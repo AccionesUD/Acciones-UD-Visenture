@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+/* Variables del tema */
+:root {
+  /* Colores principales */
+  --primary: #10b981; /* emerald-600 */
+  --primary-hover: #047857; /* emerald-700 */
+  --primary-light: #d1fae5; /* emerald-100 */
+  --primary-dark: #064e3b; /* emerald-900 */
+  --accent: #34d399; /* emerald-400 */
+
+  /* Estados */
+  --success: var(--primary);
+  --danger: #ef4444; /* red-500 */
+  --warning: #f59e0b; /* amber-500 */
+
+  /* Interfaz */
+  --text: #111827; /* gray-900 */
+  --text-light: #f9fafb; /* gray-50 */
+  --bg: #ecfdf5; /* emerald-50 */
+  --bg-card: #ffffff;
+  --bg-darker: #064e3b; /* emerald-900 */
+}
+
+/* Tema oscuro */
+.dark {
+  --primary: #34d399; /* emerald-400 */
+  --primary-hover: #0d9488; /* teal-600 */
+  --primary-light: #134e4a; /* teal-900 */
+  --primary-dark: #d1fae5; /* emerald-100 */
+  --accent: #6ee7b7; /* emerald-300 */
+  
+  --text: #f8fafc; /* slate-50 */
+  --text-muted: #94a3b8; /* slate-400 */
+  --bg: #0f172a; /* slate-900 */
+  --bg-card: #1e293b; /* slate-800 */
+  --bg-darker: var(--bg);
+
+  /* Estilos base */
+  & body {
+    background-color: var(--bg);
+    color: var(--text);
+  }
+
+  /* Fondos */
+  & .bg-white,
+  & .bg-gray-50,
+  & thead.bg-gray-50 { background-color: var(--bg-card); }
+  
+  & .bg-emerald-50,
+  & .bg-gray-800,
+  & .bg-emerald-700,
+  & .bg-emerald-800 { background-color: var(--bg); }
+  
+  & .bg-emerald-100 { background-color: var(--primary-light); }
+  & tbody.bg-white { background-color: transparent; }
+
+  /* Estados */
+  & .bg-green-100 { background-color: var(--primary-dark); }
+  & .bg-red-100 {
+    background-color: #7f1d1d; /* red-900 */
+    color: #fecaca; /* red-200 */
+  }
+  & .bg-blue-100 {
+    background-color: #172554; /* blue-950 */
+    color: #bfdbfe; /* blue-200 */
+  }
+
+  /* Bordes */
+  & .border-gray-300 { border-color: #475569; } /* slate-600 */
+  & .border-emerald-100,
+  & .divide-gray-200 { border-color: #334155; } /* slate-700 */
+  & .border-red-400 { border-color: #b91c1c; } /* red-700 */
+  & .border-blue-400 { border-color: #1e40af; } /* blue-800 */
+
+  /* Textos */
+  & .text-gray-900,
+  & .text-gray-800,
+  & .text-sm.font-medium.text-gray-900 { color: #f1f5f9; } /* slate-100 */
+  & .text-gray-700 { color: #e2e8f0; } /* slate-200 */
+  & .text-gray-600 { color: #cbd5e1; } /* slate-300 */
+  & .text-gray-500,
+  & .text-gray-400 { color: var(--text-muted); }
+
+  & .text-emerald-800,
+  & .text-emerald-600,
+  & .text-green-800,
+  & .text-green-500 { color: var(--primary); }
+  & .text-emerald-300 { color: var(--accent); }
+  & .text-emerald-100 { color: var(--primary-dark); }
+
+  & .text-red-800,
+  & .text-red-700,
+  & .text-red-600,
+  & .text-red-500 { color: #fca5a5; } /* red-300 */
+  & .text-blue-700 { color: #93c5fd; } /* blue-300 */
+
+  /* Efectos hover */
+  & .hover\:bg-emerald-50:hover,
+  & .hover\:bg-emerald-700:hover,
+  & .bg-emerald-100.hover\:bg-emerald-700:hover { background-color: var(--primary-light); }
+  
+  & .hover\:border-emerald-500:hover { border-color: var(--primary); }
+  & .hover\:text-emerald-500:hover { color: var(--primary); }
+  & .hover\:text-white:hover { color: #ffffff; }
+  & a.text-gray-600:hover,
+  & .text-gray-500:hover { color: #f1f5f9; } /* slate-100 */
+
+  /* Gradientes */
+  & .bg-gradient-to-r {
+    &.from-green-400.via-emerald-500.to-teal-600 {
+      background-image: linear-gradient(to right, #0f766e, #065f46, #0d9488);
+    }
+    &.from-gray-50.to-gray-100 {
+      background-image: linear-gradient(to right, var(--bg), var(--bg-card));
+    }
+  }
+
+  /* Formularios */
+  & input {
+    background-color: var(--bg-card);
+    color: var(--text);
+  }
+
+  /* Botones */
+  & .bg-gray-200 {
+    background-color: #e5e7eb; /* gray-200 - mantener igual que en modo claro */
+    color: #4b5563; /* gray-600 - mantener igual que en modo claro */
+
+    &:hover {
+      background-color: #d1d5db; /* gray-300 - mantener igual que en modo claro */
+    }
+  }
+
+  /* Sombras */
+  & .shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+  & .shadow-lg,
+  & .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Tablas */
+  & tr:nth-child(even) { background-color: var(--bg-card); }
+  & tr:nth-child(odd) { background-color: var(--bg); }
+  & th { color: #f1f5f9; } /* slate-100 */
+}
