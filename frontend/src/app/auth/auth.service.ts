@@ -42,6 +42,9 @@ export class AuthService {
   private tokenExpirationTimer: any = null;
   private platformId = inject(PLATFORM_ID);
   
+  // URL base para las peticiones de autenticación (se reemplazará con URL real cuando se integre con backend)
+  private apiUrl = 'api'; 
+  
   constructor(
     private router: Router,
     private jwtService: JwtService,
@@ -154,6 +157,74 @@ export class AuthService {
     }
     
     return throwError(() => new Error('Usuario no encontrado'));
+  }
+  
+  // Método para solicitar recuperación de contraseña
+  forgotPassword(email: string): Observable<{ success: boolean, message: string }> {
+    console.log('Solicitando recuperación de contraseña para:', email);
+    
+    // Simulación de respuesta mientras no existe backend
+    if (email === 'demo@example.com') {
+      return of({ 
+        success: true, 
+        message: 'Se ha enviado un correo electrónico con las instrucciones para restablecer tu contraseña.'
+      }).pipe(delay(1000));
+    }
+    
+    // return this.http.post<{ success: boolean, message: string }>(
+    //   `${this.apiUrl}/auth/forgot-password`,
+    //   { email }
+    // );
+    
+    return of({ 
+      success: true, 
+      message: 'Si el correo electrónico existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.'
+    }).pipe(delay(1000));
+  }
+  
+  // Método para validar token de restablecimiento
+  validatePasswordResetToken(token: string): Observable<{ valid: boolean }> {
+    console.log('Validando token de restablecimiento:', token);
+    
+    // Simulación de validación mientras no existe backend
+    // En un caso real, se enviaría el token al backend para validar
+    const isValid = token === 'valid-token';
+    
+    // return this.http.get<{ valid: boolean }>(
+    //   `${this.apiUrl}/auth/reset-password/validate/${token}`
+    // );
+    
+    if (isValid) {
+      return of({ valid: true }).pipe(delay(800));
+    }
+    return throwError(() => new Error('El token no es válido o ha expirado'));
+  }
+  
+  // Método para restablecer contraseña
+  resetPassword(token: string, password: string, confirmPassword: string): Observable<{ success: boolean, message: string }> {
+    console.log('Restableciendo contraseña con token:', token);
+    
+    if (password !== confirmPassword) {
+      return throwError(() => new Error('Las contraseñas no coinciden'));
+    }
+    
+    // Simulación de respuesta mientras no existe backend
+    // En un caso real, se enviaría el token y la nueva contraseña al backend
+    const isValid = token === 'valid-token';
+    
+    // return this.http.post<{ success: boolean, message: string }>(
+    //   `${this.apiUrl}/auth/reset-password`,
+    //   { token, password, confirmPassword }
+    // );
+    
+    if (isValid) {
+      return of({
+        success: true,
+        message: 'Tu contraseña ha sido restablecida con éxito'
+      }).pipe(delay(1000));
+    }
+    
+    return throwError(() => new Error('No se pudo restablecer la contraseña. El token no es válido o ha expirado.'));
   }
   
   // Cargar usuario desde localStorage al iniciar la aplicación

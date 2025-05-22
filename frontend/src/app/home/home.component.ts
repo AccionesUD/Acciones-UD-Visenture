@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { NavbarComponent } from '../shared/navbar/navbar.component';
 import { AuthStateService } from '../auth/auth-state.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
