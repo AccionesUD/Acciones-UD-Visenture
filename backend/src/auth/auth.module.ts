@@ -11,8 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    forwardRef(() => UsersModule),  // Usar forwardRef para evitar dependencia circular
-    forwardRef(() => AccountsModule),  // Usar forwardRef para evitar dependencia circular
+    forwardRef(() => UsersModule), // Usar forwardRef para evitar dependencia circular
+    forwardRef(() => AccountsModule), // Usar forwardRef para evitar dependencia circular
     MailModule,
     TokensModule,
     JwtModule.register({
