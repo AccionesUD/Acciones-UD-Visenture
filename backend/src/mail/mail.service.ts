@@ -12,8 +12,8 @@ export class MailService {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'cristiancasas706@gmail.com',
-        pass: 'fxva hulp uzwd cqad', // Contraseña de aplicación de Gmail
+        user: 'correo@gmail.com',
+        pass: 'contrasenia_app', // Contraseña de aplicación de Gmail
       },
     });
   }
