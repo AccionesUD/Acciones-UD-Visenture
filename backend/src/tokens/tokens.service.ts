@@ -34,8 +34,14 @@ export class TokensService {
     if (!loginToken) return false;
 
     const now = new Date();
-    if (loginToken.expiresAt < now) return false;
+    if (loginToken.expiresAt < now) {
+      await this.loginTokenRepository.delete({ id: loginToken.id }); // Eliminar el token expirado
+      return false;
+    }
 
+    // Si el token es válido y no ha expirado, lo eliminamos
+    // para que no pueda ser reutilizado
+    await this.loginTokenRepository.delete({ id: loginToken.id });
     return true;
   }
 }

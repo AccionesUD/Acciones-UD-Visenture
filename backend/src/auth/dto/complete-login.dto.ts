@@ -1,7 +1,7 @@
-// src/auth/dto/validate-token.dto.ts
+// src/auth/dto/complete-login.dto.ts
 import { IsEmail, IsString } from 'class-validator';
 
-export class ValidateTokenDto {
+export class CompleteLoginDto {
   @IsEmail()
   email: string;
 
