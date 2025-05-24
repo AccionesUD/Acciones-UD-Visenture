@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -19,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
                 database: 'visenture',
                 host: 'localhost'
               })
-            })],
+            }), AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
