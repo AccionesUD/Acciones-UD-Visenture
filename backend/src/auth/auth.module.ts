@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
+import { HashingProvider } from './providers/bcrypt.provider';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
@@ -10,8 +11,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
-    UsersModule,
-    AccountsModule,
+    forwardRef(() => UsersModule),  // Usar forwardRef para evitar dependencia circular
+    forwardRef(() => AccountsModule),  // Usar forwardRef para evitar dependencia circular
     MailModule,
     TokensModule,
     JwtModule.register({
@@ -20,7 +21,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy, HashingProvider],
+  exports: [AuthService, HashingProvider],
 })
 export class AuthModule {}

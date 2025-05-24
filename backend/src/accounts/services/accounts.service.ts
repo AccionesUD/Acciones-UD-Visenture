@@ -4,11 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAccountDto } from '../dtos/create-account.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 
 export class AccountsService {
   constructor(
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
+    private hashingProvider: HashingProvider,
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
