@@ -1,37 +1,37 @@
-import { User } from "src/users/users.entitiy";
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from 'src/users/users.entitiy';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
-export class Account{
+export class Account {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column({ type: 'varchar', length: 30, nullable: false, unique: true })
+  email: string;
 
-    @Column({
-        type: 'varchar',
-        nullable: false,
-        length: 30,
-        unique: true
-    })
-    email: string
+  @Column({ type: 'varchar', nullable: false })
+  password: string;
 
-    @Column({
-        type: 'varchar',
-        nullable: false
-    })
-    password: string
+  @CreateDateColumn()
+  date_created: Date;
 
-    @CreateDateColumn()
-    date_created: Date
+  @UpdateDateColumn()
+  last_acces: Date;
 
-    @UpdateDateColumn()
-    last_acces: Date
+  @Column({ type: 'int', nullable: true })
+  commissioner: number;
 
-    @OneToOne(() => Account)
-    @JoinColumn()
-    commissioner: number
-
-    @OneToOne(() => User, {nullable: true})
-    @JoinColumn()
-    identity_document : string
+  @OneToOne(() => User, (user) => user.account)
+  @JoinColumn()
+  @OneToOne(() => User, (user) => user.account)
+  @JoinColumn({ name: 'identity_document' })
+  user: User;
 }
