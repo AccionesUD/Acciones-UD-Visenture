@@ -10,6 +10,6 @@ import { AuthModule } from 'src/auth/auth.module';
   controllers: [AccountsController],
   providers: [AccountsService],
   imports: [AuthModule, TypeOrmModule.forFeature([User, Account])],
-  exports: [AccountsService]
+  exports: [AccountsService],
 })
 export class AccountsModule {}
