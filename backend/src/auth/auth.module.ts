@@ -6,6 +6,7 @@ import { AccountsModule } from 'src/accounts/accounts.module';
 import { MailModule } from 'src/mail/mail.module';
 import { TokensModule } from 'src/tokens/tokens.module';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -14,12 +15,12 @@ import { JwtModule } from '@nestjs/jwt';
     MailModule,
     TokensModule,
     JwtModule.register({
-      secret: 'your_jwt_secret_key', // Cambia esto por una clave secreta segura
+      secret: '123456', // Cambia esto por una clave secreta segura
       signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
