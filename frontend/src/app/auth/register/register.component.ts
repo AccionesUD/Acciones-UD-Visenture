@@ -22,6 +22,8 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
+      identification: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
+      phone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
@@ -32,6 +34,8 @@ export class RegisterComponent {
 
   // Getters para acceder fácil a los controles
   get name() { return this.registerForm.get('name'); }
+  get identification() { return this.registerForm.get('identification'); }
+  get phone() { return this.registerForm.get('phone'); }
   get email() { return this.registerForm.get('email'); }
   get password() { return this.registerForm.get('password'); }
   get confirmPassword() { return this.registerForm.get('confirmPassword'); }
