@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Injectable } from '@nestjs/common';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 
@@ -7,25 +8,32 @@ import { Transporter } from 'nodemailer';
 export class MailService {
   private transporter: Transporter;
 
-  constructor() {
+  constructor(
+    private readonly configService: ConfigService
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'correo@gmail.com',
-        pass: 'contrasenia_app', // Contraseña de aplicación de Gmail
-      },
-    });
+ 
+      this.transporter = nodemailer.createTransport({
+        service: configService.get('MAIL_SERVICE'),
+        auth: {
+          user: this.configService.get('MAIL_ADDRESS'),
+          pass: this.configService.get('MAIL_PASS'), // Contraseña de aplicación de Gmail
+        },
+      }); 
   }
-
+    
   async sendLoginToken(email: string, token: string): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await this.transporter.sendMail({
-      from: '"Acciones UD" <tu_correo@gmail.com>',
-      to: email,
-      subject: 'Tu código de acceso',
-      text: `Tu token de acceso es: ${token}`,
-    });
+    try {
+      await this.transporter.sendMail({
+        from: `"Acciones UD" ${this.configService.get('MAIL_ADDRESS')}`,
+        to: email,
+        subject: 'Tu código de acceso',
+        text: `Tu token de acceso es: ${token}`,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException('Error en el envio de token', {description: `No ha sido existosos el envio del token, revise las credenciales.  ${error}`})
+    }
   }
 }
 // src/mail/mail.service.ts

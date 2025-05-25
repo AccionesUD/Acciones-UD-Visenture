@@ -7,6 +7,7 @@ import { UsersService } from '../users/services/users.service';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { MailService } from 'src/mail/mail.service';
 import { TokensService } from 'src/tokens/tokens.service';
+import { HashingProvider } from './providers/bcrypt.provider';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly tokensService: TokensService,
     private readonly jwtService: JwtService,
+    private readonly hashingProvider: HashingProvider
   ) {}
 
   async validateUser(email: string, password: string): Promise<string> {
@@ -24,7 +26,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, account.password);
+    const isPasswordValid = await this.hashingProvider.comparePassword(password, account.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
