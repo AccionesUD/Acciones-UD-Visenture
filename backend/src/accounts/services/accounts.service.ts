@@ -41,4 +41,20 @@ export class AccountsService {
   async findByEmail(email: string): Promise<Account | null> {
     return this.accountRepository.findOneBy({email})
   }
+
+  async updatePassword(accountId: number, newPassword: string): Promise<void> {
+    const hashedPassword = await this.hashingProvider.hashPassword(newPassword);
+    
+    try {
+      await this.accountRepository.update(accountId, {
+        password: hashedPassword,
+        last_access: new Date() // Actualizar último acceso
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Error actualizando contraseña',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }
