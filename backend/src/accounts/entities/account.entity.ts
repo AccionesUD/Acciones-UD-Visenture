@@ -1,4 +1,4 @@
-import { User } from 'src/users/users.entitiy';
+import { User } from 'src/users/users.entity';
 import {
   Column,
   CreateDateColumn,
@@ -24,13 +24,11 @@ export class Account {
   date_created: Date;
 
   @UpdateDateColumn()
-  last_acces: Date;
+  last_access: Date;
 
   @Column({ type: 'int', nullable: true })
   commissioner: number;
 
-  @OneToOne(() => User, (user) => user.account)
-  @JoinColumn()
   @OneToOne(() => User, (user) => user.account)
   @JoinColumn({ name: 'identity_document' })
   user: User;

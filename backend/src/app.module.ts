@@ -7,32 +7,40 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { TokensModule } from './tokens/tokens.module';
-import { ConfigModule } from '@nestjs/config';
+import { PasswordResetToken } from './password-reset/entities/password-reset-token.entity';
+import { User } from './users/users.entity';
+import { Account } from './accounts/entities/account.entity';
+import { LoginToken } from './tokens/entities/login-token.entity';
+import { PasswordResetModule } from './password-reset/password-reset.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Hace que las variables de entorno estén disponibles globalmente
-      envFilePath: '.env',
+      isGlobal: true
     }),
-    UsersModule,
-    AccountsModule,    TypeOrmModule.forRootAsync({
-      useFactory: () => ({
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        autoLoadEntities: process.env.DB_AUTOLOADENTITIES === 'true',
-        synchronize: process.env.DB_SYNCRONIZE === 'true',
-        port: parseInt(process.env.DB_PORT || '5432'),
-        username: process.env.DB_USERNAME || 'postgres',
-        password: process.env.DB_PASSWORD || 'postgres',
-        database: process.env.DB_DATABASE || 'visenture_db',
-        host: process.env.DB_HOST || 'localhost',
+        autoLoadEntities: configService.get('DB_AUTOLOADENTITIES'),
+        synchronize: configService.get('DB_SYNCRONIZE'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        host: configService.get('DB_HOST')
       }),
     }),
+    UsersModule,
+    AccountsModule,
     AuthModule,
+    PasswordResetModule,
     MailModule,
-    TokensModule,
+    TokensModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

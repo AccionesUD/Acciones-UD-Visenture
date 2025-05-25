@@ -2,7 +2,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginToken } from './entities/login-token.entity';
-import { Repository, LessThan } from 'typeorm';
+import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokensService {  // Límites para reenvío de token
@@ -12,17 +13,11 @@ export class TokensService {  // Límites para reenvío de token
   constructor(
     @InjectRepository(LoginToken)
     private loginTokenRepository: Repository<LoginToken>,
-  ) {
-    // Limpiar tokens expirados cada 30 minutos
-    this.scheduleTokenCleanup();
-  }  /**
-   * Almacena un nuevo token de autenticación para el usuario
-   * @param email El correo electrónico del usuario
-   * @param token El token de autenticación generado
-   */
+    private configService: ConfigService
+  ) {}
+
   async storeToken(email: string, token: string): Promise<void> {
-    // Usamos la variable de entorno o valor por defecto de 10 minutos
-    const expirationMinutes = parseInt(process.env['2MFA_EXPIRATION_TOKEN'] || '10');
+    const expirationMinutes = this.configService.get('2MFA_EXPIRATION_TOKEN');
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
 
     // Buscar tokens existentes para este email
@@ -51,41 +46,16 @@ export class TokensService {  // Límites para reenvío de token
       lastResendAt,
     });
 
-    await this.loginTokenRepository.save(loginToken);
-  }  /**
-   * Valida si un token existe y es válido, pero no lo elimina.
-   * Esta función se utiliza para la primera fase de verificación.
-   * 
-   * @param email El email asociado al token
-   * @param token El token a validar
-   * @returns true si el token es válido, false en caso contrario
-   */
-  async checkTokenValid(email: string, token: string): Promise<boolean> {
-    const loginToken = await this.loginTokenRepository.findOne({
-      where: { email, token },
-    });
-
-    if (!loginToken) {
-      return false;
+    try {
+      await this.loginTokenRepository.save(loginToken);
+    } catch(error){
+      
     }
-
-    const now = new Date();
-    if (loginToken.expiresAt < now) {
-      await this.loginTokenRepository.delete({ id: loginToken.id }); // Eliminar el token expirado
-      return false;
-    }
-
-    return true; // El token es válido pero no lo eliminamos
+   
   }
-  /**
-   * Valida y consume un token (lo elimina si es válido).
-   * Esta función se utiliza para la segunda fase de verificación,
-   * cuando se genera el token JWT después de validar el MFA.
-   * 
-   * @param email El email asociado al token
-   * @param token El token a validar y consumir
-   * @returns true si el token es válido y se ha consumido, false en caso contrario
-   */
+
+  // src/tokens/tokens.service.ts
+
   async validateToken(email: string, token: string): Promise<boolean> {
     const loginToken = await this.loginTokenRepository.findOne({
       where: { email, token },

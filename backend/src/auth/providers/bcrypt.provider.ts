@@ -1,4 +1,4 @@
-import { HashingAbstract } from './hashing.providet';
+import { HashingAbstract } from './hashing.provider';
 import * as bcrypt from 'bcrypt';
 
 export class HashingProvider implements HashingAbstract {

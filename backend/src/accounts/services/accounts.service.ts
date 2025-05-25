@@ -2,9 +2,10 @@ import { Repository } from 'typeorm';
 import { Account } from '../entities/account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAccountDto } from '../dtos/create-account.dto';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, RequestTimeoutException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
+import { find } from 'rxjs';
 
 export class AccountsService {
   constructor(
@@ -14,7 +15,7 @@ export class AccountsService {
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
-    const hashedPassword = await bcrypt.hash(createAccountDto.password, 10);
+    const hashedPassword = await this.hashingProvider.hashPassword(createAccountDto.password);
     const account = this.accountRepository.create({
       ...createAccountDto,
       password: hashedPassword,
@@ -24,23 +25,36 @@ export class AccountsService {
       await this.accountRepository.save(account);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new HttpException('Error creating account', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
     }
   }
 
   async checkExistenceAccount(email: string) {
-    const findAccount = await this.accountRepository.findOneBy({ email });
-    if (findAccount == null) {
-      return false;
+    try {
+      const findAccount = await this.accountRepository.findOneBy({ email });
+      return findAccount
+    } catch (error) {
+      throw new RequestTimeoutException('Error en operacion en la BD', {description: 'Se presento un error en la operacion, intente luego'})
     }
-    return true;
   }
 
   async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOne({
-      where: {
-        email,
-      },
-    });
+    return this.accountRepository.findOneBy({email})
+  }
+
+  async updatePassword(accountId: number, newPassword: string): Promise<void> {
+    const hashedPassword = await this.hashingProvider.hashPassword(newPassword);
+    
+    try {
+      await this.accountRepository.update(accountId, {
+        password: hashedPassword,
+        last_access: new Date() // Actualizar último acceso
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Error actualizando contraseña',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 }
