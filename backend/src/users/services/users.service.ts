@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../users.entitiy';
+import { User } from '../users.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
+import { UserPasswordReset } from 'src/password-reset/entities/users-passwordReset.entity';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,8 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private accountService: AccountsService,
-  ) {}
+    @InjectRepository(UserPasswordReset)
+    private readonly userPasswordResetRepository: Repository<UserPasswordReset>,) { }
 
   async createUser(createUserDto: CreateUserDto) {
     if (
@@ -44,4 +46,5 @@ export class UsersService {
     }
     return true;
   }
+
 }

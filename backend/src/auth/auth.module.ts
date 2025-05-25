@@ -8,11 +8,13 @@ import { MailModule } from 'src/mail/mail.module';
 import { TokensModule } from 'src/tokens/tokens.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { PasswordResetModule } from 'src/password-reset/password-reset.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule), // Usar forwardRef para evitar dependencia circular
     forwardRef(() => AccountsModule), // Usar forwardRef para evitar dependencia circular
+    forwardRef(() => PasswordResetModule),
     MailModule,
     TokensModule,
     JwtModule.register({
