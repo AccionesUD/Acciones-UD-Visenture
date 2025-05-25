@@ -1,0 +1,15 @@
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "identity_document": "1055151104",
+  "first_name": "John",
+  "last_name": "Doeh",
+  "address": "Calle 11 #22-33",
+  "phone": "+573102523696",
+  "birthdate": "2000-05-14",
+  "account": {
+    "email": "johndh@gmail.com",
+    "password": "A1#asdasadasda"
+  }
+}

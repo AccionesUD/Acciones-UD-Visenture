@@ -3,9 +3,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokensService } from './tokens.service';
 import { LoginToken } from './entities/login-token.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([LoginToken])],
+  imports: [ConfigModule,TypeOrmModule.forFeature([LoginToken])],
   providers: [TokensService],
   exports: [TokensService],
 })
