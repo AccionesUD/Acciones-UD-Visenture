@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/services/users.service';
@@ -16,8 +15,12 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly tokensService: TokensService,
     private readonly jwtService: JwtService,
-  ) {}
-
+  ) {}  /**
+   * Valida las credenciales del usuario y genera un token MFA si son correctas
+   * @param email Correo electrónico del usuario
+   * @param password Contraseña del usuario
+   * @returns Mensaje para el usuario indicando que revise su correo
+   */
   async validateUser(email: string, password: string): Promise<string> {
     const account = await this.accountsService.findByEmail(email);
     if (!account || !account.password) {
@@ -28,22 +31,27 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
-
-    const token = uuidv4();
-
+    
+    // Generamos un token de 6 caracteres alfanuméricos
+    const token = this.generateShortToken();
     await this.tokensService.storeToken(email, token);
     await this.mailService.sendLoginToken(email, token);
 
     return 'Revise su correo para continuar el inicio de sesión';
   }
 
-  // src/auth/auth.service.ts
-
+  /**
+   * Valida el token de autenticación sin consumirlo
+   * @param email Correo electrónico del usuario
+   * @param token Token de autenticación a validar
+   * @returns Objeto con el resultado de la validación y un mensaje
+   */
   async validateLoginToken(
     email: string,
     token: string,
   ): Promise<{ success: boolean; message: string }> {
-    const isValid = await this.tokensService.validateToken(email, token);
+    // Usamos checkTokenValid que solo verifica sin consumir el token
+    const isValid = await this.tokensService.checkTokenValid(email, token);
 
     if (!isValid) {
       return { success: false, message: 'Token inválido o expirado' };
@@ -53,12 +61,18 @@ export class AuthService {
       success: true,
       message: 'Token válido, puede continuar con el login',
     };
-  }
-
+  }  /**
+   * Genera un token JWT de acceso después de verificar y consumir el token MFA
+   * @param email Correo electrónico del usuario
+   * @param token Token MFA para validación final
+   * @returns Objeto con el token JWT de acceso
+   * @throws UnauthorizedException si el token es inválido o la cuenta no existe
+   */
   async generateAccessToken(
     email: string,
     token: string,
   ): Promise<{ accessToken: string }> {
+    // Consumimos (validamos + eliminamos) el token
     const isValid = await this.tokensService.validateToken(email, token);
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
@@ -68,7 +82,8 @@ export class AuthService {
     if (!account) {
       throw new UnauthorizedException('Cuenta no encontrada');
     }
-    // Aquí definimos la estructura del payload del JWT
+    
+    // Definición de la estructura del payload del JWT
     interface JwtPayload {
       sub: number;
       email: string;
@@ -81,5 +96,30 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };
+  }  async resendToken(email: string): Promise<string> {
+    // Verificamos que el email corresponda a una cuenta existente
+    const account = await this.accountsService.findByEmail(email);
+    if (!account) {
+      throw new UnauthorizedException('Correo electrónico no encontrado');
+    }    // Generamos un nuevo token de 6 caracteres
+    const token = this.generateShortToken();
+    
+    // Almacenamos el nuevo token
+    await this.tokensService.storeToken(email, token);
+    // Enviamos el token por correo
+    await this.mailService.sendLoginToken(email, token);
+    return 'Token reenviado correctamente';
+  }
+
+  private generateShortToken(): string {
+    const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
+    const charactersLength = characters.length;
+    
+    for (let i = 0; i < 6; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    
+    return result;
   }
 }

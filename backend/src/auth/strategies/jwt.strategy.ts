@@ -5,11 +5,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    super({
+  constructor() {    super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // obtiene el token del header
       ignoreExpiration: false,
-      secretOrKey: '123456', // usa la misma que en JwtModule
+      secretOrKey: process.env.JWT_SECRET || '123456', // usa la variable de entorno JWT_SECRET
     });
   }
 

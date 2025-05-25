@@ -6,22 +6,21 @@ import { Transporter } from 'nodemailer';
 @Injectable()
 export class MailService {
   private transporter: Transporter;
-
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: process.env.MAIL_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.MAIL_PORT || '587'),
       auth: {
-        user: 'correo@gmail.com',
-        pass: 'contrasenia_app', // Contraseña de aplicación de Gmail
+        user: process.env.MAIL_USER || 'correo@gmail.com',
+        pass: process.env.MAIL_PASSWORD || 'contrasenia_app', // Contraseña de aplicación de Gmail
       },
     });
   }
-
   async sendLoginToken(email: string, token: string): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await this.transporter.sendMail({
-      from: '"Acciones UD" <tu_correo@gmail.com>',
+      from: `"Acciones UD" <${process.env.MAIL_FROM || 'no-reply@visenture.com'}>`,
       to: email,
       subject: 'Tu código de acceso',
       text: `Tu token de acceso es: ${token}`,

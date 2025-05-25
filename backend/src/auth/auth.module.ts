@@ -14,10 +14,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     forwardRef(() => UsersModule), // Usar forwardRef para evitar dependencia circular
     forwardRef(() => AccountsModule), // Usar forwardRef para evitar dependencia circular
     MailModule,
-    TokensModule,
-    JwtModule.register({
-      secret: '123456', // Cambia esto por una clave secreta segura
-      signOptions: { expiresIn: '1h' },
+    TokensModule,    JwtModule.register({
+      secret: process.env.JWT_SECRET || '123456', // Usa la variable de entorno JWT_SECRET
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || '1h' },
     }),
   ],
   controllers: [AuthController],

@@ -14,4 +14,10 @@ export class LoginToken {
 
   @Column()
   expiresAt: Date;
+  
+  @Column({ default: 0 })
+  resendCount: number;
+  
+  @Column({ nullable: true })
+  lastResendAt: Date;
 }
