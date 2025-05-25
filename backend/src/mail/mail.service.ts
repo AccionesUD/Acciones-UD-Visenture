@@ -35,5 +35,23 @@ export class MailService {
       throw new RequestTimeoutException('Error en el envio de token', {description: `No ha sido existosos el envio del token, revise las credenciales.  ${error}`})
     }
   }
+
+  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
+  const resetLink = `https://tudominio.com/reset-password?token=${token}&email=${email}`;
+  
+  await this.transporter.sendMail({
+    from: '"Soporte" <soporte@tudominio.com>',
+    to: email,
+    subject: 'Restablecimiento de contraseña',
+    html: `
+      <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #2563eb;">Restablecer contraseña</h2>
+        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+        <a href="${resetLink}" style="...">Restablecer contraseña</a>
+        <p>El enlace expirará en 1 hora.</p>
+      </div>
+    `,
+  });
+}
 }
 // src/mail/mail.service.ts
