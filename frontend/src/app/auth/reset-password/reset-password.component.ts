@@ -41,27 +41,17 @@ export class ResetPasswordComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private dialog: MatDialog
-  ) { }
-  ngOnInit(): void {
-    const isTestRoute = this.router.url === '/test-reset-password';
-    
-    if (isTestRoute) {
-      // Para la ruta de prueba, asignamos un token válido y saltamos la validación
-      this.token = 'valid-token';
-      this.isLoading = false;
-      this.invalidToken = false;
-    } else {
-      // Obtener el token de la URL para el flujo normal
-      this.route.params.subscribe(params => {
-        this.token = params['token'];
-        
-        if (this.token) {
-          this.validateToken();
-        } else {
-          this.router.navigate(['/forgot-password']);
-        }
-      });
-    }
+  ) { }  ngOnInit(): void {
+    // Obtener el token de la URL
+    this.route.params.subscribe(params => {
+      this.token = params['token'];
+      
+      if (this.token) {
+        this.validateToken();
+      } else {
+        this.router.navigate(['/forgot-password']);
+      }
+    });
 
     this.resetPasswordForm = this.formBuilder.group({
       password: ['', [Validators.required, Validators.minLength(8)]],

@@ -33,18 +33,19 @@ export class ForgotPasswordComponent implements OnInit {
   get f() {
     return this.forgotPasswordForm.controls;
   }
-
   onSubmit(): void {
     if (this.forgotPasswordForm.invalid) return;
     this.isSubmitting = true;
     this.errorMessage = '';
     this.authService.forgotPassword(this.f['email'].value)
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.isSubmitting = false;
-          this.dialog.open(SuccessForgotDialogComponent, {
-            panelClass: 'custom-dialog-container'
-          });
+          if (response.success) {
+            this.success = true;
+          } else {
+            this.errorMessage = response.message || 'Ha ocurrido un error al enviar el correo.';
+          }
         },
         error: (error) => {
           this.isSubmitting = false;

@@ -99,32 +99,17 @@ export class AuthService {
       ...verification,
       token: verification.token.toUpperCase()
     };
-    
-    // Primero validamos el token
-    return this.http.post<{ success: boolean, message: string }>(
-      `${this.apiUrl}/validate-token`, 
+      // Llamamos directamente a completar login, saltándonos la validación previa
+    // que consumía el token antes de tiempo
+    return this.http.post<{ accessToken: string }>(
+      `${this.apiUrl}/complete-login`, 
       normalizedVerification
     ).pipe(
-      // Si la validación es exitosa, completamos el login
-      switchMap(response => {
-        console.log('Respuesta de validación de token:', response);
-        if (response.success) {
-          console.log('Token validado correctamente, completando login');
-          return this.http.post<{ accessToken: string }>(
-            `${this.apiUrl}/complete-login`, 
-            normalizedVerification
-          ).pipe(
-            catchError(error => {
-              console.error('Error al completar login:', error);
-              const errorMsg = error.error?.message || 'Error al completar el inicio de sesión';
-              console.error('Mensaje de error:', errorMsg);
-              return throwError(() => new Error(errorMsg));
-            })
-          );
-        } else {
-          console.error('Error en validación de token:', response);
-          return throwError(() => new Error(response.message || 'Token inválido'));
-        }
+      catchError(error => {
+        console.error('Error al completar login:', error);
+        const errorMsg = error.error?.message || 'Error al completar el inicio de sesión';
+        console.error('Mensaje de error:', errorMsg);
+        return throwError(() => new Error(errorMsg));
       }),
       // Procesamos el token JWT recibido
       switchMap(response => {
@@ -209,8 +194,7 @@ export class AuthService {
         message: 'Se requiere un correo electrónico válido para reenviar el código' 
       });
     }
-    
-    // Usamos el endpoint para reenviar el token
+      // Usamos el endpoint para reenviar el token
     return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/resend-token`, { email }).pipe(
       map(response => {
         console.log('Token reenviado:', response);
@@ -226,52 +210,45 @@ export class AuthService {
       })
     );
   }
-    // Método para solicitar recuperación de contraseña
+  // Método para solicitar recuperación de contraseña
   forgotPassword(email: string): Observable<{ success: boolean, message: string }> {
     console.log('Solicitando recuperación de contraseña para:', email);
     
-    // Nota: Si no hay endpoint de recuperación de contraseña en el backend actual, 
-    // mantenemos una respuesta simulada hasta que se desarrolle esa funcionalidad
-    
-    // Cuando el endpoint esté disponible, usaríamos:
-    // return this.http.post<{ success: boolean, message: string }>(
-    //   `${this.apiUrl}/forgot-password`,
-    //   { email }
-    // ).pipe(
-    //   catchError(error => {
-    //     console.error('Error en recuperación de contraseña:', error);
-    //     // Para no dar pistas de qué emails están registrados, siempre devolvemos éxito
-    //     return of({ 
-    //       success: true, 
-    //       message: 'Si el correo electrónico existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.'
-    //     });
-    //   })
-    // );
-    
-    return of({ 
-      success: true, 
-      message: 'Si el correo electrónico existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.'
-    }).pipe(delay(1000));
+    // Llamada real al endpoint de recuperación de contraseña
+    return this.http.post<{ message: string }>(`${this.apiUrl}/forgot-password`, { email }).pipe(
+      map(response => {
+        return { 
+          success: true, 
+          message: response.message || 'Si el correo electrónico existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.'
+        };
+      }),
+      catchError(error => {
+        console.error('Error en recuperación de contraseña:', error);
+        // Para no dar pistas de qué emails están registrados, podemos devolver un mensaje genérico
+        return of({ 
+          success: true, 
+          message: 'Si el correo electrónico existe en nuestra base de datos, recibirás un enlace para restablecer tu contraseña.'
+        });
+      })
+    );
   }
-  
   // Método para validar token de restablecimiento
   validatePasswordResetToken(token: string): Observable<{ valid: boolean }> {
     console.log('Validando token de restablecimiento:', token);
     
-    // Simulación de validación mientras no existe backend
-    // En un caso real, se enviaría el token al backend para validar
-    const isValid = token === 'valid-token';
-    
-    // return this.http.get<{ valid: boolean }>(
-    //   `${this.apiUrl}/auth/reset-password/validate/${token}`
-    // );
-    
-    if (isValid) {
+    // Verificar si estamos en la ruta de prueba para entorno de desarrollo
+    if (token === 'valid-token') {
       return of({ valid: true }).pipe(delay(800));
     }
-    return throwError(() => new Error('El token no es válido o ha expirado'));
+    
+    // Llamamos al endpoint para validar el token
+    return this.http.get<{ valid: boolean }>(`${this.apiUrl}/reset-token/${token}`).pipe(
+      catchError(error => {
+        console.error('Error al validar el token:', error);
+        return of({ valid: false });
+      })
+    );
   }
-  
   // Método para restablecer contraseña
   resetPassword(token: string, password: string, confirmPassword: string): Observable<{ success: boolean, message: string }> {
     console.log('Restableciendo contraseña con token:', token);
@@ -280,26 +257,32 @@ export class AuthService {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
     
-    // Simulación de respuesta mientras no existe backend
-    // En un caso real, se enviaría el token y la nueva contraseña al backend
-    const isValid = token === 'valid-token';
-    
-    // return this.http.post<{ success: boolean, message: string }>(
-    //   `${this.apiUrl}/auth/reset-password`,
-    //   { token, password, confirmPassword }
-    // );
-    
-    if (isValid) {
+    // Verificar si estamos en la ruta de prueba para entorno de desarrollo
+    if (token === 'valid-token') {
       return of({
         success: true,
         message: 'Tu contraseña ha sido restablecida con éxito'
       }).pipe(delay(1000));
     }
     
-    return throwError(() => new Error('No se pudo restablecer la contraseña. El token no es válido o ha expirado.'));
+    // Llamada real al endpoint de restablecimiento de contraseña
+    return this.http.post<{ success: boolean, message: string }>(
+      `${this.apiUrl}/reset-password`,
+      { token, newPassword: password }
+    ).pipe(
+      map(response => {
+        return {
+          success: true,
+          message: response.message || 'Tu contraseña ha sido restablecida con éxito'
+        };
+      }),
+      catchError(error => {
+        console.error('Error al restablecer contraseña:', error);
+        return throwError(() => new Error(error.error?.message || 'No se pudo restablecer la contraseña. El token no es válido o ha expirado.'));
+      })
+    );
   }
-  
-  // Cargar usuario desde localStorage al iniciar la aplicación
+    // Cargar usuario desde localStorage al iniciar la aplicación
   private loadUserFromStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem(this.tokenKey);
@@ -315,8 +298,12 @@ export class AuthService {
           }
           
           const user: User = JSON.parse(userData);
+          
+          // Actualizar ambos servicios para mantener consistencia
           this.currentUserSubject.next(user);
           this.authState.updateUser(user);
+          
+          console.log('Sesión cargada desde localStorage:', user);
           
           // Configurar timer para expiración automática
           const timeRemaining = this.jwtService.getTokenTimeRemaining(token);
@@ -329,6 +316,10 @@ export class AuthService {
           console.error('Error parsing user data from localStorage', e);
           this.logout(); // Si hay error, limpiar localStorage
         }
+      } else {
+        // Asegurarse de que ambos servicios muestren que no hay usuario autenticado
+        this.currentUserSubject.next(null);
+        this.authState.updateUser(null);
       }
     }
   }
