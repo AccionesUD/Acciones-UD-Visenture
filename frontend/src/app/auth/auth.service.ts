@@ -232,53 +232,34 @@ export class AuthService {
       })
     );
   }
-  // Método para validar token de restablecimiento
-  validatePasswordResetToken(token: string): Observable<{ valid: boolean }> {
-    console.log('Validando token de restablecimiento:', token);
-    
-    // Verificar si estamos en la ruta de prueba para entorno de desarrollo
-    if (token === 'valid-token') {
-      return of({ valid: true }).pipe(delay(800));
-    }
-    
-    // Llamamos al endpoint para validar el token
-    return this.http.get<{ valid: boolean }>(`${this.apiUrl}/reset-token/${token}`).pipe(
-      catchError(error => {
-        console.error('Error al validar el token:', error);
-        return of({ valid: false });
-      })
-    );
-  }
   // Método para restablecer contraseña
   resetPassword(token: string, password: string, confirmPassword: string): Observable<{ success: boolean, message: string }> {
-    console.log('Restableciendo contraseña con token:', token);
-    
     if (password !== confirmPassword) {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
     
-    // Verificar si estamos en la ruta de prueba para entorno de desarrollo
-    if (token === 'valid-token') {
-      return of({
-        success: true,
-        message: 'Tu contraseña ha sido restablecida con éxito'
-      }).pipe(delay(1000));
-    }
+    const email = localStorage.getItem('reset_email');
     
-    // Llamada real al endpoint de restablecimiento de contraseña
+    console.log('Enviando solicitud de reset con email:', email, 'y token:', token);
+
+    // Verificar que tenemos los datos necesarios
+    if (!token || !email) {
+      return throwError(() => new Error('Faltan datos necesarios para restablecer la contraseña'));
+    }
+
+    // El DTO del backend espera: token, email y newPassword
     return this.http.post<{ success: boolean, message: string }>(
       `${this.apiUrl}/reset-password`,
-      { token, newPassword: password }
+      { token, email, newPassword: password }
     ).pipe(
-      map(response => {
-        return {
-          success: true,
-          message: response.message || 'Tu contraseña ha sido restablecida con éxito'
-        };
+      tap(response => {
+        if (response.success) {
+          localStorage.removeItem('reset_email');
+        }
       }),
       catchError(error => {
         console.error('Error al restablecer contraseña:', error);
-        return throwError(() => new Error(error.error?.message || 'No se pudo restablecer la contraseña. El token no es válido o ha expirado.'));
+        throw error;
       })
     );
   }

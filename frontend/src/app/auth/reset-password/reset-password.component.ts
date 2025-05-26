@@ -15,49 +15,46 @@ import { SuccessDialogComponent } from './success-dialog.component';
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm!: FormGroup;
   token: string = '';
-  isLoading = true;
+  email: string = '';
+  isLoading = false; 
   isSubmitting = false;
   invalidToken = false;
   errorMessage = '';
   success = false;
-  openSuccessDialog() {
-    const dialogRef = this.dialog.open(SuccessDialogComponent, {
-      width: '400px',
-      maxWidth: '95vw',
-      disableClose: true,
-      autoFocus: false,
-      panelClass: ['custom-dialog-container', 'mat-elevation-z8']
-    });
 
-    dialogRef.afterClosed().subscribe(() => {
-      // Redirigir al usuario a login después de cerrar el diálogo
-      this.router.navigate(['/login']);
-    });
-  }
-  
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private dialog: MatDialog
-  ) { }  ngOnInit(): void {
-    // Obtener el token de la URL
-    this.route.params.subscribe(params => {
-      this.token = params['token'];
-      
-      if (this.token) {
-        this.validateToken();
-      } else {
-        this.router.navigate(['/forgot-password']);
-      }
-    });
+  ) { }
 
+  ngOnInit(): void {
+    // Inicializar el formulario
     this.resetPasswordForm = this.formBuilder.group({
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), 
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)]],
       confirmPassword: ['', Validators.required]
     }, {
       validators: this.mustMatch('password', 'confirmPassword')
+    });
+
+    // Obtener el token y email de la URL
+    this.route.queryParams.subscribe(params => {
+      this.token = params['token'];
+      this.email = params['email'];
+      
+      console.log('Token recibido:', this.token);
+      console.log('Email recibido:', this.email);
+      
+      if (this.token && this.email) {
+        // Guardar el email para usarlo en el servicio de reseteo
+        localStorage.setItem('reset_email', this.email);
+      } else {
+        this.invalidToken = true;
+        this.errorMessage = 'Enlace inválido. Falta el token o el email.';
+      }
     });
   }
 
@@ -83,18 +80,18 @@ export class ResetPasswordComponent implements OnInit {
     return this.resetPasswordForm.controls;
   }
 
-  validateToken(): void {
-    this.authService.validatePasswordResetToken(this.token)
-      .subscribe({
-        next: (response) => {
-          this.isLoading = false;
-          this.invalidToken = !response.valid;
-        },
-        error: () => {
-          this.isLoading = false;
-          this.invalidToken = true;
-        }
-      });
+  openSuccessDialog() {
+    const dialogRef = this.dialog.open(SuccessDialogComponent, {
+      width: '400px',
+      maxWidth: '95vw',
+      disableClose: true,
+      autoFocus: false,
+      panelClass: ['custom-dialog-container', 'mat-elevation-z8']
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   onSubmit(): void {
@@ -105,7 +102,9 @@ export class ResetPasswordComponent implements OnInit {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    const { password, confirmPassword } = this.resetPasswordForm.value;    this.authService.resetPassword(this.token, password, confirmPassword)
+    const { password, confirmPassword } = this.resetPasswordForm.value;
+
+    this.authService.resetPassword(this.token, password, confirmPassword)
       .subscribe({
         next: (response) => {
           this.isSubmitting = false;
@@ -115,8 +114,9 @@ export class ResetPasswordComponent implements OnInit {
         },
         error: (error) => {
           this.isSubmitting = false;
+          this.invalidToken = true;
           this.errorMessage = error.error?.message || 
-            'Ha ocurrido un error. Por favor, inténtalo de nuevo más tarde.';
+            'El enlace para restablecer la contraseña no es válido o ha expirado.';
         }
       });
   }
