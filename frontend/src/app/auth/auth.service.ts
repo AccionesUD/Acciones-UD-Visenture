@@ -2,6 +2,8 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../Enviroments/Enviroment';
 import { isPlatformBrowser } from '@angular/common';
 import { JwtService } from './jwt.service';
 import { AuthStateService } from './auth-state.service';
@@ -11,7 +13,14 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
-
+export interface RegisterData {
+  name: string;
+  identification: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+  password: string;
+}
 export interface MfaVerification {
   token: string;
   email: string;
@@ -35,7 +44,6 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private tokenKey = 'auth_token';
@@ -43,10 +51,12 @@ export class AuthService {
   private tokenExpirationTimer: any = null;
   private platformId = inject(PLATFORM_ID);
   
-  constructor(
+  private apiUrl = environment.authApiUrl;
+    constructor(
     private router: Router,
     private jwtService: JwtService,
-    private authState: AuthStateService
+    private authState: AuthStateService,
+    private http: HttpClient
   ) {
     // Recuperar usuario de localStorage al iniciar
     this.loadUserFromStorage();
@@ -54,11 +64,11 @@ export class AuthService {
   /**
    * Registra un nuevo usuario
    * @param userData Datos del formulario de registro
-   
+   */
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
   }
-*/
+
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
