@@ -29,27 +29,22 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
-    
-    // Generamos un token de 6 caracteres alfanuméricos
+
     const token = this.generateShortToken();
+
     await this.tokensService.storeToken(email, token);
     await this.mailService.sendLoginToken(email, token);
 
     return 'Revise su correo para continuar el inicio de sesión';
   }
 
-  /**
-   * Valida el token de autenticación sin consumirlo
-   * @param email Correo electrónico del usuario
-   * @param token Token de autenticación a validar
-   * @returns Objeto con el resultado de la validación y un mensaje
-   */
+  // src/auth/auth.service.ts
+
   async validateLoginToken(
     email: string,
     token: string,
   ): Promise<{ success: boolean; message: string }> {
-    // Usamos checkTokenValid que solo verifica sin consumir el token
-    const isValid = await this.tokensService.checkTokenValid(email, token);
+    const isValid = await this.tokensService.validateToken(email, token);
 
     if (!isValid) {
       return { success: false, message: 'Token inválido o expirado' };
@@ -59,18 +54,12 @@ export class AuthService {
       success: true,
       message: 'Token válido, puede continuar con el login',
     };
-  }  /**
-   * Genera un token JWT de acceso después de verificar y consumir el token MFA
-   * @param email Correo electrónico del usuario
-   * @param token Token MFA para validación final
-   * @returns Objeto con el token JWT de acceso
-   * @throws UnauthorizedException si el token es inválido o la cuenta no existe
-   */
+  }
+
   async generateAccessToken(
     email: string,
     token: string,
   ): Promise<{ accessToken: string }> {
-    // Consumimos (validamos + eliminamos) el token
     const isValid = await this.tokensService.validateToken(email, token);
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
@@ -80,8 +69,7 @@ export class AuthService {
     if (!account) {
       throw new UnauthorizedException('Cuenta no encontrada');
     }
-    
-    // Definición de la estructura del payload del JWT
+    // Aquí definimos la estructura del payload del JWT
     interface JwtPayload {
       sub: number;
       email: string;
@@ -108,6 +96,8 @@ export class AuthService {
     await this.mailService.sendLoginToken(email, token);
     return 'Token reenviado correctamente';
   }
+
+
 
   private generateShortToken(): string {
     const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';

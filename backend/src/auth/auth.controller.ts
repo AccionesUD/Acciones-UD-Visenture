@@ -1,4 +1,3 @@
-// src/auth/auth.controller.ts
 import { Controller, Post, Body, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -8,9 +7,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { PasswordResetService } from 'src/password-reset/password-reset.service';
 import { UsersService } from '../users/services/users.service';
 import { MailService } from 'src/mail/mail.service';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { ResetPasswordDto } from './dto/reset-password.dto'; // Añadir esta línea
-import * as bcrypt from 'bcrypt';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 
 @Controller('auth')
@@ -23,11 +20,6 @@ export class AuthController {
     private readonly mailService: MailService,
   ) { }
 
-  /**
-   * Inicia el proceso de login generando un token MFA
-   * @param loginDto Objeto con credenciales del usuario
-   * @returns Mensaje indicando que se envió el token al correo
-   */
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const token = await this.authService.validateUser(
@@ -37,11 +29,6 @@ export class AuthController {
     return { message: 'Token generado, verifique su correo', token };
   }
 
-  /**
-   * Reenvía un token MFA al correo del usuario
-   * @param email Correo electrónico del usuario
-   * @returns Resultado de la operación con mensaje
-   */
   @Post('resend-token')
   async resendToken(@Body() { email }: { email: string }) {
     try {
@@ -55,69 +42,54 @@ export class AuthController {
     }
   }
 
-  /**
-   * Valida un token MFA sin consumirlo
-   * @param dto Objeto con email y token para validación
-   * @returns Resultado de la validación con mensaje
-   */
   @Post('validate-token')
   async validateToken(@Body() dto: ValidateTokenDto) {
     return await this.authService.validateLoginToken(dto.email, dto.token);
   }
 
-  /**
-   * Completa el proceso de login generando un token de acceso JWT
-   * @param dto Objeto con email y token MFA verificado
-   * @returns Token JWT de acceso
-   */
   @Post('complete-login')
-  async completeLogin(@Body() dto: CompleteLoginDto) {
-    try {
-      const result = await this.authService.generateAccessToken(dto.email, dto.token);
-      return result;
-    } catch (error) {
-      throw error;
+    async completeLogin(@Body() dto: CompleteLoginDto) {
+      return await this.authService.generateAccessToken(dto.email, dto.token);
     }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    const account = await this.accountsService.findByEmail(forgotPasswordDto.email);
+    
+    if (!account) {
+      throw new NotFoundException('No existe una cuenta con este correo electrónico');
+    }
+
+    const token = await this.passwordResetService.createToken(account.email);
+    await this.mailService.sendPasswordResetEmail(account.email, token);
+
+    return { message: 'Correo de recuperación enviado exitosamente' };
   }
 
-@Post('forgot-password')
-async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-  const account = await this.accountsService.findByEmail(forgotPasswordDto.email);
-  
-  if (!account) {
-    throw new NotFoundException('No existe una cuenta con este correo electrónico');
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    const isValid = await this.passwordResetService.validateToken(
+      resetPasswordDto.token,
+      resetPasswordDto.email
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException('Token inválido o expirado');
+    }
+
+    const account = await this.accountsService.findByEmail(resetPasswordDto.email);
+    
+    if (!account) {
+      throw new NotFoundException('Cuenta no encontrada');
+    }
+
+    await this.accountsService.updatePassword(account.id, resetPasswordDto.newPassword);
+    await this.passwordResetService.markTokenAsUsed(resetPasswordDto.token);
+
+    return { 
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+      last_access: account.last_access 
+    };
   }
-
-  const token = await this.passwordResetService.createToken(account.email);
-  await this.mailService.sendPasswordResetEmail(account.email, token);
-
-  return { message: 'Correo de recuperación enviado exitosamente' };
-}
-
-@Post('reset-password')
-async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-  const isValid = await this.passwordResetService.validateToken(
-    resetPasswordDto.token,
-    resetPasswordDto.email
-  );
-
-  if (!isValid) {
-    throw new UnauthorizedException('Token inválido o expirado');
-  }
-
-  const account = await this.accountsService.findByEmail(resetPasswordDto.email);
-  
-  if (!account) {
-    throw new NotFoundException('Cuenta no encontrada');
-  }
-
-  await this.accountsService.updatePassword(account.id, resetPasswordDto.newPassword);
-  await this.passwordResetService.markTokenAsUsed(resetPasswordDto.token);
-
-  return { 
-    success: true,
-    message: 'Contraseña actualizada exitosamente',
-    last_access: account.last_access 
-  };
-}
 }

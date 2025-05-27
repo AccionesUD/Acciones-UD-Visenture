@@ -13,8 +13,7 @@ export class PasswordResetToken {
 
   @Column()
   email: string;
-
-  @Column({ type: 'datetime' })
+  @Column({ type: 'timestamp' })
   expiresAt: Date;
 
   @Column({type:"boolean", default: false })
