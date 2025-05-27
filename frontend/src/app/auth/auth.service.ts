@@ -35,6 +35,7 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = '/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private tokenKey = 'auth_token';
@@ -50,7 +51,14 @@ export class AuthService {
     // Recuperar usuario de localStorage al iniciar
     this.loadUserFromStorage();
   }
-  
+  /**
+   * Registra un nuevo usuario
+   * @param userData Datos del formulario de registro
+   
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+*/
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
