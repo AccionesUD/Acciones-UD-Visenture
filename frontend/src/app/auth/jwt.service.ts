@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -25,43 +26,18 @@ export class JwtService {
       console.error('Error al obtener la fecha de expiración del token:', error);
       return null;
     }
-  }    public isTokenExpired(token: string): boolean {
+  }  public isTokenExpired(token: string): boolean {
     try {
-      // Manejo especial para nuestro token de desarrollo
-      if (token.includes('qwerty123456')) {
-        const [header, payload] = token.split('.');
-        const decodedPayload = JSON.parse(atob(payload));
-        const exp = decodedPayload.exp;
-        const now = Math.floor(Date.now() / 1000);
-        
-        console.log('Token debug:', {
-          exp,
-          now,
-          diff: exp - now,
-          isExpired: now >= exp
-        });
-        
-        return now >= exp;
-      }
-      
+      // Usamos el helper estándar para verificar la expiración
       return this.jwtHelper.isTokenExpired(token);
     } catch (error: any) {
       console.error('Error al verificar la expiración del token:', error);
       // Solo expirar si realmente hay un error al decodificar
       return error.name !== 'InvalidTokenError';
     }
-  }
-  // Calcula el tiempo restante en segundos
+  }  // Calcula el tiempo restante en segundos
   public getTokenTimeRemaining(token: string): number {
     try {
-      if (token.includes('qwerty123456')) {
-        const [header, payload] = token.split('.');
-        const decodedPayload = JSON.parse(atob(payload));
-        const exp = decodedPayload.exp;
-        const now = Math.floor(Date.now() / 1000);
-        return Math.max(0, exp - now);
-      }
-      
       const expirationDate = this.getTokenExpirationDate(token);
       if (!expirationDate) return 0;
       
@@ -72,5 +48,12 @@ export class JwtService {
       console.error('Error al calcular tiempo restante del token:', error);
       return 0;
     }
+  }
+  
+  // Verifica si el token está próximo a expirar según la configuración
+  public isTokenNearExpiry(token: string): boolean {
+    const timeRemaining = this.getTokenTimeRemaining(token);
+    // Usamos la variable de entorno para determinar cuándo notificar sobre la expiración
+    return timeRemaining > 0 && timeRemaining <= environment.tokenExpiryNotification;
   }
 }

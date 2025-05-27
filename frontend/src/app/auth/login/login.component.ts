@@ -63,35 +63,48 @@ export class LoginComponent implements OnInit {
 
     this.isLoading = true;
     const { email, password } = this.loginForm.value;
-    console.log('Enviando credenciales:', { email, password });this.authService.login({ email, password }).subscribe({
-      next: (response) => {
-        console.log('Backend respondió:', response);
-        if (response.requireMfa) {
+    
+    try {
+      this.authService.login({ email, password }).subscribe({
+        next: (response) => {
+          console.log('Backend respondió:', response);
+          // En nuestro backend, siempre se requiere MFA
           this.userEmailForToken = email;
           this.loginStage = 'token';
           this.isLoading = false;
           this.tokenResendMessage = null;
-        } else {
-          // Si no se requiere MFA (caso raro en nuestra app que siempre lo requiere)
-          this.router.navigate(['/dashboard']);
+          
+          // Limpiar el formulario de token por si hubiera un valor anterior
+          this.tokenForm.reset();
+        },
+        error: (err) => {
+          console.error('Error en solicitud de autenticación:', err);
+          // Obtener mensaje de error del backend si está disponible
+          this.errorMessage = err.error?.message || err.message || 'Correo electrónico o contraseña incorrectos.';
           this.isLoading = false;
         }
-      },      error: (err) => {
-        console.error('Error en solicitud de autenticación:', err);
-        this.errorMessage = 'Correo electrónico o contraseña incorrectos.';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  submitToken(): void {
+      });
+    } catch (error: any) {
+      console.error('Error inesperado al iniciar sesión:', error);
+      this.errorMessage = error?.message || 'Error inesperado al iniciar sesión.';
+      this.isLoading = false;
+    }
+  }  submitToken(): void {
     this.errorMessage = null;
     if (this.tokenForm.invalid) {
       this.tokenForm.markAllAsTouched();
       return;
-    }      this.isLoading = true;
-    // Extraemos el token y nos aseguramos de que sea un string
-    const token = String(this.tokenForm.get('token')?.value);
+    }      
+    
+    this.isLoading = true;
+    // Extraemos el token y nos aseguramos de que sea un string y en mayúsculas
+    const token = String(this.tokenForm.get('token')?.value).toUpperCase();
+    
+    // Si hubo cambios, actualizamos el valor en el formulario
+    if (token !== this.tokenForm.get('token')?.value) {
+      this.tokenForm.get('token')?.setValue(token, { emitEvent: false });
+    }
+    
     console.log('Enviando token:', token);
 
     if (!this.userEmailForToken) {
@@ -100,21 +113,37 @@ export class LoginComponent implements OnInit {
       this.loginStage = 'credentials';
       return;
     }
-        console.log('Datos para verificación MFA:', {token, email: this.userEmailForToken});
-    this.authService.verifyMfa({token, email: this.userEmailForToken}).subscribe({
-      next: (response) => {
-        console.log('Login exitoso!', response);
-        this.router.navigate(['/dashboard']);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error al verificar token:', err);        this.errorMessage = 'Token incorrecto. Intente de nuevo.';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  resendToken(): void {
+    
+    // Verificamos nuevamente el formato del token antes de enviarlo
+    const tokenRegex = /^[0-9A-Z]{6}$/;
+    if (!tokenRegex.test(token)) {
+      this.errorMessage = 'El código debe ser de 6 caracteres (números o letras mayúsculas).';
+      this.isLoading = false;
+      return;
+    }
+    
+    console.log('Datos para verificación MFA:', {token, email: this.userEmailForToken});
+    
+    try {
+      this.authService.verifyMfa({token, email: this.userEmailForToken}).subscribe({
+        next: (response) => {
+          console.log('Login exitoso!', response);
+          this.router.navigate(['/dashboard']);
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error al verificar token:', err);
+          // Obtener mensaje de error del backend si está disponible
+          this.errorMessage = err.error?.message || err.message || 'Token incorrecto. Intente de nuevo.';
+          this.isLoading = false;
+        }
+      });
+    } catch (error: any) {
+      console.error('Error inesperado al verificar token:', error);
+      this.errorMessage = error?.message || 'Error inesperado al verificar el código.';
+      this.isLoading = false;
+    }
+  }  resendToken(): void {
     if (!this.userEmailForToken) return;
 
     this.isResendingToken = true;
@@ -124,14 +153,19 @@ export class LoginComponent implements OnInit {
 
     this.authService.resendToken(this.userEmailForToken).subscribe({
       next: (response) => {
-        console.log('Solicitud de reenvío de token exitosa.', response);
-        this.tokenResendMessage = 'Se ha enviado un nuevo código a tu correo.';
+        console.log('Respuesta de reenvío de token:', response);
         this.isResendingToken = false;
+        
+        if (response.success) {
+          this.tokenResendMessage = 'Se ha enviado un nuevo código a tu correo.';
+        } else {
+          this.errorMessage = response.message || 'No se pudo reenviar el código. Intenta más tarde.';
+        }
       },
       error: (err) => {
         console.error('Error al reenviar token:', err);
-        this.errorMessage = 'No se pudo reenviar el código. Intenta más tarde.';
         this.isResendingToken = false;
+        this.errorMessage = err.error?.message || 'No se pudo reenviar el código. Intenta más tarde.';
       }
     });
   }
