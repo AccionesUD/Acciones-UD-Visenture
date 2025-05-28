@@ -4,16 +4,13 @@ import { User } from '../users.entity';
 import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
-import { UserPasswordReset } from 'src/password-reset/entities/users-passwordReset.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private accountService: AccountsService,
-    @InjectRepository(UserPasswordReset)
-    private readonly userPasswordResetRepository: Repository<UserPasswordReset>,) {  }
+    private accountService: AccountsService,) {}
 
   async createUser(createUserDto: CreateUserDto) {
 

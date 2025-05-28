@@ -5,7 +5,7 @@ import { User } from './users.entity';
 import { UsersController } from './users.controller';
 import { Account } from 'src/accounts/entities/account.entity';
 import { AccountsModule } from 'src/accounts/accounts.module';
-import { UserPasswordReset } from 'src/password-reset/entities/users-passwordReset.entity';
+
 
 @Module({
   controllers: [UsersController],
@@ -13,6 +13,6 @@ import { UserPasswordReset } from 'src/password-reset/entities/users-passwordRes
   exports: [UsersService],
   imports: [AccountsModule,
     forwardRef(() => AccountsModule), 
-    TypeOrmModule.forFeature([User, Account, UserPasswordReset])],
+    TypeOrmModule.forFeature([User, Account])],
 })
 export class UsersModule {}
