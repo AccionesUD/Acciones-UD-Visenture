@@ -34,6 +34,14 @@ export class AuthService {
     this.loadUserFromStorage();
   }
   
+  /**
+   * Registra un nuevo usuario
+   * @param userData Datos del formulario de registro
+   */
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
