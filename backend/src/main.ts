@@ -10,7 +10,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
     }),
-  );
+  )
+  app.setGlobalPrefix('api')
+  app.enableCors({
+    origin: 'http://localhost:4200', // permite configurar los dominios desde los que puede recibir peticiones
+  }),
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

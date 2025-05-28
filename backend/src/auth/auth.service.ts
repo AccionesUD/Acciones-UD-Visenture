@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +8,10 @@ import { AccountsService } from 'src/accounts/services/accounts.service';
 import { MailService } from 'src/mail/mail.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { HashingProvider } from './providers/bcrypt.provider';
+import { GenerateToken2MFA } from 'src/tokens/services/generate-token.provider';
+import { ResendToken2fmadDto } from './dto/resend-token2mfa';
+import { CompleteLoginDto } from './dto/complete-login.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,26 +21,38 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly tokensService: TokensService,
     private readonly jwtService: JwtService,
-    private readonly hashingProvider: HashingProvider
-  ) {}
+    private readonly hashingProvider: HashingProvider,
+    private readonly generateToken2MFA: GenerateToken2MFA
+  ) { }
 
-  async validateUser(email: string, password: string): Promise<string> {
-    const account = await this.accountsService.findByEmail(email);
-    if (!account || !account.password) {
+  async validateUser(loginDto: LoginDto){
+    const account = await this.accountsService.findByEmail(loginDto.email);
+    if (!account) {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordValid = await this.hashingProvider.comparePassword(password, account.password);
+    const isPasswordValid = await this.hashingProvider.comparePassword(loginDto.password, account.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
 
-    const token = uuidv4();
+    return await this.generateTokenLogin(loginDto.email)
+   
+  
+  }
 
+  async generateTokenLogin(email: string) {
+    const token = this.generateToken2MFA.generateToken()
+    const account = await this.accountsService.findByEmail(email);
+    if (!account) {
+      throw new UnauthorizedException('User not found');
+    }
     await this.tokensService.storeToken(email, token);
     await this.mailService.sendLoginToken(email, token);
-
-    return 'Revise su correo para continuar el inicio de sesión';
+    return {
+      success: true,
+      message: 'Token generado y enviado con exito',
+    };
   }
 
   // src/auth/auth.service.ts
@@ -60,7 +76,7 @@ export class AuthService {
   async generateAccessToken(
     email: string,
     token: string,
-  ): Promise<{ accessToken: string }> {
+  ){
     const isValid = await this.tokensService.validateToken(email, token);
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
@@ -82,6 +98,9 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken };
+    return {
+      success: true,
+      message: accessToken,
+    };
   }
 }

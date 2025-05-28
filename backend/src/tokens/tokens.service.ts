@@ -1,32 +1,37 @@
 // src/tokens/tokens.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoginToken } from './entities/login-token.entity';
+import { tokenEmail } from './entities/token-email.entity';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { GenerateToken2MFA } from './services/generate-token.provider';
+import { typesToken} from './enums/tokenType.enum';
+import { types } from 'util';
 
 @Injectable()
 export class TokensService {
   constructor(
-    @InjectRepository(LoginToken)
-    private loginTokenRepository: Repository<LoginToken>,
+    @InjectRepository(tokenEmail)
+    private tokenEmail: Repository<tokenEmail>,
     private configService: ConfigService
   ) {}
 
-  async storeToken(email: string, token: string): Promise<void> {
+  async storeToken(email: string, token: string) {
     const expirationMinutes = this.configService.get('2MFA_EXPIRATION_TOKEN');
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
+    const typeToken = typesToken.LOGIN2FMA
 
-    const loginToken = this.loginTokenRepository.create({
+    const loginToken = this.tokenEmail.create({
       email,
       token,
       expiresAt,
+      typeToken
     });
 
     try {
-      await this.loginTokenRepository.save(loginToken);
+      await this.tokenEmail.save(loginToken);
     } catch(error){
-      
+      throw new RequestTimeoutException(error, { description: 'Se presento un error en la operacion, intente luego' });
     }
    
   }
@@ -34,21 +39,21 @@ export class TokensService {
   // src/tokens/tokens.service.ts
 
   async validateToken(email: string, token: string): Promise<boolean> {
-    const loginToken = await this.loginTokenRepository.findOne({
-      where: { email, token },
+    const loginToken = await this.tokenEmail.findOne({
+      where: { email, token, typeToken: typesToken.LOGIN2FMA }, 
     });
 
     if (!loginToken) return false;
 
     const now = new Date();
     if (loginToken.expiresAt < now) {
-      await this.loginTokenRepository.delete({ id: loginToken.id }); // Eliminar el token expirado
+      await this.tokenEmail.delete({ id: loginToken.id }); // Eliminar el token expirado
       return false;
     }
 
     // Si el token es válido y no ha expirado, lo eliminamos
     // para que no pueda ser reutilizado
-    await this.loginTokenRepository.delete({ id: loginToken.id });
+    await this.tokenEmail.delete({ id: loginToken.id });
     return true;
   }
 }
