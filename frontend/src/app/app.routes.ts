@@ -15,5 +15,9 @@ export const routes: Routes = [
   { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'test-reset-password', component: ResetPasswordComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { 
+    path: 'markets', 
+    loadChildren: () => import('./markets/markets.module').then(m => m.MarketsModule),
+  },
   { path: '**', redirectTo: 'home' }
 ];

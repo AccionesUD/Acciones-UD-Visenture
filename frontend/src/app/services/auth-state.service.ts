@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User } from './auth.service';
+import { User } from '../models/auth.model';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({

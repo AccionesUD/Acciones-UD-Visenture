@@ -14,10 +14,6 @@ export const serverRoutes: ServerRoute[] = [
     path: 'reset-password',
     renderMode: RenderMode.Client
   },
-  {
-    path: 'test-reset-password',
-    renderMode: RenderMode.Client
-  },
   // Rutas protegidas - No usar SSR para estas rutas
   {
     path: 'dashboard',
