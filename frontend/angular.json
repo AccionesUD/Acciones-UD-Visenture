@@ -19,13 +19,12 @@
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",            "assets": [
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              "src/theme-initializer.js"
-            ],
+              }            ],
             "styles": [
               "src/styles.css"
             ],
@@ -97,5 +96,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "ab47c26a-de9b-4324-a091-9c34e78eff5f"
   }
 }

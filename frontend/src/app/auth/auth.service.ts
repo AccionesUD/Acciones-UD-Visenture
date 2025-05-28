@@ -13,7 +13,14 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
-
+export interface RegisterData {
+  name: string;
+  identification: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+  password: string;
+}
 export interface MfaVerification {
   token: string;
   email: string;
@@ -55,6 +62,14 @@ export class AuthService {
     this.loadUserFromStorage();
   }
   
+  /**
+   * Registra un nuevo usuario
+   * @param userData Datos del formulario de registro
+   */
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData);
+  }
+
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
