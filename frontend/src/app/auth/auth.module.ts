@@ -4,22 +4,21 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router'; 
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
-import { HttpClientModule } from '@angular/common/http';
-import { AuthService } from './auth.service';
-
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
   ],
   imports: [
-    HttpClientModule,
     CommonModule,
     AuthRoutingModule,
     FormsModule,         
     ReactiveFormsModule, 
     RouterModule,        
-    LoginComponent       
-  ],
-  providers: [AuthService],
+    LoginComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
+  ]
 })
 export class AuthModule { }

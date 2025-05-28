@@ -10,13 +10,12 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthStateService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Inicializar con el usuario del localStorage, si existe
-    this.loadUserFromStorage();
+    // La inicialización se maneja completamente desde AuthService
+    // para evitar comportamientos inconsistentes
   }
 
   get isAuthenticated(): boolean {
