@@ -182,7 +182,7 @@ export class AuthService {
       });
     }
       // Usamos el endpoint para reenviar el token
-    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/resend-token`, { email }).pipe(
+    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/resend-token2fma`, { email }).pipe(
       map(response => {
         console.log('Token reenviado:', response);
         return { 
