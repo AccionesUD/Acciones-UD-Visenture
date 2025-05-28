@@ -1,8 +1,8 @@
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
-import { AuthStateService } from '../../auth/auth-state.service';
+import { AuthService } from '../../services/auth.service';
+import { AuthStateService } from '../../services/auth-state.service';
 
 @Component({
   selector: 'app-navbar',

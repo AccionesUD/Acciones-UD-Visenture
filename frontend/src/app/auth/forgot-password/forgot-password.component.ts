@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../../services/auth.service';
 import { SuccessForgotDialogComponent } from './success-forgot-dialog.component';
 
 @Component({

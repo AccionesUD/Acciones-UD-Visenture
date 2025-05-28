@@ -93,3 +93,6 @@ html.dark .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
 .mat-button-focus-overlay {
   background-color: transparent;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

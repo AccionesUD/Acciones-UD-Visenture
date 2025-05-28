@@ -4,11 +4,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { RouteService } from './shared/route.service';
 import { Subscription } from 'rxjs';
+import { FooterComponent } from "./shared/footer/footer.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, NavbarComponent],
+  imports: [RouterOutlet, CommonModule, NavbarComponent, FooterComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit, OnDestroy {
