@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { TokensModule } from './tokens/tokens.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MarketsModule } from './markets/markets.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MarketsModule } from './markets/markets.module';
         host: configService.get('DB_HOST'),
       }),
     }),
+    CacheModule.register({ ttl: 60 }), //sirve para retrasar las peticiones realizadas a la api con intervalos de un minuto
     UsersModule,
     AccountsModule,
     AuthModule,
