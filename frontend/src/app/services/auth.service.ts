@@ -38,10 +38,25 @@ export class AuthService {
    * Registra un nuevo usuario
    * @param userData Datos del formulario de registro
    */
-  register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userData);
-  }
-
+  register(userData: any): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{message: string}>(`${this.apiUrl}/register`, userData).pipe(
+      map(response => {
+        return {
+          success: true,
+          message: response.message || 'Registro exitoso. Por favor, inicia sesión.'
+        };
+        }),
+        catchError(error => {
+          console.error('Error en registro:', error);
+          // Extraer mensaje de error del backend o usar uno genérico
+          return of({
+            success: false,
+            message: error.error?.message || 'No se pudo completar el registro. Por favor, intenta nuevamente.'
+          });
+        })
+    );
+  
+  } 
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
