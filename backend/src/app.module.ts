@@ -7,15 +7,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { TokensModule } from './tokens/tokens.module';
-import { User } from './users/users.entity';
-import { Account } from './accounts/entities/account.entity';
-import { tokenEmail } from './tokens/entities/token-email.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MarketsModule } from './markets/markets.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,16 +26,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        host: configService.get('DB_HOST')
+        host: configService.get('DB_HOST'),
       }),
     }),
     UsersModule,
     AccountsModule,
     AuthModule,
     MailModule,
-    TokensModule
+    TokensModule,
+    MarketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
