@@ -16,10 +16,10 @@ export class TokensService {
     private configService: ConfigService
   ) {}
 
-  async storeToken(email: string, token: string) {
+  async storeToken(email: string, token: string, typeToken: typesToken){
     const expirationMinutes = this.configService.get('2MFA_EXPIRATION_TOKEN');
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
-    const typeToken = typesToken.LOGIN2FMA
+    //const typeToken = typesToken.LOGIN2FMA
 
     const loginToken = this.tokenEmail.create({
       email,
@@ -37,10 +37,25 @@ export class TokensService {
   }
 
   // src/tokens/tokens.service.ts
-
-  async validateToken(email: string, token: string): Promise<boolean> {
+  async justValidateToken(email: string, token: string, typeToken: typesToken): Promise<boolean> {
     const loginToken = await this.tokenEmail.findOne({
-      where: { email, token, typeToken: typesToken.LOGIN2FMA }, 
+      where: { email, token, typeToken }, 
+    });
+
+    if (!loginToken) return false;
+
+
+    if (loginToken.expiresAt < (new Date())) {
+      console.log(loginToken.expiresAt, new Date());
+      return false;
+    }
+    return true;
+  }
+
+
+  async validateToken(email: string, token: string, typeToken: typesToken): Promise<boolean> {
+    const loginToken = await this.tokenEmail.findOne({
+      where: { email, token, typeToken }, 
     });
 
     if (!loginToken) return false;
