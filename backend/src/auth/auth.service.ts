@@ -1,8 +1,8 @@
-import { Injectable, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
-
+import { typesToken } from 'src/tokens/enums/tokenType.enum';
 import { UsersService } from '../users/services/users.service';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { MailService } from 'src/mail/mail.service';
@@ -25,7 +25,7 @@ export class AuthService {
     private readonly generateToken2MFA: GenerateToken2MFA
   ) { }
 
-  async validateUser(loginDto: LoginDto){
+  async validateUser(loginDto: LoginDto) {
     const account = await this.accountsService.findByEmail(loginDto.email);
     if (!account) {
       throw new UnauthorizedException('User not found');
@@ -37,8 +37,8 @@ export class AuthService {
     }
 
     return await this.generateTokenLogin(loginDto.email)
-   
-  
+
+
   }
 
   async generateTokenLogin(email: string) {
@@ -47,7 +47,7 @@ export class AuthService {
     if (!account) {
       throw new UnauthorizedException('User not found');
     }
-    await this.tokensService.storeToken(email, token);
+    await this.tokensService.storeToken(email, token, typesToken.LOGIN2FMA);
     await this.mailService.sendLoginToken(email, token);
     return {
       success: true,
@@ -61,7 +61,7 @@ export class AuthService {
     email: string,
     token: string,
   ): Promise<{ success: boolean; message: string }> {
-    const isValid = await this.tokensService.validateToken(email, token);
+    const isValid = await this.tokensService.validateToken(email, token, typesToken.LOGIN2FMA);
 
     if (!isValid) {
       return { success: false, message: 'Token inválido o expirado' };
@@ -76,8 +76,8 @@ export class AuthService {
   async generateAccessToken(
     email: string,
     token: string,
-  ){
-    const isValid = await this.tokensService.validateToken(email, token);
+  ) {
+    const isValid = await this.tokensService.validateToken(email, token, typesToken.LOGIN2FMA);
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
     }
@@ -102,5 +102,55 @@ export class AuthService {
       success: true,
       message: accessToken,
     };
+  }
+
+  async requestPasswordReset(email: string) {
+ //  const account = await this.accountsService.findByEmail(email);
+   // if (!account) {
+    //  throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
+//}
+    const token = this.generateToken2MFA.generateToken()
+    await this.tokensService.storeToken(email, token, typesToken.RECOVER_PASSWORD);
+    await this.mailService.sendPasswordResetEmail(email, token);
+
+    return { message: 'Correo de recuperación enviado exitosamente' };
+  }
+
+  async validatePasswordResetToken(
+    email: string,
+    token: string
+  ): Promise<{ valid: boolean }> {
+    const isValid = await this.tokensService.justValidateToken(email, token, typesToken.RECOVER_PASSWORD);
+    if (!isValid) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+    return { valid: true };
+  }
+
+  async resetPassword(
+    email: string,
+    token: string,
+    newPassword: string
+  ): Promise<{ success: boolean, message: string }> {
+
+    const account = await this.accountsService.findByEmail(email);
+    if (!account) {
+      throw new NotFoundException('Cuenta no encontrada');
+    }
+
+    const isValid = await this.tokensService.validateToken(email, token, typesToken.RECOVER_PASSWORD);
+    if (!isValid) {
+      throw new UnauthorizedException('Token inválido o expirado');
+    }
+
+    try {
+      await this.accountsService.updatePassword(account.id, newPassword);
+      return {
+        success: true,
+        message: 'Contraseña actualizada exitosamente'
+      };
+    } catch (error) {
+      throw new RequestTimeoutException('Error al actualizar la contraseña', { description: 'Se presentó un error al actualizar la contraseña, intente más tarde.' });
+    }
   }
 }
