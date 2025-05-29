@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractContro
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { mustMatch } from '../../helpers/must-match.validator'; // Validador personalizado
-import { AuthService } from '../auth.service'; // Asegúrate de que la ruta es correcta
+import { AuthService } from '../../services/auth.service'; // Asegúrate de que la ruta es correcta
 
 @Component({
   selector: 'app-register',
