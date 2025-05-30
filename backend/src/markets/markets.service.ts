@@ -5,12 +5,14 @@ import { MarketDto } from './dtos/market.dto';
 import { AlpacaAsset } from './dtos/alpaca-asset.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MarketsService {
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private readonly configService: ConfigService,
   ) {}
 
   async getMarkets(): Promise<MarketDto[]> {
@@ -20,10 +22,15 @@ export class MarketsService {
       return cached;
     }
 
-    const url = `${process.env.ALPACA_BASE_URL}/assets`;
+    // Usa ConfigService en vez de process.env
+    const baseUrl = this.configService.get<string>('ALPACA_BASE_URL');
+    const apiKey = this.configService.get<string>('ALPACA_API_KEY');
+    const secretKey = this.configService.get<string>('ALPACA_SECRET_KEY');
+
+    const url = `${baseUrl}/assets`;
     const headers = {
-      'APCA-API-KEY-ID': process.env.ALPACA_API_KEY,
-      'APCA-API-SECRET-KEY': process.env.ALPACA_SECRET_KEY,
+      'APCA-API-KEY-ID': apiKey,
+      'APCA-API-SECRET-KEY': secretKey,
     };
 
     const response$ = this.httpService.get<AlpacaAsset[]>(url, { headers });
@@ -36,14 +43,13 @@ export class MarketsService {
     for (const asset of limitedAssets) {
       let price: number | undefined = undefined;
       try {
-        const priceUrl = `${process.env.ALPACA_BASE_URL}/v2/stocks/${asset.symbol}/quotes/latest`;
+        const priceUrl = `${baseUrl}/v2/stocks/${asset.symbol}/quotes/latest`;
         const priceResp$ = this.httpService.get<{ askprice?: number }>(
           priceUrl,
           { headers },
         );
         const priceResp = await firstValueFrom(priceResp$);
 
-        // Si no viene askprice, queda como undefined (no null)
         price =
           priceResp.data?.askprice !== undefined
             ? priceResp.data.askprice
