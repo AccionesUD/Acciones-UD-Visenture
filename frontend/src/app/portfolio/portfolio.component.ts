@@ -109,10 +109,7 @@ export class PortfolioComponent implements OnInit {
       }
     });
   }
-    /**
-   * Maneja el cambio de página en el paginador
-   * @param event - Evento de cambio de página
-   */
+
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -128,37 +125,23 @@ export class PortfolioComponent implements OnInit {
       }
     }, 100); // Pequeño retraso para asegurar que la tabla se ha actualizado
   }
-  
-  /**
-   * Actualiza las acciones mostradas según la configuración de paginación
-   */
+
   updateDisplayedStocks(): void {
     const startIndex = this.pageIndex * this.pageSize;
     this.totalStocks = this.filteredStocks.length;
     this.displayedStocks = this.filteredStocks.slice(startIndex, startIndex + this.pageSize);
   }
 
-  /**
-   * Filtra las acciones por mercado
-   * @param market - Identificador del mercado seleccionado
-   */
   filterStocks(market: string): void {
     this.selectedFilter = market; // Actualizamos la variable de filtro seleccionado
     this.applyFilters();
   }
 
-  /**
-   * Aplica el filtro de rendimiento
-   * @param option - Opción de filtro de rendimiento seleccionada
-   */
   filterByPerformance(option: PerformanceFilterOption): void {
     this.selectedPerformanceFilter = option;
     this.applyFilters();
   }
 
-  /**
-   * Aplica todos los filtros activos (mercado y rendimiento)
-   */
   private applyFilters(): void {
     // Paso 1: Filtrar por mercado
     let result = [...this.stocks];
@@ -189,33 +172,44 @@ export class PortfolioComponent implements OnInit {
     this.updateDisplayedStocks();
   }
 
-  /**
-   * Ordena las acciones según el criterio seleccionado
-   * @param sortOption - Opción de ordenamiento seleccionada
-   */
+
   sortStocks(sortOption: SortOption): void {
     if (sortOption.value === 'none') {
       // Si no hay ordenamiento, reaplicamos los filtros para restaurar el orden original
       this.applyFilters();
       return;
-    }
-
-    this.filteredStocks.sort((a, b) => {
+    }    this.filteredStocks.sort((a, b) => {
       const valueA = a[sortOption.property as keyof Stock];
       const valueB = b[sortOption.property as keyof Stock];
       
-      // Orden ascendente o descendente según la dirección
+      // Manejo de valores nulos o indefinidos
+      if (valueA === null || valueA === undefined) {
+        return sortOption.direction === 'asc' ? -1 : 1;
+      }
+      if (valueB === null || valueB === undefined) {
+        return sortOption.direction === 'asc' ? 1 : -1;
+      }
+      
+      // Comparación específica para valores numéricos 
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return sortOption.direction === 'asc' 
+          ? valueA - valueB 
+          : valueB - valueA;
+      }
+      
+      // Para otros tipos de datos (cadenas, etc.)
       if (sortOption.direction === 'asc') {
         return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
       } else {
         return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
       }
     });
+    
+    // Actualizar las acciones mostradas después de ordenarlas
+    this.updateDisplayedStocks();
   }
 
-  /**
-   * Calcula el resumen del portafolio basado en las acciones filtradas
-   */  private calculatePortfolioSummary(): void {
+    private calculatePortfolioSummary(): void {
     const totalInvested = this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
     const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
     
@@ -227,9 +221,7 @@ export class PortfolioComponent implements OnInit {
       performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
     };
   }
-    /**
-   * Resetea todos los filtros aplicados
-   */  resetFilters(): void {
+    resetFilters(): void {
     this.selectedFilter = 'ALL';
     this.selectedPerformanceFilter = null;
     this.filteredStocks = [...this.stocks]; // Restaurar todas las acciones
