@@ -5,9 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Market } from '../../models/market.model';
-import { MarketServiceService } from '../../services/markets.service'; // Asegúrate que el nombre del servicio es correcto
+import { MarketServiceService } from '../../services/markets.service';
 
 @Component({
   selector: 'app-markets',
@@ -17,7 +19,9 @@ import { MarketServiceService } from '../../services/markets.service'; // Asegú
     MatCardModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    MatBadgeModule,
+    MatTooltipModule
   ],
   templateUrl: './markets.component.html',
   styleUrls: ['./markets.component.css']

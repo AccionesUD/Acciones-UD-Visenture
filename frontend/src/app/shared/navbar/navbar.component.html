@@ -1,4 +1,4 @@
-<nav class="bg-white dark:bg-slate-800 shadow-lg py-4">
+<nav class="bg-emerald-50 dark:bg-slate-900 shadow-lg py-4">
   <div class="container mx-auto px-4 flex justify-between items-center">
     <div class="flex items-center">
       <div class="flex items-center">        <button *ngIf="isAuthenticated" (click)="toggleSidebar()"
@@ -7,22 +7,22 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <a [routerLink]="['/home']" class="text-2xl font-bold text-emerald-600 dark:text-emerald-500">Visenture</a>
+        <a [routerLink]="['/home']" class="text-2xl font-bold text-emerald-500 dark:text-emerald-600">Visenture</a>
       </div>
     </div>
 
     <!-- Navegación en pantallas grandes -->
     <div class="hidden md:flex items-center space-x-4">      <ng-container *ngIf="!isAuthenticated">
         <a [routerLink]="['/login']" 
-           class="py-2 px-4 mr-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transition duration-200">
+           class="py-2 px-4 mr-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 transition duration-200">
           Iniciar Sesión
         </a>
         <a [routerLink]="['/register']" 
-           class="py-2 px-4 mr-2 rounded border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-700 dark:hover:text-emerald-300 transition duration-200">
+           class="py-2 px-4 mr-2 rounded border border-emerald-600 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-700 dark:hover:text-emerald-300 transition duration-200">
           Registrarse
         </a>
           <!-- Botón de cambio de tema para usuarios no autenticados -->
-        <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" aria-label="Cambiar tema">
+        <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200 cursor-pointer" aria-label="Cambiar tema">
           <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
           </svg>
@@ -75,7 +75,7 @@
           </div>
         </div>
         <div class="relative">
-          <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" aria-label="Cambiar tema">
+          <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200 cursor-pointer" aria-label="Cambiar tema">
             <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
             </svg>

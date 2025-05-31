@@ -1,175 +1,245 @@
-import { Component, OnInit } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Market } from '../models/market.model';
-import { MarketServiceService } from '../services/markets.service';   
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { FiltersComponent } from './filters/filters.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
+import { PortfolioSummary, Stock } from '../models/portfolio.model';
+import { SortOption, PerformanceFilterOption } from '../models/filters.model';
+import { PortfolioService } from '../services/portfolio.service';
+import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
 
-@Component({
+@Component({  
   selector: 'app-portfolio',
   templateUrl: './portfolio.component.html',
   styleUrls: ['./portfolio.component.css'],
-  providers: [DatePipe, CurrencyPipe],
-  imports: [RouterModule,CommonModule,FormsModule],
-  standalone: true
+  standalone: true,
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule, 
+    FiltersComponent, 
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    MatPaginatorModule
+  ],  
+  providers: [
+    { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
+  ]
 })
 export class PortfolioComponent implements OnInit {
-  market: Market | undefined;
+  @ViewChild('filtersComponent') filtersComponent?: FiltersComponent;
+  @ViewChild('stocksTable') stocksTable?: ElementRef;
+  
+  // Estado de la carga de datos
   isLoading = true;
   error: string | null = null;
-  marketId: string | null = null;
-constructor(private datePipe: DatePipe,
-      private currencyPipe: CurrencyPipe,
-      private route: ActivatedRoute,
-      private router: Router,
-      private marketService: MarketServiceService) {}
-  // Acciones del portafolio
-  stocks: { company:string ;unitValue:number;symbol: string; totalValue: number; marketName:string ;performance: number; quantity: number;color:string }[] = [
-  {
-      company: 'Apple',
-      symbol: 'AAPL',
-      quantity: 10,
-      unitValue: 185,
-      marketName: 'NASDAQ',
-      totalValue: 10 * 185,
-      performance: 4.5,
-      color: 'red'
-    },
-    {
-      company: 'Microsoft',
-      symbol: 'MSFT',
-      quantity: 15,
-      unitValue: 330,
-      marketName: 'NASDAQ',
-      totalValue: 15 * 330,
-      performance: 3.2,
-      color: 'green'
-    },
-    {
-      company: 'Bank of America',
-      symbol: 'BAC',
-      quantity: 20,
-      unitValue: 35,
-      marketName: 'NYSE',
-      totalValue: 20 * 35,
-      performance: 1.8,
-      color: 'purple'
-    },
-    {
-      company: 'Ecopetrol',
-      symbol: 'ECOPETROL',
-      quantity: 150,
-      unitValue: 2450,
-      marketName: 'BVC',
-      totalValue: 150 * 2450,
-      performance: 5.2,
-      color: 'emerald'
-    },
-    {
-      company: 'Bancolombia',
-      symbol: 'BCOLOMBIA',
-      quantity: 80,
-      unitValue: 32100,
-      marketName: 'BVC',
-      totalValue: 80 * 32100,
-      performance: 8.7,
-      color: 'blue'
-    },
-    {
-      company: 'Avianca',
-      symbol: 'AVIANCA',
-      quantity: 200,
-      unitValue: 1890,
-      marketName: 'BVC',
-      totalValue: 200 * 1890,
-      performance: -2.3,
-      color: 'yellow'
-    }];
-
-
-    // Acciones filtradas (se muestran en la tabla)
-  filteredStocks = [...this.stocks];
-
-  // Opciones del menú de filtrado
+  selectedFilter = 'ALL'; // Variable necesaria para el template
+  selectedPerformanceFilter: PerformanceFilterOption | null = null;
+    // Datos de acciones
+  stocks: Stock[] = [];
+  filteredStocks: Stock[] = [];
+  displayedStocks: Stock[] = []; // Acciones a mostrar después de la paginación
+  
+  // Configuración de paginación
+  pageSize = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  pageIndex = 0;
+  totalStocks = 0;
+  
+  // Filtros y ordenamiento
   marketFilters = [
     { value: 'ALL', label: 'Todos los mercados' },
     { value: 'NASDAQ', label: 'NASDAQ' },
     { value: 'NYSE', label: 'NYSE' },
     { value: 'BVC', label: 'Bolsa de Valores de Colombia' }
   ];
-
-  // Filtro seleccionado
-  selectedFilter = 'ALL';
-
-  // Resumen del portafolio (calculado dinámicamente)
-  portfolioSummary = this.calculateSummary();
-  filterStocks(market: string): void {
-    this.selectedFilter = market;
-    
-    if (market === 'ALL') {
-      this.filteredStocks = [...this.stocks];
-    } else {
-      this.filteredStocks = this.stocks.filter(stock => stock.marketName === market);
-    }
-    
-    this.portfolioSummary = this.calculateSummary();
-  }
+  
+  // Resumen del portafolio
+  portfolioSummary: PortfolioSummary = {
+    totalInvested: 0,
+    totalEarnings: 0,
+    totalStocks: 0,
+    totalValue: 0,
+    performance: 0
+  };
+  constructor(private portfolioService: PortfolioService) {}  
+  
+  // Variable para mantener el estado del tema
+  isDarkMode = false;
 
   ngOnInit(): void {
-    this.marketId = this.route.snapshot.paramMap.get('id'); 
-    if(this.marketId){
-      this.loadMarketDetails(this.marketId);
-    } else {
-      this.error = 'No se proporcionó un ID de mercado.';
-      this.isLoading = false;
-    }// Simulación de ID de mercado
-  }
-  loadMarketDetails(id: string): void {
+    // Utilizamos isPlatformBrowser en vez de document directamente
+    // Esto nos ayudará con la renderización del lado del servidor
+    if (typeof window !== 'undefined') {
+      // Solo ejecuta código relacionado con document en el navegador
+      this.isDarkMode = document.body.classList.contains('dark-theme');
+      
+      // Detector de cambios en el tema sólo en el navegador
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === 'class') {
+            this.isDarkMode = document.body.classList.contains('dark-theme');
+          }
+        });
+      });
+      
+      observer.observe(document.body, { attributes: true });
+    }
+    
+    // Simulamos una carga de datos
     this.isLoading = true;
-    this.error = null;
-    this.marketService.getMarketById(id).subscribe({
-      next: (data) => {
-        if (data) {
-          this.market = data;
-          this.isLoading = false;
-        } else {
-          this.error = 'No se encontraron datos para el mercado solicitado.';
-          this.isLoading = false;
-        }
+    
+    // Cargar datos mediante el servicio
+    this.portfolioService.getPortfolioStocks().subscribe({
+      next: (stocks) => {
+        this.stocks = stocks;
+        this.applyFilters(); // Aplica los filtros actuales
+        this.updateDisplayedStocks(); // Actualiza las acciones que se muestran según la paginación
+        this.isLoading = false;
       },
       error: (err) => {
-        this.error = 'Error al cargar los detalles del mercado: ' + err.message;
+        console.error('Error al cargar acciones', err);
+        this.error = 'No se pudieron cargar las acciones. Intente nuevamente más tarde.';
         this.isLoading = false;
       }
     });
   }
-
-  filterActionsByMarket(): void {
-    if (!this.market) return;
+    /**
+   * Maneja el cambio de página en el paginador
+   * @param event - Evento de cambio de página
+   */
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updateDisplayedStocks();
     
-    if (this.market.id === 'NYSE' || this.market.id === '1') {
-    } else if (this.market.id === 'NASDAQ' || this.market.id === '2') {
-      this.stocks = this.stocks.filter(action => 
-        ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA'].includes(action.symbol)
-      );
-    } else {
-      this.stocks = this.stocks.slice(0, 3);
+    // Hacer scroll hasta el inicio de la tabla
+    setTimeout(() => {
+      if (this.stocksTable) {
+        this.stocksTable.nativeElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+      }
+    }, 100); // Pequeño retraso para asegurar que la tabla se ha actualizado
+  }
+  
+  /**
+   * Actualiza las acciones mostradas según la configuración de paginación
+   */
+  updateDisplayedStocks(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    this.totalStocks = this.filteredStocks.length;
+    this.displayedStocks = this.filteredStocks.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  /**
+   * Filtra las acciones por mercado
+   * @param market - Identificador del mercado seleccionado
+   */
+  filterStocks(market: string): void {
+    this.selectedFilter = market; // Actualizamos la variable de filtro seleccionado
+    this.applyFilters();
+  }
+
+  /**
+   * Aplica el filtro de rendimiento
+   * @param option - Opción de filtro de rendimiento seleccionada
+   */
+  filterByPerformance(option: PerformanceFilterOption): void {
+    this.selectedPerformanceFilter = option;
+    this.applyFilters();
+  }
+
+  /**
+   * Aplica todos los filtros activos (mercado y rendimiento)
+   */
+  private applyFilters(): void {
+    // Paso 1: Filtrar por mercado
+    let result = [...this.stocks];
+    
+    if (this.selectedFilter !== 'ALL') {
+      result = result.filter(stock => stock.marketName === this.selectedFilter);
+    }
+    
+    // Paso 2: Filtrar por rendimiento
+    if (this.selectedPerformanceFilter && this.selectedPerformanceFilter.value !== 'all') {
+      const min = this.selectedPerformanceFilter.min !== undefined ? this.selectedPerformanceFilter.min : null;
+      const max = this.selectedPerformanceFilter.max !== undefined ? this.selectedPerformanceFilter.max : null;
+      
+      result = result.filter(stock => {
+        if (min !== null && max !== null) {
+          return stock.performance >= min && stock.performance <= max;
+        } else if (min !== null) {
+          return stock.performance >= min;
+        } else if (max !== null) {
+          return stock.performance <= max;
+        }
+        return true;
+      });
+    }    
+    this.filteredStocks = result;
+    this.calculatePortfolioSummary();
+    this.pageIndex = 0; // Volver a la primera página cuando se aplican filtros
+    this.updateDisplayedStocks();
+  }
+
+  /**
+   * Ordena las acciones según el criterio seleccionado
+   * @param sortOption - Opción de ordenamiento seleccionada
+   */
+  sortStocks(sortOption: SortOption): void {
+    if (sortOption.value === 'none') {
+      // Si no hay ordenamiento, reaplicamos los filtros para restaurar el orden original
+      this.applyFilters();
+      return;
+    }
+
+    this.filteredStocks.sort((a, b) => {
+      const valueA = a[sortOption.property as keyof Stock];
+      const valueB = b[sortOption.property as keyof Stock];
+      
+      // Orden ascendente o descendente según la dirección
+      if (sortOption.direction === 'asc') {
+        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      } else {
+        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+      }
+    });
+  }
+
+  /**
+   * Calcula el resumen del portafolio basado en las acciones filtradas
+   */  private calculatePortfolioSummary(): void {
+    const totalInvested = this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
+    const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
+    
+    this.portfolioSummary = {
+      totalInvested: totalInvested,
+      totalEarnings: totalEarnings,
+      totalStocks: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
+      totalValue: totalInvested + totalEarnings,
+      performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
+    };
+  }
+    /**
+   * Resetea todos los filtros aplicados
+   */  resetFilters(): void {
+    this.selectedFilter = 'ALL';
+    this.selectedPerformanceFilter = null;
+    this.filteredStocks = [...this.stocks]; // Restaurar todas las acciones
+    this.calculatePortfolioSummary();
+    this.pageIndex = 0; // Volver a la primera página
+    this.updateDisplayedStocks();
+    
+    // Resetear los selectores en el componente hijo
+    if (this.filtersComponent) {
+      this.filtersComponent.resetAllFilters();
     }
   }
-  // Resumen del portafolio
-  private calculateSummary() {
-    return {
-    totalInvested: this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0),
-    totalEarnings: this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0),
-    totalStocks: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
-    totalValue: this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0) + 
-                this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0),
-    performance: (this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0) / 
-                 this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0)) * 100
-  };
-  } 
-
-  
 }
