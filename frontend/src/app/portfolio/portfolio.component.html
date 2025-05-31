@@ -1,0 +1,107 @@
+<div class="min-h-screen bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 p-4">
+  <!-- Logo/Link a Home -->
+  <div class="absolute top-4 left-4 ">
+    <a [routerLink]="['/home']" class="flex items-center text-white hover:text-emerald-100 transition-colors duration-200">
+      <span class="text-xl font-bold">Visenture</span>
+    </a>
+  </div>
+
+  <!-- Sección Acciones Compradas -->
+  <div class="flex justify-center pb-10">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-5xl">
+      <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Mis Acciones</h3>
+      <!-- Estado vacío -->
+  <div *ngIf="!isLoading && !error && stocks.length === 0" class="bg-gray-50 dark:bg-slate-800 rounded-lg p-6 text-center">
+    <p class="text-gray-600 dark:text-gray-300 text-lg">No has comprado acciones aún.</p>
+  </div>
+  <!-- Menú de filtrado -->
+      <div class="relative">
+        <select 
+          [(ngModel)]="selectedFilter"
+          (change)="filterStocks(selectedFilter)"
+          class="block w-full bg-w-100 border border-emerald-400 text-gray-800 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors duration-200">
+          <option *ngFor="let filter of marketFilters" [value]="filter.value">
+            {{ filter.label }}
+          </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+          </svg>
+        </div>
+      </div>
+    
+
+
+      <!-- Tabla de Acciones -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Empresa</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Símbolo</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mercado</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Unitario</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Total</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rendimiento</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let stock of filteredStocks" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center"
+                       [ngClass]="{
+                         'bg-emerald-100': stock.color === 'emerald',
+                         'bg-blue-100': stock.color === 'blue',
+                         'bg-yellow-100': stock.color === 'yellow'
+                       }">
+                    <span [ngClass]="{
+                      'text-emerald-600': stock.color === 'emerald',
+                      'text-blue-600': stock.color === 'blue',
+                      'text-yellow-600': stock.color === 'yellow'
+                    }" class="font-bold">{{ stock.symbol.charAt(0) }}</span>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900">{{ stock.company }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stock.symbol }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stock.marketName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stock.quantity }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stock.unitValue | currency:'COP':'symbol':'1.0-0' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ stock.totalValue | currency:'COP':'symbol':'1.0-0' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': stock.performance >= 0,
+                        'bg-red-100 text-red-800': stock.performance < 0
+                      }">
+                  {{ stock.performance >= 0 ? '+' : '' }}{{ stock.performance | number:'1.1-1' }}%
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Resumen de Inversiones -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-emerald-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Valor Total Invertido</p>
+          <p class="text-xl font-bold text-emerald-600">{{ portfolioSummary.totalInvested | currency:'COP':'symbol':'1.0-0' }}</p>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Ganancias Totales</p>
+          <p class="text-xl font-bold text-blue-600">{{ portfolioSummary.totalEarnings | currency:'COP':'symbol':'1.0-0' }}</p>
+        </div>
+        <div class="bg-purple-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Acciones Totales</p>
+          <p class="text-xl font-bold text-purple-600">{{ portfolioSummary.totalStocks }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
