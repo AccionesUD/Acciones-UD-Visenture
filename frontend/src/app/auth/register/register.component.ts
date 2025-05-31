@@ -9,7 +9,6 @@ import { AuthService } from '../../services/auth.service'; // Asegúrate de que 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
   imports: [CommonModule , ReactiveFormsModule,RouterModule]
 })
 export class RegisterComponent {

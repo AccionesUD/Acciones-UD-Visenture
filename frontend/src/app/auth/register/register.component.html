@@ -1,4 +1,4 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 p-4">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-950 dark:via-slate-800 dark:to-slate-950 p-4">
   
   <!-- Logo/Link a Home (igual que en login) -->
   <div class="absolute top-4 left-4">
@@ -6,100 +6,100 @@
       <span class="text-xl font-bold">Visenture</span>
     </a>
   </div>
-  
-  <!-- Contenedor del Formulario -->
-  <div class="bg-white p-8 sm:p-10 rounded-xl shadow-2xl w-full max-w-md">
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Crear Cuenta</h2>
-    <p class="text-center text-gray-600 mb-8">Completa tus datos para registrarte</p>
+    <!-- Contenedor del Formulario -->
+  <div class="bg-white dark:bg-slate-800 p-8 sm:p-10 rounded-xl shadow-2xl dark:shadow-black dark:shadow-2xl w-full max-w-md border-0 dark:border-slate-700">
+    <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-2">Crear Cuenta</h2>
+    <p class="text-center text-gray-600 dark:text-gray-400 mb-8">Completa tus datos para registrarte</p>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
-      <!-- Nombre Completo -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>      <!-- Nombre Completo -->
       <div class="mb-4">
-        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre Completo</label>
         <input 
           type="text" 
           id="name" 
           formControlName="name"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': name?.invalid && (name?.dirty || name?.touched) }"
+          autocomplete="name"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': name?.invalid && (name?.dirty || name?.touched) }"
           placeholder="Tu nombre"
         />
-        <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="mt-1 text-xs text-red-600">
+        <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           <span *ngIf="name?.errors?.['required']">Este campo es requerido.</span>
         </div>
-      </div>
-      <!--Identificación-->
+      </div><!--Identificación-->
       <div class="mb-4">
-        <label for="identification" class="block text-sm font-medium text-gray-700 mb-1">Identificacion</label>
+        <label for="identification" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Identificación</label>
         <input 
           type="text" 
           id="identification" 
           formControlName="identification"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': identification?.invalid && (identification?.dirty || identification?.touched) }"
+          autocomplete="off"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': identification?.invalid && (identification?.dirty || identification?.touched) }"
           placeholder="Tu identificación"
         />
-        <div *ngIf="identification?.invalid && (identification?.dirty || identification?.touched)" class="mt-1 text-xs text-red-600">
-          <span *ngIf="name?.errors?.['required']">Este campo es requerido.</span>
+        <div *ngIf="identification?.invalid && (identification?.dirty || identification?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+          <span *ngIf="identification?.errors?.['required']">Este campo es requerido.</span>
+          <span *ngIf="identification?.errors?.['minlength'] || identification?.errors?.['maxlength']">La identificación debe tener 8 caracteres.</span>
         </div>
-      </div>
-      <!-- Fecha de Nacimiento -->
+      </div>      <!-- Fecha de Nacimiento -->
       <div class="mb-4">
-        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Nacimiento</label>
+        <label for="birthDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Nacimiento</label>
         <input 
           type="date" 
           id="birthDate" 
           formControlName="birthDate"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': birthDate?.invalid && (birthDate?.dirty || birthDate?.touched) }"
+          autocomplete="bday"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': birthDate?.invalid && (birthDate?.dirty || birthDate?.touched) }"
         />
-        <div *ngIf="birthDate?.invalid && (birthDate?.dirty || birthDate?.touched)" class="mt-1 text-xs text-red-600">
+        <div *ngIf="birthDate?.invalid && (birthDate?.dirty || birthDate?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           <span *ngIf="birthDate?.errors?.['required']">Este campo es requerido.</span>
         </div>
-      </div>
-      <!-- direccion -->
+      </div>      <!-- dirección -->
       <div class="mb-4">
-        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+        <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
         <input 
           type="text" 
           id="address" 
           formControlName="address"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': address?.invalid && (address?.dirty || address?.touched) }"
+          autocomplete="street-address"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': address?.invalid && (address?.dirty || address?.touched) }"
           placeholder="Tu dirección"
-        /> 
-        <div *ngIf="address?.invalid && (address?.dirty || address?.touched)" class="mt-1 text-xs text-red-600">
+        />
+        <div *ngIf="address?.invalid && (address?.dirty || address?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           <span *ngIf="address?.errors?.['required']">Este campo es requerido.</span>
         </div>
-      </div>
-      <!-- Teléfono -->
-       <div class="mb-4">
-        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
+      </div>      <!-- Teléfono -->
+      <div class="mb-4">
+        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
         <input 
           type="tel" 
           id="phone" 
           formControlName="phone"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': phone?.invalid && (phone?.dirty || phone?.touched) }"
-          placeholder="Tu telefono"
+          autocomplete="tel"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': phone?.invalid && (phone?.dirty || phone?.touched) }"
+          placeholder="Tu teléfono"
         />
-        <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="mt-1 text-xs text-red-600">
-          <span *ngIf="name?.errors?.['required']">Este campo es requerido.</span>
+        <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+          <span *ngIf="phone?.errors?.['required']">Este campo es requerido.</span>
+          <span *ngIf="phone?.errors?.['minlength'] || phone?.errors?.['maxlength']">El teléfono debe tener 10 dígitos.</span>
         </div>
-      </div>
-
-      <!-- Email -->
+      </div>      <!-- Email -->
       <div class="mb-4">
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo Electrónico</label>
         <input 
           type="email" 
           id="email" 
           formControlName="email"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': email?.invalid && (email?.dirty || email?.touched) }"
+          autocomplete="email"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': email?.invalid && (email?.dirty || email?.touched) }"
           placeholder="ejemplo@correo.com"
         />
-        <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-xs text-red-600">
+        <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           <span *ngIf="email?.errors?.['required']">Este campo es requerido.</span>
           <span *ngIf="email?.errors?.['email']">Por favor, ingresa un correo válido.</span>
         </div>
@@ -107,16 +107,16 @@
 
       <!-- Contraseña -->
       <div class="mb-4">
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
         <input 
           type="password" 
           id="password" 
           formControlName="password"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': password?.invalid && (password?.dirty || password?.touched) }"
+          autocomplete="new-password"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': password?.invalid && (password?.dirty || password?.touched) }"
           placeholder="••••••••"
-        />
-        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="mt-1 text-xs text-red-600">
+        />        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           <span *ngIf="password?.errors?.['required']">Este campo es requerido.</span>
           <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres.</span>
         </div>
@@ -124,22 +124,20 @@
 
       <!-- Confirmar Contraseña -->
       <div class="mb-6">
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar Contraseña</label>
         <input 
           type="password" 
           id="confirmPassword" 
           formControlName="confirmPassword"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-150"
-          [ngClass]="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': registerForm.errors?.['mismatch'] && (confirmPassword?.dirty || confirmPassword?.touched) }"
+          autocomplete="new-password"
+          class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition duration-150 placeholder-gray-400 dark:placeholder-gray-500"
+          [ngClass]="{ 'border-red-500 dark:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 focus:border-red-500 dark:focus:border-red-400': registerForm.errors?.['mismatch'] && (confirmPassword?.dirty || confirmPassword?.touched) }"
           placeholder="••••••••"
-        />
-        <div *ngIf="registerForm.errors?.['mismatch'] && (confirmPassword?.dirty || confirmPassword?.touched)" class="mt-1 text-xs text-red-600">
+        />        <div *ngIf="registerForm.errors?.['mismatch'] && (confirmPassword?.dirty || confirmPassword?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
           Las contraseñas no coinciden.
         </div>
-      </div>
-
-      <!-- Mensaje de Error -->
-      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md text-sm">
+      </div>      <!-- Mensaje de Error -->
+      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 rounded-md text-sm">
         {{ errorMessage }}
       </div>
 
@@ -147,17 +145,21 @@
       <button 
         type="submit" 
         [disabled]="registerForm.invalid || isLoading"
-        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span *ngIf="!isLoading">Registrarse</span>
-        <span *ngIf="isLoading">Creando cuenta...</span>
+        <span *ngIf="isLoading" class="flex items-center justify-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Creando cuenta...
+        </span>
       </button>
-    </form>
-
-    <!-- Enlace a Login -->
-    <div class="mt-6 text-center text-sm text-gray-600">
+    </form>    <!-- Enlace a Login -->
+    <div class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
       ¿Ya tienes una cuenta? 
-      <a [routerLink]="['/login']" class="font-medium text-emerald-600 hover:text-emerald-500">Inicia sesión aquí</a>
+      <a [routerLink]="['/login']" class="font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300">Inicia sesión aquí</a>
     </div>
   </div>
 </div>

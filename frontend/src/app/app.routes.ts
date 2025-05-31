@@ -14,7 +14,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'register', component: RegisterComponent },
-  {path: 'portfolio', component: PortfolioComponent},
+  { path: 'portfolio', component: PortfolioComponent},
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'test-reset-password', component: ResetPasswordComponent },
