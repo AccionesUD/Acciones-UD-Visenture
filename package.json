@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@types/babel__generator": "^7.27.0"
+  }
+}
