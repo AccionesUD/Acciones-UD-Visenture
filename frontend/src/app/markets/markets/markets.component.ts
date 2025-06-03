@@ -73,19 +73,27 @@ export class MarketsComponent implements OnInit {
       }
     });
   }
-
-  viewMarketDetails(marketId: string): void {
-    this.router.navigate(['/markets', marketId]);
-  }
-  getMarketStatusIcon(status: 'open' | 'closed'): string {
+  viewMarketDetails(marketId: string | undefined): void {
+    if (marketId) {
+      this.router.navigate(['/markets', marketId]);
+    }
+  }getMarketStatusIcon(status: string): string {
     return status === 'open' ? 'check_circle' : 'cancel';
   }
 
-  getMarketStatusColor(status: 'open' | 'closed'): string {
+  getMarketStatusColor(status: string): string {
     return status === 'open' ? 'green' : 'red';
   }
   
-  getMarketStatusText(status: 'open' | 'closed'): string {
+  getMarketStatusText(status: string): string {
     return status === 'open' ? 'Abierto' : 'Cerrado';
+  }
+    // Obtiene un valor formateado para el precio
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-CO', { 
+      style: 'currency', 
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(price);
   }
 }

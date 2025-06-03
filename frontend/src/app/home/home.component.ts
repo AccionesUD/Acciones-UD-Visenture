@@ -6,7 +6,8 @@ import { FinancialDataService, FinancialNews } from '../services/financial-data.
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-home',  standalone: true,
+  selector: 'app-home',  
+  standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './home.component.html',
 })

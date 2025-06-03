@@ -37,7 +37,7 @@ export class MailService {
   }
 
   async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-  const resetLink = `https://tudominio.com/reset-password?token=${token}&email=${email}`;
+  const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
   
   await this.transporter.sendMail({
     from: '"Soporte" <soporte@tudominio.com>',
