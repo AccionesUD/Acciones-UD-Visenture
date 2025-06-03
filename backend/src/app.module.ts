@@ -10,6 +10,7 @@ import { TokensModule } from './tokens/tokens.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MarketsModule } from './markets/markets.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     MailModule,
     TokensModule,
     MarketsModule,
+    AlpacaBrokerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

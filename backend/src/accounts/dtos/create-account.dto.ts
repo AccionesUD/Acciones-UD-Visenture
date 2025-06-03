@@ -28,4 +28,7 @@ export class CreateAccountDto {
 
   @IsOptional()
   identity_document: string;
+
+  @IsOptional()
+  alpaca_account_id: string
 }
