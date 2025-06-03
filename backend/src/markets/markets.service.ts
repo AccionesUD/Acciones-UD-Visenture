@@ -84,12 +84,12 @@ export class MarketsService {
   }
 
   // Consulta periódica cada 5 minutos (ajustable)
-  @Cron('*/1 * * * *')
-  async handleCron() {
-    this.logger.debug('Fetching market data from Alpaca...');
-    await this.getMarketData('AAPL,MSFT,GOOGL');
-  }
-
+  //@Cron('*/1 * * * *')
+  //async handleCron() {
+    //this.logger.debug('Fetching market data from Alpaca...');
+    //await this.getMarketData('AAPL,MSFT,GOOGL');
+ //}
+  /*
   async getMarketData(symbols: string): Promise<void> {
     const url = `${this.baseUrl}/stocks/bars?symbols=${symbols}&timeframe=1Day`;
     
@@ -134,5 +134,5 @@ export class MarketsService {
 
   getParsedData(): MarketData[] {
     return this.marketData;
-  }
+  }*/
 }

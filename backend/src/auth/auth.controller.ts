@@ -43,7 +43,7 @@ export class AuthController {
     return await this.authService.requestPasswordReset(forgotPasswordDto.email);
   }
 
-  @Get('validate-reset-token')
+  @Post('validate-reset-token')
   @ApiOperation({ summary: 'Validar token de restablecimiento' })
   async validateResetToken(@Body() validateTokenDto: ValidateTokenDto) {
     return this.authService.validatePasswordResetToken(

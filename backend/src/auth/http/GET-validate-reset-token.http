@@ -1,0 +1,7 @@
+POST http://localhost:3000/api/auth/validate-reset-token/
+Content-Type: application/json
+
+{
+    "email": "johndh@gmail.com",
+    "token": "6648HQ"
+}

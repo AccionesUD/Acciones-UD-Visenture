@@ -12,9 +12,9 @@ export class MarketsController {
     return await this.marketsService.getMarkets();
   }
 
-   @Get('all')
+  /* @Get('all')
   getMarketData(): MarketData [] {
     return this.marketsService.getParsedData();
-  }
+  }*/
 }
 
