@@ -99,37 +99,108 @@
       </div>
     </div>
 
-    <!-- Acciones simuladas -->
-    <div class="border-2 border-emerald-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8">
-      <div class="border-b border-gray-200 dark:border-slate-700 p-6">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Acciones Destacadas</h2>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">Listado simulado de acciones disponibles en {{ market.name }}</p>
-      </div>
-      
-      <div class="p-6">
-        <div class="bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden">
-          <div class="grid grid-cols-12 gap-4 bg-gray-200 dark:bg-slate-600 p-4 font-medium text-gray-800 dark:text-gray-200">
-            <div class="col-span-2">Símbolo</div>
-            <div class="col-span-5">Nombre</div>
-            <div class="col-span-2 text-right">Precio</div>
-            <div class="col-span-3 text-right">Cambio</div>
+        <!-- Acciones simuladas -->
+        <div
+          class="border-2 border-emerald-200 dark:border-slate-700 bg-white dark:bg-slate-800
+                rounded-xl shadow-lg overflow-hidden mb-8">
+
+          <!-- Encabezado -->
+          <div class="border-b border-gray-200 dark:border-slate-700 p-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Acciones Destacadas</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+              Listado simulado de acciones disponibles en {{ market.name }}
+            </p>
           </div>
-          
-          <div *ngFor="let action of simulatedActions" class="grid grid-cols-12 gap-4 p-4 border-b border-gray-200 dark:border-slate-600 last:border-0">
-            <div class="col-span-2 font-medium text-gray-800 dark:text-white">{{ action.symbol }}</div>
-            <div class="col-span-5 text-gray-700 dark:text-gray-300">{{ action.name }}</div>
-            <div class="col-span-2 text-right text-gray-800 dark:text-white font-medium">${{ action.price }}</div>
-            <div class="col-span-3 text-right font-medium" [ngClass]="{
-              'text-green-600 dark:text-green-400': action.change.startsWith('+'),
-              'text-red-600 dark:text-red-400': action.change.startsWith('-')
-            }">{{ action.change }}</div>
+
+          <!-- Filtros -->
+          <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Filtro por nombre -->
+            <input
+              [(ngModel)]="filtros.nombre"
+              type="text"
+              placeholder="Filtrar por nombre"
+              class="p-2 border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white"
+            />
+
+            <!-- Filtro por sector -->
+            <select
+              [(ngModel)]="filtros.sector"
+              class="p-2 border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white">
+              <option value="">Todos los sectores</option>
+              <option *ngFor="let s of sectoresDisponibles" [value]="s">{{ s }}</option>
+            </select>
+
+            <!-- Ordenar por -->
+            <select
+              [(ngModel)]="filtros.orden"
+              class="p-2 border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white">
+              <option value="">Ordenar por</option>
+              <option value="precio_asc">Precio: Menor a mayor</option>
+              <option value="precio_desc">Precio: Mayor a menor</option>
+              <option value="cambio_asc">Cambio: Menor a mayor</option>
+              <option value="cambio_desc">Cambio: Mayor a menor</option>
+            </select>
+          </div>
+
+          <!-- Lista -->
+          <div class="p-6">
+            <div class="bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden">
+              <div class="grid grid-cols-12 gap-4 bg-gray-200 dark:bg-slate-600 p-4 font-medium text-gray-800 dark:text-gray-200">
+                <div class="col-span-2">Símbolo</div>
+                <div class="col-span-4">Nombre</div> 
+                <div class="col-span-2 text-right">Precio</div>
+                <div class="col-span-2 text-right">Cambio</div>
+                <div class="col-span-2 text-right">Acciones</div>
+              </div>
+
+              <!-- Filas -->
+              <div
+                *ngFor="let action of accionesFiltradas"
+                class="grid grid-cols-12 gap-4 p-4 border-b border-gray-200
+                      dark:border-slate-600 last:border-0 items-center">
+                <div class="col-span-2 font-medium text-gray-800 dark:text-white">
+                  {{ action.symbol }}
+                </div>
+
+                <div class="col-span-4 text-gray-700 dark:text-gray-300">
+                  {{ action.name }}
+                </div>
+
+                <div class="col-span-2 text-right text-gray-800 dark:text-white font-medium">
+                  ${{ action.price }}
+                </div>
+
+                <div
+                  class="col-span-2 text-right font-medium"
+                  [ngClass]="{
+                    'text-green-600 dark:text-green-400': action.change.startsWith('+'),
+                    'text-red-600 dark:text-red-400': action.change.startsWith('-')
+                  }">
+                  {{ action.change }}
+                </div>
+
+                <div class="col-span-2 flex justify-end space-x-2">
+                  <button
+                    (click)="abrirOperacion('buy', action)"
+                    class="px-3 py-1 bg-emerald-600 text-white text-sm rounded
+                          hover:bg-emerald-700 transition">
+                    Comprar
+                  </button>
+                  <button
+                    (click)="abrirOperacion('sell', action)"
+                    class="px-3 py-1 bg-red-600 text-white text-sm rounded
+                          hover:bg-red-700 transition">
+                    Vender
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+              Esta es una visualización preliminar. La funcionalidad completa de
+              visualización y operación de acciones por mercado será implementada próximamente.
+            </p>
           </div>
         </div>
-        
-        <p class="mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
-          Esta es una visualización preliminar. La funcionalidad completa de visualización y operación de acciones por mercado será implementada próximamente.
-        </p>
-      </div>
-    </div>
   </div>
 </div>

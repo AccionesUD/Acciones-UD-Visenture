@@ -6,6 +6,7 @@ import { MarketsRoutingModule } from './markets-routing.module';
 import { MarketsComponent } from './markets/markets.component';
 import { MarketDetailComponent } from './market-detail/market-detail.component';
 
+
 // Material Modules
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';

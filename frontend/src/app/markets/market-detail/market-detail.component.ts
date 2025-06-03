@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-market-detail',
@@ -18,7 +20,8 @@ import { MatListModule } from '@angular/material/list';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    FormsModule
   ],
   templateUrl: './market-detail.component.html',
 })
@@ -30,12 +33,12 @@ export class MarketDetailComponent implements OnInit {
 
   // Acciones simuladas para el mercado
   simulatedActions = [
-    { symbol: 'AAPL', name: 'Apple Inc.', price: 170.34, change: '+1.25%' },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 280.50, change: '-0.50%' },
-    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2750.70, change: '+2.10%' },
-    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 3400.25, change: '+0.75%' },
-    { symbol: 'META', name: 'Meta Platforms Inc.', price: 330.15, change: '-1.20%' },
-    { symbol: 'TSLA', name: 'Tesla Inc.', price: 780.90, change: '+3.45%' }
+    { symbol: 'AAPL', name: 'Apple Inc.', price: 170.34, change: '+1.25%',sector: 'Tecnología' },
+    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 280.50, change: '-0.50%',sector: 'Bienes' },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2750.70, change: '+2.10%',sector: 'Servicios' },
+    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 3400.25, change: '+0.75%',sector: 'Tecnología' },
+    { symbol: 'META', name: 'Meta Platforms Inc.', price: 330.15, change: '-1.20%',sector: 'Servicios' },
+    { symbol: 'TSLA', name: 'Tesla Inc.', price: 780.90, change: '+3.45%',sector: 'Tecnología' }
   ];
 
   constructor(
@@ -92,4 +95,43 @@ export class MarketDetailComponent implements OnInit {
   goBackToMarkets(): void {
     this.router.navigate(['/markets']);
   }
+
+  abrirOperacion(tipo: 'buy' | 'sell', accion: any) {
+    console.log(`Operación: ${tipo} - Acción:`, accion);
+  }
+
+  filtros = {
+    nombre: '',
+    sector: '',
+    orden: ''
+  };
+
+sectoresDisponibles: string[] = ['Tecnología', 'Salud', 'Finanzas', 'Energía'];
+
+get accionesFiltradas() {
+  let acciones = [...this.simulatedActions];
+
+  // Filtrar por nombre
+  if (this.filtros.nombre) {
+    acciones = acciones.filter(a =>
+      a.name.toLowerCase().includes(this.filtros.nombre.toLowerCase())
+    );
+  }
+
+  // Filtrar por sector
+  if (this.filtros.sector) {
+    acciones = acciones.filter(a => a.sector === this.filtros.sector);
+  }
+
+  // Ordenar
+  if (this.filtros.orden === 'nombre') {
+    acciones.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (this.filtros.orden === 'precio') {
+    acciones.sort((a, b) => b.price - a.price);
+  }
+
+  return acciones;
+}
+
+
 }
