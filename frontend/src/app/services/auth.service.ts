@@ -23,6 +23,7 @@ export class AuthService {
   private platformId = inject(PLATFORM_ID);
   
   // URL base para las peticiones de autenticación desde las variables de entorno
+  private registerUrl = environment.apiUrl;
   private apiUrl = environment.authApiUrl;
     constructor(
     private router: Router,
@@ -33,27 +34,19 @@ export class AuthService {
     // Recuperar usuario de localStorage al iniciar
     this.loadUserFromStorage();
   }
-  
-  /**
-   * Registra un nuevo usuario
-   * @param userData Datos del formulario de registro
-   */
-  register(userData: any): Observable<{ success: boolean; message: string }> {
-    return this.http.post<{message: string}>(`${this.apiUrl}/register`, userData).pipe(
+    register(userData: any): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{message: string}>(`${this.registerUrl}/users`, userData).pipe(
       map(response => {
         return {
           success: true,
           message: response.message || 'Registro exitoso. Por favor, inicia sesión.'
         };
-        }),
-        catchError(error => {
-          console.error('Error en registro:', error);
-          // Extraer mensaje de error del backend o usar uno genérico
-          return of({
-            success: false,
-            message: error.error?.message || 'No se pudo completar el registro. Por favor, intenta nuevamente.'
-          });
-        })
+      }),
+      catchError(error => {
+        console.error('Error en registro:', error);
+        // En lugar de manejar el error aquí, lo propagamos para que el componente lo maneje
+        return throwError(() => error);
+      })
     );
   
   } 
@@ -105,7 +98,7 @@ export class AuthService {
     };
     
     // Llamamos directamente a completar login
-    return this.http.post<{ accessToken: string }>(
+    return this.http.post<{ message: string, success: boolean }>(
       `${this.apiUrl}/complete-login`, 
       normalizedVerification
     ).pipe(
@@ -118,7 +111,7 @@ export class AuthService {
       // Procesamos el token JWT recibido
       switchMap(response => {
         console.log('Token JWT recibido:', response);
-        const token = response.accessToken;
+        const token = response.message;
         // Decodificamos el token para obtener la información del usuario
         const decodedToken = this.jwtService.decodeToken(token);
         
@@ -233,40 +226,80 @@ export class AuthService {
         });
       })
     );
+  }  
+  
+  validateResetToken(token: string, email: string): Observable<{ valid: boolean, message?: string }> {
+    console.log('Validando token de restablecimiento:', token, 'para email:', email);
+    
+    if (!token || !email) {
+      return throwError(() => new Error('Se requiere token y email para la validación'));
+    }
+    
+    return this.http.post<{ valid: boolean, message?: string }>(
+      `${this.apiUrl}/validate-reset-token`,
+      { token, email }
+    ).pipe(
+      catchError(error => {
+        console.error('Error al validar token de restablecimiento:', error);
+        return of({ valid: false, message: error.error?.message || 'Token inválido o expirado' });
+      })
+    );
   }
-  // Método para restablecer contraseña
-  resetPassword(token: string, password: string, confirmPassword: string): Observable<{ success: boolean, message: string }> {
+  
+  resetPassword(token: string, password: string, confirmPassword: string, email?: string): Observable<any> {
+    // Usar el email proporcionado o intentar obtenerlo del almacenamiento local
+    const userEmail = email || localStorage.getItem('reset_email');
+    
+    console.log('Enviando solicitud de reset con email:', userEmail, 'y token:', token);
+    
+    if (!token || !userEmail || !password || !confirmPassword) {
+      return throwError(() => new Error('Se requieren todos los campos para restablecer la contraseña'));
+    }
+    
     if (password !== confirmPassword) {
       return throwError(() => new Error('Las contraseñas no coinciden'));
     }
     
-    const email = localStorage.getItem('reset_email');
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const isLongEnough = password.length >= 8;
     
-    console.log('Enviando solicitud de reset con email:', email, 'y token:', token);
-
-    // Verificar que tenemos los datos necesarios
-    if (!token || !email) {
-      return throwError(() => new Error('Faltan datos necesarios para restablecer la contraseña'));
+    if (!hasLowerCase || !hasUpperCase || !hasNumber || !hasSpecialChar || !isLongEnough) {
+      return throwError(() => new Error('La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y al menos un carácter especial.'));
     }
-
-    // El DTO del backend espera: token, email y newPassword
-    return this.http.post<{ success: boolean, message: string }>(
+    
+    // Enviar el formato correcto que espera el backend: newPassword en lugar de password/confirmPassword
+    return this.http.post(
       `${this.apiUrl}/reset-password`,
-      { token, email, newPassword: password }
+      {
+        token,
+        email: userEmail,
+        newPassword: password // Usar newPassword como espera el backend
+      }
     ).pipe(
-      tap(response => {
-        if (response.success) {
+      tap(() => {
+        // Limpiar el email de reseteo del almacenamiento local si se usó
+        if (!email && localStorage.getItem('reset_email')) {
           localStorage.removeItem('reset_email');
         }
       }),
       catchError(error => {
         console.error('Error al restablecer contraseña:', error);
-        throw error;
+        
+        // Manejar específicamente el error de contraseña débil
+        if (error.error?.message?.includes('newPassword is not strong enough')) {
+          return throwError(() => new Error('La contraseña no es lo suficientemente segura. Debe incluir mayúsculas, minúsculas, números y caracteres especiales.'));
+        }
+        
+        return throwError(() => new Error(error.error?.message || 'Error al restablecer la contraseña'));
       })
     );
   }
-    // Cargar usuario desde localStorage al iniciar la aplicación
-  private loadUserFromStorage(): void {
+
+  
+  public loadUserFromStorage(): void {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem(this.tokenKey);
       const userData = localStorage.getItem(this.userKey);

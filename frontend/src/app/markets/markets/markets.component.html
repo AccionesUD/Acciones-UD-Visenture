@@ -55,34 +55,44 @@
                           [ngClass]="{'bg-green-500': market.status === 'open', 'bg-red-500': market.status === 'closed'}"></span>
                     <span class="text-xs font-medium">{{ getMarketStatusText(market.status) }}</span>
                   </div>
-                </div>
-                <div *ngIf="market.iconUrl" class="w-16 h-16 rounded-full bg-white p-1 shadow-md overflow-hidden border-2 border-white">
-                  <img [src]="market.iconUrl" [alt]="market.country" class="w-full h-full object-cover rounded-full">
+                </div>                <!-- Se ha eliminado la referencia al iconUrl -->
+                <div class="w-16 h-16 rounded-full bg-white p-1 shadow-md overflow-hidden border-2 border-white flex items-center justify-center">
+                  <mat-icon class="text-3xl text-emerald-500">account_balance</mat-icon>
                 </div>
               </div>
               
-              <!-- Contenido del mercado -->
-              <div class="p-6 flex-grow overflow-auto">
+              <!-- Contenido del mercado -->              <div class="p-6 flex-grow overflow-auto">
                 <div class="space-y-4">
+                  <!-- Precio del mercado (destacado) -->
+                  <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 mb-2">
+                    <div class="flex items-center justify-between">
+                      <div class="text-sm text-gray-500 dark:text-gray-400">Precio actual:</div>                      <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {{ market.price !== undefined ? formatPrice(market.price) : 'N/A' }}
+                      </div>
+                    </div>
+                    <div class="text-right text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      Símbolo: {{ market.symbol }}
+                    </div>
+                  </div>
+                  
                   <div class="flex items-center">
                     <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-400">public</mat-icon> 
-                    <span class="text-gray-700 dark:text-gray-300">País: <span class="font-medium">{{ market.country }}</span></span>
+                    <span class="text-gray-700 dark:text-gray-300">País: <span class="font-medium">{{ market.country || 'No especificado' }}</span></span>
                   </div>
                   
                   <div class="flex items-center">
                     <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-400">attach_money</mat-icon>
                     <span class="text-gray-700 dark:text-gray-300">Moneda: <span class="font-medium">{{ market.currency }}</span></span>
                   </div>
-                  
-                  <div class="flex items-center">
+                    <div class="flex items-center">
                     <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-400">schedule</mat-icon>
                     <span class="text-gray-700 dark:text-gray-300">
-                      Horario: 
-                      <span class="font-medium" *ngIf="market.openingTime && market.closingTime">
-                        {{ market.openingTime }} - {{ market.closingTime }}
-                        <span *ngIf="market.timezone" class="text-xs text-gray-500 dark:text-gray-400 ml-1">({{ market.timezone }})</span>
+                      Estado: 
+                      <span class="font-medium" 
+                            [ngClass]="{'text-green-600 dark:text-green-400': market.status === 'open', 
+                                      'text-red-600 dark:text-red-400': market.status === 'closed'}">
+                        {{ getMarketStatusText(market.status) }}
                       </span>
-                      <span class="font-medium" *ngIf="!market.openingTime || !market.closingTime">No disponible</span>
                     </span>
                   </div>
                   
@@ -94,9 +104,8 @@
               </div>
 
               <!-- Botón de acción -->
-              <div class="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 mt-auto">
-                <button 
-                  (click)="viewMarketDetails(market.id)" 
+              <div class="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 mt-auto">                <button 
+                  (click)="viewMarketDetails(market.symbol)" 
                   class="cursor-pointer w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center">
                   <mat-icon class="mr-2 text-sm">visibility</mat-icon>
                   Ver Detalles

@@ -7,13 +7,23 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
 // Interceptor funcional para Angular 17+
-export function tokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
-  // Si la petición no va a nuestra API, no añadimos el token
-  if (!req.url.includes(environment.apiUrl) && !req.url.includes(environment.authApiUrl)) {
+export function tokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {  // Rutas públicas que no necesitan autenticación
+  const publicRoutes = [
+    '/api/market',
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+    '/api/auth/validate-reset-token'
+  ];
+
+  // Si la petición es a una ruta pública o no es a nuestra API, no añadimos el token
+  if (!req.url.includes(environment.apiUrl) || 
+      publicRoutes.some(route => req.url.includes(route))) {
     return next(req);
   }
 
-  // Si hay un token, lo añadimos
+  // Si hay un token y la ruta requiere autenticación, lo añadimos
   const token = localStorage.getItem('auth_token');
   if (token) {
     req = req.clone({
