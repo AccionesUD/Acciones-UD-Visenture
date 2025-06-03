@@ -1,4 +1,4 @@
-<div class="max-h-screen flex flex-col">
+<div class="flex flex-col">
 
   <!-- Hero Section -->
   <section class="flex-grow flex items-center bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950 border-gray-200 dark:border-slate-700 shadow-inner">
@@ -15,8 +15,8 @@
             <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-center transition duration-200">
               Iniciar sesión
             </a>
-            <a href="#features" class="py-3 px-6 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-center hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition duration-200">
-              Cómo comenzar
+            <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-center hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition duration-200">
+              Ver Mercados
             </a>
           </div>
         </div>
@@ -31,12 +31,95 @@
     </div>
   </section>
 
-<!-- Footer
-  <footer class="bg-gray-800 dark:bg-slate-900 text-white py-8">
+  <!-- Noticias Financieras -->
+  <section class="py-12 bg-white dark:bg-slate-900">
     <div class="container mx-auto px-4">
-      <div class="text-center">
-        <p class="text-gray-300 dark:text-gray-400">© 2025 Visenture. Todos los derechos reservados.</p>
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Noticias Financieras</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">      <div *ngFor="let news of financialNews" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
+          <!-- Imagen de la noticia -->
+          <div *ngIf="news.imageUrl" class="mb-4 -mx-6 -mt-6">
+            <img [src]="news.imageUrl" [alt]="news.title" class="w-full h-48 object-cover rounded-t-lg">
+          </div>
+          
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ news.title }}</h3>
+          <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <span>{{ news.source }}</span>
+            <span>{{ news.date }}</span>
+          </div>
+          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ news.summary }}</p>
+          <a [href]="news.url" target="_blank" rel="noopener noreferrer" 
+             class="mt-4 inline-block text-emerald-600 dark:text-emerald-400 hover:underline">
+            Leer más →
+          </a>
+        </div>
       </div>
     </div>
-  </footer> -->
+  </section>
+
+  <!-- Ventajas -->
+  <section class="py-12 bg-gray-100 dark:bg-slate-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">¿Por qué elegir Visenture?</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
+          <div class="rounded-full bg-emerald-100 dark:bg-emerald-900 p-4 inline-flex mb-4">
+            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Análisis en Tiempo Real</h3>
+          <p class="text-gray-600 dark:text-gray-300">Accede a datos de mercado en tiempo real para tomar decisiones informadas.</p>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
+          <div class="rounded-full bg-emerald-100 dark:bg-emerald-900 p-4 inline-flex mb-4">
+            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Estrategias Probadas</h3>
+          <p class="text-gray-600 dark:text-gray-300">Aplica estrategias de trading desarrolladas por expertos y optimizadas para diferentes mercados.</p>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
+          <div class="rounded-full bg-emerald-100 dark:bg-emerald-900 p-4 inline-flex mb-4">
+            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Alertas Personalizadas</h3>
+          <p class="text-gray-600 dark:text-gray-300">Configura alertas para nunca perder oportunidades de trading importantes.</p>
+        </div>
+        
+        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
+          <div class="rounded-full bg-emerald-100 dark:bg-emerald-900 p-4 inline-flex mb-4">
+            <svg class="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Seguridad Avanzada</h3>
+          <p class="text-gray-600 dark:text-gray-300">Tu información y operaciones están protegidas con los más altos estándares de seguridad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-white dark:bg-slate-800">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-3xl font-bold mb-4 text-slate-600 dark:text-white">¿Listo para empezar tu viaje de trading?</h2>
+      <p class="text-xl mb-8 text-emerald-950 dark:text-emerald-100">Únete a miles de traders que ya están aumentando sus ganancias con Visenture</p>
+      <div class="flex justify-center gap-4 flex-wrap">
+        <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg hover:bg-emerald-200 dark:hover:bg-slate-700  text-emerald-700 dark:text-white font-medium text-center transition duration-200">
+          Iniciar sesión
+        </a>
+        <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border-2 border-emerald-200 dark:border-slate-600 text-emerald-700 dark:text-white hover:bg-emerald-200 dark:hover:bg-slate-700 text-center transition duration-200">
+          Explorar mercados
+        </a>
+      </div>
+    </div>
+  </section>
+
 </div>

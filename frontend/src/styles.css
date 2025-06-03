@@ -23,19 +23,12 @@ html.dark body {
 
 /* Asegurarse de que el contenido ocupe al menos toda la altura disponible */
 app-root {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
 }
 
 /* Estilos específicos para formularios en modo oscuro */
 html.dark input, 
 html.dark textarea, 
-html.dark select {
-  background-color: #1e293b; /* slate-800 */
-  border-color: #334155; /* slate-700 */
-  color: #e2e8f0; /* slate-200 */
-}
 
 html.dark input::placeholder, 
 html.dark textarea::placeholder {
@@ -93,3 +86,6 @@ html.dark .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
 .mat-button-focus-overlay {
   background-color: transparent;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

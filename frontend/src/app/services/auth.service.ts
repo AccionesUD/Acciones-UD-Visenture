@@ -7,31 +7,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { JwtService } from './jwt.service';
 import { AuthStateService } from './auth-state.service';
+import { LoginCredentials, MfaVerification, User, AuthResponse } from '../models/auth.model';
 
 // Interfaces para la autenticación
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
 
-export interface MfaVerification {
-  token: string;
-  email: string;
-}
-
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  name: string;
-  role: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  token: string;
-  expiresIn?: number; // Tiempo de expiración en segundos
-}
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +34,29 @@ export class AuthService {
     this.loadUserFromStorage();
   }
   
+  /**
+   * Registra un nuevo usuario
+   * @param userData Datos del formulario de registro
+   */
+  register(userData: any): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{message: string}>(`${this.apiUrl}/register`, userData).pipe(
+      map(response => {
+        return {
+          success: true,
+          message: response.message || 'Registro exitoso. Por favor, inicia sesión.'
+        };
+        }),
+        catchError(error => {
+          console.error('Error en registro:', error);
+          // Extraer mensaje de error del backend o usar uno genérico
+          return of({
+            success: false,
+            message: error.error?.message || 'No se pudo completar el registro. Por favor, intenta nuevamente.'
+          });
+        })
+    );
+  
+  } 
   // Verifica si el usuario está autenticado
   public get isAuthenticated(): boolean {
     return !!this.currentUserSubject.value;
@@ -63,7 +65,9 @@ export class AuthService {
   // Obtiene el usuario actual
   public get currentUser(): User | null {
     return this.currentUserSubject.value;
-  }  login(credentials: LoginCredentials): Observable<{ success: boolean, requireMfa: boolean }> {
+  }  
+  
+  login(credentials: LoginCredentials): Observable<{ success: boolean, requireMfa: boolean }> {
     // Llamada real al backend
     return this.http.post<{ message: string, token: string }>(`${this.apiUrl}/login`, credentials).pipe(
       map(response => {
@@ -71,7 +75,7 @@ export class AuthService {
         // El backend devuelve un mensaje y un token temporal
         return { 
           success: true, 
-          requireMfa: true // Siempre requerimos MFA en este flujo
+          requireMfa: true 
         };
       }),
       catchError(error => {
@@ -99,8 +103,8 @@ export class AuthService {
       ...verification,
       token: verification.token.toUpperCase()
     };
-      // Llamamos directamente a completar login, saltándonos la validación previa
-    // que consumía el token antes de tiempo
+    
+    // Llamamos directamente a completar login
     return this.http.post<{ accessToken: string }>(
       `${this.apiUrl}/complete-login`, 
       normalizedVerification
@@ -181,10 +185,8 @@ export class AuthService {
       // Redireccionar al home
     this.router.navigate(['/home']);
     
-    // Si hay un endpoint de logout en el backend, podríamos llamarlo aquí:
-    // this.http.post(`${this.apiUrl}/logout`, {}).subscribe();
   }
-    // Método para solicitar reenvío de token
+
   resendToken(email: string): Observable<{ success: boolean, message: string }> {
     console.log('Solicitando reenvío de token para:', email);
     
@@ -195,7 +197,7 @@ export class AuthService {
       });
     }
       // Usamos el endpoint para reenviar el token
-    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/resend-token`, { email }).pipe(
+    return this.http.post<{ success: boolean, message: string }>(`${this.apiUrl}/resend-token2fma`, { email }).pipe(
       map(response => {
         console.log('Token reenviado:', response);
         return { 

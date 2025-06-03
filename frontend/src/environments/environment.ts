@@ -1,8 +1,8 @@
-// Variables de entorno de desarrollo
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
-  authApiUrl: 'http://localhost:3000/api/auth',  // Corregido para usar el prefijo global 'api'
+  authApiUrl: 'http://localhost:3000/api/auth',  
   appName: 'Visenture',
-  tokenExpiryNotification: 60, // segundos antes de notificar que el token va a expirar
+  tokenExpiryNotification: 60,
+  newsApiKey: 'demo' 
 };
