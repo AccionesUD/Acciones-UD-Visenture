@@ -4,13 +4,16 @@ import { User } from '../users.entity';
 import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
+import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private accountService: AccountsService,) {}
+    private accountService: AccountsService,
+    private alpacaBrokerService: AlpacaBrokerService
+    ) {}
 
   async createUser(createUserDto: CreateUserDto) {
 
@@ -25,6 +28,15 @@ export class UsersService {
 
     createUserDto.account.identity_document = createUserDto.identity_document;
     const user = this.userRepository.create(createUserDto)
+
+    const accountAlpca: string = await this.alpacaBrokerService.createAccountAlpaca(createUserDto)
+
+    createUserDto.account = {
+      ...createUserDto.account,
+      identity_document: createUserDto.identity_document,
+      alpaca_account_id: accountAlpca
+     }
+
     try {
       await this.userRepository.save(user);
       await this.accountService.createAccount(createUserDto.account);
