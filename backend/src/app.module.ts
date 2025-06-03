@@ -43,4 +43,4 @@ import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

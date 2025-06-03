@@ -8,7 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
   providedIn: 'root'
 })
 export class RouteService {
-  private authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/test-reset-password'];
+  private authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
   
   private isAuthRouteSubject = new BehaviorSubject<boolean>(false);
   public isAuthRoute$ = this.isAuthRouteSubject.asObservable();

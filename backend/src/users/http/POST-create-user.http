@@ -7,6 +7,7 @@ Content-Type: application/json
   "last_name": "Doeh",
   "phone": "+573123551663",
   "birthdate": "2003-12-20",
+  "address": "cll45", 
   "account": {
     "email": "johndoe@gmail.com",
     "password": "A1#asdasadasda"

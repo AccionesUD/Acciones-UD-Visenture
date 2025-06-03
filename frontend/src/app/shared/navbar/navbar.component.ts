@@ -1,8 +1,9 @@
-import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -10,11 +11,14 @@ import { AuthStateService } from '../../services/auth-state.service';
   imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
 })
-export class NavbarComponent implements OnInit {
-  isAuthenticated = false;  username: string | null = null;
+export class NavbarComponent implements OnInit, OnDestroy {
+  isAuthenticated = false;
+  username: string | null = null;
   mobileMenuOpen = false;
   sidebarOpen = false;
   isDarkTheme = false;
+  isLoading = true; // Estado de carga para controlar la visualización
+  private authSubscription: Subscription = new Subscription();
   
   // Verifica si estamos en el navegador
   private get isBrowser(): boolean {
@@ -40,13 +44,27 @@ export class NavbarComponent implements OnInit {
       }
     }
   }
-
   ngOnInit(): void {
     // Suscribirse al estado de autenticación
-    this.authState.currentUser$.subscribe(user => {
-      this.isAuthenticated = !!user;
-      this.username = user?.username || null;
+    this.isLoading = true;
+    this.authSubscription = this.authService.currentUser$.subscribe({
+      next: (user) => {
+        this.isAuthenticated = !!user;
+        this.username = user?.username || null;
+        this.isLoading = false; // Terminamos de cargar cuando tengamos datos de autenticación
+      },
+      error: (err) => {
+        console.error('Error al obtener el usuario actual:', err);
+        this.isLoading = false;
+      }
     });
+  }
+  
+  ngOnDestroy(): void {
+    // Limpiamos la suscripción para evitar memory leaks
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   toggleTheme(): void {

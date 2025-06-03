@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { MarketDto } from './dtos/market.dto';
@@ -6,14 +6,24 @@ import { AlpacaAsset } from './dtos/alpaca-asset.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
+import { Cron, Interval } from '@nestjs/schedule';
+import { AxiosResponse } from 'axios';
+import { Observable, map } from 'rxjs';
+import { MarketData } from './dtos/market-data.interface';
 
 @Injectable()
 export class MarketsService {
+  private readonly logger = new Logger(MarketsService.name);
+  private readonly apiKey = process.env.ALPACA_API_KEY;
+  private readonly apiSecret = process.env.ALPACA_API_SECRET;
+  private readonly baseUrl = process.env.ALPACA_BASE_URL;
+  private marketData: MarketData[] = [];
+
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async getMarkets(): Promise<MarketDto[]> {
     const cacheKey = 'markets-list';
@@ -72,4 +82,57 @@ export class MarketsService {
     await this.cacheManager.set(cacheKey, markets, 60);
     return markets;
   }
+
+  // Consulta periódica cada 5 minutos (ajustable)
+  //@Cron('*/1 * * * *')
+  //async handleCron() {
+    //this.logger.debug('Fetching market data from Alpaca...');
+    //await this.getMarketData('AAPL,MSFT,GOOGL');
+ //}
+  /*
+  async getMarketData(symbols: string): Promise<void> {
+    const url = `${this.baseUrl}/stocks/bars?symbols=${symbols}&timeframe=1Day`;
+    
+    try {
+      const response = await this.httpService.get(url, {
+        headers: {
+          'APCA-API-KEY-ID': this.apiKey,
+          'APCA-API-SECRET-KEY': this.apiSecret
+        }
+      }).toPromise();
+
+      if (response && response.data) {
+        this.parseMarketData(response.data);
+        this.logger.log('Market data updated successfully');
+      } else {
+        this.logger.warn('No response or response data received from market data API');
+      }
+    } catch (error) {
+      this.logger.error('Error fetching market data', error.stack);
+    }
+  }
+
+  private parseMarketData(data: any): void {
+    this.marketData = [];
+    const bars = data.bars;
+
+    for (const symbol in bars) {
+      if (bars[symbol] && bars[symbol].length > 0) {
+        const bar = bars[symbol][0];
+        this.marketData.push({
+          symbol: symbol,
+          openPrice: bar.o,
+          highPrice: bar.h,
+          lowPrice: bar.l,
+          closePrice: bar.c,
+          volume: bar.v,
+          timestamp: bar.t
+        });
+      }
+    }
+  }
+
+  getParsedData(): MarketData[] {
+    return this.marketData;
+  }*/
 }

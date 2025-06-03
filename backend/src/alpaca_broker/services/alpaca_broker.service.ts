@@ -16,7 +16,7 @@ export class AlpacaBrokerService {
         private readonly validateDataAccount: ValidateDataAccountProvider
     ) { }
 
-    public async createAccountAlpaca(createUserDto: CreateUserDto, path: string = '/v1/accounts') {
+/*     public async createAccountAlpaca(createUserDto: CreateUserDto, path: string = '/v1/accounts') {
         const data = await this.validateDataAccount.validate(createUserDto)
         try {
             const response: AxiosResponse<any> = await firstValueFrom(
@@ -26,7 +26,7 @@ export class AlpacaBrokerService {
             throw new BadRequestException(error.response.data)
         }
 
-    }
+    } */
 
 }
 

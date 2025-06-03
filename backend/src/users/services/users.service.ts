@@ -29,13 +29,13 @@ export class UsersService {
     createUserDto.account.identity_document = createUserDto.identity_document;
     const user = this.userRepository.create(createUserDto)
 
-    const accountAlpca: string = await this.alpacaBrokerService.createAccountAlpaca(createUserDto)
-
+/*     const accountAlpca: string = await this.alpacaBrokerService.createAccountAlpaca(createUserDto)
+ */
     createUserDto.account = {
       ...createUserDto.account,
       identity_document: createUserDto.identity_document,
-      alpaca_account_id: accountAlpca
-     }
+/*       alpaca_account_id: accountAlpca
+ */     }
 
     try {
       await this.userRepository.save(user);
