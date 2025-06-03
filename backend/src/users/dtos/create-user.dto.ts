@@ -1,5 +1,6 @@
 import {
   IsNotEmpty,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   Matches,
@@ -47,7 +48,7 @@ export class CreateUserDto {
   @MaxLength(80, {
     message: 'El campo direccion debe contener maximo 80 caracteres',
   })
-  @IsNotEmpty({ message: 'El campo direccion es requerido' })
+  @IsOptional()
   address: string;
 
   @IsPhoneNumber('CO', { message: 'El numero de telefono es invalido' })
