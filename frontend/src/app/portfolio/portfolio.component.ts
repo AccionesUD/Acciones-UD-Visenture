@@ -7,17 +7,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { PortfolioSummary, Stock } from '../models/portfolio.model';
 import { SortOption, PerformanceFilterOption } from '../models/filters.model';
 import { PortfolioService } from '../services/portfolio.service';
 import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
+import { SellStockModalComponent } from '../shared/modals/sell-stock-modal/sell-stock-modal.component';
+import { AlertDialogComponent } from '../shared/modals/alert-dialog/alert-dialog.component';
 
 @Component({  
   selector: 'app-portfolio',
   templateUrl: './portfolio.component.html',
   styleUrls: ['./portfolio.component.css'],
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule, 
     RouterModule, 
     FormsModule, 
@@ -25,8 +27,9 @@ import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatPaginatorModule
-  ],  
+    MatPaginatorModule,
+    MatDialogModule
+  ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
   ]
@@ -67,7 +70,10 @@ export class PortfolioComponent implements OnInit {
     totalValue: 0,
     performance: 0
   };
-  constructor(private portfolioService: PortfolioService) {}  
+  constructor(
+    private portfolioService: PortfolioService,
+    private dialog: MatDialog
+  ) {}  
   
   // Variable para mantener el estado del tema
   isDarkMode = false;
@@ -233,5 +239,54 @@ export class PortfolioComponent implements OnInit {
     if (this.filtersComponent) {
       this.filtersComponent.resetAllFilters();
     }
+  }
+
+  /**
+   * Abre el modal de venta para una acción específica
+   * @param stock Acción a vender
+   */  abrirModalVenta(stock: Stock): void {
+    const dialogRef = this.dialog.open(SellStockModalComponent, {
+      width: '500px',
+      maxHeight: '90vh',
+      data: { 
+        stock, 
+        price: stock.unitValue 
+      },
+      panelClass: 'custom-dialog-container',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.success) {
+        // Si la orden se completó, mostrar mensaje de éxito
+        if (result.status === 'completed') {
+          // Mostrar un mensaje de confirmación
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Venta completada',
+              message: `Se han vendido ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
+                      Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        } else if (result.status === 'pending') {
+          // Mostrar mensaje para órdenes pendientes
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Orden registrada',
+              message: `Su orden de venta para ${result.filledQuantity || stock.quantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        }
+        
+        // Recargar datos del portafolio después de una venta exitosa
+        this.portfolioService.refreshPortfolioData();
+        // Recargar la lista de acciones
+        this.ngOnInit();
+      }
+    });
   }
 }

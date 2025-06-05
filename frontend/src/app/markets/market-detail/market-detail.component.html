@@ -218,19 +218,19 @@
                     'text-red-600 dark:text-red-400': action.change.startsWith('-')
                   }">
                   {{ action.change }}
-                </div>
-
-                <div class="col-span-2 flex justify-end space-x-2">
+                </div>                <div class="col-span-2 flex justify-end space-x-2">
                   <button
                     (click)="abrirOperacion('buy', action)"
                     class="px-3 py-1 bg-emerald-600 text-white text-sm rounded
-                          hover:bg-emerald-700 transition">
+                          hover:bg-emerald-700 transition-colors flex items-center">
+                    <mat-icon class="text-sm mr-1">add_shopping_cart</mat-icon>
                     Comprar
                   </button>
                   <button
                     (click)="abrirOperacion('sell', action)"
                     class="px-3 py-1 bg-red-600 text-white text-sm rounded
-                          hover:bg-red-700 transition">
+                          hover:bg-red-700 transition-colors flex items-center">
+                    <mat-icon class="text-sm mr-1">sell</mat-icon>
                     Vender
                   </button>
                 </div>

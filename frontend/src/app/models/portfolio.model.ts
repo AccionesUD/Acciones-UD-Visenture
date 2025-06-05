@@ -18,3 +18,22 @@ export interface PortfolioSummary {
   totalValue: number;
   performance: number;
 }
+
+export interface PortfolioPosition {
+  id: string;
+  stock: Stock;
+  quantity: number;
+  averagePrice: number;
+  totalInvested: number;
+  currentValue: number;
+}
+
+export interface Portfolio {
+  id: string;
+  userId: string;
+  balance: number;
+  positions: PortfolioPosition[];
+  totalValue: number;
+  totalInvested: number;
+  performance: number;
+}

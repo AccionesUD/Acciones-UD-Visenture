@@ -8,21 +8,26 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { SellStockModalComponent } from '../../shared/modals/sell-stock-modal/sell-stock-modal.component';
+import { AlertDialogComponent } from '../../shared/modals/alert-dialog/alert-dialog.component';
+import { PortfolioService } from '../../services/portfolio.service';
+import { Stock } from '../../models/portfolio.model';
 
 
 @Component({
   selector: 'app-market-detail',
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule,
     MatCardModule,
     MatButtonModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatListModule,
-    FormsModule
+    FormsModule,
+    MatDialogModule
   ],
   templateUrl: './market-detail.component.html',
   animations: [
@@ -62,7 +67,9 @@ export class MarketDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private marketService: MarketServiceService
+    private marketService: MarketServiceService,
+    private dialog: MatDialog,
+    private portfolioService: PortfolioService
   ) { }
 
   ngOnInit(): void {
@@ -148,9 +155,88 @@ export class MarketDetailComponent implements OnInit {
 
   goBackToMarkets(): void {
     this.router.navigate(['/markets']);
+  }  abrirOperacion(tipo: 'buy' | 'sell', accion: any) {
+    if (tipo === 'sell') {
+      // Verificar si el usuario tiene esta acción en su portafolio antes de intentar vender
+      this.portfolioService.getPortfolioStocks().subscribe(stocks => {
+        // Buscar la acción en el portafolio (usando el symbol para identificarla)
+        const stockEnPortafolio = stocks.find(s => s.symbol === accion.symbol);
+        
+        if (stockEnPortafolio && stockEnPortafolio.quantity > 0) {
+          // Si la acción existe en el portafolio, abrir el diálogo de venta
+          this.abrirModalVenta(stockEnPortafolio, accion.price);
+        } else {          // Mostrar un mensaje más detallado en un diálogo
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'No es posible vender',
+              message: `No posees acciones de ${accion.name} (${accion.symbol}) en tu portafolio. Debes comprar acciones antes de poder venderlas.`,
+              buttonText: 'Entendido'
+            }
+          });
+        }
+      });    } else {
+      // Mostrar mensaje informativo para la operación de compra (que será implementada en futuras versiones)
+      this.dialog.open(AlertDialogComponent, {
+        width: '400px',
+        data: {
+          title: 'Funcionalidad en desarrollo',
+          message: `La funcionalidad de compra estará disponible en futuras actualizaciones. Por ahora, solo se ha implementado la venta de acciones.`,
+          type: 'info',
+          buttonText: 'Entendido'
+        }
+      });
+      console.log(`Operación: ${tipo} - Acción:`, accion);
+    }
   }
-  abrirOperacion(tipo: 'buy' | 'sell', accion: any) {
-    console.log(`Operación: ${tipo} - Acción:`, accion);
+  
+  /**
+   * Abre el modal de venta con los datos de la acción seleccionada
+   */
+  abrirModalVenta(stock: Stock, currentPrice?: number): void {
+    // Si tenemos el precio actual, lo usamos; si no, usamos el valor unitario de la posición
+    const price = currentPrice || stock.unitValue;
+      const dialogRef = this.dialog.open(SellStockModalComponent, {
+      width: '500px',
+      maxHeight: '90vh',
+      data: { 
+        stock, 
+        price
+      },
+      panelClass: 'custom-dialog-container',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.success) {
+        // Si la orden se completó, mostrar mensaje de éxito
+        if (result.status === 'completed') {
+          // Mostrar un mensaje de confirmación
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Venta completada',
+              message: `Se han vendido ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
+                      Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        } else if (result.status === 'pending') {
+          // Mostrar mensaje para órdenes pendientes
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Orden registrada',
+              message: `Su orden de venta para ${result.filledQuantity || stock.quantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        }
+        
+        // Recargar datos del portafolio después de una venta exitosa
+        this.portfolioService.refreshPortfolioData();
+      }
+    });
   }
     // Formatea el precio para mostrar en la UI
   formatPrice(price: number | undefined): string {
