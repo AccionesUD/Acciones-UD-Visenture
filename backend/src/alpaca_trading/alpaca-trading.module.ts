@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { MarketsService } from './markets.service';
-import { MarketsController } from './markets.controller';
+import { AlpacaTradingService } from './alpaca-trading.service';
+import { AlpacaTradingController } from './alpaca-trading.controller';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 
@@ -9,8 +9,8 @@ import { ScheduleModule } from '@nestjs/schedule';
   imports: [HttpModule, CacheModule.register(),
     ScheduleModule.forRoot(),
   ],
-  providers: [MarketsService],
-  controllers: [MarketsController],
-  exports: [MarketsService],
+  providers: [AlpacaTradingService],
+  controllers: [AlpacaTradingController],
+  exports: [AlpacaTradingService],
 })
 export class MarketsModule {}

@@ -8,9 +8,12 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { TokensModule } from './tokens/tokens.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MarketsModule } from './markets/markets.module';
+import { MarketsModule } from './alpaca_trading/alpaca-trading.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
+import { AssetsModule } from './assets/assets.module';
+import { StocksController } from './stocks/stocks.controller';
+import { StocksModule } from './stocks/stocks.module';
 
 @Module({
   imports: [
@@ -39,8 +42,10 @@ import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
     TokensModule,
     MarketsModule,
     AlpacaBrokerModule,
+    StocksModule,
+    AssetsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, StocksController],
   providers: [AppService],
 })
 export class AppModule { }

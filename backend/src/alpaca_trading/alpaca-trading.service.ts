@@ -1,19 +1,20 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { MarketDto } from './dtos/market.dto';
-import { AlpacaAsset } from './dtos/alpaca-asset.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { Cron, Interval } from '@nestjs/schedule';
 import { AxiosResponse } from 'axios';
 import { Observable, map } from 'rxjs';
-import { MarketData } from './dtos/market-data.interface';
+import { MarketData } from 'src/stocks/dtos/market-data.interface';
+import { MarketDto } from 'src/stocks/dtos/market.dto';
+import { AlpacaAsset } from 'src/assets/dtos/alpaca-asset.dto';
+
 
 @Injectable()
-export class MarketsService {
-  private readonly logger = new Logger(MarketsService.name);
+export class AlpacaTradingService {
+  private readonly logger = new Logger(AlpacaTradingService.name);
   private readonly apiKey = process.env.ALPACA_API_KEY;
   private readonly apiSecret = process.env.ALPACA_API_SECRET;
   private readonly baseUrl = process.env.ALPACA_BASE_URL;
@@ -84,20 +85,20 @@ export class MarketsService {
   }
 
   // Consulta periódica cada 5 minutos (ajustable)
-  //@Cron('*/1 * * * *')
-  //async handleCron() {
-    //this.logger.debug('Fetching market data from Alpaca...');
-    //await this.getMarketData('AAPL,MSFT,GOOGL');
- //}
-  /*
+ // @Cron('*/1 * * * *')
+ // async handleCron() {
+ //   this.logger.debug('Fetching market data from Alpaca...');
+  //  await this.getMarketData('AAPL,MSFT,GOOGL');
+//}
+ /*
   async getMarketData(symbols: string): Promise<void> {
-    const url = `${this.baseUrl}/stocks/bars?symbols=${symbols}&timeframe=1Day`;
+    const url = `${this.configService.get<string>('ALPACA_BASE_URL')}/stocks/bars?symbols=${symbols}&timeframe=1Day`;
     
     try {
       const response = await this.httpService.get(url, {
         headers: {
-          'APCA-API-KEY-ID': this.apiKey,
-          'APCA-API-SECRET-KEY': this.apiSecret
+          'APCA-API-KEY-ID': this.configService.get<string>('ALPACA_API_KEY'),
+          'APCA-API-SECRET-KEY': this.configService.get<string>('ALPACA_SECRET_KEY')
         }
       }).toPromise();
 

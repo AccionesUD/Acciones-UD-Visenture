@@ -1,10 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { MarketsService } from './markets.service';
-import { MarketData } from './dtos/market-data.interface';
+import { AlpacaTradingService } from './alpaca-trading.service';
+import { MarketData } from 'src/stocks/dtos/market-data.interface';
 
 @Controller('market')
-export class MarketsController {
-  constructor(private readonly marketsService: MarketsService) {}
+export class AlpacaTradingController {
+  constructor(private readonly marketsService: AlpacaTradingService) {}
 
   //endPointObtenerListaDeMercados
   @Get()
@@ -12,7 +12,7 @@ export class MarketsController {
     return await this.marketsService.getMarkets();
   }
 
-  /* @Get('all')
+ /*@Get('all')
   getMarketData(): MarketData [] {
     return this.marketsService.getParsedData();
   }*/

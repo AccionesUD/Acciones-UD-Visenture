@@ -5,6 +5,7 @@ import { IsNull, Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -26,14 +27,14 @@ export class UsersService {
       throw new HttpException('El email ya esta registrado', HttpStatus.CONFLICT);
     }
 
-    createUserDto.account.identity_document = createUserDto.identity_document;
+
     const user = this.userRepository.create(createUserDto)
 
     const accountAlpca: string = await this.alpacaBrokerService.createAccountAlpaca(createUserDto)
 
     createUserDto.account = {
       ...createUserDto.account,
-      identity_document: createUserDto.identity_document,
+      user: user,
       alpaca_account_id: accountAlpca
      }
 

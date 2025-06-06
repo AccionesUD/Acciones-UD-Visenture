@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MarketsService } from './markets.service';
+import { AlpacaTradingService } from './alpaca-trading.service';
 
 describe('MarketsService', () => {
-  let service: MarketsService;
+  let service: AlpacaTradingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [MarketsService],
+      providers: [AlpacaTradingService],
     }).compile();
 
-    service = module.get<MarketsService>(MarketsService);
+    service = module.get<AlpacaTradingService>(AlpacaTradingService);
   });
 
   it('should be defined', () => {

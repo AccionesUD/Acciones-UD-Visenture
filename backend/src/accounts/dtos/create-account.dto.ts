@@ -6,6 +6,7 @@ import {
   IsStrongPassword,
   MaxLength,
 } from 'class-validator';
+import { User } from 'src/users/users.entity';
 
 export class CreateAccountDto {
   @IsNotEmpty({ message: 'El campo email es requerido' })
@@ -27,7 +28,7 @@ export class CreateAccountDto {
   commissioner_id?: number;
 
   @IsOptional()
-  identity_document: string;
+  user: User
 
   @IsOptional()
   alpaca_account_id: string
