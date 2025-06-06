@@ -8,6 +8,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthRedirectGuard } from './auth/guards/auth-redirect.guard';
 import { PortfolioComponent } from './portfolio/portfolio.component';
+import { ProfileComponent } from './profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -24,5 +25,6 @@ export const routes: Routes = [
     path: 'markets', 
     loadChildren: () => import('./markets/markets.module').then(m => m.MarketsModule),
   },
+  { path: 'profile', component: ProfileComponent,},
   { path: '**', redirectTo: 'home' }
 ];
