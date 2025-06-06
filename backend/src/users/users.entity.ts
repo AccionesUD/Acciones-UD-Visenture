@@ -22,7 +22,7 @@ export class User {
   @Column({ type: 'date', nullable: false })
   birthdate: Date;
 
-  @Column({ type: 'varchar', length: 80, nullable: true})
+  @Column({ type: 'varchar', length: 80, nullable: true })
   address: string;
 
   @Column({ type: 'varchar', length: 15, nullable: false })
