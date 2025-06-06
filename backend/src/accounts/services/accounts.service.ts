@@ -15,6 +15,7 @@ export class AccountsService {
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
+    console.log(createAccountDto)
     const hashedPassword = await this.hashingProvider.hashPassword(createAccountDto.password);
     const account = this.accountRepository.create({
       ...createAccountDto,

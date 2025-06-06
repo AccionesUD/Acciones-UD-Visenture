@@ -7,7 +7,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
+  @UseGuards(JwtAuthGuard)
   @Post()
   public createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
