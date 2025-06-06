@@ -38,6 +38,7 @@ export class AccountsService {
     try {
       const findAccount = await this.accountRepository.findOneBy({ email });
       return findAccount;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new RequestTimeoutException('Error en operacion en la BD', {
         description: 'Se presento un error en la operacion, intente luego',
@@ -57,11 +58,18 @@ export class AccountsService {
         password: hashedPassword,
         last_access: new Date(), // Actualizar último acceso
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new HttpException(
         'Error actualizando contraseña',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  // accounts.service.ts
+  async findByUserId(accountId: number): Promise<Account | null> {
+    return this.accountRepository.findOne({
+      where: { id: accountId }, // Busca por el ID autoincremental de la cuenta
+    });
   }
 }
