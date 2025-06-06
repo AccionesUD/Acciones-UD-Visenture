@@ -2,10 +2,12 @@ import { Repository } from 'typeorm';
 import { Account } from '../entities/account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAccountDto } from '../dtos/create-account.dto';
-import { HttpException, HttpStatus, RequestTimeoutException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import {
+  HttpException,
+  HttpStatus,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
-import { find } from 'rxjs';
 
 export class AccountsService {
   constructor(
@@ -15,8 +17,10 @@ export class AccountsService {
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
-    console.log(createAccountDto)
-    const hashedPassword = await this.hashingProvider.hashPassword(createAccountDto.password);
+    console.log(createAccountDto);
+    const hashedPassword = await this.hashingProvider.hashPassword(
+      createAccountDto.password,
+    );
     const account = this.accountRepository.create({
       ...createAccountDto,
       password: hashedPassword,
@@ -33,29 +37,39 @@ export class AccountsService {
   async checkExistenceAccount(email: string) {
     try {
       const findAccount = await this.accountRepository.findOneBy({ email });
-      return findAccount
+      return findAccount;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      throw new RequestTimeoutException('Error en operacion en la BD', {description: 'Se presento un error en la operacion, intente luego'})
+      throw new RequestTimeoutException('Error en operacion en la BD', {
+        description: 'Se presento un error en la operacion, intente luego',
+      });
     }
   }
 
   async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({email})
+    return this.accountRepository.findOneBy({ email });
   }
 
   async updatePassword(accountId: number, newPassword: string): Promise<void> {
     const hashedPassword = await this.hashingProvider.hashPassword(newPassword);
-    
+
     try {
       await this.accountRepository.update(accountId, {
         password: hashedPassword,
-        last_access: new Date() // Actualizar último acceso
+        last_access: new Date(), // Actualizar último acceso
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new HttpException(
         'Error actualizando contraseña',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  // accounts.service.ts
+  async findByUserId(accountId: number): Promise<Account | null> {
+    return this.accountRepository.findOne({
+      where: { id: accountId }, // Busca por el ID autoincremental de la cuenta
+    });
   }
 }

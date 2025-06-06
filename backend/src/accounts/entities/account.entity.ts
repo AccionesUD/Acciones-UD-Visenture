@@ -29,8 +29,8 @@ export class Account {
   @Column({ type: 'int', nullable: true })
   commissioner: number;
 
-  @Column({type: 'varchar', nullable: true, unique: true, length:50})
-  alpaca_account_id: string
+  @Column({ type: 'varchar', nullable: true, unique: true, length: 50 })
+  alpaca_account_id: string;
 
   @OneToOne(() => User, (user) => user.account)
   @JoinColumn({ name: 'identity_document' })
