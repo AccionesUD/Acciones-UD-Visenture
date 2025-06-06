@@ -14,6 +14,7 @@ import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
 import { AssetsModule } from './assets/assets.module';
 import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -25,9 +26,9 @@ import { StocksModule } from './stocks/stocks.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        autoLoadEntities: configService.get('DB_AUTOLOADENTITIES'),
-        synchronize: configService.get('DB_SYNCRONIZE'),
-        port: configService.get('DB_PORT'),
+        autoLoadEntities: configService.get('DB_AUTOLOADENTITIES') === 'true',
+        synchronize: configService.get('DB_SYNCRONIZE') === 'true',
+        port: configService.get('DB_PORT', 10),
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
@@ -44,8 +45,9 @@ import { StocksModule } from './stocks/stocks.module';
     AlpacaBrokerModule,
     StocksModule,
     AssetsModule,
+    OrdersModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

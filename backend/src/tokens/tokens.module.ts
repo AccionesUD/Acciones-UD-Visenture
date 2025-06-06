@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GenerateToken2MFA } from './services/generate-token.provider';
 
 @Module({
-  imports: [ConfigModule,TypeOrmModule.forFeature([tokenEmail])],
+  imports: [ConfigModule, TypeOrmModule.forFeature([tokenEmail])],
   providers: [TokensService, GenerateToken2MFA],
   exports: [TokensService, GenerateToken2MFA],
 })

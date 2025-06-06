@@ -1,12 +1,20 @@
-import { Entity } from "typeorm";
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()
-export class Stock{
-    mic: string  // codigo identificador de mercado 
-    name_market: string
-    country_region: string
-    logo: string
-    opening_time: string
-    closing_time: string
-    days_operation: string  // podria ser un enum 
+export class Stock {
+  @PrimaryColumn() // OBLIGATORIO
+  mic: string; // código identificador de mercado
+
+  @Column()
+  name_market: string;
+  @Column()
+  country_region: string;
+  @Column()
+  logo: string;
+  @Column()
+  opening_time: string;
+  @Column()
+  closing_time: string;
+  @Column()
+  days_operation: string; // puede ser enum
 }
