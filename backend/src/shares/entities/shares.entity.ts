@@ -1,12 +1,36 @@
-import { Stock } from "src/stocks/entities/stocks.entity"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Stock } from 'src/stocks/entities/stocks.entity';
 
-export class Share{
-    id: number
-    class: string
-    ticker: string
-    name_share: string
-    sector: string
-    status: boolean
-    tradable: boolean
-    stock: Stock
+@Entity()
+export class Share {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  class: string;
+
+  @Column()
+  ticker: string;
+
+  @Column()
+  name_share: string;
+
+  @Column()
+  sector: string;
+
+  @Column()
+  status: boolean;
+
+  @Column()
+  tradable: boolean;
+
+  @ManyToOne(() => Stock)
+  @JoinColumn({ name: 'mic_stock_market', referencedColumnName: 'mic' }) // OJO: usa el campo correcto
+  stock: Stock;
 }
