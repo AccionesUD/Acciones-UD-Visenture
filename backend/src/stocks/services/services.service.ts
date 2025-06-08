@@ -16,24 +16,13 @@ export class ServicesService {
   ) {}
 
   async inicializarMercados(): Promise<any> {
-    const requiredMics = [
-      { mic: 'XNYS', key: 'N', name: 'New York Stock Exchange' }, // NYSE
-      { mic: 'XNAS', key: 'Q', name: 'NASDAQ OMX' }, // NASDAQ
+    // MICs requeridos y nombres exactos según la API de Alpaca
+    const mercados = [
+      { mic: 'XNYS', nombre: 'New York Stock Exchange' },
+      { mic: 'XNAS', nombre: 'NASDAQ OMX' },
     ];
 
-    // 1. Buscar los que ya existen en la BD
-    const existentes = await this.stockRepo.find({
-      where: requiredMics.map((m) => ({ mic: m.mic })),
-      select: ['mic'],
-    });
-    const existentesMics = existentes.map((x) => x.mic);
-
-    const faltan = requiredMics.filter((m) => !existentesMics.includes(m.mic));
-    if (faltan.length === 0) {
-      return { message: 'Los mercados NYSE y NASDAQ ya existen', creados: [] };
-    }
-
-    // 2. Consultar la API Market Data Alpaca
+    // 1. Consultar la API Market Data Alpaca
     const url = 'https://data.alpaca.markets/v2/stocks/meta/exchanges';
     const apiKey = this.configService.get<string>('ALPACA_API_KEY');
     const apiSecret = this.configService.get<string>('ALPACA_SECRET_KEY');
@@ -51,28 +40,63 @@ export class ServicesService {
       throw new Error('No se pudo consultar la API de mercados de Alpaca');
     }
 
-    // 3. Verificar y registrar solo los faltantes que estén en Alpaca
-    const registrosCreados: Stock[] = [];
-    for (const falta of faltan) {
-      if (alpacaData[falta.key] && alpacaData[falta.key].includes(falta.name)) {
-        const nuevo = this.stockRepo.create({
-          mic: falta.mic,
-          name_market: alpacaData[falta.key], // Usa el nombre completo retornado
-          country_region: '', // (Agrega si puedes inferirlo)
-          logo: '',
-          opening_time: '',
-          closing_time: '',
-          days_operation: '',
-        });
+    // Enriquecimiento de datos adicionales
+    const logosMap: Record<string, string> = {
+      XNYS: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/NYSE_Logo.svg',
+      XNAS: 'https://upload.wikimedia.org/wikipedia/commons/6/6d/NASDAQ_Logo.svg',
+    };
+    const countriesMap: Record<string, string> = {
+      XNYS: 'Estados Unidos',
+      XNAS: 'Estados Unidos',
+    };
+    const openingTime = '09:30';
+    const closingTime = '16:00';
+    const daysOperation = 'Lunes a Viernes';
+
+    // 2. Procesar mercados requeridos
+    const resultado: { creado_o_actualizado: string[]; errores: string[] } = {
+      creado_o_actualizado: [],
+      errores: [],
+    };
+
+    for (const mercado of mercados) {
+      // Buscar el nombre exacto en la respuesta de Alpaca
+      const entry = Object.entries(alpacaData).find(
+        ([, nombreApi]) => nombreApi === mercado.nombre,
+      );
+
+      if (!entry) {
+        resultado.errores.push(`${mercado.mic} no existe en Alpaca`);
+        continue;
+      }
+
+      // Usamos los valores tal cual del mapping
+      const existente = await this.stockRepo.findOne({
+        where: { mic: mercado.mic },
+      });
+      const dataActualizar = {
+        mic: mercado.mic,
+        name_market: mercado.nombre,
+        country_region: countriesMap[mercado.mic],
+        logo: logosMap[mercado.mic],
+        opening_time: openingTime,
+        closing_time: closingTime,
+        days_operation: daysOperation,
+      };
+
+      if (existente) {
+        await this.stockRepo.update({ mic: mercado.mic }, dataActualizar);
+        resultado.creado_o_actualizado.push(`${mercado.mic} actualizado`);
+      } else {
+        const nuevo = this.stockRepo.create(dataActualizar);
         await this.stockRepo.save(nuevo);
-        registrosCreados.push(nuevo);
+        resultado.creado_o_actualizado.push(`${mercado.mic} creado`);
       }
     }
 
     return {
       message: 'Proceso completado',
-      creados: registrosCreados,
-      faltaban: faltan.map((x) => x.mic),
+      ...resultado,
     };
   }
 }
