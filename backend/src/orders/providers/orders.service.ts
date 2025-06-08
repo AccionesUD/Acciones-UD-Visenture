@@ -2,14 +2,42 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { SellOrderDto } from '../orders/dto/sell-stock.dto';
+import { SellOrderDto } from '../dto/sell-stock.dto';
+import { OrderDto } from '../dto/order.dto';
+import { FactoryOrder } from './factory-order.provider';
+import { AccountsService } from 'src/accounts/services/accounts.service';
+import { plainToInstance } from 'class-transformer';
+import { LimitOrderDto, MarketOrdeDto, StopOrderDto } from '../dto/orderClean.dto';
+import { typeOrder } from '../enums/type-order.enum';
+
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly factoryOrder: FactoryOrder,
+    private readonly accountsService: AccountsService
   ) {}
+
+
+  async createOrder(orderDto: OrderDto, account_id: number){
+    orderDto.account = account_id
+    let orderCleanDto 
+    switch (orderDto.type) {
+      case (typeOrder.LIMIT):
+        orderCleanDto = plainToInstance(LimitOrderDto, orderDto, {excludeExtraneousValues: true})
+        break
+      case (typeOrder.MARKET):
+        orderCleanDto = plainToInstance(MarketOrdeDto, orderDto, {excludeExtraneousValues: true})
+        break
+      case (typeOrder.STOP):
+        orderCleanDto = plainToInstance(StopOrderDto, orderDto, {excludeExtraneousValues: true})
+        break
+    }
+   return this.factoryOrder.create(orderCleanDto)
+    
+  }
 
   async placeSellOrder(
     alpacaAccountId: string,

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StocksController } from './stocks.controller';
 import { ServicesService } from './services/services.service';
-import { Stock } from './stocks.entity';
+import { Stock } from './entities/stocks.entity';
 
 @Module({
   imports: [

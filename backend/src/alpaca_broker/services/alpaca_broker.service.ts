@@ -1,7 +1,7 @@
 import { HttpService } from "@nestjs/axios";
 import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "src/users/dtos/create-user.dto";
-import { defaultAccountAlpacaEnum } from "../enums/default-values-account-alpaca.enum";
+import { defaultAccountAlpacaEnum } from "../consts/default-values-account-alpaca.const";
 import { ValidateDataAccountProvider } from "./validate_data_account.provider";
 import { Axios, AxiosResponse } from "axios";
 import { firstValueFrom, identity } from "rxjs";
