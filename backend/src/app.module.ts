@@ -50,6 +50,7 @@ import { BriefcaseModule } from './briefcases/briefcases.module';
     OrdersModule,
     SharesModule,
     BriefcaseModule,
+    StocksModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
