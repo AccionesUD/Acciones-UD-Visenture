@@ -10,5 +10,6 @@ import { Stock } from './stocks.entity';
   ],
   controllers: [StocksController],
   providers: [ServicesService],
+  exports: [TypeOrmModule],
 })
 export class StocksModule {}

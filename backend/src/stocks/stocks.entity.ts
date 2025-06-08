@@ -3,7 +3,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity()
 export class Stock {
   @PrimaryColumn() // OBLIGATORIO
-  mic: string; // código identificador de mercado
+  symbol: string; // código identificador de mercado
 
   @Column()
   name_market: string;

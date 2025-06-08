@@ -105,10 +105,10 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string) {
- //  const account = await this.accountsService.findByEmail(email);
-   // if (!account) {
-    //  throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
-//}
+    const account = await this.accountsService.findByEmail(email);
+    if (!account) {
+      throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
+    }
     const token = this.generateToken2MFA.generateToken()
     await this.tokensService.storeToken(email, token, typesToken.RECOVER_PASSWORD);
     await this.mailService.sendPasswordResetEmail(email, token);

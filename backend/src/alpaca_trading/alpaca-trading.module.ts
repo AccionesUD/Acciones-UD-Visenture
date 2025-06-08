@@ -4,13 +4,21 @@ import { AlpacaTradingService } from './alpaca-trading.service';
 import { AlpacaTradingController } from './alpaca-trading.controller';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AssetsService } from 'src/assets/services/assets.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [HttpModule, CacheModule.register(),
+  imports: [
+    HttpModule,
+    CacheModule.register(),
     ScheduleModule.forRoot(),
   ],
-  providers: [AlpacaTradingService],
+  providers: [
+    AssetsService,
+    ConfigService,
+    AlpacaTradingService,
+  ],
   controllers: [AlpacaTradingController],
   exports: [AlpacaTradingService],
 })
-export class MarketsModule {}
+export class MarketsModule { }
