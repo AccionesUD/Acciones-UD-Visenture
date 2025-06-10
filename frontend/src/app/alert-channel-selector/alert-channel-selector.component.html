@@ -1,0 +1,54 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-950 dark:via-slate-800 dark:to-slate-950 p-4">
+  <div class="bg-white dark:bg-slate-800 p-8 sm:p-10 rounded-xl shadow-2xl dark:shadow-black w-full max-w-md border dark:border-slate-700">
+    <h2 class="text-2xl font-bold text-center text-gray-800 dark:text-white mb-4">Canales de Notificación</h2>
+    <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
+      Selecciona cómo deseas recibir alertas importantes
+    </p>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="grid gap-4">
+        <label
+          *ngFor="let channel of channels"
+          [for]="channel.id"
+          class="flex items-center justify-between p-4 rounded-lg shadow-md cursor-pointer transition border bg-gray-50 dark:bg-slate-900 hover:shadow-lg hover:ring-2 hover:ring-emerald-400 dark:hover:ring-emerald-500"
+          [class.border-emerald-500]="channel.enabled"
+        >
+          <div class="flex items-center gap-4">
+            <div class="text-emerald-600 dark:text-emerald-400">
+              <ng-container [ngSwitch]="channel.id">
+                <svg *ngSwitchCase="'email'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8m18 0L12 13 3 8" />
+                </svg>
+                <svg *ngSwitchCase="'sms'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h5m-5 4h10m1 4v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4l3-3h12l3 3z" />
+                </svg>
+                <svg *ngSwitchCase="'whatsapp'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M20.52 3.48A12 12 0 003.5 20.5L2 22l3.2-.85A12 12 0 0020.52 3.48zM12 4a8 8 0 018 8 8 8 0 01-12.47 6.51l-.53.15.35-1.26a8 8 0 014.1-13.4z"/>
+                </svg>
+              </ng-container>
+            </div>
+            <span class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ channel.label }}</span>
+          </div>
+          <input
+            type="checkbox"
+            class="w-5 h-5 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 dark:bg-slate-800 dark:border-slate-700"
+            [(ngModel)]="channel.enabled"
+            [name]="channel.id"
+            [id]="channel.id"
+          />
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition duration-150"
+      >
+        Guardar Preferencias
+      </button>
+
+      <div *ngIf="saved" class="text-sm text-center text-green-700 dark:text-green-400 mt-4">
+        Preferencias guardadas correctamente ✔
+      </div>
+    </form>
+  </div>
+</div>
