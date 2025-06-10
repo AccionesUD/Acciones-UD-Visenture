@@ -74,19 +74,20 @@
 
     <!-- Chart Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Main Chart -->
-      <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-emerald-100">
-        <highcharts-chart 
-          *ngIf="!isLoading"
-          [Highcharts]="Highcharts"
-          [options]="chartOptions"
-          style="width: 100%; height: 400px; display: block;"
-        ></highcharts-chart>
-        
-        <div *ngIf="isLoading" class="h-[400px] flex items-center justify-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-        </div>
-      </div>
+  <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-emerald-100">
+    <apx-chart
+      *ngIf="!isLoading && chartOptions"
+      [series]="chartOptions?.series || []"
+      [chart]="chartOptions?.chart || { type: 'line' }"
+      [xaxis]="chartOptions?.xaxis || {}"
+      [title]="chartOptions?.title || {}"
+      style="width: 100%; height: 400px; display: block;"
+    ></apx-chart>
+
+    <div *ngIf="isLoading" class="h-[400px] flex items-center justify-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+    </div>
+  </div>
       
 
       <!-- Watchlist -->
