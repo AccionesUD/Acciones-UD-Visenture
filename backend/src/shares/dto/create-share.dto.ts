@@ -1,25 +1,10 @@
 // src/shares/dto/create-share.dto.ts
-import { IsString, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateShareDto {
+  @ApiProperty({ example: 'AAPL', description: 'Símbolo de la acción' })
+  @IsNotEmpty()
   @IsString()
-  class: string;
-
-  @IsString()
-  ticker: string;
-
-  @IsString()
-  name_share: string;
-
-  @IsString()
-  sector: string;
-
-  @IsBoolean()
-  status: boolean;
-
-  @IsBoolean()
-  tradable: boolean;
-
-  @IsString()
-  mic_stock_market: string; // mic del mercado asociado
+  symbol: string;
 }
