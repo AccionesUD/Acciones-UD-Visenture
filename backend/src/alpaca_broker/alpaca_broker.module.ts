@@ -4,11 +4,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { AlpacaBrokerService } from './services/alpaca_broker.service';
 import { ValidateDataAccountProvider } from './services/validate_data_account.provider';
+import { FundCapitalAccount } from './services/fund_capital_account.provide';
 
 
 @Module({
     exports: [AlpacaBrokerService, ValidateDataAccountProvider],
-    providers: [AlpacaBrokerService, ValidateDataAccountProvider],
+    providers: [AlpacaBrokerService, ValidateDataAccountProvider, FundCapitalAccount],
     imports: [AccountsModule, ConfigModule, HttpModule.registerAsync({
         imports: [ConfigModule],
         inject: [ConfigService],
@@ -19,6 +20,7 @@ import { ValidateDataAccountProvider } from './services/validate_data_account.pr
                 Authorization: `Basic ${configService.get('ALPACA_BROKER_CREDENTIAL_BASE64')}`
             }
         })
-    })]
+    })],
+    controllers: []
 })
 export class AlpacaBrokerModule {}

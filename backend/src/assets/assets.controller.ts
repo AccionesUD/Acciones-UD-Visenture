@@ -1,8 +1,9 @@
 import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AssetsService } from './services/assets.service';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 
+
+/*
 @Controller('assets')
 export class AssetsController {
   constructor(
@@ -28,4 +29,4 @@ export class AssetsController {
 
     return { hasEnoughShares: enough };
   }
-}
+}*/

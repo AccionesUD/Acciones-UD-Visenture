@@ -15,6 +15,8 @@ import { AssetsModule } from './assets/assets.module';
 import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
 import { OrdersModule } from './orders/orders.module';
+import { SharesModule } from './shares/shares.module';
+import { BriefcaseModule } from './briefcases/briefcases.module';
 
 @Module({
   imports: [
@@ -46,6 +48,9 @@ import { OrdersModule } from './orders/orders.module';
     StocksModule,
     AssetsModule,
     OrdersModule,
+    SharesModule,
+    BriefcaseModule,
+    StocksModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
