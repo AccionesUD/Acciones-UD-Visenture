@@ -52,6 +52,25 @@ export class DashboardComponent implements OnInit {
     this.loadChartData(this.currentSymbol);
   }
 
+   loadMarkets(): void {
+    this.alpacaService.getMarkets().subscribe({
+      next: (markets) => {
+        this.watchlistStocks = markets.map((market: any) => ({
+          symbol: market.symbol,
+          name: market.name,
+          price: market.price || 0,
+          change: 0 // Puedes calcular el cambio si tienes datos históricos
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading markets:', err);
+        // Cargar datos de respaldo si falla
+        
+      }
+    });
+  }
+
+
   loadChartData(symbol: string): void {
     this.isLoading = true;
     this.currentSymbol = symbol;
@@ -64,12 +83,16 @@ export class DashboardComponent implements OnInit {
       }, 1000);
     } else {
       const end = new Date();
-      const start = new Date(end.getTime() - 1000 * 60 * 30); // últimos 30 minutos
+      const start = new Date(end.getTime() - 7); // últimos 7 dias
 
-      this.alpacaService.getStockBars(symbol, start.toISOString(), end.toISOString(), '1Min').subscribe({
+      this.alpacaService.getStockBars(symbol, start, end, '15Min').subscribe({
         next: (data) => {
+          if (data.length > 0) {
           this.updateChart(data);
-          this.isLoading = false;
+        } else {
+          this.showNoDataState(symbol);
+        }
+        this.isLoading = false;
         },
         error: (err) => {
           console.error('Error al obtener datos reales:', err);
@@ -77,6 +100,18 @@ export class DashboardComponent implements OnInit {
         }
       });
     }
+    
+  }
+  private showNoDataState(symbol: string): void {
+  this.chartOptions = {
+    title: { text: `${symbol} - No hay datos disponibles` },
+    series: [{
+      name: 'Sin datos',
+      data: []
+    }],
+    chart: { type: 'line', height: 400 },
+    xaxis: { type: 'datetime' }
+  };
   }
 
   testMarketScenario(type: string): void {
