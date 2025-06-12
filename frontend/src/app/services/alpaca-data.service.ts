@@ -5,7 +5,7 @@ import{of} from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AlpacaDataService {
-  private baseUrl = 'https://data.alpaca.markets/v2';
+  private baseUrl = 'https://paper-api.alpaca.markets/v2';
   private headers = new HttpHeaders({
     'APCA-API-KEY-ID': 'PKQ306VP6O0TZJTI003J',
     'APCA-API-SECRET-KEY': 'dGmY0cbCLmpedASnKfdSBkAVDD2coc3N7xHLlRyw'

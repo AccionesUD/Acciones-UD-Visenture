@@ -14,7 +14,7 @@ import { PortfolioService } from '../services/portfolio.service';
 import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
 import { SellStockModalComponent } from '../shared/modals/sell-stock-modal/sell-stock-modal.component';
 import { AlertDialogComponent } from '../shared/modals/alert-dialog/alert-dialog.component';
-
+import { BuyStockModalComponent } from '../shared/modals/buy-stock-modal/buy-stock-modal.component';
 @Component({  
   selector: 'app-portfolio',
   templateUrl: './portfolio.component.html',
@@ -35,6 +35,7 @@ import { AlertDialogComponent } from '../shared/modals/alert-dialog/alert-dialog
   ]
 })
 export class PortfolioComponent implements OnInit {
+
   @ViewChild('filtersComponent') filtersComponent?: FiltersComponent;
   @ViewChild('stocksTable') stocksTable?: ElementRef;
   
@@ -240,6 +241,54 @@ export class PortfolioComponent implements OnInit {
       this.filtersComponent.resetAllFilters();
     }
   }
+  /**
+   * Abre el modal de compra para una acción específica
+   * @param stock Acción a comprar
+   */ 
+abrirModalCompra(stock: Stock): void {
+  const dialogRef = this.dialog.open(BuyStockModalComponent, {
+    width: '500px',
+    maxHeight: '90vh',
+    data: { 
+      stock, 
+      price: stock.unitValue,
+      maxQuantity: 1000 // Puedes ajustar esto según tu lógica de negocio
+    },
+    panelClass: 'custom-dialog-container',
+    autoFocus: false
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result && result.success) {
+      // Si la compra se completó, mostrar mensaje de éxito
+      if (result.status === 'completed') {
+        this.dialog.open(AlertDialogComponent, {
+          width: '400px',
+          data: { 
+            title: 'Compra completada',
+            message: `Has comprado ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
+                    Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+            buttonText: 'Aceptar'
+          }
+        });
+      } else if (result.status === 'pending') {
+        this.dialog.open(AlertDialogComponent, {
+          width: '400px',
+          data: { 
+            title: 'Orden registrada',
+            message: `Tu orden de compra para ${result.filledQuantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
+            buttonText: 'Aceptar'
+          }
+        });
+      }
+      
+      // Recargar datos del portafolio después de una compra exitosa
+      this.portfolioService.refreshPortfolioData();
+      // Recargar la lista de acciones
+      this.ngOnInit();
+    }
+  });
+}
 
   /**
    * Abre el modal de venta para una acción específica
