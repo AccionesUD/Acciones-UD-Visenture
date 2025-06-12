@@ -1,63 +1,95 @@
 <div class="min-h-screen bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950">
   <!-- Main Content -->
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6 text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-emerald-800">Panel de Trading</h1>
+      <button 
+        (click)="toggleDataMode()"
+        class="px-4 py-2 rounded-lg text-sm font-medium"
+        [class.bg-emerald-600]="!useMockData"
+        [class.bg-yellow-500]="useMockData"
+        [class.text-white]="true"
+      >
+        {{ useMockData ? 'Usar Datos Reales' : 'Usar Datos Simulados' }}
+      </button>
+    </div>
     
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Balance</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">$10,245.00</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            2.5%
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">desde ayer</span>
-        </div>
+    <!-- Controls -->
+    <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+      <div class="flex flex-wrap gap-2">
+        <button 
+          *ngFor="let stock of watchlistStocks"
+          (click)="loadChartData(stock.symbol)"
+          class="px-3 py-1 text-xs rounded-full border"
+          [class.bg-emerald-100]="currentSymbol === stock.symbol"
+          [class.border-emerald-300]="currentSymbol === stock.symbol"
+          [class.bg-gray-50]="currentSymbol !== stock.symbol"
+        >
+          {{ stock.symbol }}
+        </button>
       </div>
-      
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Operaciones hoy</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">15</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            8
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">exitosas</span>
-        </div>
-      </div>
-      
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Rentabilidad</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">+$842.50</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            7.8%
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">este mes</span>
+
+      <div *ngIf="useMockData" class="mt-4">
+        <h3 class="text-sm font-medium mb-2">Escenarios de Prueba:</h3>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            (click)="testMarketScenario('bull')"
+            class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 border border-green-200"
+          >
+            Alcista
+          </button>
+          <button 
+            (click)="testMarketScenario('bear')"
+            class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-800 border border-red-200"
+          >
+            Bajista
+          </button>
+          <button 
+            (click)="testMarketScenario('sideways')"
+            class="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-800 border border-gray-200"
+          >
+            Lateral
+          </button>
+          <button 
+            (click)="testMarketScenario('volatile')"
+            class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200"
+          >
+            Volátil
+          </button>
+          <button 
+            (click)="testMarketScenario('gap')"
+            class="px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-800 border border-purple-200"
+          >
+            Simular Gap
+          </button>
+          <button 
+            (click)="testMarketScenario('reset')"
+            class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800 border border-blue-200"
+          >
+            Normal
+          </button>
         </div>
       </div>
     </div>
-    
-    <!-- Chart and Watchlist Section -->
+
+    <!-- Chart Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Main Chart Area -->
-      <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
-        <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Gráfico principal</h2>
-        <div class="h-80 bg-emerald-50 dark:bg-slate-700 rounded flex items-center justify-center">
-          <p class="text-emerald-700 dark:text-emerald-300">El gráfico se cargará cuando haya datos disponibles</p>
-        </div>
-      </div>
+  <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-emerald-100">
+    <apx-chart
+      *ngIf="!isLoading && chartOptions"
+      [series]="chartOptions?.series || []"
+      [chart]="chartOptions?.chart || { type: 'line' }"
+      [xaxis]="chartOptions?.xaxis || {}"
+      [title]="chartOptions?.title || {}"
+      style="width: 100%; height: 400px; display: block;"
+    ></apx-chart>
+
+    <div *ngIf="isLoading" class="h-[400px] flex items-center justify-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+    </div>
+  </div>
       
+
       <!-- Watchlist -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
         <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Lista de seguimiento</h2>

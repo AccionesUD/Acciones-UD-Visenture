@@ -161,14 +161,20 @@
                       <svg *ngIf="stock.performance < 0" class="h-4 w-4 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                       </svg>
-                    </div>                    <button 
-                      (click)="abrirModalVenta(stock)"
-                      class="ml-3 px-3 py-1 bg-green-500 dark:bg-green-400 text-white text-xs rounded hover:bg-emerald-700 transition-colors flex items-center cursor-pointer">
-                      <mat-icon class="text-sm mr-1">sell</mat-icon>
-                      Vender
-                    </button>
-                  </div>
-                </td>
+                </div>  
+                  <button 
+                    (click)="abrirModalCompra(stock)"
+                    class="px-3 py-1 bg-blue-500 dark:bg-blue-400 text-white text-xs rounded hover:bg-blue-700 transition-colors flex items-center cursor-pointer">
+                    <mat-icon class="text-sm mr-1">shopping_cart</mat-icon>
+                    Comprar
+                  </button>                  
+                  <button 
+                    (click)="abrirModalVenta(stock)"
+                    class="ml-3 px-3 py-1 bg-green-500 dark:bg-green-400 text-white text-xs rounded hover:bg-emerald-700 transition-colors flex items-center cursor-pointer">
+                    <mat-icon class="text-sm mr-1">sell</mat-icon>
+                    Vender
+                  </button>
+                </div>
               </tr>
             </tbody>          
           </table>
