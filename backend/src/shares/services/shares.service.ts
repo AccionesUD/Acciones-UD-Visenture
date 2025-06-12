@@ -1,5 +1,5 @@
 // src/shares/services/services.service.ts
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Share } from '../entities/shares.entity';
@@ -37,7 +37,7 @@ export class SharesService {
 
     // Validaciones
     if (!alpacaAsset.tradable) {
-        throw new Error(`Asset ${symbol} is not tradable`);
+        throw new BadRequestException(`Asset ${symbol} is not tradable`);
     }
 
     // Mapeo de exchange a MIC
@@ -50,7 +50,7 @@ export class SharesService {
 
     const mic = exchangeToMIC[alpacaAsset.exchange];
     if (!mic) {
-        throw new Error(`Unsupported exchange: ${alpacaAsset.exchange}`);
+        throw new BadRequestException(`Unsupported exchange: ${alpacaAsset.exchange}`);
     }
 
     const stock = await this.stockRepository.findOne({ 
@@ -60,7 +60,7 @@ export class SharesService {
     });
 
     if (!stock) {
-        throw new NotFoundException(
+        throw new BadRequestException(
             ` ${mic}. Not Found ` +
             `Available exchanges: ${Object.keys(exchangeToMIC).join(', ')}`
         );
@@ -90,7 +90,7 @@ export class SharesService {
     });
 
     if (!share) {
-      throw new NotFoundException(`Share with symbol ${symbol} not found`);
+      throw new BadRequestException(`Share with symbol ${symbol} not found`);
     }
 
     return share;

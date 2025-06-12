@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -108,7 +108,7 @@ export class AlpacaTradingService {
       );
 
       if (!response.data) {
-        throw new Error(`No data received for symbol ${symbol}`);
+        throw new BadRequestException(`No data received for symbol ${symbol}`);
       }
 
       return response.data;
@@ -121,11 +121,11 @@ export class AlpacaTradingService {
 
       // Manejo específico para diferentes códigos de estado
       if (error.response?.status === 404) {
-        throw new Error(`Asset ${symbol} not found in Alpaca. Verify the symbol is correct and supported.`);
+        throw new BadRequestException(`Asset ${symbol} not found in Alpaca. Verify the symbol is correct and supported.`);
       } else if (error.response?.status === 403) {
-        throw new Error(`API credentials invalid or insufficient permissions for symbol ${symbol}`);
+        throw new BadRequestException(`API credentials invalid or insufficient permissions for symbol ${symbol}`);
       } else {
-        throw new Error(`Failed to fetch asset ${symbol}: ${error.message}`);
+        throw new BadRequestException(`Failed to fetch asset ${symbol}: ${error.message}`);
       }
     }
   }
@@ -147,7 +147,7 @@ export class AlpacaTradingService {
       );
 
       if (!response.data) {
-        throw new Error('No data received from Alpaca');
+        throw new BadRequestException('No data received from Alpaca');
       }
 
       // Mapear a solo símbolo y nombre
