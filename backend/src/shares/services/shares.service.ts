@@ -97,7 +97,7 @@ export class SharesService {
   }
 
   // Tarea programada para actualizar shares diariamente
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async updateSharesStatus() {
     this.logger.log('Starting scheduled shares update...');
 

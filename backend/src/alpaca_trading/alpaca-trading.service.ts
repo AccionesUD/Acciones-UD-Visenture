@@ -140,7 +140,7 @@ export class AlpacaTradingService {
           params: {
             status: 'active', // Solo activas
             asset_class: 'us_equity', // Solo acciones estadounidenses
-            exchange: 'XNYS,XNAS,NYSE', // Filtrar por NYSE y NASDAQ
+            exchange: 'NYSE, NASDAQ', // Filtrar por NYSE y NASDAQ
           },
           timeout: 10000,
         })
