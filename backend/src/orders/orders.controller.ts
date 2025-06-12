@@ -7,10 +7,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { OrdersService } from './orders.service';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { SellOrderDto } from './dto/sell-stock.dto';
 import { Account } from 'src/accounts/entities/account.entity';
+import { OrdersService } from './providers/orders.service';
+import { OrderDto } from './dto/order.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -48,5 +49,11 @@ export class OrdersController {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       order,
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createOrder(@Body() orderDto: OrderDto, @Request() req){
+      return this.ordersService.createOrder(orderDto, req.user.userId)
   }
 }

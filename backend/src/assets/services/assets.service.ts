@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Asset } from '../assets.entity';
 import { Repository } from 'typeorm';
-
+/*
 @Injectable()
 export class AssetsService {
   constructor(
@@ -18,11 +17,11 @@ export class AssetsService {
   ): Promise<boolean> {
     const asset = await this.assetRepository.findOne({
       where: {
-        account: { id: accountId },
-        symbol: symbol,
+        briefcase: { id: accountId },
+        ticket_share: symbol,
       },
       relations: ['account'],
     });
     return asset ? asset.currentShareQuantity >= quantity : false;
   }
-}
+}*/

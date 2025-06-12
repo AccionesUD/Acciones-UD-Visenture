@@ -14,17 +14,29 @@ import { AlpacaAsset } from 'src/assets/dtos/alpaca-asset.dto';
 
 @Injectable()
 export class AlpacaTradingService {
+  private readonly alpacaTradingUrl: string;
+  private readonly apiKey: string;
+  private readonly apiSecret: string;
   private readonly logger = new Logger(AlpacaTradingService.name);
-  private readonly apiKey = process.env.ALPACA_API_KEY;
-  private readonly apiSecret = process.env.ALPACA_API_SECRET;
-  private readonly baseUrl = process.env.ALPACA_BASE_URL;
+
   private marketData: MarketData[] = [];
 
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
-  ) { }
+  ) {
+    this.alpacaTradingUrl = this.configService.get<string>('ALPACA_BASE_URL') || 'https://paper-api.alpaca.markets';
+    this.apiKey = this.configService.get<string>('ALPACA_API_KEY') || '';
+    this.apiSecret = this.configService.get<string>('ALPACA_SECRET_KEY') || '';
+  }
+
+  private getAuthHeaders() {
+    return {
+      'APCA-API-KEY-ID': this.apiKey,
+      'APCA-API-SECRET-KEY': this.apiSecret,
+    };
+  }
 
   async getMarkets(): Promise<MarketDto[]> {
     const cacheKey = 'markets-list';
@@ -84,56 +96,75 @@ export class AlpacaTradingService {
     return markets;
   }
 
-  // Consulta periódica cada 5 minutos (ajustable)
- // @Cron('*/1 * * * *')
- // async handleCron() {
- //   this.logger.debug('Fetching market data from Alpaca...');
-  //  await this.getMarketData('AAPL,MSFT,GOOGL');
-//}
- /*
-  async getMarketData(symbols: string): Promise<void> {
-    const url = `${this.configService.get<string>('ALPACA_BASE_URL')}/stocks/bars?symbols=${symbols}&timeframe=1Day`;
-    
+  async getAssetFromAlpaca(symbol: string): Promise<any> {
+    const url = `${this.alpacaTradingUrl}/assets/${symbol}`;
+
     try {
-      const response = await this.httpService.get(url, {
-        headers: {
-          'APCA-API-KEY-ID': this.configService.get<string>('ALPACA_API_KEY'),
-          'APCA-API-SECRET-KEY': this.configService.get<string>('ALPACA_SECRET_KEY')
-        }
-      }).toPromise();
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: this.getAuthHeaders(),
+          timeout: 5000,
+        })
+      );
 
-      if (response && response.data) {
-        this.parseMarketData(response.data);
-        this.logger.log('Market data updated successfully');
-      } else {
-        this.logger.warn('No response or response data received from market data API');
+      if (!response.data) {
+        throw new Error(`No data received for symbol ${symbol}`);
       }
+
+      return response.data;
     } catch (error) {
-      this.logger.error('Error fetching market data', error.stack);
-    }
-  }
+      this.logger.error(`Error fetching asset ${symbol} from Alpaca`, {
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+        url: url
+      });
 
-  private parseMarketData(data: any): void {
-    this.marketData = [];
-    const bars = data.bars;
-
-    for (const symbol in bars) {
-      if (bars[symbol] && bars[symbol].length > 0) {
-        const bar = bars[symbol][0];
-        this.marketData.push({
-          symbol: symbol,
-          openPrice: bar.o,
-          highPrice: bar.h,
-          lowPrice: bar.l,
-          closePrice: bar.c,
-          volume: bar.v,
-          timestamp: bar.t
-        });
+      // Manejo específico para diferentes códigos de estado
+      if (error.response?.status === 404) {
+        throw new Error(`Asset ${symbol} not found in Alpaca. Verify the symbol is correct and supported.`);
+      } else if (error.response?.status === 403) {
+        throw new Error(`API credentials invalid or insufficient permissions for symbol ${symbol}`);
+      } else {
+        throw new Error(`Failed to fetch asset ${symbol}: ${error.message}`);
       }
     }
   }
 
-  getParsedData(): MarketData[] {
-    return this.marketData;
-  }*/
+  async getAllStocks(): Promise<{ symbol: string, name: string }[]> {
+    const url = `${this.alpacaTradingUrl}/assets`;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: this.getAuthHeaders(),
+          params: {
+            status: 'active', // Solo activas
+            asset_class: 'us_equity', // Solo acciones estadounidenses
+            exchange: 'NYSE, NASDAQ', // Filtrar por NYSE y NASDAQ
+          },
+          timeout: 10000,
+        })
+      );
+
+      if (!response.data) {
+        throw new Error('No data received from Alpaca');
+      }
+
+      // Mapear a solo símbolo y nombre
+      return response.data.map(asset => ({
+        symbol: asset.symbol,
+        name: asset.name,
+        market: asset.exchange, // Agregar mercado si es necesario
+      }));
+    } catch (error) {
+      this.logger.error('Error fetching assets from Alpaca',{
+        url,
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      }); 
+      throw new Error('Failed to fetch assets from Alpaca');
+    }
+  }
 }
+  

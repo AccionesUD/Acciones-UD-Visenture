@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CreateAccountAlpacaDto } from "../dtos/create-account-alpaca.dto";
 import { CreateUserDto } from "src/users/dtos/create-user.dto";
-import { defaultAccountAlpacaEnum } from "../enums/default-values-account-alpaca.enum";
+import { defaultAccountAlpacaEnum } from "../consts/default-values-account-alpaca.const";
 
 @Injectable()
 export class ValidateDataAccountProvider {
