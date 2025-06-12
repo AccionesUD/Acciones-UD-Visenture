@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
 
@@ -26,11 +26,15 @@ export class StocksService {
   }
   
   /**
-   * Inicializa los mercados en el backend (solo para admin)
+   * Inicializa los mercados en el backend (obligatorio antes de usar los mercados)
    */
   initializeMarkets(): Observable<StockInitResponse> {
     return this.http.post<StockInitResponse>(`${this.apiUrl}/inicializacion`, {}).pipe(
-      tap(response => console.log('Mercados inicializados:', response)),
+      tap(response => {
+        console.log('Mercados inicializados:', response);
+        // Después de inicializar, actualizamos la lista de mercados
+        this.getStocksFromBackend().subscribe();
+      }),
       catchError(error => {
         console.error('Error al inicializar mercados:', error);
         return throwError(() => new Error('Error al inicializar mercados'));
@@ -39,30 +43,41 @@ export class StocksService {
   }
   
   /**
-   * Obtiene todos los stocks (mercados) disponibles
+   * Obtiene todos los stocks (mercados) desde el backend sin verificar inicialización
    */
-  getStocks(): Observable<Stock[]> {
-    // Si tenemos datos en caché, los devolvemos primero mientras actualizamos
-    if (this.stocksCache.length > 0) {
-      this.stocksSubject.next(this.stocksCache);
-    }
-    
+  private getStocksFromBackend(): Observable<Stock[]> {
     return this.http.get<Stock[]>(this.apiUrl).pipe(
       tap(stocks => {
+        console.log(`Obtenidos ${stocks.length} mercados`);
         this.stocksCache = stocks;
         this.stocksSubject.next(stocks);
       }),
       catchError(error => {
-        console.error('Error al obtener stocks (mercados):', error);
-        
-        // Si hay error pero tenemos caché, usamos eso
+        console.error('Error al obtener mercados:', error);
         if (this.stocksCache.length > 0) {
-          return of(this.stocksCache);
+          return of(this.stocksCache); // Devolvemos la caché si hay error
         }
-        
-        // Si no tenemos caché, generamos datos de prueba
-        return this.getFallbackStocks();
+        return throwError(() => new Error('Error al obtener mercados'));
       })
+    );
+  }
+  
+  /**
+   * Obtiene todos los stocks (mercados) disponibles
+   * Si no hay datos en caché, primero verifica que los mercados estén inicializados
+   */
+  getStocks(): Observable<Stock[]> {
+    // Si tenemos datos en caché, los devolvemos primero mientras actualizamos en segundo plano
+    if (this.stocksCache.length > 0) {
+      this.stocksSubject.next(this.stocksCache);
+      // Actualizamos en segundo plano
+      this.getStocksFromBackend().subscribe();
+      return of(this.stocksCache);
+    }
+    
+    // Si no hay datos en caché, primero inicializamos y luego obtenemos los stocks
+    return this.initializeMarkets().pipe(
+      switchMap(() => this.getStocksFromBackend())
     );
   }
   
@@ -85,10 +100,10 @@ export class StocksService {
           return this.getStocks().pipe(
             map(stocks => {
               const foundStock = stocks.find(s => s.mic === mic);
-              if (foundStock) {
-                return foundStock;
+              if (!foundStock) {
+                throw new Error(`No se encontró el mercado con MIC: ${mic}`);
               }
-              throw new Error(`No se encontró el mercado con MIC ${mic}`);
+              return foundStock;
             })
           );
         }
@@ -99,36 +114,22 @@ export class StocksService {
   }
   
   /**
-   * Obtiene el estado actual del reloj de mercado
+   * Obtiene el estado actual del reloj del mercado
    */
   getMarketClock(): Observable<MarketClock> {
     return this.http.get<MarketClock>(`${this.apiUrl}/clock`).pipe(
       catchError(error => {
-        console.error('Error al obtener reloj del mercado:', error);
-        
-        // Valores por defecto si falla la llamada
-        const now = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(9, 30, 0, 0);
-        
-        const fallbackClock: MarketClock = {
-          timestamp: now.toISOString(),
-          is_open: false,
-          next_open: tomorrow.toISOString(),
-          next_close: tomorrow.toISOString()
-        };
-        
-        return of(fallbackClock);
+        console.error('Error al obtener el reloj del mercado:', error);
+        return throwError(() => new Error('Error al obtener el estado del mercado'));
       })
     );
   }
   
   /**
-   * Datos de respaldo si el backend no está disponible
+   * Datos de prueba en caso de error al obtener stocks
    */
   private getFallbackStocks(): Observable<Stock[]> {
-    console.warn('Usando datos de respaldo para stocks (mercados)');
+    console.log('Usando datos de fallback para stocks');
     
     const fallbackStocks: Stock[] = [
       {
@@ -138,33 +139,47 @@ export class StocksService {
         opening_time: '09:30',
         closing_time: '16:00',
         days_operation: 'Lunes a Viernes',
+        logo: 'https://example.com/nyse-logo.png',
         status: 'active',
-        is_open: false
+        is_open: this.isMarketOpen(9, 30, 16, 0)
       },
       {
-        mic: 'XMAD',
-        name_market: 'Bolsa de Madrid',
-        country_region: 'España',
-        opening_time: '09:00',
-        closing_time: '17:30',
+        mic: 'XNAS',
+        name_market: 'NASDAQ',
+        country_region: 'Estados Unidos',
+        opening_time: '09:30',
+        closing_time: '16:00',
         days_operation: 'Lunes a Viernes',
+        logo: 'https://example.com/nasdaq-logo.png',
         status: 'active',
-        is_open: false
-      },
-      {
-        mic: 'XLON',
-        name_market: 'London Stock Exchange',
-        country_region: 'Reino Unido',
-        opening_time: '08:00',
-        closing_time: '16:30',
-        days_operation: 'Lunes a Viernes',
-        status: 'active',
-        is_open: false
+        is_open: this.isMarketOpen(9, 30, 16, 0)
       }
     ];
     
     this.stocksCache = fallbackStocks;
     this.stocksSubject.next(fallbackStocks);
+    
     return of(fallbackStocks);
+  }
+  
+  /**
+   * Calcula si un mercado está abierto en este momento
+   */
+  private isMarketOpen(openHour: number, openMinute: number, closeHour: number, closeMinute: number): boolean {
+    const now = new Date();
+    const day = now.getDay();
+    
+    // Verificar si es fin de semana (0 = Domingo, 6 = Sábado)
+    if (day === 0 || day === 6) {
+      return false;
+    }
+    
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTimeInMinutes = hours * 60 + minutes;
+    const openTimeInMinutes = openHour * 60 + openMinute;
+    const closeTimeInMinutes = closeHour * 60 + closeMinute;
+    
+    return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
   }
 }

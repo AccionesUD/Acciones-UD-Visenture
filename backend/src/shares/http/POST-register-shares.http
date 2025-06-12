@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/shares/new/
+Content-Type: application/json
+
+{
+    "symbol": "AAPL"
+}
+
+# "symbol": "GOOGL", "symbol": "AMZN", "symbol": "META"
+# "symbol": "MSFT", "symbol": "NVDA", "symbol": "TSLA"
+# "symbol": "JNJ", "symbol": "JPM", "symbol": "XOM"

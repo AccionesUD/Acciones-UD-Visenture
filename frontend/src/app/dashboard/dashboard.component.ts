@@ -81,19 +81,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoadingWatchlist = true;
     this.isLoadingTransactions = true;
     
-    // Cargar mercados (stocks)
+    // Primero inicializamos los mercados y luego cargamos los datos
     this.stocksService.getStocks().subscribe({
       next: (stocks) => {
         this.availableStocks = stocks;
         console.log('Mercados cargados en dashboard:', stocks.length);
+        
+        // Una vez que los mercados están cargados, podemos cargar las acciones
+        if (stocks.length > 0) {
+          this.loadWatchlistShares();
+        }
       },
-      error: (err) => console.error('Error al cargar mercados en dashboard:', err)
+      error: (err) => {
+        console.error('Error al cargar mercados en dashboard:', err);
+        // Intentamos cargar watchlist de todas formas
+        this.loadWatchlistShares();
+      }
     });
     
-    // Cargar watchlist (acciones favoritas o destacadas)
-    this.loadWatchlistShares();
-    
-    // Cargar datos del gráfico para la acción actual
+    // Cargar datos del gráfico para la acción actual (independiente de los mercados)
     this.loadChartData(this.currentSymbol);
     
     // Cargar transacciones recientes
@@ -111,21 +117,54 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadWatchlistShares(): void {
     this.isLoadingWatchlist = true;
     
-    // En una implementación real, obtendríamos esto de un servicio de watchlist
-    // Por ahora, vamos a cargar algunas acciones populares
+    // Si tenemos mercados cargados, obtenemos acciones del mercado XNAS (NASDAQ)
+    if (this.availableStocks.length > 0) {
+      const nasdaqStock = this.availableStocks.find(stock => stock.mic === 'XNAS');
+      if (nasdaqStock) {
+        this.sharesService.getSharesByMarket(nasdaqStock.mic).subscribe({
+          next: (shares) => {
+            console.log(`Obtenidas ${shares.length} acciones para el dashboard`);
+            
+            // Tomamos hasta 5 acciones para el watchlist
+            const watchlistData = shares.slice(0, 5).map(share => ({
+              symbol: share.ticker,
+              name: share.name_share,
+              price: Math.random() * 1000 + 50, // Simular precio actual
+              change: (Math.random() * 10 - 5).toFixed(2), // Simular cambio
+              isPositive: Math.random() > 0.5 // Simular dirección
+            }));
+            
+            this.watchlistShares = watchlistData;
+            this.isLoadingWatchlist = false;
+          },
+          error: (err) => {
+            console.error('Error al obtener acciones para el dashboard:', err);
+            this.loadFallbackWatchlist();
+          }
+        });
+        return;
+      }
+    }
+    
+    // Si no podemos obtener acciones del servicio, cargamos datos predefinidos
+    this.loadFallbackWatchlist();
+  }
+  
+  /**
+   * Carga datos de watchlist predefinidos en caso de error
+   */
+  loadFallbackWatchlist(): void {
     const popularSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA'];
     
-    // Simulamos una carga de datos
-    setTimeout(() => {
-      this.watchlistShares = popularSymbols.map(symbol => ({
-        symbol,
-        name: this.getCompanyName(symbol),
-        price: Math.random() * 1000 + 50, // Precio aleatorio entre 50 y 1050
-        change: (Math.random() * 10 - 5).toFixed(2), // Cambio entre -5% y +5%
-        isPositive: Math.random() > 0.5 // 50% positivo, 50% negativo
-      }));
-      this.isLoadingWatchlist = false;
-    }, 1000);
+    this.watchlistShares = popularSymbols.map(symbol => ({
+      symbol,
+      name: this.getCompanyName(symbol),
+      price: Math.random() * 1000 + 50, // Precio aleatorio entre 50 y 1050
+      change: (Math.random() * 10 - 5).toFixed(2), // Cambio entre -5% y +5%
+      isPositive: Math.random() > 0.5 // 50% positivo, 50% negativo
+    }));
+    
+    this.isLoadingWatchlist = false;
   }
   
   loadChartData(symbol: string): void {
@@ -137,31 +176,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
     startDate.setDate(endDate.getDate() - 7); // Datos de la última semana
     
     if (this.useMockData) {
-      // Usar datos simulados si estamos en modo prueba
-      this.mockService.getStockData(symbol).subscribe(data => {
-        this.updateChartWithData(data, symbol);
-        this.isLoading = false;
-      });
+      // Usar datos simulados
+      const mockData = this.mockService.getMockData(symbol);
+      this.updateChartWithData(mockData, symbol);
     } else {
-      // Usar Alpaca API para datos reales
-      this.alpacaService.getShareBars(symbol, startDate, endDate).subscribe({
-        next: (data) => {
-          if (data && data.length > 0) {
-            this.updateChartWithData(data, symbol);
-          } else {
-            console.warn(`No hay datos para ${symbol}, usando datos simulados`);
-            this.useMockData = true;
-            this.loadChartData(symbol); // Recargar con datos simulados
+      // Usar datos reales de Alpaca
+      this.alpacaService.getShareBars(symbol, startDate, endDate, '1D')
+        .subscribe({
+          next: (data) => {
+            if (data && data.length > 0) {
+              this.updateChartWithData(data, symbol);
+            } else {
+              console.warn(`No hay datos disponibles para ${symbol}, usando datos simulados`);
+              const mockData = this.mockService.getMockData(symbol);
+              this.updateChartWithData(mockData, symbol);
+            }
+          },
+          error: (error) => {
+            console.error(`Error al obtener datos para ${symbol}:`, error);
+            // En caso de error, usamos datos simulados
+            const mockData = this.mockService.getMockData(symbol);
+            this.updateChartWithData(mockData, symbol);
           }
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error al cargar datos del gráfico:', error);
-          this.useMockData = true;
-          this.loadChartData(symbol); // Recargar con datos simulados
-          this.isLoading = false;
-        }
-      });
+        });
+    }
+  }
+  
+  // Este método se utiliza para cambiar el símbolo de la acción en el gráfico
+  changeSymbol(symbol: string): void {
+    if (symbol !== this.currentSymbol) {
+      console.log(`Cambiando símbolo a: ${symbol}`);
+      this.loadChartData(symbol);
     }
   }
   
@@ -172,79 +217,83 @@ export class DashboardComponent implements OnInit, OnDestroy {
         data: data
       }],
       chart: {
-        height: 350,
         type: 'line',
-        zoom: {
-          enabled: true
-        },
-        toolbar: {
-          show: true
-        },
+        height: 350,
         animations: {
           enabled: true
         },
+        toolbar: {
+          show: false
+        }
       },
       title: {
-        text: `Precio de ${symbol} - ${this.getCompanyName(symbol)}`
+        text: `${symbol} - Evolución de Precio`,
+        align: 'left'
       },
       xaxis: {
         type: 'datetime'
       }
     };
+    
+    this.isLoading = false;
   }
-  
+
   loadTransactions(): void {
     this.isLoadingTransactions = true;
     
-    // En una implementación real, obtendríamos esto de un servicio de transacciones
-    // Por ahora, simulamos transacciones
+    // Simulamos una carga de datos de transacciones
     setTimeout(() => {
       this.transactions = [
-        {
-          id: 'TX123456',
-          type: 'buy',
+        { 
+          id: 'TX100523', 
+          type: 'buy', 
           symbol: 'AAPL',
-          shares: 5,
-          price: 178.42,
-          total: 892.10,
-          date: new Date(Date.now() - 86400000) // Ayer
+          shares: 10,
+          price: 185.92,
+          total: 1859.20,
+          date: '2025-06-10'
         },
-        {
-          id: 'TX123457',
-          type: 'sell',
+        { 
+          id: 'TX100524', 
+          type: 'sell', 
           symbol: 'MSFT',
-          shares: 2,
-          price: 336.21,
-          total: 672.42,
-          date: new Date(Date.now() - 172800000) // Hace 2 días
+          shares: 5,
+          price: 337.50,
+          total: 1687.50,
+          date: '2025-06-09'
         },
-        {
-          id: 'TX123458',
-          type: 'buy',
+        { 
+          id: 'TX100525', 
+          type: 'buy', 
           symbol: 'GOOGL',
-          shares: 1,
-          price: 125.86,
-          total: 125.86,
-          date: new Date(Date.now() - 259200000) // Hace 3 días
+          shares: 3,
+          price: 131.86,
+          total: 395.58,
+          date: '2025-06-08'
         }
       ];
       this.isLoadingTransactions = false;
     }, 1200);
   }
   
-
-  
-  changeSymbol(symbol: string): void {
-    if (symbol !== this.currentSymbol) {
-      this.loadChartData(symbol);
-    }
+  initializeChart(): void {
+    this.chartOptions = {
+      series: [{
+        name: "Cargando...",
+        data: []
+      }],
+      chart: {
+        height: 350,
+        type: "line"
+      },
+      title: {
+        text: "Cargando datos..."
+      },
+      xaxis: {
+        type: 'datetime'
+      }
+    };
   }
-  
-  getStatusClass(value: number): string {
-    return value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
-  }
-  
-
   
   getCompanyName(symbol: string): string {
     const companies: { [key: string]: string } = {
@@ -263,22 +312,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return companies[symbol] || 'Desconocida';
   }
   
-  private initializeChart(): void {
-    this.chartOptions = {
-      series: [{
-        name: "Loading...",
-        data: []
-      }],
-      chart: {
-        height: 350,
-        type: "line"
-      },
-      title: {
-        text: "Cargando datos..."
-      },
-      xaxis: {
-        type: 'datetime'
-      }
-    };
+  getStatusClass(value: number): string {
+    return value >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
   }
 }

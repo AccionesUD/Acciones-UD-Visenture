@@ -99,4 +99,8 @@ export class ServicesService {
       ...resultado,
     };
   }
+
+  async findAll(): Promise<Stock[]> {
+    return this.stockRepo.find();
+  }
 }

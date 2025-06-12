@@ -12,8 +12,6 @@ export class NewsService {
 
   /**
    * Obtiene las últimas noticias financieras
-   * @param symbols Símbolos específicos para filtrar (opcional)
-   * @param limit Cantidad máxima de noticias a devolver
    */
   getLatestNews(symbols?: string[], limit: number = 5): Observable<AlpacaNews[]> {
     const params: GetNewsParams = {
@@ -43,8 +41,6 @@ export class NewsService {
 
   /**
    * Obtiene noticias específicas para una acción
-   * @param symbol Símbolo de la acción
-   * @param limit Cantidad máxima de noticias a devolver
    */
   getNewsForSymbol(symbol: string, limit: number = 5): Observable<AlpacaNews[]> {
     return this.getLatestNews([symbol], limit);

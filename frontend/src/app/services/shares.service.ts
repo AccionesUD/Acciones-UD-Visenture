@@ -42,6 +42,7 @@ export class SharesService {
   
   /**
    * Obtiene acciones por mercado (Stock MIC)
+   * Primero intenta obtener del caché, si no está, hace la petición al backend
    */
   getSharesByMarket(stockMic: string): Observable<Share[]> {
     // Verificamos si tenemos datos en caché para este mercado
@@ -49,10 +50,10 @@ export class SharesService {
       return of(this.sharesCache.get(stockMic) || []);
     }
     
-    // Si no hay en caché, hacemos la solicitud al backend
-    const params = new HttpParams().set('mic', stockMic);
-    
-    return this.http.get<Share[]>(`${this.apiUrl}/market/${stockMic}`, { params }).pipe(
+    // Si no hay en caché, hacemos la solicitud al backend para obtener todas las acciones
+    // y luego filtramos por el mercado que nos interesa
+    return this.getAllShares().pipe(
+      map(shares => shares.filter(share => share.mic_stock_market === stockMic)),
       tap(shares => {
         console.log(`Obtenidas ${shares.length} acciones para el mercado ${stockMic}`);
         // Guardamos en caché
