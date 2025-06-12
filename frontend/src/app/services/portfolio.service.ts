@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { Portfolio, PortfolioSummary, Stock, PortfolioPosition } from "../models/portfolio.model";
+import { Portfolio, PortfolioSummary, PortfolioShare, PortfolioPosition } from "../models/portfolio.model";
 
 @Injectable({
   providedIn: 'root'
@@ -16,335 +16,448 @@ export class PortfolioService {
   portfolio$ = this.portfolioSubject.asObservable();
 
   // Datos de ejemplo para desarrollo
-  private mockStocks: Stock[] = [
+  private mockShares: PortfolioShare[] = [
     {
       id: '1',
-      company: 'Apple',
-      symbol: 'AAPL',
+      companyName: 'Apple',
+      ticker: 'AAPL',
       quantity: 10,
       unitValue: 185,
-      marketName: 'NASDAQ',
-      marketId: 'nasdaq',
+      stockName: 'NASDAQ',
+      stockMic: 'XNAS',
       totalValue: 10 * 185,
       performance: 4.5,
       color: 'red'
     },
     {
       id: '2',
-      company: 'Microsoft',
-      symbol: 'MSFT',
+      companyName: 'Microsoft',
+      ticker: 'MSFT',
       quantity: 15,
       unitValue: 330,
-      marketName: 'NASDAQ',
-      marketId: 'nasdaq',
+      stockName: 'NASDAQ',
+      stockMic: 'XNAS',
       totalValue: 15 * 330,
       performance: 3.2,
       color: 'green'
     },
     {
       id: '3',
-      company: 'Bank of America',
-      symbol: 'BAC',
+      companyName: 'Bank of America',
+      ticker: 'BAC',
       quantity: 20,
       unitValue: 35,
-      marketName: 'NYSE',
-      marketId: 'nyse',
+      stockName: 'NYSE',
+      stockMic: 'XNYS',
       totalValue: 20 * 35,
-      performance: 1.8,
-      color: 'purple'
-    },
-    {
-      id: '4',
-      company: 'Ecopetrol',
-      symbol: 'ECOPETROL',
-      quantity: 150,
-      unitValue: 2450,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 150 * 2450,
-      performance: 5.2,
-      color: 'emerald'
-    },
-    {
-      id: '5',
-      company: 'Bancolombia',
-      symbol: 'BCOLOMBIA',
-      quantity: 80,
-      unitValue: 32100,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 80 * 32100,
-      performance: 8.7,
+      performance: -1.2,
       color: 'blue'
     },
     {
-      id: '6',
-      company: 'Avianca',
-      symbol: 'AVIANCA',
-      quantity: 200,
-      unitValue: 1890,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 200 * 1890,
-      performance: -2.3,
-      color: 'yellow'
+      id: '4',
+      companyName: 'Tesla',
+      ticker: 'TSLA',
+      quantity: 5,
+      unitValue: 256,
+      stockName: 'NASDAQ',
+      stockMic: 'XNAS',
+      totalValue: 5 * 256,
+      performance: 7.8,
+      color: 'purple'
+    },
+    {
+      id: '5',
+      companyName: 'Amazon',
+      ticker: 'AMZN',
+      quantity: 8,
+      unitValue: 135,
+      stockName: 'NASDAQ',
+      stockMic: 'XNAS',
+      totalValue: 8 * 135,
+      performance: 2.3,
+      color: 'orange'
     }
   ];
 
   constructor(private http: HttpClient) {
-    // Inicializar el portafolio con datos simulados
-    this.refreshPortfolioData();
+    // Cargamos datos iniciales
+    this.loadInitialData();
   }
 
   /**
-   * Actualiza los datos del portafolio desde el backend
-   * @param sellData Datos de la venta para actualizar el portfolio si se proporciona
+   * Carga los datos iniciales del portafolio
    */
-  refreshPortfolioData(sellData?: { stockId: string, quantity: number }): void {
-    // En producción, esto llamaría al backend
-    // this.http.get<Portfolio>(`${this.apiUrl}/portfolio`).subscribe(...)
-    
-    // Si tenemos datos de venta, actualizamos el portafolio en memoria
-    if (sellData) {
-      const stockIndex = this.mockStocks.findIndex(stock => stock.id === sellData.stockId);
-      if (stockIndex >= 0) {
-        // Actualizar la cantidad después de la venta
-        this.mockStocks[stockIndex].quantity -= sellData.quantity;
-        
-        // Si la cantidad llega a 0, consideramos eliminar la acción del portfolio
-        if (this.mockStocks[stockIndex].quantity <= 0) {
-          this.mockStocks.splice(stockIndex, 1);
-        } else {
-          // Recalcular el valor total
-          this.mockStocks[stockIndex].totalValue = 
-            this.mockStocks[stockIndex].quantity * this.mockStocks[stockIndex].unitValue;
-        }
+  private loadInitialData(): void {
+    // Primero intentamos cargar desde el backend
+    this.getUserPortfolio().subscribe({
+      next: (portfolio) => {
+        this.portfolioSubject.next(portfolio);
+      },
+      error: (err) => {
+        console.error('Error al cargar portafolio del backend:', err);
+        // Si hay error, usamos datos de prueba
+        this.portfolioSubject.next(this.generateMockPortfolio());
       }
-    }
-    
-    // Simulación de datos para desarrollo
-    const mockPortfolio: Portfolio = {
-      id: '1',
-      userId: 'user123',
-      balance: 5000000,
-      positions: this.mockStocks.map(stock => ({
-        id: `pos-${stock.id}`,
-        stock: stock,
-        quantity: stock.quantity,
-        averagePrice: stock.unitValue,
-        totalInvested: stock.totalValue,
-        currentValue: stock.totalValue * (1 + stock.performance/100)
-      })),
-      totalValue: this.mockStocks.reduce((acc, stock) => acc + stock.totalValue, 0),
-      totalInvested: this.mockStocks.reduce((acc, stock) => acc + stock.totalValue, 0),
-      performance: this.calculateAveragePerformance(this.mockStocks)
-    };
-    
-    this.portfolioSubject.next(mockPortfolio);
-  }
-
-  getPortfolioStocks(): Observable<Stock[]> {
-    // En producción, descomentar esta línea y comentar el retorno del mock
-    // return this.http.get<Stock[]>(`${this.apiUrl}/portfolio/stocks`)
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>('getPortfolioStocks', []))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.mockStocks);
-  }
-
-  getPortfolioSummary(): Observable<PortfolioSummary> {
-    // En producción:
-    // return this.http.get<PortfolioSummary>(`${this.apiUrl}/portfolio/summary`)
-    //   .pipe(
-    //     catchError(this.handleError<PortfolioSummary>('getPortfolioSummary', this.calculateMockSummary()))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.calculateMockSummary());
-  }
-
-  getStocksByMarket(marketId: string): Observable<Stock[]> {
-    // En producción:
-    // return this.http.get<Stock[]>(`${this.apiUrl}/portfolio/stocks/markets/${marketId}`)
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>(`getStocksByMarket id=${marketId}`, []))
-    //   );
-    
-    // Mock para desarrollo
-    if (marketId === 'ALL') {
-      return of(this.mockStocks);
-    } else {
-      return of(this.mockStocks.filter(stock => stock.marketId === marketId.toLowerCase()));
-    }
-  }
-
-  getStocksByPerformance(min?: number, max?: number): Observable<Stock[]> {
-    // En producción:
-    // Construir URL con parámetros opcionales
-    // let url = `${this.apiUrl}/portfolio/stocks/performance`;
-    // let params = new HttpParams();
-    // if (min !== undefined) params = params.append('min', min.toString());
-    // if (max !== undefined) params = params.append('max', max.toString());
-    // return this.http.get<Stock[]>(url, { params })
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>('getStocksByPerformance', []))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.mockStocks.filter(stock => {
-      if (min !== undefined && max !== undefined) {
-        return stock.performance >= min && stock.performance <= max;
-      } else if (min !== undefined) {
-        return stock.performance >= min;
-      } else if (max !== undefined) {
-        return stock.performance <= max;
-      }
-      return true;
-    }));
+    });
   }
 
   /**
-   * Obtiene el portafolio completo del usuario
+   * Obtiene el portafolio del usuario desde el backend
    */
   getUserPortfolio(): Observable<Portfolio> {
-    // Si ya tenemos el portafolio cargado, lo retornamos
-    if (this.portfolioSubject.value) {
-      return of(this.portfolioSubject.value);
-    }
-    
-    // En producción, esto llamaría al backend
-    // return this.http.get<Portfolio>(`${this.apiUrl}/portfolio`).pipe(
-    //  tap(portfolio => this.portfolioSubject.next(portfolio))
-    // );
-    
-    // Simulación para desarrollo
-    this.refreshPortfolioData();
-    return of(this.portfolioSubject.value!);
-  }
-  
-  private calculateMockSummary(): PortfolioSummary {
-    const totalInvested = this.mockStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
-    const totalEarnings = this.mockStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
-    
-    return {
-      totalInvested: totalInvested,
-      totalEarnings: totalEarnings,
-      totalStocks: this.mockStocks.reduce((sum, stock) => sum + stock.quantity, 0),
-      totalValue: totalInvested + totalEarnings,
-      performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
-    };
-  }
-
-  /**
-   * Calcula el rendimiento promedio en base a las acciones
-   */
-  private calculateAveragePerformance(stocks: Stock[]): number {
-    const totalValue = stocks.reduce((acc, stock) => acc + stock.totalValue, 0);
-    const weightedPerformance = stocks.reduce((acc, stock) => {
-      const weight = stock.totalValue / totalValue;
-      return acc + (stock.performance * weight);
-    }, 0);
-    
-    return weightedPerformance;
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed: ${error.message}`);
-      
-      // Devuelve un resultado predeterminado para mantener la app funcionando
-      return of(result as T);
-    };
-  }
-
-  /**
-   * Actualiza el saldo del usuario después de una transacción
-   * @param amount Cantidad a añadir al saldo (positivo para ingresos, negativo para gastos)
-   * @returns Observable con el nuevo saldo
-   */
-  updateUserBalance(amount: number): Observable<number> {
-    // En producción, esto se haría con una llamada al backend
-    // return this.http.post<{balance: number}>(`${this.apiUrl}/portfolio/balance/update`, {amount})
-    //   .pipe(map(response => response.balance));
-    
-    // Versión mock para desarrollo
-    return this.getUserPortfolio().pipe(
-      map(portfolio => {
-        // Actualizamos el saldo
-        const newBalance = portfolio.balance + amount;
-        
-        // Simulamos persistencia local (para desarrollo)
-        // En un entorno de producción, esto no sería necesario ya que vendría del backend
-        portfolio.balance = newBalance;
-        
-        console.log(`Balance actualizado: Anterior: ${portfolio.balance - amount}, Nuevo: ${newBalance}, Cambio: ${amount > 0 ? '+' : ''}${amount}`);
-        
-        return newBalance;
-      }),
-      catchError(this.handleError<number>('updateUserBalance', 0))
+    const userId = this.getUserId();
+    return this.http.get<Portfolio>(`${this.apiUrl}/portfolio/${userId}`).pipe(
+      tap((portfolio) => console.log('Portafolio cargado:', portfolio)),
+      catchError((error) => {
+        console.error('Error al obtener portafolio:', error);
+        return of(this.generateMockPortfolio());
+      })
     );
   }
+
   /**
-   * Actualiza el portfolio después de una venta de acciones
-   * @param stockId ID o símbolo de la acción vendida
-   * @param quantity Cantidad de acciones vendidas
+   * Obtiene el resumen del portafolio del usuario
    */
-  updatePortfolioAfterSell(stockId: string, quantity: number): void {
-    if (this.portfolioSubject.value) {
-      const portfolio = { ...this.portfolioSubject.value };
-      
-      // Actualizar las acciones en el array mock
-      this.mockStocks = this.mockStocks.map(stock => {
-        if (stock.id === stockId || stock.symbol === stockId) {
-          const newQuantity = stock.quantity - quantity;
-          
-          // Si la cantidad llega a cero, podríamos remover la acción del portfolio
-          if (newQuantity <= 0) {
-            return null; // Lo filtraremos después
-          }
-          
-          // Actualizamos la cantidad y el valor total
+  getPortfolioSummary(): Observable<PortfolioSummary> {
+    const portfolio = this.portfolioSubject.getValue();
+    
+    if (portfolio) {
+      // Si ya tenemos el portafolio, extraemos el resumen
+      const summary: PortfolioSummary = {
+        totalInvested: portfolio.totalInvested,
+        totalEarnings: portfolio.totalValue - portfolio.totalInvested,
+        totalShares: portfolio.positions.length,
+        totalValue: portfolio.totalValue,
+        performance: portfolio.performance
+      };
+      return of(summary);
+    } else {
+      // Si no tenemos portafolio, lo cargamos primero
+      return this.getUserPortfolio().pipe(
+        map((portfolio) => {
           return {
-            ...stock,
-            quantity: newQuantity,
-            totalValue: newQuantity * stock.unitValue
+            totalInvested: portfolio.totalInvested,
+            totalEarnings: portfolio.totalValue - portfolio.totalInvested,
+            totalShares: portfolio.positions.length,
+            totalValue: portfolio.totalValue,
+            performance: portfolio.performance
           };
-        }
-        return stock;
-      }).filter(Boolean) as Stock[]; // Filtra las acciones con cantidad cero
-
-      // Actualizar las posiciones del portfolio
-      portfolio.positions = portfolio.positions.map(position => {
-        if (position.stock.id === stockId || position.stock.symbol === stockId) {
-          const newQuantity = position.quantity - quantity;
-          
-          // Si la cantidad llega a cero, podríamos remover la posición
-          if (newQuantity <= 0) {
-            return null;
-          }
-          
-          // Actualizamos la cantidad y los valores
-          return {
-            ...position,
-            quantity: newQuantity,
-            currentValue: newQuantity * position.stock.unitValue
-          };
-        }
-        return position;
-      }).filter(Boolean) as PortfolioPosition[];
-
-      // Recalcular los totales del portfolio
-      portfolio.totalValue = portfolio.positions.reduce((sum, pos) => sum + pos.currentValue, 0);
-      portfolio.totalInvested = portfolio.positions.reduce((sum, pos) => sum + pos.totalInvested, 0);
-      portfolio.performance = portfolio.totalInvested > 0 ? 
-        ((portfolio.totalValue - portfolio.totalInvested) / portfolio.totalInvested) * 100 : 0;
-      
-      // Actualizar el subject
-      this.portfolioSubject.next(portfolio);
-      
-      console.log('Portfolio actualizado después de venta:', portfolio);
+        })
+      );
     }
+  }
+
+  /**
+   * Obtiene todas las acciones del portafolio
+   */
+  getPortfolioShares(): Observable<PortfolioShare[]> {
+    const portfolio = this.portfolioSubject.getValue();
+    
+    if (portfolio) {
+      // Si ya tenemos el portafolio, extraemos las acciones
+      const shares = portfolio.positions.map(position => position.share);
+      return of(shares);
+    } else {
+      // Si no tenemos portafolio, lo cargamos primero
+      return this.getUserPortfolio().pipe(
+        map((portfolio) => {
+          return portfolio.positions.map(position => position.share);
+        })
+      );
+    }
+  }
+  
+  /**
+   * Compra una acción para el portafolio
+   * @param ticker Símbolo de la acción
+   * @param quantity Cantidad a comprar
+   * @param price Precio unitario
+   */
+  buyShare(ticker: string, quantity: number, price: number): Observable<Portfolio> {
+    const userId = this.getUserId();
+    
+    const buyData = {
+      ticker,
+      quantity,
+      price
+    };
+    
+    return this.http.post<Portfolio>(`${this.apiUrl}/portfolio/${userId}/buy`, buyData).pipe(
+      tap((updatedPortfolio) => {
+        console.log('Acción comprada:', ticker, quantity, price);
+        this.portfolioSubject.next(updatedPortfolio);
+      }),
+      catchError((error) => {
+        console.error('Error al comprar acción:', error);
+        
+        // Para desarrollo, simulamos la compra
+        const currentPortfolio = this.portfolioSubject.getValue() || this.generateMockPortfolio();
+        const mockUpdatedPortfolio = this.simulateBuy(currentPortfolio, ticker, quantity, price);
+        this.portfolioSubject.next(mockUpdatedPortfolio);
+        
+        return of(mockUpdatedPortfolio);
+      })
+    );
+  }
+  
+  /**
+   * Vende una acción del portafolio
+   * @param ticker Símbolo de la acción
+   * @param quantity Cantidad a vender
+   * @param price Precio unitario
+   */
+  sellShare(ticker: string, quantity: number, price: number): Observable<Portfolio> {
+    const userId = this.getUserId();
+    
+    const sellData = {
+      ticker,
+      quantity,
+      price
+    };
+    
+    return this.http.post<Portfolio>(`${this.apiUrl}/portfolio/${userId}/sell`, sellData).pipe(
+      tap((updatedPortfolio) => {
+        console.log('Acción vendida:', ticker, quantity, price);
+        this.portfolioSubject.next(updatedPortfolio);
+      }),
+      catchError((error) => {
+        console.error('Error al vender acción:', error);
+        
+        // Para desarrollo, simulamos la venta
+        const currentPortfolio = this.portfolioSubject.getValue() || this.generateMockPortfolio();
+        const mockUpdatedPortfolio = this.simulateSell(currentPortfolio, ticker, quantity, price);
+        this.portfolioSubject.next(mockUpdatedPortfolio);
+        
+        return of(mockUpdatedPortfolio);
+      })
+    );
+  }
+
+  /**
+   * Obtiene los datos históricos del portafolio
+   * @param days Número de días para el histórico
+   */
+  getPortfolioHistory(days: number = 30): Observable<any[]> {
+    const userId = this.getUserId();
+    
+    const params = new HttpParams().set('days', days.toString());
+    
+    return this.http.get<any[]>(`${this.apiUrl}/portfolio/${userId}/history`, { params }).pipe(
+      catchError((error) => {
+        console.error('Error al obtener histórico del portafolio:', error);
+        return this.generateMockHistory(days);
+      })
+    );
+  }
+
+  /**
+   * Genera un portafolio con datos de prueba
+   */
+  private generateMockPortfolio(): Portfolio {
+    const positions: PortfolioPosition[] = this.mockShares.map(share => ({
+      id: `pos-${share.id}`,
+      share,
+      quantity: share.quantity,
+      averagePrice: share.unitValue * 0.9, // Precio de compra ligeramente menor
+      totalInvested: share.quantity * share.unitValue * 0.9,
+      currentValue: share.quantity * share.unitValue
+    }));
+    
+    const totalInvested = positions.reduce((sum, pos) => sum + pos.totalInvested, 0);
+    const totalValue = positions.reduce((sum, pos) => sum + pos.currentValue, 0);
+    const performance = ((totalValue / totalInvested) - 1) * 100;
+    
+    return {
+      id: 'mock-portfolio',
+      userId: this.getUserId(),
+      balance: 10000, // Saldo disponible
+      positions,
+      totalInvested,
+      totalValue,
+      performance
+    };
+  }
+  
+  /**
+   * Simula la compra de una acción para modo de desarrollo
+   */
+  private simulateBuy(portfolio: Portfolio, ticker: string, quantity: number, price: number): Portfolio {
+    // Copia del portafolio para no mutar el original
+    const updatedPortfolio = { ...portfolio };
+    
+    // Buscar si ya tenemos esta acción en el portafolio
+    const existingPosition = updatedPortfolio.positions.find(pos => pos.share.ticker === ticker);
+    
+    if (existingPosition) {
+      // Si ya existe la posición, actualizamos
+      const newQuantity = existingPosition.quantity + quantity;
+      const newTotalInvested = existingPosition.totalInvested + (quantity * price);
+      const newAveragePrice = newTotalInvested / newQuantity;
+      
+      existingPosition.quantity = newQuantity;
+      existingPosition.averagePrice = newAveragePrice;
+      existingPosition.totalInvested = newTotalInvested;
+      existingPosition.currentValue = newQuantity * existingPosition.share.unitValue;
+      existingPosition.share.quantity = newQuantity;
+      existingPosition.share.totalValue = existingPosition.currentValue;
+    } else {
+      // Si no existe, creamos una nueva posición
+      const mockShare: PortfolioShare = {
+        id: `mock-${Date.now().toString()}`,
+        companyName: this.getCompanyName(ticker),
+        ticker,
+        stockName: 'NASDAQ', // Por defecto
+        stockMic: 'XNAS',    // Por defecto
+        quantity,
+        unitValue: price,    // Asumimos que el precio actual es el mismo que compramos
+        totalValue: quantity * price,
+        performance: 0,      // Sin rendimiento inicial
+        color: this.getRandomColor()
+      };
+      
+      const newPosition: PortfolioPosition = {
+        id: `pos-${mockShare.id}`,
+        share: mockShare,
+        quantity,
+        averagePrice: price,
+        totalInvested: quantity * price,
+        currentValue: quantity * price
+      };
+      
+      updatedPortfolio.positions.push(newPosition);
+    }
+    
+    // Actualizamos los totales del portafolio
+    updatedPortfolio.balance -= quantity * price;
+    updatedPortfolio.totalInvested = updatedPortfolio.positions.reduce(
+      (sum, pos) => sum + pos.totalInvested, 0
+    );
+    updatedPortfolio.totalValue = updatedPortfolio.positions.reduce(
+      (sum, pos) => sum + pos.currentValue, 0
+    );
+    updatedPortfolio.performance = ((updatedPortfolio.totalValue / updatedPortfolio.totalInvested) - 1) * 100;
+    
+    return updatedPortfolio;
+  }
+  
+  /**
+   * Simula la venta de una acción para modo de desarrollo
+   */
+  private simulateSell(portfolio: Portfolio, ticker: string, quantity: number, price: number): Portfolio {
+    // Copia del portafolio para no mutar el original
+    const updatedPortfolio = { ...portfolio };
+    
+    // Buscar la posición de la acción
+    const position = updatedPortfolio.positions.find(pos => pos.share.ticker === ticker);
+    
+    if (!position) {
+      console.error(`No se encontró la acción ${ticker} en el portafolio`);
+      return portfolio;
+    }
+    
+    if (position.quantity < quantity) {
+      console.error(`No hay suficientes acciones de ${ticker} para vender`);
+      return portfolio;
+    }
+    
+    // Cantidad después de la venta
+    const newQuantity = position.quantity - quantity;
+    
+    if (newQuantity === 0) {
+      // Si vendimos todas las acciones, eliminamos la posición
+      updatedPortfolio.positions = updatedPortfolio.positions.filter(pos => pos.share.ticker !== ticker);
+    } else {
+      // Actualizamos la posición
+      position.quantity = newQuantity;
+      position.currentValue = newQuantity * position.share.unitValue;
+      // La cantidad invertida disminuye proporcionalmente
+      position.totalInvested = (position.totalInvested / position.quantity) * newQuantity;
+      
+      // Actualizamos también el share asociado
+      position.share.quantity = newQuantity;
+      position.share.totalValue = position.currentValue;
+    }
+    
+    // Actualizamos los totales del portafolio
+    updatedPortfolio.balance += quantity * price;
+    updatedPortfolio.totalInvested = updatedPortfolio.positions.reduce(
+      (sum, pos) => sum + pos.totalInvested, 0
+    );
+    updatedPortfolio.totalValue = updatedPortfolio.positions.reduce(
+      (sum, pos) => sum + pos.currentValue, 0
+    );
+    
+    // Evitamos división por cero
+    if (updatedPortfolio.totalInvested > 0) {
+      updatedPortfolio.performance = ((updatedPortfolio.totalValue / updatedPortfolio.totalInvested) - 1) * 100;
+    } else {
+      updatedPortfolio.performance = 0;
+    }
+    
+    return updatedPortfolio;
+  }
+  
+  /**
+   * Genera datos históricos de prueba para el portafolio
+   */
+  private generateMockHistory(days: number): Observable<any[]> {
+    const history = [];
+    const today = new Date();
+    const startValue = 10000; // Valor inicial
+    let currentValue = startValue;
+    
+    for (let i = days; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      
+      // Variación aleatoria entre -2% y +2%
+      const variation = (Math.random() * 4 - 2) / 100;
+      currentValue = currentValue * (1 + variation);
+      
+      history.push({
+        date: date.toISOString().split('T')[0], // Formato YYYY-MM-DD
+        value: Math.round(currentValue * 100) / 100
+      });
+    }
+    
+    return of(history);
+  }
+
+  /**
+   * Obtiene un color aleatorio para la visualización
+   */
+  private getRandomColor(): string {
+    const colors = ['red', 'blue', 'green', 'purple', 'orange', 'teal', 'indigo', 'pink'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  
+  /**
+   * Obtiene el nombre de la empresa basado en el ticker
+   */
+  private getCompanyName(ticker: string): string {
+    const companies: {[key: string]: string} = {
+      'AAPL': 'Apple Inc.',
+      'MSFT': 'Microsoft Corporation',
+      'GOOGL': 'Alphabet Inc.',
+      'AMZN': 'Amazon.com Inc.',
+      'META': 'Meta Platforms Inc.',
+      'TSLA': 'Tesla Inc.',
+      'NVDA': 'NVIDIA Corporation',
+      'BRK.B': 'Berkshire Hathaway Inc.',
+      'JPM': 'JPMorgan Chase & Co.',
+      'V': 'Visa Inc.',
+      'JNJ': 'Johnson & Johnson',
+      'BAC': 'Bank of America Corp.',
+    };
+    
+    return companies[ticker] || `${ticker} Inc.`;
+  }
+  
+  /**
+   * Obtiene el ID del usuario actual
+   */
+  private getUserId(): string {
+    // En una aplicación real, obtendrías esto del servicio de autenticación
+    return 'current-user-id';
   }
 }

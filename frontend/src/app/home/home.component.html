@@ -36,18 +36,74 @@
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Noticias Financieras</h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">      <div *ngFor="let news of financialNews" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
-          <!-- Imagen de la noticia -->
-          <div *ngIf="news.imageUrl" class="mb-4 -mx-6 -mt-6">
-            <img [src]="news.imageUrl" [alt]="news.title" class="w-full h-48 object-cover rounded-t-lg">
+      <!-- Estado de carga -->
+      <div *ngIf="isLoadingNews" class="flex justify-center py-12">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      
+      <!-- Error de carga -->
+      <div *ngIf="!isLoadingNews && newsError" class="text-center py-10">
+        <mat-icon class="text-gray-400 dark:text-gray-600 text-5xl mb-4">sentiment_dissatisfied</mat-icon>
+        <p class="text-gray-600 dark:text-gray-400 text-xl">{{ newsError }}</p>
+        <button (click)="loadFinancialNews()" class="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
+          Reintentar
+        </button>
+      </div>
+      
+      <!-- Noticias de la API de Alpaca -->
+      <div *ngIf="!isLoadingNews && news.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div *ngFor="let item of news" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
+          <!-- Imagen de la noticia si está disponible -->
+          <div *ngIf="item.Images && item.Images.length > 0" class="mb-4 -mx-6 -mt-6">
+            <img [src]="item.Images[0]" [alt]="item.Headline" class="w-full h-48 object-cover rounded-t-lg">
           </div>
           
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ news.title }}</h3>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ item.Headline }}</h3>
           <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-            <span>{{ news.source }}</span>
-            <span>{{ news.date }}</span>
+            <span>{{ item.Author || 'Equipo Editorial' }} | {{ item.Source }}</span>
+            <span>{{ formatNewsDate(item.CreatedAt) }}</span>
           </div>
-          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ news.summary }}</p>
+          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.Summary }}</p>
+          
+          <!-- Símbolos relacionados -->
+          <div class="flex flex-wrap gap-1 mt-4">
+            <span *ngFor="let symbol of item.Symbols" 
+                  class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">
+              {{ symbol }}
+            </span>
+          </div>
+          
+          <!-- Enlace a la noticia completa -->
+          <a [href]="item.URL" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
+            Leer más →
+          </a>
+        </div>
+      </div>
+      
+      <!-- Noticias de fallback -->
+      <div *ngIf="!isLoadingNews && !news.length && !newsError" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div *ngFor="let item of fallbackNews" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ item.title }}</h3>
+          <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <span>{{ item.source }}</span>
+            <span>{{ item.date }}</span>
+          </div>
+          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.summary }}</p>
+          
+          <!-- Símbolos relacionados -->
+          <div *ngIf="item.symbols && item.symbols.length > 0" class="flex flex-wrap gap-1 mt-4">
+            <span *ngFor="let symbol of item.symbols" 
+                  class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">
+              {{ symbol }}
+            </span>
+          </div>
+          
+          <!-- Enlace a la noticia completa -->
+          <a [href]="item.url" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
+            Leer más →
+          </a>
+        </div>
+      </div>
           <a [href]="news.url" target="_blank" rel="noopener noreferrer" 
              class="mt-4 inline-block text-emerald-600 dark:text-emerald-400 hover:underline">
             Leer más →

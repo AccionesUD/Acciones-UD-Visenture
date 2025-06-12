@@ -1,0 +1,12 @@
+POST: http://localhost:3000/api/stocks/inicializacion
+
+response 201
+
+{
+	"message": "Proceso completado",
+	"creado_o_actualizado": [
+		"XNYS actualizado",
+		"XNAS actualizado"
+	],
+	"errores": []
+}

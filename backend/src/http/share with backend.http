@@ -1,0 +1,35 @@
+
+POST: http://localhost:3000/api/shares
+
+Body:
+
+{
+  "class": "Common Stock",
+  "ticker": "AAPL",
+  "name_share": "Apple Inc.",
+  "sector": "Technology",
+  "status": true,
+  "tradable": true,
+  "mic_stock_market": "XNAS"
+}
+
+response 201
+
+{
+	"id": 2,
+	"class": "Common Stock",
+	"ticker": "AAPL",
+	"name_share": "Apple Inc.",
+	"sector": "Technology",
+	"status": true,
+	"tradable": true,
+	"stock": {
+		"mic": "XNAS",
+		"name_market": "NASDAQ OMX",
+		"country_region": "Estados Unidos",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/6/6d/NASDAQ_Logo.svg",
+		"opening_time": "09:30",
+		"closing_time": "16:00",
+		"days_operation": "Lunes a Viernes"
+	}
+}

@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
-import { delay, tap, catchError, map } from 'rxjs/operators';
+import { Observable, of, throwError, BehaviorSubject, forkJoin } from 'rxjs';
+import { delay, tap, catchError, map, switchMap } from 'rxjs/operators';
 import { Market } from '../models/market.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { StocksService } from './stocks.service';
+import { AlpacaDataService } from './alpaca-data.service';
+import { Stock } from '../models/stock.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +19,11 @@ export class MarketServiceService {
   // Cache de mercados para optimizar las solicitudes
   private marketsCache: Market[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private stocksService: StocksService,
+    private alpacaService: AlpacaDataService
+  ) { }
 
   getMarkets(): Observable<Market[]> {
     // Si tenemos datos en caché, los usamos primero mientras actualizamos
@@ -24,8 +31,20 @@ export class MarketServiceService {
       this.marketsSubject.next(this.marketsCache);
     }
     
-    return this.http.get<Market[]>(this.apiUrl).pipe(
-      map(markets => markets.map(market => this.adaptMarketFromAPI(market))),      tap(markets => {
+    // Obtenemos los mercados del backend
+    return this.stocksService.getMarkets().pipe(
+      // Combinamos con el estado actual del mercado desde Alpaca
+      switchMap(markets => {
+        return forkJoin([
+          of(markets), 
+          this.alpacaService.getMarketStatus()
+        ]);
+      }),
+      map(([markets, marketStatus]) => {
+        // Convertimos los mercados del backend al formato del frontend
+        return markets.map(market => this.adaptMarketFromBackend(market, marketStatus));
+      }),
+      tap(markets => {
         this.marketsCache = markets;
         this.marketsSubject.next(markets);
         console.log('Mercados obtenidos:', markets);
@@ -41,7 +60,7 @@ export class MarketServiceService {
     // Primero intentamos encontrarlo en caché
     if (this.marketsCache.length > 0) {
       const cachedMarket = this.marketsCache.find(m => 
-        m.symbol === id || m.id === id
+        m.symbol === id || m.id === id || m.name === id
       );
       
       if (cachedMarket) {
@@ -51,7 +70,7 @@ export class MarketServiceService {
     
     // Si no está en caché, obtenemos todos los mercados y filtramos
     return this.getMarkets().pipe(
-      map(markets => markets.find(m => m.symbol === id || m.id === id)),
+      map(markets => markets.find(m => m.symbol === id || m.id === id || m.name === id)),
       catchError(error => {
         console.error(`Error al buscar mercado ${id}:`, error);
         return throwError(() => new Error(`Mercado con ID: ${id} no encontrado.`));
@@ -59,117 +78,67 @@ export class MarketServiceService {
     );
   }
 
-  getMarketsWithError(): Observable<Market[]> {
-    return throwError(() => new Error('Error simulado: La API no responde.'));
-  } 
-
-  private adaptMarketFromAPI(apiMarket: Market): Market {
-    return {
-      ...apiMarket,
-      id: apiMarket.symbol, // Para mantener compatibilidad con código existente
-      status: this.translateStatus(apiMarket.status, apiMarket.isActive),
-      description: `${apiMarket.name} es un activo que cotiza con el símbolo ${apiMarket.symbol} en la divisa ${apiMarket.currency}.`
-      // No se agregan campos ficticios como iconUrl, openingTime, etc.
-    };
-  }
-    
-  private translateStatus(status: string, isActive: boolean): 'open' | 'closed' {
-    // El backend puede devolver diferentes valores para el estado
-    if ((status === 'active' || status === 'open') && isActive) {
-      // Verificamos si estamos en horario de mercado (9:30 AM - 4:00 PM EST)
-      const now = new Date();
-      const day = now.getDay(); // 0 es domingo, 6 es sábado
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      
-      // Si es fin de semana, mercado cerrado
-      if (day === 0 || day === 6) {
-        return 'closed';
-      }
-      
-      // Convertimos la hora actual a formato decimal para comparar fácilmente
-      const currentTimeDecimal = hour + (minute / 60);
-      
-      // Horario típico de NYSE: 9:30 AM - 4:00 PM (EST)
-      if (currentTimeDecimal >= 9.5 && currentTimeDecimal <= 16) {
-        return 'open';
-      }
-      return 'closed';
-    }
-    return 'closed';
-  }
-
-  private handleError(error: any): Observable<never> {
-    let errorMessage = 'Error del servidor al procesar la solicitud.';
-    
-    if (error.error instanceof ErrorEvent) {
-      // Error del lado cliente
-      errorMessage = `Error: ${error.error.message}`;
-    } else if (error.status) {
-      // Error devuelto por el backend
-      switch (error.status) {
-        case 404:
-          errorMessage = 'No se encontró el recurso solicitado. Verifique la URL del servicio.';
-          break;
-        case 403:
-          errorMessage = 'No tiene permisos para acceder a este recurso. Verifique su autenticación.';
-          break;
-        case 500:
-          errorMessage = 'Error interno del servidor. Por favor, contacte al equipo de soporte.';
-          break;
-        case 0:
-          errorMessage = 'No se pudo conectar con el servidor. Verifique su conexión o que el servidor esté en ejecución.';
-          break;
-        default:
-          errorMessage = `Error ${error.status}: ${error.message || (error.error && error.error.message) || 'Error desconocido'}`;
-      }
-    }
-    
-    console.error('Error en MarketServiceService:', error);
-    console.log('URL que causó el error:', error.url || 'No disponible');
-    
-    return throwError(() => new Error(errorMessage));
-  }
-
-  getMarketDetails(symbol: string): Observable<any> {
-
-    const url = `${this.apiUrl}/${symbol}`;
-    
-    return this.http.get(url).pipe(
-      map(data => this.adaptMarketDetailsFromAPI(data, symbol)),
-      catchError(error => {
-        // Si no existe el endpoint específico o hay un error, ofrecemos datos limitados
-        console.error(`Error al obtener detalles del mercado ${symbol}:`, error);
-        
-        // Intentamos usar la información en caché
-        const cachedMarket = this.marketsCache.find(m => 
-          m.symbol === symbol || m.id === symbol
-        );
-        
-        if (cachedMarket) {
-          // Enriquecemos los datos del mercado en caché con información simulada
-          return of(this.generateFallbackMarketDetails(cachedMarket));
+  // Nuevo método para obtener detalles del mercado que incluye estado actual
+  getMarketDetails(id: string): Observable<Market | undefined> {
+    return this.getMarketById(id).pipe(
+      switchMap(market => {
+        if (!market) {
+          return throwError(() => new Error(`Mercado con ID: ${id} no encontrado.`));
         }
         
-        return throwError(() => new Error(`No se pudieron obtener detalles del mercado ${symbol}`));
+        // Obtenemos información actualizada del estado del mercado
+        return this.alpacaService.getMarketStatus().pipe(
+          map(marketStatus => {
+            return {
+              ...market,
+              status: marketStatus.is_open ? 'open' : 'closed',
+              nextOpeningTime: marketStatus.next_open,
+              nextClosingTime: marketStatus.next_close
+            };
+          })
+        );
       })
     );
   }
-    
-  private adaptMarketDetailsFromAPI(apiData: any, symbol: string): any {
-    // Solo pasamos los datos tal como vienen del backend, sin agregar campos adicionales
-    return {
-      ...apiData,
-      id: symbol // Mantenemos el id por compatibilidad
-      // No agregamos campos adicionales que no existan en el backend
+
+  private adaptMarketFromBackend(backendMarket: Stock, marketStatus: any): Market {
+    // Convertir al formato Market que espera el frontend
+    const market: Market = {
+      id: backendMarket.mic,
+      symbol: backendMarket.mic,
+      name: backendMarket.name_market,
+      country: backendMarket.country_region,
+      currency: 'USD', // Por defecto USD para NYSE y NASDAQ
+      status: marketStatus.is_open ? 'open' : 'closed',
+      isActive: backendMarket.status === 'active',
+      // Campos adicionales del frontend
+      description: `${backendMarket.name_market} (${backendMarket.mic}) es un mercado financiero ubicado en ${backendMarket.country_region}`,
+      openingTime: backendMarket.opening_time,
+      closingTime: backendMarket.closing_time,
+      timezone: 'America/New_York', // Por defecto para NYSE y NASDAQ
+      iconUrl: backendMarket.logo || this.getDefaultLogoForMarket(backendMarket.mic)
     };
+    
+    return market;
+  }
+  
+  private getDefaultLogoForMarket(mic: string): string {
+    const logos: {[key: string]: string} = {
+      'XNYS': 'https://upload.wikimedia.org/wikipedia/commons/6/61/NYSE_logo.svg',
+      'XNAS': 'https://upload.wikimedia.org/wikipedia/commons/6/6d/NASDAQ_Logo.svg'
+    };
+    
+    return logos[mic] || 'assets/images/default-market-logo.png';
   }
 
-  private generateFallbackMarketDetails(market: Market): any {
-    return {
-      ...market,
-      // Solo añadimos la descripción como dato mínimo necesario
-      description: market.description || `${market.name} es un activo que cotiza con el símbolo ${market.symbol} en la divisa ${market.currency}.`
-    };
+  private handleError(error: any): Observable<Market[]> {
+    console.error('Error en MarketService:', error);
+    // Si hay un error, podríamos usar datos de caché o datos mock como fallback
+    if (this.marketsCache.length > 0) {
+      return of(this.marketsCache);
+    }
+    
+    // Si todo falla, retornamos un array vacío para evitar errores en la UI
+    return of([]);
   }
 }
