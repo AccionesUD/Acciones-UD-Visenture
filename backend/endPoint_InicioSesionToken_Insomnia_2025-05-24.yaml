@@ -1,0 +1,148 @@
+type: collection.insomnia.rest/5.0
+name: Visenture API
+meta:
+  id: wrk_8ecb577b0ebb4b3ba97daa7fe644b6b4
+  created: 1748100701901
+  modified: 1748100701901
+collection:
+  - name: Inicio_Sesion_con_Token
+    meta:
+      id: fld_6a2f8e741c784ce1a50c794e7df26771
+      created: 1748123110200
+      modified: 1748123110200
+      sortKey: -1748123110200
+    children:
+      - url: http://localhost:3000/auth/login
+        name: Enviar Token de Autenticacion
+        meta:
+          id: req_4971a8521f0a4ce8ad22b3f82703b70d
+          created: 1748100760112
+          modified: 1748123122649
+          isPrivate: false
+          sortKey: -1748123114129
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "cdcasasd@udistrital.edu.co",
+              "password": "123456"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/auth/validate-token
+        name: Validar Token
+        meta:
+          id: req_d4b4cbb639674a91903670b0a6c6067f
+          created: 1748111988458
+          modified: 1748123121027
+          isPrivate: false
+          sortKey: -1748123114029
+        method: POST
+        body:
+          mimeType: application/json
+          text: |
+            {
+              "email": "cdcasasd@udistrital.edu.co",
+              "token": "9bd399a0-1f30-4296-8a54-1d07a2ca6895"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/auth/complete-login
+        name: Token de Inicio de Sesion
+        meta:
+          id: req_15970f2bd0554fafabe4357417091f75
+          created: 1748113376697
+          modified: 1748123117332
+          isPrivate: false
+          sortKey: -1748123113929
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "cdcasasd@udistrital.edu.co",
+              "token": "f271e7c3-ba3b-41e5-9e9f-a7c0af978f7c"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3000/users/me
+        name: Proteger Ruta Guard
+        meta:
+          id: req_48427136ae854b2e82cc98d4f744005f
+          created: 1748114661251
+          modified: 1748123113925
+          isPrivate: false
+          sortKey: -1748123113829
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+            id: pair_86fe042c7aee4da1be8664b928ca0aba
+          - id: pair_b2f2f5c112344bd2adc5aed7d2bd6ed4
+            name: Key
+            value: Authorization
+            disabled: false
+          - id: pair_bfd5b54c15cb43e4835d920114c93c95
+            name: Value
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJpYXQiOjE3NDgxMTUyNzAsImV4cCI6MTc0ODExODg3MH0.pVG0f58lmErriRVbi0uRKmjwyDBov675nhaslndA8YA
+            disabled: false
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJpYXQiOjE3NDgxMjI5MjYsImV4cCI6MTc0ODEyNjUyNn0.EkMaNcyRZ33Y36mVZb8xyvaes9W-Y5D2NxXlo2BUSC8
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_4d49ef58f60c677856a6127d40a857765b335811
+    created: 1748100701915
+    modified: 1748100701915
+environments:
+  name: Base Environment
+  meta:
+    id: env_4d49ef58f60c677856a6127d40a857765b335811
+    created: 1748100701907
+    modified: 1748100701907
+    isPrivate: false

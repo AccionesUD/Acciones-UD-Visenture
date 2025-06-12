@@ -6,7 +6,6 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { NgApexchartsModule } from 'ng-apexcharts';
 
 @NgModule({
   declarations: [
@@ -19,8 +18,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     RouterModule,        
     LoginComponent,
     ForgotPasswordComponent,
-    ResetPasswordComponent,
-    NgApexchartsModule
+    ResetPasswordComponent
   ]
 })
 export class AuthModule { }
