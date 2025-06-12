@@ -1,0 +1,10 @@
+/* Estilos para el gráfico */
+highcharts-chart {
+  border-radius: 0.5rem;
+}
+
+/* Estilos para los botones de símbolos */
+button.active-symbol {
+  background-color: #059669;
+  color: white;
+}

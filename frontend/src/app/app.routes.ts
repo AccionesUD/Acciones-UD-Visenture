@@ -8,6 +8,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthRedirectGuard } from './auth/guards/auth-redirect.guard';
 import { PortfolioComponent } from './portfolio/portfolio.component';
+import { ProfileComponent } from './profile/profile.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -19,10 +20,11 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'test-reset-password', component: ResetPasswordComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard', component: DashboardComponent },
   { 
     path: 'markets', 
     loadChildren: () => import('./markets/markets.module').then(m => m.MarketsModule),
   },
+  { path: 'profile', component: ProfileComponent,},
   { path: '**', redirectTo: 'home' }
 ];

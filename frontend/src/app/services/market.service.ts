@@ -63,6 +63,8 @@ export class MarketService {
       {
         id: '1',
         name: 'NYSE',
+        symbol: 'NYSE',
+        isActive: true,
         country: 'Estados Unidos',
         currency: 'USD',
         status: 'open',
@@ -75,6 +77,8 @@ export class MarketService {
       {
         id: '2',
         name: 'NASDAQ',
+        symbol: 'NASDAQ',
+        isActive: true,
         country: 'Estados Unidos',
         currency: 'USD',
         status: 'open',
@@ -87,6 +91,8 @@ export class MarketService {
       {
         id: '3',
         name: 'LSE',
+        symbol: 'LSE',
+        isActive: false,
         country: 'Reino Unido',
         currency: 'GBP',
         status: 'closed',
@@ -99,6 +105,8 @@ export class MarketService {
       {
         id: '4',
         name: 'TSE',
+        symbol: 'TSE',
+        isActive: false,
         country: 'Japón',
         currency: 'JPY',
         status: 'closed',
@@ -111,6 +119,8 @@ export class MarketService {
       {
         id: '5',
         name: 'SSE',
+        symbol: 'SSE',
+        isActive: false,
         country: 'China',
         currency: 'CNY',
         status: 'closed',
