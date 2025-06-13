@@ -1,0 +1,63 @@
+/* Estilos específicos para el componente de seguridad */
+
+/* Botones primarios */
+:host ::ng-deep .mat-mdc-flat-button {
+  height: auto;
+  line-height: normal;
+  padding: 0.5rem 1rem;
+}
+
+/* Campos de contraseña */
+.password-field {
+  position: relative;
+}
+
+.password-field mat-icon {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estados de validación */
+.validation-passed {
+  color: #10b981;
+}
+
+.validation-failed {
+  color: #ef4444;
+}
+
+/* Mensajes de éxito/error */
+.success-message {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-left: 4px solid #10b981;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+.error-message {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 4px solid #ef4444;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+}
+
+/* Modo oscuro */
+:host-context(.dark-theme) .success-message {
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+:host-context(.dark-theme) .error-message {
+  background-color: rgba(239, 68, 68, 0.05);
+}

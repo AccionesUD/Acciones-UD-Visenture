@@ -1,0 +1,47 @@
+/* Estilos específicos para el componente de información */
+
+/* Botones primarios */
+:host ::ng-deep .mat-mdc-flat-button {
+  height: auto;
+  line-height: normal;
+  padding: 0.5rem 1rem;
+}
+
+/* Campos en modo de edición */
+.editable-field {
+  transition: all 0.3s ease;
+}
+
+.editable-field:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estados diferentes de los formularios */
+.field-valid {
+  border-color: #10b981 !important;
+}
+
+.field-invalid {
+  border-color: #ef4444 !important;
+}
+
+.field-disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+/* Modo oscuro */
+:host-context(.dark-theme) .field-disabled {
+  background-color: #1f2937;
+}
