@@ -32,9 +32,9 @@ export interface SnapshotData {
       <div mat-dialog-content class="py-4">
         <!-- Precio y cambio -->
         <div class="flex items-end mb-6">
-          <span class="text-3xl font-bold mr-2">{{data.latestTrade?.price | currency:'USD':'symbol':'1.2-2'}}</span>
+          <span class="text-3xl font-bold mr-2">{{data.latestTrade.price | currency:'USD':'symbol':'1.2-2'}}</span>
           <span class="text-sm text-gray-500">
-            Última actualización: {{data.latestTrade?.timestamp | date:'dd/MM/yyyy HH:mm:ss'}}
+            Última actualización: {{data.latestTrade.timestamp | date:'dd/MM/yyyy HH:mm:ss'}}
           </span>
         </div>
         
@@ -43,19 +43,19 @@ export interface SnapshotData {
           <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
             <div class="text-sm text-gray-500 mb-1">Precio de compra (Ask)</div>
             <div class="text-xl font-semibold text-green-700 dark:text-green-400">
-              {{data.latestQuote?.askPrice | currency:'USD':'symbol':'1.2-2'}}
+              {{data.latestQuote.askPrice | currency:'USD':'symbol':'1.2-2'}}
             </div>
-            <div class="text-xs text-gray-500" *ngIf="data.latestQuote?.askSize">
-              Tamaño: {{data.latestQuote?.askSize | number}}
+            <div class="text-xs text-gray-500" *ngIf="data.latestQuote.askSize">
+              Tamaño: {{data.latestQuote.askSize | number}}
             </div>
           </div>
           <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
             <div class="text-sm text-gray-500 mb-1">Precio de venta (Bid)</div>
             <div class="text-xl font-semibold text-red-700 dark:text-red-400">
-              {{data.latestQuote?.bidPrice | currency:'USD':'symbol':'1.2-2'}}
+              {{data.latestQuote.bidPrice | currency:'USD':'symbol':'1.2-2'}}
             </div>
-            <div class="text-xs text-gray-500" *ngIf="data.latestQuote?.bidSize">
-              Tamaño: {{data.latestQuote?.bidSize | number}}
+            <div class="text-xs text-gray-500" *ngIf="data.latestQuote.bidSize">
+              Tamaño: {{data.latestQuote.bidSize | number}}
             </div>
           </div>
         </div>

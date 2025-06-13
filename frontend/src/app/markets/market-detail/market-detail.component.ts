@@ -36,11 +36,7 @@ import { SnapshotModalComponent, SnapshotData } from '../../shared/modals/snapsh
     FormsModule,
     MatDialogModule,
     MatSnackBarModule,
-    RouterLink,
-    BuyStockModalComponent,
-    SnapshotModalComponent,
-    SellStockModalComponent,
-    AlertDialogComponent
+    RouterLink
   ],
   templateUrl: './market-detail.component.html',  
   animations: [
