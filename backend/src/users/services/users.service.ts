@@ -7,6 +7,8 @@ import {
   Injectable,
   NotFoundException,
   RequestTimeoutException,
+  BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users.entity';
@@ -15,6 +17,9 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
 import { Role } from 'src/roles-permission/entities/role.entity';
+import { UpdateProfileDto } from '../dtos/update-profile.dto';
+import { ChangePasswordDto } from '../dtos/change-password.dto';
+import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +30,7 @@ export class UsersService {
     private roleRepository: Repository<Role>,
     private accountService: AccountsService,
     private alpacaBrokerService: AlpacaBrokerService,
+    private readonly hashingProvider: HashingProvider,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -95,7 +101,9 @@ export class UsersService {
     }
   }
 
-  async findById(id: string) {
+  // src/users/services/users.service.ts
+
+  async findById(id: string, p0?: string[]): Promise<User | null> {
     return this.userRepository.findOne({
       where: { identity_document: String(id) },
       relations: ['roles', 'account'],
@@ -116,10 +124,7 @@ export class UsersService {
     return { message: 'Rol actualizado', roles: user.roles.map((r) => r.name) };
   }
 
-  // src/users/services/users.service.ts
   // Obtener perfil
-  // src/users/services/users.service.ts
-
   async getProfileCompleto(identity_document: string) {
     const user = await this.userRepository.findOne({
       where: { identity_document },
@@ -136,4 +141,94 @@ export class UsersService {
       phone: user.phone,
     };
   }
+
+  async updateProfile(identity_document: string, data: UpdateProfileDto) {
+    const forbiddenFields = ['first_name', 'last_name', 'identity_document'];
+    for (const field of forbiddenFields) {
+      if (field in UpdateProfileDto) {
+        throw new BadRequestException(
+          `No está permitido cambiar el campo: ${field}`,
+        );
+      }
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { identity_document },
+      relations: ['account'],
+    });
+
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    // Cambia el teléfono directamente
+    if (data.phone) {
+      user.phone = data.phone;
+      await this.userRepository.save(user);
+    }
+
+    // Cambia el email usando el servicio de cuentas
+    if (data.email) {
+      await this.accountService.updateEmail(user.account.id, data.email);
+    }
+
+    // Cambia la dirección si la mandaron
+    if (data.address) {
+      user.address = data.address;
+      await this.userRepository.save(user);
+    }
+
+    // Refresca la información
+    const updatedUser = await this.userRepository.findOne({
+      where: { identity_document },
+      relations: ['account'],
+    });
+
+    return {
+      message: 'Perfil actualizado correctamente',
+      email: updatedUser?.account.email,
+      phone: updatedUser?.phone,
+    };
+  }
+
+  // async changePassword(identity_document: string, data: ChangePasswordDto) {
+  //   // Busca el usuario y la cuenta relacionada
+  //   const user = await this.userRepository.findOne({
+  //     where: { identity_document },
+  //     relations: ['account'],
+  //   });
+
+  //   console.log('Password actual (hash en base):', user?.account.password);
+  //   const hashed = await this.hashingProvider.hashPassword(data.newPassword);
+  //   console.log('Nuevo hash generado:', hashed);
+  //   if (user && user.account) {
+  //     user.account.password = hashed;
+  //     await this.accountService.updatePassword(
+  //       user.account.id,
+  //       user.account.password,
+  //     );
+  //   }
+
+  //   if (!user || !user.account)
+  //     throw new NotFoundException('Usuario no encontrado');
+
+  //   // Compara la clave actual
+  //   const passwordOk = await this.hashingProvider.comparePassword(
+  //     data.currentPassword,
+  //     user.account.password,
+  //   );
+  //   if (!passwordOk)
+  //     throw new BadRequestException('La contraseña actual es incorrecta');
+
+  //   // Hashea la nueva contraseña y actualiza
+  //   user.account.password = await this.hashingProvider.hashPassword(
+  //     data.newPassword,
+  //   );
+  //   await this.accountService.updatePassword(
+  //     user.account.id,
+  //     user.account.password,
+  //   );
+  //   console.log('Nuevo hash bcrypt:', user.account.password);
+  //   return { message: 'Contraseña actualizada correctamente' };
+  // }
 }

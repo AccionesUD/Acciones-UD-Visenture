@@ -15,6 +15,7 @@ import { TokensService } from 'src/tokens/tokens.service';
 import { HashingProvider } from './providers/bcrypt.provider';
 import { GenerateToken2MFA } from 'src/tokens/services/generate-token.provider';
 import { LoginDto } from './dto/login.dto';
+import { ChangePasswordDto } from 'src/users/dtos/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,8 @@ export class AuthService {
 
   async validateUser(loginDto: LoginDto) {
     const account = await this.accountsService.findByEmail(loginDto.email);
+    console.log('Email:', loginDto.email, 'Hash en base:', account?.password); // <---
+    console.log('Intentando login con clave:', loginDto.password); // <---
     if (!account) {
       throw new UnauthorizedException('User not found');
     }
@@ -38,6 +41,7 @@ export class AuthService {
       loginDto.password,
       account.password,
     );
+    console.log('¿Password válido?', isPasswordValid);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
@@ -185,5 +189,32 @@ export class AuthService {
           'Se presentó un error al actualizar la contraseña, intente más tarde.',
       });
     }
+  }
+
+  // auth.service.ts
+  async changePassword(identity_document: string, data: ChangePasswordDto) {
+    // Busca el usuario y su cuenta (con join en relations)
+    const user = await this.usersService.findById(identity_document, [
+      'account',
+    ]);
+    if (!user || !user.account)
+      throw new NotFoundException('Usuario no encontrado');
+
+    // Valida la contraseña actual
+    const passwordOk = await this.hashingProvider.comparePassword(
+      data.currentPassword,
+      user.account.password,
+    );
+    if (!passwordOk)
+      throw new BadRequestException('La contraseña actual es incorrecta');
+    console.log(data.newPassword);
+    // Hashea la nueva clave y actualiza
+    //const newHash = await this.hashingProvider.hashPassword(data.newPassword);
+    await this.accountsService.updatePassword(
+      user.account.id,
+      data.newPassword,
+    );
+
+    return { message: 'Contraseña actualizada correctamente' };
   }
 }

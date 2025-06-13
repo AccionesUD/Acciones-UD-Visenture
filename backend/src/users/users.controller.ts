@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './services/users.service';
@@ -14,11 +15,17 @@ import { UpdateUserRoleDto } from './dtos/update-user-role.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
 import { AuthUser } from 'src/auth/interfaces/auth-user.interface';
+import { UpdateProfileDto } from './dtos/update-profile.dto';
+import { Request } from 'express';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly authService: AuthService,
+  ) {}
   @Post()
   public createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
@@ -62,6 +69,7 @@ export class UsersController {
   @Roles('admin', 'comisionista')
   @Get('admin-only')
   getOnlyAdmins(@Req() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     console.log('Usuario autenticado:', req.user);
     return { message: 'Solo admins/comisionistas pueden ver esto' };
   }
@@ -94,4 +102,27 @@ export class UsersController {
     const identity_document: string = String(req.user.userId);
     return this.usersService.getProfileCompleto(identity_document);
   }
+
+  @Put('perfil')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @Req() req: Request & { user: AuthUser },
+    @Body() body: UpdateProfileDto,
+  ) {
+    const identity_document = String(req.user.userId); // Asegura que sea string
+    return this.usersService.updateProfile(identity_document, body);
+  }
+
+  // // users.controller.ts
+  // @Patch('perfil/password')
+  // @UseGuards(JwtAuthGuard)
+  // async changePassword(
+  //   @Req() req: Request,
+  //   @Body() body: ChangePasswordDto,
+  // ): Promise<{ message: string }> {
+  //   // Tipar explícitamente el usuario inyectado por JwtStrategy
+  //   const user = req.user as { userId: string };
+  //   // Usa await para el método asíncrono
+  //   return await this.authService.changePassword(user.userId, body);
+  // }
 }
