@@ -46,8 +46,27 @@ export class AccountsService {
     }
   }
 
-  async findByEmail(email: string): Promise<Account | null> {
-    return this.accountRepository.findOneBy({ email });
+  // En accounts.service.ts
+  async findByEmail(email: string): Promise<Account> {
+    const account = await this.accountRepository.findOne({
+      where: { email },
+      relations: ['user'],
+    });
+    if (!account) {
+      throw new HttpException('Cuenta no encontrada', HttpStatus.NOT_FOUND);
+    }
+    return account;
+  }
+
+  async findByEmailWithUserAndRoles(email: string): Promise<Account> {
+    const account = await this.accountRepository.findOne({
+      where: { email },
+      relations: ['user', 'user.roles'],
+    });
+    if (!account) {
+      throw new HttpException('Cuenta no encontrada', HttpStatus.NOT_FOUND);
+    }
+    return account;
   }
 
   async updatePassword(accountId: number, newPassword: string): Promise<void> {

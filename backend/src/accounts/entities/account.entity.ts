@@ -1,3 +1,4 @@
+// account.entity.ts
 import { User } from 'src/users/users.entity';
 import {
   Column,
@@ -32,7 +33,14 @@ export class Account {
   @Column({ type: 'varchar', nullable: true, unique: true, length: 50 })
   alpaca_account_id: string;
 
+  // Agrega la columna foránea explícita:
+  @Column({ type: 'varchar', length: 10, nullable: false })
+  identity_document: string;
+
   @OneToOne(() => User, (user) => user.account)
-  @JoinColumn({ name: 'identity_document' })
+  @JoinColumn({
+    name: 'identity_document',
+    referencedColumnName: 'identity_document',
+  })
   user: User;
 }

@@ -1,0 +1,211 @@
+<div class="min-h-screen bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950">
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6 text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Balance</h3>
+        <p class="text-2xl font-bold text-gray-800 dark:text-white">$10,245.00</p>
+        <div class="flex items-center mt-2">
+          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            2.5%
+          </span>
+          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">desde ayer</span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Operaciones hoy</h3>
+        <p class="text-2xl font-bold text-gray-800 dark:text-white">15</p>
+        <div class="flex items-center mt-2">
+          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            8
+          </span>
+          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">exitosas</span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Rentabilidad</h3>
+        <p class="text-2xl font-bold text-gray-800 dark:text-white">+$842.50</p>
+        <div class="flex items-center mt-2">
+          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+            7.8%
+          </span>
+          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">este mes</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chart and Watchlist Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Main Chart Area -->
+      <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
+        <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Gráfico principal</h2>
+        <div class="h-80 bg-emerald-50 dark:bg-slate-700 rounded flex items-center justify-center">
+          <p class="text-emerald-700 dark:text-emerald-300">El gráfico se cargará cuando haya datos disponibles</p>
+        </div>
+      </div>
+      
+      <!-- Watchlist -->
+      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
+        <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Lista de seguimiento</h2>
+        <div class="divide-y divide-emerald-100 dark:divide-slate-700">
+          <div class="py-3 flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">AAPL</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Apple Inc.</p>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-gray-900 dark:text-white">$180.95</p>
+              <p class="text-sm text-emerald-500 dark:text-emerald-400">+2.45%</p>
+            </div>
+          </div>
+          
+          <div class="py-3 flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">MSFT</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Microsoft Corp.</p>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-gray-900 dark:text-white">$340.27</p>
+              <p class="text-sm text-emerald-500 dark:text-emerald-400">+1.02%</p>
+            </div>
+          </div>
+          
+          <div class="py-3 flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">TSLA</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Tesla Inc.</p>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-gray-900 dark:text-white">$198.73</p>
+              <p class="text-sm text-red-500 dark:text-red-400">-0.83%</p>
+            </div>
+          </div>
+          
+          <div class="py-3 flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">AMZN</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Amazon.com</p>
+            </div>
+            <div class="text-right">
+              <p class="font-medium text-gray-900 dark:text-white">$145.68</p>
+              <p class="text-sm text-green-500 dark:text-green-400">+0.75%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recent Activities/Transactions -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
+      <h2 class="font-semibold mb-4 text-gray-900 dark:text-white">Transacciones recientes</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+          <thead class="bg-gray-50 dark:bg-slate-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Símbolo
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Tipo
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Cantidad
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Precio
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Total
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Fecha
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">AAPL</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                  Compra
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                10
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $180.95
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $1,809.50
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                17/05/2025 10:23 AM
+              </td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">MSFT</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                  Compra
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                5
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $340.27
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $1,701.35
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                17/05/2025 9:45 AM
+              </td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">TSLA</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                  Venta
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                8
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $200.50
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                $1,604.00
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                16/05/2025 3:22 PM
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
