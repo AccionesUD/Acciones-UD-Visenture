@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { typesToken } from 'src/tokens/enums/tokenType.enum';
 import { UsersService } from '../users/services/users.service';
@@ -9,8 +14,6 @@ import { MailService } from 'src/mail/mail.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { HashingProvider } from './providers/bcrypt.provider';
 import { GenerateToken2MFA } from 'src/tokens/services/generate-token.provider';
-import { ResendToken2fmadDto } from './dto/resend-token2mfa';
-import { CompleteLoginDto } from './dto/complete-login.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -22,8 +25,8 @@ export class AuthService {
     private readonly tokensService: TokensService,
     private readonly jwtService: JwtService,
     private readonly hashingProvider: HashingProvider,
-    private readonly generateToken2MFA: GenerateToken2MFA
-  ) { }
+    private readonly generateToken2MFA: GenerateToken2MFA,
+  ) {}
 
   async validateUser(loginDto: LoginDto) {
     const account = await this.accountsService.findByEmail(loginDto.email);
@@ -31,18 +34,19 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const isPasswordValid = await this.hashingProvider.comparePassword(loginDto.password, account.password);
+    const isPasswordValid = await this.hashingProvider.comparePassword(
+      loginDto.password,
+      account.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is incorrect');
     }
 
-    return await this.generateTokenLogin(loginDto.email)
-
-
+    return await this.generateTokenLogin(loginDto.email);
   }
 
   async generateTokenLogin(email: string) {
-    const token = this.generateToken2MFA.generateToken()
+    const token = this.generateToken2MFA.generateToken();
     const account = await this.accountsService.findByEmail(email);
     if (!account) {
       throw new UnauthorizedException('User not found');
@@ -61,7 +65,11 @@ export class AuthService {
     email: string,
     token: string,
   ): Promise<{ success: boolean; message: string }> {
-    const isValid = await this.tokensService.validateToken(email, token, typesToken.LOGIN2FMA);
+    const isValid = await this.tokensService.validateToken(
+      email,
+      token,
+      typesToken.LOGIN2FMA,
+    );
 
     if (!isValid) {
       return { success: false, message: 'Token inválido o expirado' };
@@ -73,31 +81,42 @@ export class AuthService {
     };
   }
 
-  async generateAccessToken(
-    email: string,
-    token: string,
-  ) {
-    const isValid = await this.tokensService.validateToken(email, token, typesToken.LOGIN2FMA);
+  async generateAccessToken(email: string, token: string) {
+    const isValid = await this.tokensService.validateToken(
+      email,
+      token,
+      typesToken.LOGIN2FMA,
+    );
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
     }
 
-    const account = await this.accountsService.findByEmail(email);
-    if (!account) {
-      throw new UnauthorizedException('Cuenta no encontrada');
-    }
-    // Aquí definimos la estructura del payload del JWT
-    interface JwtPayload {
-      sub: number;
-      email: string;
+    const account =
+      await this.accountsService.findByEmailWithUserAndRoles(email);
+    if (!account) throw new UnauthorizedException('Cuenta no encontrada');
+
+    // --- Intentar buscar el usuario y sus roles ---
+    let roles: string[] = [];
+    try {
+      if (account.identity_document && account.user.identity_document) {
+        if (account?.user?.roles) {
+          roles = account.user.roles.map((r) => r.name);
+        }
+      }
+    } catch (err) {
+      // Si falla, simplemente deja roles vacío (no rompas el flujo)
+      roles = [];
     }
 
-    const payload: JwtPayload = {
-      sub: account.id,
+    // --- Armado del payload ---
+    const payload = {
+      sub: account.user.identity_document, // <-- Ahora el sub es el identity_document (string)
       email: account.email,
+      roles,
     };
 
     const accessToken = this.jwtService.sign(payload);
+
     return {
       success: true,
       message: accessToken,
@@ -105,12 +124,16 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string) {
- //  const account = await this.accountsService.findByEmail(email);
-   // if (!account) {
+    //  const account = await this.accountsService.findByEmail(email);
+    // if (!account) {
     //  throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
-//}
-    const token = this.generateToken2MFA.generateToken()
-    await this.tokensService.storeToken(email, token, typesToken.RECOVER_PASSWORD);
+    //}
+    const token = this.generateToken2MFA.generateToken();
+    await this.tokensService.storeToken(
+      email,
+      token,
+      typesToken.RECOVER_PASSWORD,
+    );
     await this.mailService.sendPasswordResetEmail(email, token);
 
     return { message: 'Correo de recuperación enviado exitosamente' };
@@ -118,9 +141,13 @@ export class AuthService {
 
   async validatePasswordResetToken(
     email: string,
-    token: string
+    token: string,
   ): Promise<{ valid: boolean }> {
-    const isValid = await this.tokensService.justValidateToken(email, token, typesToken.RECOVER_PASSWORD);
+    const isValid = await this.tokensService.justValidateToken(
+      email,
+      token,
+      typesToken.RECOVER_PASSWORD,
+    );
     if (!isValid) {
       throw new BadRequestException('Token inválido o expirado');
     }
@@ -130,15 +157,18 @@ export class AuthService {
   async resetPassword(
     email: string,
     token: string,
-    newPassword: string
-  ): Promise<{ success: boolean, message: string }> {
-
+    newPassword: string,
+  ): Promise<{ success: boolean; message: string }> {
     const account = await this.accountsService.findByEmail(email);
     if (!account) {
       throw new NotFoundException('Cuenta no encontrada');
     }
 
-    const isValid = await this.tokensService.validateToken(email, token, typesToken.RECOVER_PASSWORD);
+    const isValid = await this.tokensService.validateToken(
+      email,
+      token,
+      typesToken.RECOVER_PASSWORD,
+    );
     if (!isValid) {
       throw new UnauthorizedException('Token inválido o expirado');
     }
@@ -147,10 +177,13 @@ export class AuthService {
       await this.accountsService.updatePassword(account.id, newPassword);
       return {
         success: true,
-        message: 'Contraseña actualizada exitosamente'
+        message: 'Contraseña actualizada exitosamente',
       };
     } catch (error) {
-      throw new RequestTimeoutException('Error al actualizar la contraseña', { description: 'Se presentó un error al actualizar la contraseña, intente más tarde.' });
+      throw new RequestTimeoutException('Error al actualizar la contraseña', {
+        description:
+          'Se presentó un error al actualizar la contraseña, intente más tarde.',
+      });
     }
   }
 }
