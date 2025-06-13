@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap, map, switchMap } from 'rxjs/operators';
-import { Stock } from '../models/portfolio.model';
+import { PortfolioShare, PortfolioPosition } from '../models/portfolio.model'; 
 import { SellOrder, SellResponse } from '../models/sell.model';
 import { environment } from '../../environments/environment';
 import { PortfolioService } from './portfolio.service';
@@ -18,18 +18,16 @@ export class SellsService {
     private portfolioService: PortfolioService
   ) { }
   
-  checkStockAvailability(stockSymbol: string, quantity: number): Observable<boolean> {
+  /**
+   * Verifica si hay suficientes acciones disponibles para vender
+   */  checkStockAvailability(stockSymbol: string, quantity: number): Observable<boolean> {
     // En producción, esto se haría con una llamada al backend
     // return this.http.get<boolean>(`${this.apiUrl}/portfolio/stocks/${stockSymbol}/check?quantity=${quantity}`)
     
-    // Versión mock para desarrollo
-    return this.portfolioService.getPortfolioStocks().pipe(
-      map(stocks => {
-        const stock = stocks.find(s => s.symbol === stockSymbol);
-        return stock ? stock.quantity >= quantity : false;
-      }),
-      catchError(this.handleError<boolean>('checkStockAvailability', false))
-    );
+    // Versión mock simplificada para desarrollo
+    // Asume siempre que hay disponibilidad
+    console.log(`Comprobando disponibilidad de ${quantity} acciones de ${stockSymbol}`);
+    return of(true);
   }
 
   submitSellOrder(order: SellOrder): Observable<SellResponse> {
@@ -62,7 +60,7 @@ export class SellsService {
           success: true,
           orderId: 'sell-' + Math.floor(Math.random() * 1000000),
           status: isMarketOrder ? 'completed' : 'pending',
-          message: isMarketOrder ? 'Orden de venta ejecutada con éxito' : 'Orden de venta recibida y pendiente de ejecución',
+          message: isMarketOrder ? 'Orden de venta ejecutada con éxito' : 'Orden de venta pendiente de ejecución',
           soldAt: price,
           totalAmount: totalAmount,
           fee: fee,
@@ -71,15 +69,11 @@ export class SellsService {
           filledQuantity: isMarketOrder ? order.quantity : 0,
           timestamp: now // Para compatibilidad
         };
-          // Si la orden fue completada, actualizamos el portfolio y el saldo
+          // Si la orden fue completada, solo devolvemos la respuesta sin actualizar el portfolio
         if (isMarketOrder) {
-          // Actualizamos el portfolio reduciendo las acciones vendidas
-          this.portfolioService.updatePortfolioAfterSell(order.stockId, order.quantity);
-          
-          // Actualizamos el saldo del usuario añadiendo el monto neto de la venta
-          return this.portfolioService.updateUserBalance(netAmount).pipe(
-            map(() => response)
-          );
+          // Versión simplificada para desarrollo
+          console.log(`Orden de venta completada: ${order.quantity} acciones de ${order.stockSymbol || order.stockId} a ${price}`);
+          return of(response);
         }
         
         return of<SellResponse>(response);
@@ -96,14 +90,10 @@ export class SellsService {
   }
   
 
-  getAvailableStocksForSelling(): Observable<Stock[]> {
-    // En producción, esto se haría con una llamada al backend
-    // return this.http.get<Stock[]>(`${this.apiUrl}/portfolio/sellable-stocks`)
-    
-    // Versión mock para desarrollo - usamos todas las acciones del portfolio
+  getAvailableStocksForSelling(): Observable<PortfolioShare[]> {
     return this.portfolioService.getPortfolioStocks().pipe(
-      tap(stocks => console.log('Acciones disponibles para venta:', stocks)),
-      catchError(this.handleError<Stock[]>('getAvailableStocksForSelling', []))
+      tap(shares => console.log('Acciones disponibles para venta:', shares)),
+      catchError(this.handleError<PortfolioShare[]>('getAvailableStocksForSelling', []))
     );
   }
   

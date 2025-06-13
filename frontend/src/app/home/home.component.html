@@ -35,21 +35,60 @@
   <section class="py-12 bg-white dark:bg-slate-900">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Noticias Financieras</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">      <div *ngFor="let news of financialNews" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
-          <!-- Imagen de la noticia -->
-          <div *ngIf="news.imageUrl" class="mb-4 -mx-6 -mt-6">
-            <img [src]="news.imageUrl" [alt]="news.title" class="w-full h-48 object-cover rounded-t-lg">
-          </div>
-          
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ news.title }}</h3>
+      <div *ngIf="isLoadingNews" class="flex justify-center py-12">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      <div *ngIf="!isLoadingNews && newsError" class="text-center py-10">
+        <mat-icon class="text-gray-400 dark:text-gray-600 text-5xl mb-4">sentiment_dissatisfied</mat-icon>
+        <p class="text-gray-600 dark:text-gray-400 text-xl">{{ newsError }}</p>
+        <button (click)="loadFinancialNews()" class="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
+          Reintentar
+        </button>
+      </div>
+      <div *ngIf="!isLoadingNews && news.length" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div *ngFor="let item of news" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
+          <!-- Imagen o placeholder -->
+          <ng-container *ngIf="item.Images.length; else noImage">
+            <img [src]="item.Images[0]" [alt]="item.Headline" class="w-full h-48 object-cover rounded-t-lg mb-4">
+          </ng-container>
+          <ng-template #noImage>
+            <div class="w-full h-48 bg-gray-200 dark:bg-slate-700 rounded-t-lg mb-4 flex items-center justify-center">
+              <mat-icon class="text-gray-400 dark:text-gray-600 text-5xl">image_not_supported</mat-icon>
+            </div>
+          </ng-template>
+          <!-- Título -->
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ item.Headline }}</h3>
           <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-            <span>{{ news.source }}</span>
-            <span>{{ news.date }}</span>
+            <span>{{ item.Author }} | {{ item.Source }}</span>
+            <span>{{ formatNewsDate(item.CreatedAt) }}</span>
           </div>
-          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ news.summary }}</p>
-          <a [href]="news.url" target="_blank" rel="noopener noreferrer" 
-             class="mt-4 inline-block text-emerald-600 dark:text-emerald-400 hover:underline">
+          <!-- Resumen o placeholder -->
+          <ng-container *ngIf="item.Summary; else noSummary">
+            <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.Summary }}</p>
+          </ng-container>
+          <ng-template #noSummary>
+            <p class="text-gray-500 dark:text-gray-600 italic flex-grow">Sin resumen disponible.</p>
+          </ng-template>
+          <div class="flex flex-wrap gap-1 mt-4" *ngIf="item.Symbols.length">
+            <span *ngFor="let symbol of item.Symbols" class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">{{ symbol }}</span>
+          </div>
+          <a [href]="item.URL" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
+            Leer más →
+          </a>
+        </div>
+      </div>
+      <div *ngIf="!isLoadingNews && !news.length && !newsError" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div *ngFor="let item of fallbackNews" class="bg-gray-50 dark:bg-slate-800 rounded-lg shadow-md p-6 flex flex-col h-full">
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">{{ item.title }}</h3>
+          <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <span>{{ item.source }}</span>
+            <span>{{ item.date }}</span>
+          </div>
+          <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.summary }}</p>
+          <div class="flex flex-wrap gap-1 mt-4" *ngIf="item.symbols?.length">
+            <span *ngFor="let symbol of item.symbols" class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">{{ symbol }}</span>
+          </div>
+          <a [href]="item.url" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
             Leer más →
           </a>
         </div>

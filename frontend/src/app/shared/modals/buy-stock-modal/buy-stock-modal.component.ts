@@ -185,7 +185,7 @@ export class BuyStockModalComponent implements OnInit {
     
     const formValues = this.buyForm.value;
     const buyOrder: BuyOrder = {
-      stockId: this.data.stock.id,
+      stockId: this.data.stock.id.toString(),
       stockSymbol: this.data.stock.symbol,
       quantity: formValues.quantity,
       orderType: formValues.orderType,

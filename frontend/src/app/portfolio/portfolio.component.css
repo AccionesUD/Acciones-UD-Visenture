@@ -115,3 +115,88 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Estilos para scroll horizontal */
+.overflow-x-auto {
+  overflow-x: auto;
+  scrollbar-width: thin; /* Para Firefox */
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Para Firefox */
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+/* Barra de desplazamiento personalizada para Chrome, Edge, y Safari */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.8);
+}
+
+/* Estilos para modo oscuro */
+.dark .overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(75, 85, 99, 0.5);
+}
+
+.dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(75, 85, 99, 0.7);
+}
+
+.dark .overflow-x-auto {
+  scrollbar-color: rgba(75, 85, 99, 0.5) transparent; /* Para Firefox en modo oscuro */
+}
+
+/* Asegurar que todos los elementos dentro de la tabla tengan el mismo ancho mínimo */
+.min-w-full {
+  min-width: 1000px; /* Ancho mínimo para asegurar scroll en pantallas pequeñas */
+}
+
+/* Indicador visual de scroll horizontal */
+.scroll-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  padding: 4px 6px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 3px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.overflow-x-auto:hover .scroll-indicator {
+  opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+  .overflow-x-auto .scroll-indicator {
+    opacity: 0.7;
+  }
+}
+
+/* Corregir el ancho del paginador para que coincida con la tabla */
+::ng-deep .mat-mdc-paginator-container {
+  min-width: 100%;
+  justify-content: space-between;
+}
+
+/* Aseguramos que el header y el paginador se expandan correctamente */
+.overflow-x-auto > div {
+  display: inline-block;
+  min-width: 100%;
+}
+
