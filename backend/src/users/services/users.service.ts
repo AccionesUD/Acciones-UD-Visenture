@@ -115,4 +115,25 @@ export class UsersService {
     await this.userRepository.save(user);
     return { message: 'Rol actualizado', roles: user.roles.map((r) => r.name) };
   }
+
+  // src/users/services/users.service.ts
+  // Obtener perfil
+  // src/users/services/users.service.ts
+
+  async getProfileCompleto(identity_document: string) {
+    const user = await this.userRepository.findOne({
+      where: { identity_document },
+      relations: ['account'],
+    });
+
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    return {
+      identity_document: user.identity_document,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.account?.email,
+      phone: user.phone,
+    };
+  }
 }

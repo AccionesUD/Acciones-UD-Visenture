@@ -13,6 +13,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateUserRoleDto } from './dtos/update-user-role.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
+import { AuthUser } from 'src/auth/interfaces/auth-user.interface';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -85,5 +86,12 @@ export class UsersController {
     @Body() body: UpdateUserRoleDto,
   ) {
     return this.usersService.updateUserRole(id, body.roleIds);
+  }
+
+  @Get('perfilCompleto')
+  @UseGuards(JwtAuthGuard)
+  async getProfileCompleto(@Req() req: Request & { user: AuthUser }) {
+    const identity_document: string = String(req.user.userId);
+    return this.usersService.getProfileCompleto(identity_document);
   }
 }
