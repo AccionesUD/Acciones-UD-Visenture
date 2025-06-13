@@ -24,12 +24,34 @@ export class StocksService {
   private marketsInitialized = false;
   
   constructor(private http: HttpClient) { 
-    // No cargamos automáticamente los stocks al iniciar el servicio
-    // Ahora esperaremos a que se inicialice explícitamente
+    // Ahora intentaremos cargar los stocks al iniciar el servicio
+    // Si no hay mercados, se inicializarán automáticamente
+    this.loadAndInitializeIfNeeded();
   }
   
   /**
-   * Inicializa los mercados en el backend (obligatorio antes de usar los mercados)
+   * Método principal para cargar mercados y, si es necesario, inicializarlos
+   */
+  private loadAndInitializeIfNeeded(): void {
+    this.getStocksFromBackend().pipe(
+      switchMap(stocks => {
+        if (stocks.length === 0) {
+          console.log('No hay mercados disponibles, inicializando automáticamente...');
+          return this.initializeMarkets();
+        }
+        return of({ success: true, message: 'Mercados ya existentes', count: stocks.length });
+      }),
+      catchError(error => {
+        console.error('Error al cargar/inicializar mercados:', error);
+        return of({ success: false, message: 'Error al cargar/inicializar mercados', count: 0 });
+      })
+    ).subscribe(result => {
+      console.log('Resultado de carga/inicialización de mercados:', result);
+    });
+  }
+  
+  /**
+   * Inicializa los mercados en el backend (ahora público por compatibilidad, pero idealmente no se llamaría directamente)
    */
   initializeMarkets(): Observable<StockInitResponse> {
     return this.http.post<StockInitResponse>(`${this.apiUrl}/inicializacion`, {}).pipe(
@@ -63,14 +85,14 @@ export class StocksService {
         if (this.stocksCache.length > 0) {
           return of(this.stocksCache); // Devolvemos la caché si hay error
         }
-        return throwError(() => new Error('Error al obtener mercados'));
+        return of([]); // Devolvemos array vacío para manejar el flujo de inicialización
       })
     );
   }
   
   /**
    * Obtiene todos los stocks (mercados) disponibles
-   * Ya no inicializa automáticamente, solo devuelve los mercados disponibles
+   * Ahora intenta inicializar automáticamente si no hay datos
    */
   getStocks(): Observable<Stock[]> {
     // Si tenemos datos en caché, los devolvemos primero
@@ -80,8 +102,22 @@ export class StocksService {
       return of(this.stocksCache);
     }
     
-    // Si no hay caché, cargamos desde backend (sin inicializar)
-    return this.getStocksFromBackend();
+    // Si no hay caché, intentamos cargar y, si es necesario, inicializar
+    return this.getStocksFromBackend().pipe(
+      switchMap(stocks => {
+        if (stocks.length === 0) {
+          console.log('No hay mercados disponibles en getStocks, intentando inicializar...');
+          return this.initializeMarkets().pipe(
+            switchMap(() => this.getStocksFromBackend())
+          );
+        }
+        return of(stocks);
+      }),
+      catchError(error => {
+        console.error('Error en getStocks:', error);
+        return this.getFallbackStocks();
+      })
+    );
   }
   
   /**
@@ -90,35 +126,71 @@ export class StocksService {
   areMarketsInitialized(): boolean {
     return this.marketsInitialized;
   }
-  
-  /**
+    /**
    * Obtiene un stock (mercado) específico por su ID (MIC)
+   * Si los mercados no están inicializados, intenta inicializarlos automáticamente
    */
   getStockDetails(mic: string): Observable<Stock> {
+    console.log(`[StocksService] Solicitando detalles del mercado con MIC: ${mic}`);
+    
     // Primero, intentamos encontrarlo en la caché
     const cachedStock = this.stocksCache.find(stock => stock.mic === mic);
     if (cachedStock) {
+      console.log(`[StocksService] Mercado ${mic} encontrado en caché:`, cachedStock);
       return of(cachedStock);
     }
     
-    return this.http.get<Stock>(`${this.apiUrl}/${mic}`).pipe(
-      catchError(error => {
-        console.error(`Error al obtener detalles del stock (mercado) ${mic}:`, error);
-        
-        // Si el error es 404, intentamos obtener todos los stocks para actualizar la caché
-        if (error instanceof HttpErrorResponse && error.status === 404) {
-          return this.getStocks().pipe(
+    // Si no está en caché, verificamos si se deben inicializar los mercados
+    if (this.stocksCache.length === 0 && !this.marketsInitialized) {
+      console.log(`[StocksService] No hay mercados en caché. Intentando inicializar...`);
+      
+      // Intentar inicializar mercados y luego buscar el específico
+      return this.initializeMarkets().pipe(
+        switchMap(() => {
+          console.log(`[StocksService] Mercados inicializados. Buscando mercado ${mic}...`);
+          return this.getStocksFromBackend().pipe(
             map(stocks => {
+              console.log(`[StocksService] Obtenidos ${stocks.length} mercados. Buscando ${mic}...`);
               const foundStock = stocks.find(s => s.mic === mic);
               if (!foundStock) {
+                console.error(`[StocksService] No se encontró el mercado ${mic} después de inicializar`);
                 throw new Error(`No se encontró el mercado con MIC: ${mic}`);
               }
               return foundStock;
             })
           );
+        }),
+        catchError(error => {
+          console.error(`[StocksService] Error al inicializar mercados para obtener ${mic}:`, error);
+          return throwError(() => new Error(`No se pudo inicializar los mercados: ${error.message}`));
+        })
+      );
+    }
+    
+    // Intento normal de obtener el mercado directamente desde la API
+    return this.http.get<Stock>(`${this.apiUrl}/${mic}`).pipe(
+      tap(stock => console.log(`[StocksService] Mercado ${mic} obtenido directamente de la API:`, stock)),
+      catchError(error => {
+        console.error(`[StocksService] Error al obtener detalles del stock (mercado) ${mic}:`, error);
+        
+        // Si el error es 404, intentamos obtener todos los stocks para actualizar la caché
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          console.log(`[StocksService] Mercado ${mic} no encontrado directamente. Intentando a través de getStocks()`);
+          
+          return this.getStocks().pipe(
+            map(stocks => {
+              const foundStock = stocks.find(s => s.mic === mic);
+              if (!foundStock) {
+                console.error(`[StocksService] Mercado ${mic} no encontrado en la lista completa de mercados`);
+                throw new Error(`No se encontró el mercado con MIC: ${mic}`);
+              }
+              console.log(`[StocksService] Mercado ${mic} encontrado en la lista completa:`, foundStock);
+              return foundStock;
+            })
+          );
         }
         
-        return throwError(() => new Error(`Error al obtener detalles del mercado ${mic}`));
+        return throwError(() => new Error(`Error al obtener detalles del mercado ${mic}: ${error.message}`));
       })
     );
   }

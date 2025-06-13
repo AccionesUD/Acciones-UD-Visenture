@@ -264,7 +264,7 @@ export class SellStockModalComponent implements OnInit {
     
     const formValues = this.sellForm.value;
     const sellOrder: SellOrder = {
-      stockId: this.data.stock.id,
+      stockId: this.data.stock.id.toString(),
       stockSymbol: this.data.stock.symbol,
       quantity: formValues.quantity,
       orderType: formValues.orderType,

@@ -1,14 +1,16 @@
+import { Stock } from './stock.model';
+
 // Modelo para la entidad acciones (shares) en el backend
 export interface Share {
-  id?: number;              // ID de la acción en la base de datos
-  class: string;            // Clase de acción (ej: 'Common Stock')
-  ticker: string;           // Símbolo/ticker de la acción (ej: 'AAPL')
-  name_share: string;       // Nombre de la acción/empresa
-  sector: string;           // Sector al que pertenece la acción
-  status: boolean;          // Estado activo/inactivo
-  tradable: boolean;        // Si la acción se puede negociar
-  stock?: any;              // Mercado al que pertenece (relación con Stock)
-  mic_stock_market: string; // Código MIC del mercado asociado
+  id?: number;                // ID de la acción en la base de datos
+  symbol: string;             // Símbolo de la acción (ej: 'AAPL')
+  ticker?: string;            // Alias para símbolo, opcional
+  class?: string;             // Clase de la acción (ej: 'common', 'preferred')
+  name_share: string;         // Nombre de la acción/empresa
+  sector: string | null;      // Sector al que pertenece la acción
+  status: 'active' | 'inactive'; // Estado de la acción
+  tradable: boolean;          // Si la acción se puede negociar
+  stock?: Stock;              // Mercado al que pertenece (relación con Stock)
 }
 
 // Modelo para crear una nueva acción

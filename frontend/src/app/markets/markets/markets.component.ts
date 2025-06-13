@@ -80,10 +80,9 @@ export class MarketsComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
-  /**
+    /**
    * Carga la lista de mercados
-   * Si la lista está vacía y no hubo un error, intenta inicializar automáticamente
+   * El servicio ya maneja la inicialización automática si no hay mercados
    */
   loadStocks(): void {
     this.isLoading = true;
@@ -93,14 +92,15 @@ export class MarketsComponent implements OnInit, OnDestroy {
       next: (data) => {
         this.stocks = data;
         this.isInitialized = data.length > 0;
+        console.log('Mercados cargados:', this.stocks);
+        this.isLoading = false;
         
-        // Si no hay mercados, intentamos inicializar automáticamente
-        if (data.length === 0) {
-          console.log('No se encontraron mercados, intentando inicializar...');
-          this.initializeMarkets();
-        } else {
-          console.log('Mercados cargados:', this.stocks);
-          this.isLoading = false;
+        // Actualizar estado de mercados desde Alpaca inmediatamente
+        this.updateStockStatus();
+        
+        // Verificar si están inicializados
+        if (this.stocksService.areMarketsInitialized()) {
+          console.log('Los mercados ya están inicializados');
         }
       },
       error: (err) => {
@@ -215,21 +215,61 @@ export class MarketsComponent implements OnInit, OnDestroy {
   updateStockStatus(): void {
     // Solo actualizamos si hay mercados cargados
     if (this.stocks.length === 0 || !this.isInitialized) {
+      console.log('No hay mercados para actualizar el estado');
       return;
     }
     
+    console.log('Actualizando estado de mercados...');
+    
+    // Utilizamos el servicio de Alpaca para obtener el estado del mercado
     this.alpacaService.getMarketStatus().subscribe({
       next: (status) => {
-        console.log('Estado actual del mercado:', status);
-        // Actualizamos el estado de los mercados
-        this.stocks = this.stocks.map(stock => ({
-          ...stock,
-          status: status.is_open ? 'active' : 'inactive',
-          is_open: status.is_open
-        }));
+        console.log('Estado actual del mercado desde Alpaca:', status);
+        
+        // Obtenemos información útil del status
+        const currentTime = new Date(status.timestamp);
+        const nextOpenTime = new Date(status.next_open);
+        const nextCloseTime = new Date(status.next_close);
+        
+        const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+        
+        // Actualizamos el estado de los mercados en la UI
+        this.stocks = this.stocks.map(stock => {
+          // En un sistema real, podríamos tener lógica específica por mercado
+          // Por ahora, todos los mercados comparten el mismo estado
+          const isOpen = status.is_open;
+          
+          // Log detallado para depuración
+          console.log(`Actualizando estado de mercado ${stock.name_market} (${stock.mic}): ${isOpen ? 'Abierto' : 'Cerrado'}`);
+          console.log(`  - Próxima apertura: ${nextOpenTime.toLocaleTimeString([], timeOptions as Intl.DateTimeFormatOptions)}`);
+          console.log(`  - Próximo cierre: ${nextCloseTime.toLocaleTimeString([], timeOptions as Intl.DateTimeFormatOptions)}`);
+          
+          return {
+            ...stock,
+            status: isOpen ? 'active' : 'inactive',
+            is_open: isOpen
+          };
+        });
       },
       error: (err) => {
         console.error('Error al actualizar estado de mercados:', err);
+        // En caso de error, intentamos calcular localmente si está abierto
+        // basándonos en la hora del cliente (menos preciso pero funcional como fallback)
+        this.stocks = this.stocks.map(stock => {
+          // Extraer horas y minutos de los strings "HH:MM"
+          const [openHour, openMinute] = stock.opening_time.split(':').map(Number);
+          const [closeHour, closeMinute] = stock.closing_time.split(':').map(Number);
+          
+          // Usar una función auxiliar para calcular si está abierto
+          const isOpen = this.isMarketOpenLocally(openHour, openMinute, closeHour, closeMinute);
+          console.log(`Fallback: Estado calculado localmente para ${stock.name_market}: ${isOpen ? 'Abierto' : 'Cerrado'}`);
+          
+          return {
+            ...stock,
+            status: isOpen ? 'active' : 'inactive',
+            is_open: isOpen
+          };
+        });
       }
     });
   }
@@ -241,5 +281,27 @@ export class MarketsComponent implements OnInit, OnDestroy {
   navigateToStockDetail(stock: Stock): void {
     // Navegamos al detalle del mercado usando su MIC
     this.router.navigate(['/markets', stock.mic]);
+  }
+  
+  /**
+   * Calcula localmente si un mercado está abierto basado en la hora del cliente
+   * Método de fallback para cuando no se puede obtener el estado real de Alpaca
+   */
+  private isMarketOpenLocally(openHour: number, openMinute: number, closeHour: number, closeMinute: number): boolean {
+    const now = new Date();
+    const day = now.getDay();
+    
+    // Verificar si es fin de semana (0 = Domingo, 6 = Sábado)
+    if (day === 0 || day === 6) {
+      return false;
+    }
+    
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const currentTimeInMinutes = hours * 60 + minutes;
+    const openTimeInMinutes = openHour * 60 + openMinute;
+    const closeTimeInMinutes = closeHour * 60 + closeMinute;
+    
+    return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
   }
 }

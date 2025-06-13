@@ -18,14 +18,15 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { SellStockModalComponent } from '../../shared/modals/sell-stock-modal/sell-stock-modal.component';
 import { AlertDialogComponent } from '../../shared/modals/alert-dialog/alert-dialog.component';
 import { PortfolioService } from '../../services/portfolio.service';
-import { Subject, interval } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, interval, forkJoin } from 'rxjs';
+import { takeUntil, map } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
+import { BuyStockModalComponent } from '../../shared/modals/buy-stock-modal/buy-stock-modal.component';
+import { SnapshotModalComponent, SnapshotData } from '../../shared/modals/snapshot-modal/snapshot-modal.component';
 
 @Component({
   selector: 'app-market-detail',
-  standalone: true,  
-  imports: [
+  standalone: true,    imports: [
     CommonModule,
     MatCardModule,
     MatButtonModule,
@@ -35,7 +36,11 @@ import { RouterLink } from '@angular/router';
     FormsModule,
     MatDialogModule,
     MatSnackBarModule,
-    RouterLink
+    RouterLink,
+    BuyStockModalComponent,
+    SnapshotModalComponent,
+    SellStockModalComponent,
+    AlertDialogComponent
   ],
   templateUrl: './market-detail.component.html',  
   animations: [
@@ -50,6 +55,7 @@ import { RouterLink } from '@angular/router';
 export class MarketDetailComponent implements OnInit, OnDestroy {  
   stock: Stock | undefined; // Mercado actual
   shares: Share[] = []; // Lista de acciones del mercado
+  shareQuotes: Record<string, { price: number; changePercent: number } | undefined> = {};
   isLoading = true;
   error: string | null = null;
   isLoadingShares = false;
@@ -75,20 +81,14 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) { }
-  
-  ngOnInit(): void {
-    // Primero verificamos si los mercados están inicializados
-    this.isInitialized = this.stocksService.areMarketsInitialized();
-    
-    if (!this.isInitialized) {
-      this.error = 'Los mercados no han sido inicializados. Por favor, regresa a la lista de mercados e inicializa primero.';
-      this.isLoading = false;
-      return;
-    }
+    ngOnInit(): void {
+    // Ya no comprobamos la inicialización, sino que confiamos en que el servicio lo manejará
+    console.log('[MarketDetail] Iniciando componente de detalle de mercado');
     
     this.route.params.subscribe(params => {
       const marketId = params['id'];
       if (marketId) {
+        console.log(`[MarketDetail] Cargando detalles del mercado con ID: ${marketId}`);
         this.loadStockDetails(marketId);
       } else {
         this.error = 'No se pudo encontrar el ID del mercado';
@@ -106,15 +106,17 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
-  loadStockDetails(stockId: string): void {
+    loadStockDetails(stockId: string): void {
     this.isLoading = true;
+    console.log(`[MarketDetail] Solicitando detalles del mercado ${stockId}`);
     
+    // Si los mercados no están inicializados, el servicio se encargará de inicializarlos
     this.stocksService.getStockDetails(stockId).subscribe({
       next: (stock) => {
         this.stock = stock;
+        this.isInitialized = true; // Si llegamos aquí, significa que hay datos disponibles
         this.isLoading = false;
-        console.log('Detalle del mercado cargado:', this.stock);
+        console.log('[MarketDetail] Detalle del mercado cargado:', this.stock);
         
         // Una vez que tenemos el mercado, cargamos sus acciones
         this.loadShares(stock.mic);
@@ -122,9 +124,18 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
         this.updateMarketStatus();
       },
       error: (err) => {
-        this.error = `Error al cargar los detalles del mercado: ${err.message}`;
-        this.isLoading = false;
-        console.error('Error al cargar detalles del mercado:', err);
+        console.error('[MarketDetail] Error al cargar detalles del mercado:', err);
+        
+        if (err.message && err.message.includes('inicializar')) {
+          // Error específico de inicialización
+          this.error = 'Es necesario inicializar los mercados. Se intentará hacer automáticamente...';
+          
+          // Intentar inicializar los mercados automáticamente
+          this.initializeMarketsAndRetry(stockId);
+        } else {
+          this.error = `Error al cargar los detalles del mercado: ${err.message}`;
+          this.isLoading = false;
+        }
       }
     });
   }
@@ -133,11 +144,55 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
     this.isLoadingShares = true;
     this.sharesError = null;
     
+    console.log(`[MarketDetail] Solicitando acciones para mercado con MIC: ${stockMic}`);
+    
     this.sharesService.getSharesByMarket(stockMic).subscribe({
       next: (shares) => {
+        console.log(`[MarketDetail] Recibidas ${shares.length} acciones para el mercado ${stockMic}`);
         this.shares = shares;
+        
+        // Mostrar debug de los primeros 3 elementos si hay acciones
+        if (shares.length > 0) {
+          const debugSample = shares.slice(0, 3).map(s => ({ 
+            ticker: s.ticker, 
+            name: s.name_share,
+            mic: s.stock 
+          }));
+          console.log('[MarketDetail] Muestra de acciones recibidas:', debugSample);
+        } else {
+          console.warn(`[MarketDetail] No se encontraron acciones para el mercado ${stockMic}`);
+        }
+        
         this.isLoadingShares = false;
         
+        // Cargar cotizaciones actuales para cada acción
+        if (shares.length > 0) {
+          console.log(`[MarketDetail] Solicitando cotizaciones en tiempo real para ${shares.length} acciones`);
+          // Filtramos las acciones que tienen ticker definido
+          const sharesWithTickers = this.shares.filter(s => s.ticker);
+          console.log(`[MarketDetail] ${sharesWithTickers.length} acciones tienen ticker definido`);
+          
+          if (sharesWithTickers.length > 0) {
+            const quoteCalls = this.shares.map(s =>
+              this.alpacaService.getSymbolSnapshot(s.symbol).pipe(
+                map(snapshot => {
+                  console.log(`[MarketDetail] Snapshot recibido para ${s.symbol}:`, snapshot);
+                  return {
+                    symbol: s.symbol,
+                    price: snapshot.latestTrade?.price,
+                    changePercent: snapshot.latestQuote
+                      ? (snapshot.latestQuote.askPrice - snapshot.latestQuote.bidPrice) / snapshot.latestQuote.bidPrice * 100
+                      : 0
+                  };
+                })
+              )
+            );
+            forkJoin(quoteCalls).subscribe(results => {
+              results.forEach(q => this.shareQuotes[q.symbol] = { price: q.price!, changePercent: q.changePercent! });
+            });
+          }
+        }
+
         // Seleccionamos algunas acciones destacadas
         if (shares.length > 0) {
           this.featuredShares = shares.slice(0, Math.min(4, shares.length));
@@ -152,23 +207,69 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
-  updateMarketStatus(): void {
+    updateMarketStatus(): void {
+    console.log('[MarketDetail] Actualizando estado del mercado');
+    
     this.alpacaService.getMarketStatus().subscribe({
       next: (status) => {
         this.marketClock = status;
-        console.log('Estado del mercado actualizado:', status);
+        console.log('[MarketDetail] Estado del mercado recibido de Alpaca:', status);
+        
+        // Formatear fechas para mostrar información más útil
+        const currentTime = new Date(status.timestamp);
+        const nextOpenTime = new Date(status.next_open);
+        const nextCloseTime = new Date(status.next_close);
+        
+        console.log(`[MarketDetail] Hora actual: ${currentTime.toLocaleString()}`);
+        console.log(`[MarketDetail] Próxima apertura: ${nextOpenTime.toLocaleString()}`);
+        console.log(`[MarketDetail] Próximo cierre: ${nextCloseTime.toLocaleString()}`);
+        console.log(`[MarketDetail] ¿Mercado abierto?: ${status.is_open}`);
         
         // Actualizar el estado del mercado actual
         if (this.stock) {
           this.stock = {
             ...this.stock,
+            status: status.is_open ? 'active' : 'inactive',
             is_open: status.is_open
           };
+          console.log(`[MarketDetail] Estado del mercado ${this.stock.name_market} actualizado a ${status.is_open ? 'abierto' : 'cerrado'}`);
         }
       },
       error: (err) => {
-        console.error('Error al actualizar estado del mercado:', err);
+        console.error('[MarketDetail] Error al actualizar estado del mercado:', err);
+        
+        // Si falla la actualización de estado, intentamos determinar el estado basado en la hora local
+        // como fallback (menos preciso pero funcional)
+        if (this.stock) {
+          try {
+            const [openHour, openMinute] = this.stock.opening_time.split(':').map(Number);
+            const [closeHour, closeMinute] = this.stock.closing_time.split(':').map(Number);
+            
+            const now = new Date();
+            const day = now.getDay();
+            
+            // Verificar si es fin de semana (0 = Domingo, 6 = Sábado)
+            let isOpen = false;
+            if (day !== 0 && day !== 6) {
+              const hours = now.getHours();
+              const minutes = now.getMinutes();
+              const currentTimeInMinutes = hours * 60 + minutes;
+              const openTimeInMinutes = openHour * 60 + openMinute;
+              const closeTimeInMinutes = closeHour * 60 + closeMinute;
+              
+              isOpen = currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
+            }
+            
+            console.log(`[MarketDetail] Estado calculado localmente: ${isOpen ? 'abierto' : 'cerrado'}`);
+            this.stock = {
+              ...this.stock,
+              status: isOpen ? 'active' : 'inactive',
+              is_open: isOpen
+            };
+          } catch (e) {
+            console.error('[MarketDetail] Error al calcular estado local:', e);
+          }
+        }
       }
     });
   }
@@ -180,28 +281,173 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
   getStatusClass(isOpen: boolean | undefined): string {
     return isOpen ? 'success' : 'closed';
   }
+    buyShare(share: Share): void {
+    // Obtener precio actual y abrir modal de compra
+    const symbol = share.symbol;
+    if (!symbol) {
+      this.snackBar.open('Símbolo de acción inválido.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    this.alpacaService.getSymbolSnapshot(symbol).subscribe({
+      next: snapshot => {
+        const price = snapshot.latestTrade?.price ?? 0;
+        
+        // Creamos un objeto de tipo Stock compatible con BuyStockModalComponent
+        const stockForModal = {
+          symbol: share.symbol,
+          name: share.name_share,
+          exchange: share.stock?.mic || '',
+          type: share.class || '',
+          currency: 'USD', // Por defecto USD
+          current_price: price
+        };
+        
+        const dialogRef = this.dialog.open(BuyStockModalComponent, {
+          width: '500px',
+          maxHeight: '90vh',
+          data: {
+            stock: stockForModal,
+            price: price,
+            maxQuantity: 1000
+          },
+          panelClass: 'custom-dialog-container',
+          autoFocus: false
+        });
+        
+        dialogRef.afterClosed().subscribe(result => {
+          if (result?.success) {
+            this.snackBar.open('Compra completada exitosamente.', 'Aceptar', { duration: 3000 });
+            // Opcional: recargar acciones o actualizar estado
+          }
+        });
+      },
+      error: err => {
+        console.error('Error al obtener snapshot para compra:', err);
+        this.snackBar.open(`No se pudo obtener precio para ${symbol}.`, 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  navigateToShareDetail(share: Share): void {
+    const symbol = share.symbol;
+    if (!symbol) {
+      this.snackBar.open('Símbolo inválido para detalles.', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    // Mostrar snapshot en modal
+    this.alpacaService.getSymbolSnapshot(symbol).subscribe({
+      next: snapshot => {
+        const data: SnapshotData = snapshot;
+        this.dialog.open(SnapshotModalComponent, { data });
+      },
+      error: err => {
+        console.error('Error al obtener snapshot para detalles:', err);
+        this.snackBar.open('No se pudo obtener detalles de snapshot.', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
   
-  buyShare(share: Share): void {
-    // Verificar si el mercado está inicializado
-    if (!this.isInitialized) {
-      this.snackBar.open('Los mercados no están inicializados. Por favor, inicialícelos primero.', 'Cerrar', {
-        duration: 5000
-      });
+  /**
+   * Navegar de vuelta a la lista de mercados
+   */
+  goBack(): void {
+    this.router.navigate(['/markets']);
+  }
+  
+  /**
+   * Inicializa los mercados y luego reintenta cargar los detalles del mercado específico
+   */
+  private initializeMarketsAndRetry(stockId: string): void {
+    console.log('[MarketDetail] Intentando inicializar mercados automáticamente');
+    
+    this.stocksService.initializeMarkets().subscribe({
+      next: (response) => {
+        console.log('[MarketDetail] Mercados inicializados automáticamente:', response);
+        
+        // Mostramos mensaje de éxito brevemente
+        this.snackBar.open('Mercados inicializados correctamente', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+        
+        // Volver a intentar cargar los detalles del mercado después de la inicialización
+        setTimeout(() => {
+          console.log('[MarketDetail] Reintentando cargar detalles del mercado');
+          this.error = null;
+          this.loadStockDetails(stockId);
+        }, 1000);
+      },
+      error: (err) => {
+        console.error('[MarketDetail] Error durante la inicialización automática:', err);
+        this.error = `No se pudieron inicializar los mercados: ${err.message}. Por favor, intenta desde la página principal.`;
+        this.isLoading = false;
+        
+        // Mostramos mensaje de error
+        this.snackBar.open('Error al inicializar mercados', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  sellShare(share: Share): void {
+    const symbol = share.symbol;
+    if (!symbol) {
+      this.snackBar.open('Símbolo de acción inválido.', 'Cerrar', { duration: 3000 });
       return;
     }
     
-    // Implementar lógica para comprar acción
-    console.log('Comprar acción:', share);
-    
-    // Aquí iría el código para abrir el modal de compra o redirigir a página de compra
-  }
-  
-  navigateToShareDetail(share: Share): void {
-    // Navegación al detalle de la acción
-    this.router.navigate(['/actions', share.ticker]);
-  }
-  
-  goBack(): void {
-    this.router.navigate(['/markets']);
+    this.alpacaService.getSymbolSnapshot(symbol).subscribe({
+      next: snapshot => {
+        const price = snapshot.latestTrade?.price ?? 0;
+        
+        // Creamos un objeto de tipo Stock compatible con SellStockModalComponent
+        const stockForModal = {
+          symbol: share.symbol,
+          name: share.name_share,
+          exchange: share.stock?.mic || '',
+          type: share.class || '',
+          currency: 'USD',
+          current_price: price,
+          unitValue: price
+        };
+        
+        const dialogRef = this.dialog.open(SellStockModalComponent, {
+          width: '500px',
+          maxHeight: '90vh',
+          data: { 
+            stock: stockForModal, 
+            price: price 
+          },
+          panelClass: 'custom-dialog-container',
+          autoFocus: false
+        });
+        
+        dialogRef.afterClosed().subscribe(result => {
+          if (result && result.success) {
+            this.snackBar.open('Orden de venta procesada exitosamente.', 'Aceptar', { duration: 3000 });
+            
+            // Opcional: mostrar un diálogo de confirmación más detallado
+            if (result.status === 'completed') {
+              this.dialog.open(AlertDialogComponent, {
+                width: '400px',
+                data: { 
+                  title: 'Venta completada',
+                  message: `Has vendido ${result.quantity} acciones de ${symbol} por un total de ${result.totalAmount.toFixed(2)} USD.`,
+                  icon: 'check_circle',
+                  confirmText: 'Aceptar'
+                }
+              });
+            }
+          }
+        });
+      },
+      error: err => {
+        console.error('[MarketDetail] Error al obtener snapshot para venta:', err);
+        this.snackBar.open(`No se pudo obtener precio para ${symbol}.`, 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 }

@@ -382,16 +382,29 @@ export class AlpacaDataService {
 
   getSymbolSnapshot(symbol: string): Observable<any> {
     const url = `${this.dataBaseUrl}/stocks/${symbol}/snapshot`;
-    
     return this.http.get<any>(url, { headers: this.headers }).pipe(
       map(response => {
-        console.log(`Respuesta de snapshot para ${symbol}:`, response);
-        return response;
+        console.log(`Alpaca snapshot response for ${symbol}:`, response);
+        // Devolver datos relevantes del snapshot
+        return {
+          symbol: response.symbol,
+          latestTrade: {
+            price: response.latestTrade?.price,
+            timestamp: response.latestTrade?.timestamp
+          },
+          latestQuote: {
+            bidPrice: response.latestQuote?.bidprice,
+            askPrice: response.latestQuote?.askprice,
+            timestamp: response.latestQuote?.timestamp
+          },
+          dailyBar: response.dailyBar,
+          prevDailyBar: response.prevDailyBar
+        };
       }),
       catchError(error => {
-        console.error(`Error al obtener snapshot para ${symbol}:`, error);
-        const errorMsg = error.status === 403 
-          ? `Error de permisos (403) al obtener snapshot. Verifique su API Key.`
+        console.error(`Error fetching snapshot for ${symbol}:`, error);
+        const errorMsg = error.status === 403
+          ? `Permisos denegados (403) al obtener snapshot para ${symbol}`
           : `Error al obtener snapshot para ${symbol}`;
         return throwError(() => new Error(errorMsg));
       })

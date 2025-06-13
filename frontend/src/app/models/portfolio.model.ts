@@ -34,7 +34,7 @@ export interface PortfolioSummary {
 }
 
 export interface PortfolioPosition {
-  id: string;
+  id: number;
   share: PortfolioShare;  // Acción
   quantity: number;
   averagePrice: number;
@@ -43,7 +43,7 @@ export interface PortfolioPosition {
 }
 
 export interface Portfolio {
-  id: string;
+  id: number;
   userId: string;
   balance: number;
   positions: PortfolioPosition[];
