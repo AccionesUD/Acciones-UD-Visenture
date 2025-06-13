@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
+import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -10,6 +11,10 @@ import { environment } from '../../environments/environment';
 })
 export class ProfileService {
   private apiUrl = environment.apiUrl;
+  
+  // BehaviorSubject para mantener el perfil del usuario actual
+  private userProfileSubject = new BehaviorSubject<User | null>(null);
+  public userProfile$ = this.userProfileSubject.asObservable();
 
   constructor(private http: HttpClient) { }
   // Obtener las preferencias del usuario
@@ -56,35 +61,95 @@ export class ProfileService {
     );
   }
 
-  // Obtener información del perfil del usuario
-  getUserProfileInfo(): Observable<any> {
-    // En producción: return this.http.get<any>(`${this.apiUrl}/profile`);
+  /**
+   * Obtiene el perfil completo del usuario
+   */
+  getUserProfile(): Observable<User> {
+    // Si ya tenemos el perfil en caché, lo retornamos
+    if (this.userProfileSubject.value) {
+      return of(this.userProfileSubject.value);
+    }
+    
+    // En producción: return this.http.get<User>(`${this.apiUrl}/profile`).pipe(...
     
     // Mock para desarrollo
-    return of({
+    const mockProfile: User = {
       id: 1,
-      name: 'Juan Pérez',
+      identity_document: '1234567890',
+      first_name: 'Juan',
+      last_name: 'Pérez',
       email: 'juan.perez@example.com',
-      phone: '123-456-7890',
-      created_at: '2023-01-15',
-      subscription_type: 'Premium',
-      broker: 'XYZ Investments'
-    }).pipe(
-      tap(profile => console.log('User profile loaded:', profile)),
-      catchError(this.handleError<any>('getUserProfileInfo'))
+      phone_number: '+57 300 123 4567',
+      birthdate: new Date('1990-01-15')
+    };
+    
+    return of(mockProfile).pipe(
+      tap(profile => {
+        console.log('User profile loaded:', profile);
+        this.userProfileSubject.next(profile);
+      }),
+      catchError(this.handleError<User>('getUserProfile'))
     );
   }
-  // Actualizar información del perfil
-  updateProfileInfo(profileData: any): Observable<any> {
-    // En producción: return this.http.put<any>(`${this.apiUrl}/profile`, profileData);
+  
+  /**
+   * Obtener información básica del perfil (para compatibilidad)
+   */
+  getUserProfileInfo(): Observable<any> {
+    return this.getUserProfile().pipe(
+      map(profile => ({
+        id: profile.id,
+        name: `${profile.first_name} ${profile.last_name}`,
+        email: profile.email,
+        phone: profile.phone_number,
+        created_at: '2023-01-15',
+        subscription_type: 'Premium',
+        broker: 'XYZ Investments'
+      }))
+    );
+  }
+  
+  /**
+   * Actualiza los datos del perfil del usuario
+   */
+  updateProfile(profileData: UpdateProfileDto): Observable<ProfileUpdateResponse> {
+    // En producción: return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/profile`, profileData).pipe(...
     
     // Mock para desarrollo
-    return of({
-      ...profileData,
-      updated_at: new Date().toISOString()
+    return this.getUserProfile().pipe(
+      map(currentProfile => {
+        const updatedProfile = {
+          ...currentProfile,
+          ...profileData
+        };
+        
+        this.userProfileSubject.next(updatedProfile);
+        
+        return {
+          success: true,
+          message: 'Perfil actualizado correctamente',
+          data: updatedProfile
+        };
+      }),
+      catchError(this.handleError<ProfileUpdateResponse>('updateProfile', {
+        success: false,
+        message: 'Error al actualizar el perfil'
+      }))
+    );
+  }
+  
+  /**
+   * Para compatibilidad con código existente
+   */
+  updateProfileInfo(profileData: any): Observable<any> {
+    return this.updateProfile({
+      email: profileData.email,
+      phone_number: profileData.phone
     }).pipe(
-      tap(profile => console.log('Profile updated:', profile)),
-      catchError(this.handleError<any>('updateProfileInfo'))
+      map(response => ({
+        ...response.data,
+        updated_at: new Date().toISOString()
+      }))
     );
   }
   // Obtener lista de tickers disponibles
@@ -153,15 +218,54 @@ export class ProfileService {
     );
   }
 
-  // Cambiar contraseña
-  changePassword(passwords: { current: string, new: string, confirm: string }): Observable<any> {
-    // En producción: return this.http.post<any>(`${this.apiUrl}/profile/change-password`, passwords);
+  /**
+   * Cambiar contraseña del usuario
+   */
+  changePassword(passwordData: ChangePasswordDto): Observable<ProfileUpdateResponse> {
+    // En producción: return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/profile/password`, passwordData).pipe(...
     
-    // Mock para desarrollo
-    return of({ success: true, message: 'Contraseña actualizada correctamente' }).pipe(
+    // Mock para desarrollo: validamos que la contraseña actual sea "password123" para simular verificación
+    if (passwordData.current_password !== 'password123') {
+      return of({
+        success: false,
+        message: 'La contraseña actual es incorrecta'
+      }).pipe(
+        tap(result => console.log('Password change result:', result))
+      );
+    }
+    
+    // Verificamos que las contraseñas nuevas coincidan
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      return of({
+        success: false,
+        message: 'Las contraseñas nuevas no coinciden'
+      }).pipe(
+        tap(result => console.log('Password change result:', result))
+      );
+    }
+    
+    // Si todo está bien, simulamos éxito
+    return of({
+      success: true,
+      message: 'Contraseña actualizada correctamente'
+    }).pipe(
       tap(result => console.log('Password change result:', result)),
-      catchError(this.handleError<any>('changePassword'))
+      catchError(this.handleError<ProfileUpdateResponse>('changePassword', {
+        success: false,
+        message: 'Error al cambiar la contraseña'
+      }))
     );
+  }
+  
+  /**
+   * Compatibilidad con el formato anterior
+   */
+  changePasswordLegacy(passwords: { current: string, new: string, confirm: string }): Observable<any> {
+    return this.changePassword({
+      current_password: passwords.current,
+      new_password: passwords.new,
+      confirm_password: passwords.confirm
+    });
   }
 
   // Manejo de errores
