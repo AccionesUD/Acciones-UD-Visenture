@@ -11,7 +11,7 @@ export class NewsService {
   constructor(private alpacaService: AlpacaDataService) { }
 
   /**
-   * Obtiene las últimas noticias financieras
+   * Obtiene las últimas noticias financieras y las mapea al modelo AlpacaNews
    */
   getLatestNews(symbols?: string[], limit: number = 5): Observable<AlpacaNews[]> {
     const params: GetNewsParams = {
@@ -32,6 +32,20 @@ export class NewsService {
     params.end = endDate.toISOString().split('T')[0];
 
     return this.alpacaService.getNews(params).pipe(
+      map((raw: any[]) => raw.map(item => ({
+        ID: item.id,
+        Headline: item.headline,
+        Author: item.author || 'Equipo Editorial',
+        CreatedAt: item.created_at,
+        UpdatedAt: item.updated_at,
+        Summary: item.summary || item.content || '',
+        URL: item.url,
+        Images: Array.isArray(item.images)
+          ? item.images.map((img: any) => img.url)
+          : [],
+        Symbols: Array.isArray(item.symbols) ? item.symbols : [],
+        Source: item.source
+      } as AlpacaNews))),
       catchError(error => {
         console.error('Error al obtener noticias:', error);
         return this.getFallbackNews(symbols, limit);

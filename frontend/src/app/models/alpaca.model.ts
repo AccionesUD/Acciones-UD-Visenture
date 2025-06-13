@@ -49,6 +49,7 @@ export interface AlpacaAssetsParams {
   status?: 'active' | 'inactive'; // Estado del activo
   asset_class?: string;     // Clase de activo (ej: 'us_equity')
   exchange?: string;        // Exchange específico
+  symbols?: string;         // Lista de símbolos separados por comas
 }
 
 // Interfaces para respuestas de la API
@@ -56,16 +57,17 @@ export interface AlpacaAssetsParams {
 // Respuesta de barras (v2/stocks/{symbol}/bars)
 export interface AlpacaBarsResponse {
   bars: {
-    Timestamp: string;
-    OpenPrice: number;
-    HighPrice: number;
-    LowPrice: number;
-    ClosePrice: number;
-    Volume: number;
-    VWAP?: number;
-    TradeCount?: number;
-  }[];
-  symbol: string;
+    [symbol: string]: {
+      t: string;         // Timestamp
+      o: number;         // Open Price
+      h: number;         // High Price
+      l: number;         // Low Price
+      c: number;         // Close Price
+      v: number;         // Volume
+      n?: number;        // Trade Count (opcional)
+      vw?: number;       // Volume Weighted Average Price (opcional)
+    }[]
+  };
   next_page_token?: string;
 }
 

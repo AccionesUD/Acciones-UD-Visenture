@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NewsService } from '../services/news.service';
@@ -55,36 +55,25 @@ export class HomeComponent implements OnInit {
 
   loadFinancialNews(): void {
     this.isLoadingNews = true;
-    
-    // Obtener noticias de empresas importantes
-    const topSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'META', 'NVDA', 'SPY'];
-    
+    this.newsError = null;
+    const topSymbols = ['AAPL','MSFT','GOOGL','AMZN','TSLA'];
     this.newsService.getLatestNews(topSymbols, 6).subscribe({
-      next: (news) => {
+      next: news => {
         this.news = news;
         this.isLoadingNews = false;
       },
-      error: (error) => {
-        console.error('Error al cargar noticias financieras:', error);
-        this.newsError = 'No se pudieron cargar las noticias financieras. Intente más tarde.';
+      error: () => {
+        this.newsError = 'No se pudieron cargar las noticias financieras.';
         this.isLoadingNews = false;
       }
     });
   }
-  
+
   formatNewsDate(dateString: string): string {
     const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 60) {
-      return `Hace ${diffMins} minutos`;
-    } else if (diffMins < 1440) {
-      const hours = Math.floor(diffMins / 60);
-      return `Hace ${hours} horas`;
-    } else {
-      return date.toLocaleDateString('es-ES', {day: 'numeric', month: 'short', year: 'numeric'});
-    }
+    const diffMins = Math.floor((Date.now() - date.getTime())/60000);
+    if (diffMins < 60) return `Hace ${diffMins} minutos`;
+    if (diffMins < 1440) return `Hace ${Math.floor(diffMins/60)} horas`;
+    return date.toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
   }
 }

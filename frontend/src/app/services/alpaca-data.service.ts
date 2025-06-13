@@ -36,8 +36,7 @@ export class AlpacaDataService {
   });
 
   constructor(private http: HttpClient) {}
-
-  getShareBars(symbol: string, params: AlpacaBarsParams): Observable<StockBar[]> {
+  getShareBars(symbol: string, params: AlpacaBarsParams): Observable<StockBar[]> {    
     // Valores predeterminados para parámetros obligatorios si no se proporcionan
     if (!params.start) {
       const endDate = params.end ? new Date(params.end) : new Date();
@@ -50,36 +49,74 @@ export class AlpacaDataService {
       params.end = new Date().toISOString();
     }
     
-    // Clonar los parámetros para no modificar el objeto original
-    const paramsWithDefaults = { 
+    // Añadimos defaults de timeframe, limit, adjustment, feed y sort
+    const paramsWithDefaults = {
       ...params,
       timeframe: params.timeframe || '1Min',
-      limit: params.limit || '500'
+      limit: params.limit || 1000,
+      adjustment: params.adjustment || 'raw',
+      feed: params.feed || 'iex',  // Cambio de sip a iex por limitaciones de suscripción
+      sort: params.sort || 'asc'
     };
+    const encodedStart = encodeURIComponent(paramsWithDefaults.start!);
+    const encodedEnd = encodeURIComponent(paramsWithDefaults.end!);
+    const url = `${this.dataBaseUrl}/stocks/bars?symbols=${symbol}` +
+                `&timeframe=${paramsWithDefaults.timeframe}` +
+                `&start=${encodedStart}` +
+                `&end=${encodedEnd}` +
+                `&limit=${paramsWithDefaults.limit}` +
+                `&adjustment=${paramsWithDefaults.adjustment}` +
+                `&feed=${paramsWithDefaults.feed}` +
+                `&sort=${paramsWithDefaults.sort}`;
     
-    // Usar el método utilitario para construir los parámetros HTTP
-    const httpParams = this.buildHttpParams(paramsWithDefaults);
+    // Imprimir la URL y los headers para depuración
+    console.log('Solicitud a Alpaca (URL):', url);
     
-    return this.http.get<AlpacaBarsResponse>(
-      `${this.dataBaseUrl}/stocks/${symbol}/bars`, 
-      { params: httpParams, headers: this.headers }
-    ).pipe(
+    return this.http.get<any>(url, { headers: this.headers }).pipe(
       map(response => {
-        // Validar la estructura de la respuesta
-        if (!response.bars || !Array.isArray(response.bars)) {
+        console.log('Respuesta de barras de Alpaca:', response);
+        
+        // Nuevo formato: { bars: { SYMBOL: [...] } }
+        if (response.bars && response.bars[symbol] && Array.isArray(response.bars[symbol])) {
+          console.log(`Procesando barras para símbolo ${symbol}, encontrado en respuesta`);
+          // Transformar al formato StockBar esperado por la aplicación
+          return response.bars[symbol].map((bar: any) => ({
+            t: bar.t || bar.Timestamp, // Soportamos ambos formatos de respuesta
+            o: bar.o || bar.OpenPrice,
+            h: bar.h || bar.HighPrice,
+            l: bar.l || bar.LowPrice,
+            c: bar.c || bar.ClosePrice,
+            v: bar.v || bar.Volume
+          }));
+        } 
+        // Formato antiguo: { bars: [...] }
+        else if (response.bars && Array.isArray(response.bars)) {
+          console.log('Procesando formato antiguo de barras');
+          return response.bars.map((bar: any) => ({
+            t: bar.t || bar.Timestamp,
+            o: bar.o || bar.OpenPrice,
+            h: bar.h || bar.HighPrice,
+            l: bar.l || bar.LowPrice,
+            c: bar.c || bar.ClosePrice,
+            v: bar.v || bar.Volume
+          }));
+        } 
+        // No hay estructura bars, pero quizás el objeto completo sea un array de barras
+        else if (Array.isArray(response)) {
+          console.log('Procesando respuesta como array directo');
+          return response.map((bar: any) => ({
+            t: bar.t || bar.Timestamp,
+            o: bar.o || bar.OpenPrice,
+            h: bar.h || bar.HighPrice,
+            l: bar.l || bar.LowPrice,
+            c: bar.c || bar.ClosePrice,
+            v: bar.v || bar.Volume
+          }));
+        } 
+        else {
           console.warn('Formato de respuesta inesperado para barras:', response);
           return [];
         }
-        
-        // Transformar al formato StockBar esperado por la aplicación
-        return response.bars.map(bar => ({
-          t: bar.Timestamp,
-          o: bar.OpenPrice,
-          h: bar.HighPrice,
-          l: bar.LowPrice,
-          c: bar.ClosePrice,
-          v: bar.Volume
-        }));
       }),
       catchError(error => {
         console.error('Error al obtener barras históricas para', symbol, ':', error);
@@ -91,24 +128,29 @@ export class AlpacaDataService {
       })
     );
   }
-
-  getAssets(paramsObj: AlpacaAssetsParams = {}): Observable<AlpacaAsset[]> {
+  getAssets(paramsOrSymbols?: AlpacaAssetsParams | string[] | string): Observable<AlpacaAsset[]> {
     // Parámetros predeterminados
     const defaultParams: AlpacaAssetsParams = {
       status: 'active',
       asset_class: 'us_equity'
     };
     
-    // Mezclar parámetros predeterminados con los proporcionados
-    const params = { ...defaultParams, ...paramsObj };
+    let params: AlpacaAssetsParams;
+    
+    // Si se proporciona un array de símbolos o un string, ajustamos para usar como filtro
+    if (Array.isArray(paramsOrSymbols) || typeof paramsOrSymbols === 'string') {
+      const symbols = Array.isArray(paramsOrSymbols) ? paramsOrSymbols.join(',') : paramsOrSymbols;
+      params = { 
+        ...defaultParams, 
+        symbols 
+      };
+    } else {
+      // Caso normal: se pasó un objeto de parámetros o nada
+      params = { ...defaultParams, ...(paramsOrSymbols || {}) };
+    }
     
     // Construir parámetros HTTP
-    let httpParams = new HttpParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        httpParams = httpParams.set(key, String(value));
-      }
-    });
+    let httpParams = this.buildHttpParams(params);
     
     return this.http.get<AlpacaAsset[]>(`${this.baseUrl}/assets`, { params: httpParams, headers: this.headers }).pipe(
       map(response => {
@@ -197,6 +239,7 @@ export class AlpacaDataService {
       headers: this.headers 
     }).pipe(
       map(response => {
+        console.log('Respuesta de noticias de Alpaca:', response);
         if (!response.news || !Array.isArray(response.news)) {
           console.warn('Respuesta de noticias inesperada:', response);
           return [];
@@ -232,7 +275,7 @@ export class AlpacaDataService {
 
   getQuotes(symbol: string, params: AlpacaQuotesParams): Observable<AlpacaQuoteResponse> {
     // Construir parámetros HTTP
-    let httpParams = new HttpParams();
+    let httpParams = this.buildHttpParams(params)
     
     // Agregar todos los parámetros proporcionados
     Object.entries(params).forEach(([key, value]) => {
@@ -260,7 +303,7 @@ export class AlpacaDataService {
   }
   getAuctions(symbol: string, params: AlpacaAuctionsParams): Observable<AlpacaAuctionsResponse> {
     // Usar el método utilitario para construir los parámetros HTTP
-    const httpParams = this.buildHttpParams(params);
+    let httpParams = this.buildHttpParams(params);
     
     return this.http.get<AlpacaAuctionsResponse>(
       `${this.dataBaseUrl}/stocks/${symbol}/auctions`, 
@@ -278,7 +321,7 @@ export class AlpacaDataService {
 
   getTrades(symbol: string, params: AlpacaTradesParams): Observable<AlpacaTradesResponse> {
     // Usar el método utilitario para construir los parámetros HTTP
-    const httpParams = this.buildHttpParams(params);
+    let httpParams = this.buildHttpParams(params);
     
     return this.http.get<AlpacaTradesResponse>(
       `${this.dataBaseUrl}/stocks/${symbol}/trades`, 
@@ -294,9 +337,70 @@ export class AlpacaDataService {
     );
   }
   
+  getExtendedHistoricalData(symbol: string, days: number = 30, timeframe: string = '1H', additionalParams: Partial<AlpacaBarsParams> = {}): Observable<StockBar[]> {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - days);
+    
+    // Opcionalmente aumentamos el límite para timeframes pequeños
+    let limit = 1000;
+    if (timeframe.includes('Min') || timeframe === '1H') {
+      limit = 10000; // Más datos para timeframes más pequeños
+    }
+    
+    return this.getShareBars(symbol, {
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+      timeframe: timeframe,
+      limit: limit,
+      ...additionalParams
+    });
+  }
+
+  getMultipleLatestQuotes(symbols: string[] | string): Observable<any> {
+    // Convertir array a string si es necesario
+    const symbolsStr = Array.isArray(symbols) ? symbols.join(',') : symbols;
+    
+    // URL para obtener snapshots de múltiples símbolos
+    const url = `${this.dataBaseUrl}/stocks/snapshots?symbols=${symbolsStr}`;
+    
+    return this.http.get<any>(url, { headers: this.headers }).pipe(
+      map(response => {
+        // Los snapshots incluyen tanto la última cotización como el último trade
+        console.log('Respuesta de snapshots multiple:', response);
+        return response;
+      }),
+      catchError(error => {
+        console.error(`Error al obtener snapshots para ${symbolsStr}:`, error);
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener cotizaciones. Verifique su API Key.`
+          : `Error al obtener cotizaciones para ${symbolsStr}`;
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
+  getSymbolSnapshot(symbol: string): Observable<any> {
+    const url = `${this.dataBaseUrl}/stocks/${symbol}/snapshot`;
+    
+    return this.http.get<any>(url, { headers: this.headers }).pipe(
+      map(response => {
+        console.log(`Respuesta de snapshot para ${symbol}:`, response);
+        return response;
+      }),
+      catchError(error => {
+        console.error(`Error al obtener snapshot para ${symbol}:`, error);
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener snapshot. Verifique su API Key.`
+          : `Error al obtener snapshot para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
 
   private buildHttpParams(params: any): HttpParams {
-    let httpParams = new HttpParams();
+  let httpParams = new HttpParams();
     
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {

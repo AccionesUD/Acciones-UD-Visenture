@@ -2,9 +2,8 @@
   <!-- Main Content -->
   <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
-      <button 
-        (click)="useMockData = !useMockData; loadChartData(currentSymbol);"
+      <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>      <button 
+        (click)="toggleDataMode()"
         class="px-4 py-2 rounded-lg text-sm font-medium"
         [class.bg-emerald-600]="!useMockData"
         [class.bg-yellow-500]="useMockData"
@@ -36,6 +35,43 @@
       </div>
     </div>
 
+    <!-- Chart Controls -->
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md mb-6 border border-emerald-100 dark:border-slate-700 flex flex-wrap items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div>
+          <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Periodo:</label>          <select 
+            [(ngModel)]="selectedPeriod"
+            (ngModelChange)="changeTimeSettings($event)"
+            class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
+          >
+            <option *ngFor="let period of availablePeriods" [ngValue]="period.value">
+              {{ period.label }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Intervalo:</label>          <select 
+            [(ngModel)]="selectedTimeframe"
+            (ngModelChange)="changeTimeSettings($event)"
+            class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
+          >
+            <option *ngFor="let frame of availableTimeframes" [ngValue]="frame.value">
+              {{ frame.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+        <div>
+        <button 
+          (click)="refreshData()" 
+          class="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white rounded-md text-sm flex items-center"
+        >
+          <mat-icon class="text-sm mr-1">refresh</mat-icon>
+          Actualizar
+        </button>
+      </div>
+    </div>
+
     <!-- Chart Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
       <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
@@ -59,12 +95,14 @@
         <div class="h-80 relative">
           <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-slate-800 dark:bg-opacity-75 z-10">
             <mat-spinner diameter="40"></mat-spinner>
-          </div>
-          <apx-chart
+          </div>          <apx-chart
             #chart
             [series]="chartOptions.series || []"
             [chart]="chartOptions.chart || { type: 'line' }"
             [xaxis]="chartOptions.xaxis || {}"
+            [yaxis]="chartOptions.yaxis || {}"
+            [theme]="chartOptions.theme || {}"
+            [tooltip]="chartOptions.tooltip || {}"
             [title]="chartOptions.title || {}"
           ></apx-chart>
         </div>
