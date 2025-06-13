@@ -98,7 +98,7 @@ export class UsersService {
   async findById(id: string) {
     return this.userRepository.findOne({
       where: { identity_document: String(id) },
-      relations: ['roles'],
+      relations: ['roles', 'account'],
     });
   }
 
