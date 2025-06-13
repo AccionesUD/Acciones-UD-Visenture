@@ -8,6 +8,7 @@ import { Account } from 'src/accounts/entities/account.entity';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
 import { RolesPermissionModule } from 'src/roles-permission/roles-permission.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [UsersController],
@@ -18,6 +19,7 @@ import { RolesPermissionModule } from 'src/roles-permission/roles-permission.mod
     AccountsModule,
     RolesPermissionModule,
     forwardRef(() => AccountsModule),
+    forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User, Account, Role]),
   ],
 })
