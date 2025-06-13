@@ -16,6 +16,7 @@ export interface StockInitResponse {
   message: string;
   creado_o_actualizado: string[];
   errores: string[];
+  count?: number;           // Número de mercados inicializados
 }
 
 // Modelo para la información de horario del mercado desde Alpaca

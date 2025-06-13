@@ -20,9 +20,12 @@ export class StocksService {
   // Cache de stocks para optimizar las solicitudes
   private stocksCache: Stock[] = [];
   
-  constructor(private http: HttpClient) {
-    // Intentamos cargar los stocks al iniciar el servicio
-    this.getStocks().subscribe();
+  // Flag para saber si ya se han inicializado los mercados
+  private marketsInitialized = false;
+  
+  constructor(private http: HttpClient) { 
+    // No cargamos automáticamente los stocks al iniciar el servicio
+    // Ahora esperaremos a que se inicialice explícitamente
   }
   
   /**
@@ -32,6 +35,8 @@ export class StocksService {
     return this.http.post<StockInitResponse>(`${this.apiUrl}/inicializacion`, {}).pipe(
       tap(response => {
         console.log('Mercados inicializados:', response);
+        this.marketsInitialized = true;
+        
         // Después de inicializar, actualizamos la lista de mercados
         this.getStocksFromBackend().subscribe();
       }),
@@ -50,6 +55,7 @@ export class StocksService {
       tap(stocks => {
         console.log(`Obtenidos ${stocks.length} mercados`);
         this.stocksCache = stocks;
+        this.marketsInitialized = stocks.length > 0;  // Marcar inicializado si hay datos
         this.stocksSubject.next(stocks);
       }),
       catchError(error => {
@@ -64,21 +70,25 @@ export class StocksService {
   
   /**
    * Obtiene todos los stocks (mercados) disponibles
-   * Si no hay datos en caché, primero verifica que los mercados estén inicializados
+   * Ya no inicializa automáticamente, solo devuelve los mercados disponibles
    */
   getStocks(): Observable<Stock[]> {
-    // Si tenemos datos en caché, los devolvemos primero mientras actualizamos en segundo plano
+    // Si tenemos datos en caché, los devolvemos primero
     if (this.stocksCache.length > 0) {
+      this.marketsInitialized = true;  // Ya están inicializados porque hay datos
       this.stocksSubject.next(this.stocksCache);
-      // Actualizamos en segundo plano
-      this.getStocksFromBackend().subscribe();
       return of(this.stocksCache);
     }
     
-    // Si no hay datos en caché, primero inicializamos y luego obtenemos los stocks
-    return this.initializeMarkets().pipe(
-      switchMap(() => this.getStocksFromBackend())
-    );
+    // Si no hay caché, cargamos desde backend (sin inicializar)
+    return this.getStocksFromBackend();
+  }
+  
+  /**
+   * Verifica si los mercados ya fueron inicializados
+   */
+  areMarketsInitialized(): boolean {
+    return this.marketsInitialized;
   }
   
   /**

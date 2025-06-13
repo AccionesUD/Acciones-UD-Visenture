@@ -71,14 +71,34 @@ export class SharesService {
   }
   
   /**
-   * Registra una nueva acción
+   * Registra una nueva acción usando solo el símbolo
+   * Este método usa el endpoint simplificado que solo requiere el símbolo
    */
   createShare(shareData: CreateShareDto): Observable<Share> {
-    return this.http.post<Share>(`${this.apiUrl}/new`, shareData).pipe(
+    // Si solo se proporciona el símbolo, usamos el endpoint simplificado
+    if (shareData.symbol) {
+      return this.http.post<Share>(`${this.apiUrl}/new`, { symbol: shareData.symbol }).pipe(
+        tap(share => {
+          console.log('Acción registrada usando símbolo:', share);
+          // Invalidamos la caché para que se vuelva a cargar
+          this.sharesCache.clear();
+        }),
+        catchError(error => {
+          console.error('Error al registrar acción:', error);
+          return throwError(() => new Error('Error al registrar acción'));
+        })
+      );
+    }
+    
+    // Si se provee información completa, usamos el endpoint completo
+    return this.http.post<Share>(`${this.apiUrl}/register`, shareData).pipe(
       tap(share => {
         console.log('Acción registrada:', share);
-        // Actualizamos la caché si existe para el mercado de esta acción
-        if (this.sharesCache.has(shareData.mic_stock_market)) {
+        // Invalidamos la caché para que se vuelva a cargar
+        this.sharesCache.clear();
+        
+        // Si tenemos el mercado específico, actualizamos esa entrada
+        if (shareData.mic_stock_market && this.sharesCache.has(shareData.mic_stock_market)) {
           const currentShares = this.sharesCache.get(shareData.mic_stock_market) || [];
           this.sharesCache.set(shareData.mic_stock_market, [...currentShares, share]);
         }

@@ -1,11 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle, NgApexchartsModule } from 'ng-apexcharts';
+import { 
+  ApexAxisChartSeries, 
+  ApexChart, 
+  ApexXAxis, 
+  ApexTitleSubtitle,
+  ApexYAxis,
+  ApexTheme,
+  ApexTooltip, // Añadido ApexTooltip
+  ChartComponent,
+  NgApexchartsModule 
+} from 'ng-apexcharts';
 import { MockChartDataService } from '../services/mock-data-chart.service';
 import { AlpacaDataService } from '../services/alpaca-data.service';
 import { SharesService } from '../services/shares.service';
@@ -19,7 +29,10 @@ export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
+  yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
+  theme: ApexTheme;
+  tooltip?: ApexTooltip; // Añadido tooltip como propiedad opcional
 };
 
 @Component({
@@ -27,7 +40,8 @@ export type ChartOptions = {
   standalone: true,
   imports: [
     CommonModule, 
-    NgApexchartsModule, 
+    ChartComponent,
+    NgApexchartsModule,
     MatProgressSpinnerModule, 
     MatButtonModule,
     MatIconModule,
@@ -37,6 +51,7 @@ export type ChartOptions = {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashboardComponent implements OnInit, OnDestroy {
 
   public chartOptions: Partial<ChartOptions>={};
@@ -181,8 +196,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.updateChartWithData(mockData, symbol);
     } else {
       // Usar datos reales de Alpaca
-      this.alpacaService.getShareBars(symbol, startDate, endDate, '1D')
-        .subscribe({
+      this.alpacaService.getShareBars(symbol, {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+        timeframe: '1D'
+      }).subscribe({
           next: (data) => {
             if (data && data.length > 0) {
               this.updateChartWithData(data, symbol);
@@ -228,10 +246,55 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       title: {
         text: `${symbol} - Evolución de Precio`,
-        align: 'left'
+        align: 'left',
+        style: {
+          color: '#FFFFFF' // Blanco para modo oscuro
+        }
       },
       xaxis: {
-        type: 'datetime'
+        type: 'datetime',
+        labels: {
+          style: {
+            colors: '#FFFFFF' // Blanco para modo oscuro
+          }
+        },
+        title: {
+          style: {
+            color: '#FFFFFF' // Blanco para modo oscuro
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#FFFFFF' // Blanco para modo oscuro
+          }
+        },
+        title: {
+          style: {
+            color: '#FFFFFF' // Blanco para modo oscuro
+          }
+        }
+      },
+      tooltip: {
+        theme: 'dark', // Cambiado a tema oscuro para el tooltip
+        style: {
+          fontSize: '12px',
+          fontFamily: 'Helvetica, Arial, sans-serif'
+        },
+        // Personalizamos el estilo del tooltip para mejor legibilidad
+        x: {
+          show: true,
+          format: 'dd/MM/yyyy'
+        },
+        y: {
+          formatter: function(value: number) {
+            return value.toFixed(2) + ' USD'; // Formateamos el valor con 2 decimales
+          }
+        },
+        marker: {
+          show: true
+        }
       }
     };
     
@@ -278,19 +341,63 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
   initializeChart(): void {
     this.chartOptions = {
-      series: [{
-        name: "Cargando...",
-        data: []
-      }],
+      series: [{ name: 'Cargando...', data: [] }],
       chart: {
         height: 350,
-        type: "line"
+        type: 'line',
+        zoom: { enabled: false },
+        toolbar: { show: true }
       },
-      title: {
-        text: "Cargando datos..."
+      title: { 
+        text: 'Gráfico de Acciones',
+        style: {
+          color: '#FFFFFF' // Blanco para modo oscuro
+        }
       },
-      xaxis: {
-        type: 'datetime'
+      xaxis: { 
+        type: 'datetime',
+        labels: {
+          style: {
+            colors: '#FFFFFF' // Blanco para modo oscuro
+          }
+        },
+        title: {
+          style: {
+            color: '#FFFFFF' // Blanco para modo oscuro
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: '#FFFFFF' // Blanco para modo oscuro
+          }
+        },
+        title: {
+          style: {
+            color: '#FFFFFF' // Blanco para modo oscuro
+          }
+        }
+      },
+      tooltip: {
+        theme: 'dark', // Cambiado a tema oscuro para el tooltip
+        style: {
+          fontSize: '12px',
+          fontFamily: 'Helvetica, Arial, sans-serif'
+        },
+        // Personalizamos el estilo del tooltip para mejor legibilidad
+        x: {
+          show: true,
+          format: 'dd/MM/yyyy'
+        },
+        y: {
+          formatter: function(value: number) {
+            return value.toFixed(2) + ' USD'; // Formateamos el valor con 2 decimales
+          }
+        },
+        marker: {
+          show: true
+        }
       }
     };
   }

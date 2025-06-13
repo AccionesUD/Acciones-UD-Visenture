@@ -13,13 +13,17 @@ export interface Share {
 
 // Modelo para crear una nueva acción
 export interface CreateShareDto {
-  class: string;
-  ticker: string;
-  name_share: string;
-  sector: string;
-  status: boolean;
-  tradable: boolean;
-  mic_stock_market: string;
+  // Campo para el endpoint simplificado (POST /api/shares/new/)
+  symbol?: string;          // Símbolo de la acción para creación simplificada
+  
+  // Campos para el endpoint completo
+  class?: string;
+  ticker?: string;
+  name_share?: string;
+  sector?: string;
+  status?: boolean;
+  tradable?: boolean;
+  mic_stock_market?: string;
 }
 
 // Modelo para datos de precio/barra desde Alpaca

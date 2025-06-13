@@ -5,6 +5,18 @@
     <p class="ml-4 text-lg text-gray-600 dark:text-gray-300">Cargando detalles del mercado...</p>
   </div>
 
+  <!-- Mensaje de inicialización requerida -->
+  <div *ngIf="!isLoading && !isInitialized" class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl p-6 max-w-2xl mx-auto">
+    <div class="flex items-center mb-4">
+      <mat-icon class="text-amber-500 dark:text-amber-400 mr-2 text-3xl">warning</mat-icon>
+      <h2 class="text-xl font-bold text-amber-700 dark:text-amber-300">Inicialización Requerida</h2>
+    </div>
+    <p class="mb-6 text-amber-700 dark:text-amber-300">Los mercados no han sido inicializados. Debes inicializarlos primero desde la pantalla de listado de mercados.</p>
+    <button mat-button [routerLink]="['/markets']" class="bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/50 px-4 py-2 rounded-lg flex items-center">
+      <mat-icon class="mr-2">arrow_back</mat-icon> Volver a Mercados
+    </button>
+  </div>
+
   <!-- Manejo de errores -->
   <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-6 max-w-2xl mx-auto">
     <div class="flex items-center mb-4">
@@ -18,7 +30,7 @@
   </div>
 
   <!-- Contenido principal -->
-  <div *ngIf="!isLoading && !error && stock">
+  <div *ngIf="!isLoading && !error && isInitialized && stock">
     <!-- Navegación superior -->
     <div class="mb-6">
       <button (click)="goBack()" class="cursor-pointer flex items-center text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">

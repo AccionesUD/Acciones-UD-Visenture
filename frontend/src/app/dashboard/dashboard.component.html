@@ -60,13 +60,13 @@
           <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-slate-800 dark:bg-opacity-75 z-10">
             <mat-spinner diameter="40"></mat-spinner>
           </div>
-          <apexchart
+          <apx-chart
             #chart
-            [series]="chartOptions.series"
-            [chart]="chartOptions.chart"
-            [xaxis]="chartOptions.xaxis"
-            [title]="chartOptions.title"
-          ></apexchart>
+            [series]="chartOptions.series || []"
+            [chart]="chartOptions.chart || { type: 'line' }"
+            [xaxis]="chartOptions.xaxis || {}"
+            [title]="chartOptions.title || {}"
+          ></apx-chart>
         </div>
       </div>
       

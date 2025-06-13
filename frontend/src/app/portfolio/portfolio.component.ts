@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { PortfolioSummary, Stock } from '../models/portfolio.model';
+import { PortfolioSummary, Stock, PortfolioShare } from '../models/portfolio.model';
 import { SortOption, PerformanceFilterOption } from '../models/filters.model';
 import { PortfolioService } from '../services/portfolio.service';
 import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
@@ -67,7 +67,7 @@ export class PortfolioComponent implements OnInit {
   portfolioSummary: PortfolioSummary = {
     totalInvested: 0,
     totalEarnings: 0,
-    totalStocks: 0,
+    totalShares: 0,
     totalValue: 0,
     performance: 0
   };
@@ -102,15 +102,35 @@ export class PortfolioComponent implements OnInit {
     this.isLoading = true;
     
     // Cargar datos mediante el servicio
+    this.loadPortfolioData();
+  }
+
+  /**
+   * Carga los datos del portafolio desde el servicio
+   */
+  private loadPortfolioData(): void {
+    this.isLoading = true;
+    this.error = null;
     this.portfolioService.getPortfolioStocks().subscribe({
-      next: (stocks) => {
-        this.stocks = stocks;
-        this.applyFilters(); // Aplica los filtros actuales
-        this.updateDisplayedStocks(); // Actualiza las acciones que se muestran según la paginación
+      next: (shares: PortfolioShare[]) => {
+        this.stocks = shares.map(share => ({
+          id: share.id,
+          company: share.companyName,
+          symbol: share.ticker,
+          marketName: share.stockName,
+          marketId: share.stockMic,
+          quantity: share.quantity,
+          unitValue: share.unitValue,
+          totalValue: share.totalValue,
+          performance: share.performance,
+          color: share.color
+        }));
+        this.applyFilters();
+        this.updateDisplayedStocks();
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error al cargar acciones', err);
+      error: (error: any) => {
+        console.error('Error al cargar acciones', error);
         this.error = 'No se pudieron cargar las acciones. Intente nuevamente más tarde.';
         this.isLoading = false;
       }
@@ -219,11 +239,10 @@ export class PortfolioComponent implements OnInit {
     private calculatePortfolioSummary(): void {
     const totalInvested = this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
     const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
-    
     this.portfolioSummary = {
-      totalInvested: totalInvested,
-      totalEarnings: totalEarnings,
-      totalStocks: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
+      totalInvested,
+      totalEarnings,
+      totalShares: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
       totalValue: totalInvested + totalEarnings,
       performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
     };
@@ -283,9 +302,8 @@ abrirModalCompra(stock: Stock): void {
       }
       
       // Recargar datos del portafolio después de una compra exitosa
-      this.portfolioService.refreshPortfolioData();
-      // Recargar la lista de acciones
-      this.ngOnInit();
+      this.loadPortfolioData();
+      this.filtersComponent?.resetAllFilters();
     }
   });
 }
@@ -332,9 +350,8 @@ abrirModalCompra(stock: Stock): void {
         }
         
         // Recargar datos del portafolio después de una venta exitosa
-        this.portfolioService.refreshPortfolioData();
-        // Recargar la lista de acciones
-        this.ngOnInit();
+        this.loadPortfolioData();
+        this.filtersComponent?.resetAllFilters();
       }
     });
   }

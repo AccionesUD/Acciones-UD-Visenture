@@ -6,180 +6,308 @@ import { environment } from '../../environments/environment';
 import { MarketClock } from '../models/stock.model';
 import { StockBar } from '../models/share.model';
 import { AlpacaNews, GetNewsParams } from '../models/news.model';
+import { 
+  AlpacaAssetsParams, 
+  AlpacaBarsParams,
+  AlpacaAuctionsParams,
+  AlpacaNewsParams,
+  AlpacaQuotesParams,
+  AlpacaTradesParams,
+  AlpacaBarsResponse,
+  AlpacaAuctionsResponse,
+  AlpacaQuoteResponse,
+  AlpacaTradesResponse,
+  AlpacaLatestQuoteResponse,
+  AlpacaAsset
+} from '../models/alpaca.model';
 
 @Injectable({ providedIn: 'root' })
 export class AlpacaDataService {
-  private baseUrl = environment.alpaca.baseUrl;
-  private dataBaseUrl = 'https://data.alpaca.markets/v2'; // URL específica para datos de mercado
+  // URLs base para diferentes endpoints de la API de Alpaca
+  private baseUrl = environment.alpaca.baseUrl;            // Trading endpoints (v2 - clock, assets)
+  private dataBaseUrl = environment.alpaca.dataBaseUrl;    // Data endpoints (v2 - bars, quotes, trades)
+  private newsBaseUrl = 'https://data.alpaca.markets/v1beta1/news'; // Endpoint específico para noticias (v1beta1)
+  
+  // Headers comunes para todas las peticiones a Alpaca
   private headers = new HttpHeaders({
     'APCA-API-KEY-ID': environment.alpaca.apiKey,
-    'APCA-API-SECRET-KEY': environment.alpaca.secretKey
+    'APCA-API-SECRET-KEY': environment.alpaca.secretKey,
+    'accept': 'application/json'
   });
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Obtiene las barras de datos de una acción (share) para un gráfico
-   */
-  getShareBars(symbol: string, start: Date, end: Date, timeframe = '1Min'): Observable<any[]> {
-    const validTimeframes = ['1Min', '5Min', '15Min', '1H', '1D'];
-    if (!validTimeframes.includes(timeframe)) {
-      timeframe = '1Min'; // Valor por defecto
+  getShareBars(symbol: string, params: AlpacaBarsParams): Observable<StockBar[]> {
+    // Valores predeterminados para parámetros obligatorios si no se proporcionan
+    if (!params.start) {
+      const endDate = params.end ? new Date(params.end) : new Date();
+      const startDate = new Date(endDate);
+      startDate.setDate(startDate.getDate() - 1); // Por defecto, 1 día atrás
+      params.start = startDate.toISOString();
     }
-    const params = new HttpParams()
-      .set('start', start.toISOString())
-      .set('end', end.toISOString())
-      .set('timeframe', timeframe)
-      .set('limit', '100');
-
-    return this.http.get<any>(`${this.dataBaseUrl}/stocks/${symbol}/bars`, { headers: this.headers, params }).pipe(
+    
+    if (!params.end) {
+      params.end = new Date().toISOString();
+    }
+    
+    // Clonar los parámetros para no modificar el objeto original
+    const paramsWithDefaults = { 
+      ...params,
+      timeframe: params.timeframe || '1Min',
+      limit: params.limit || '500'
+    };
+    
+    // Usar el método utilitario para construir los parámetros HTTP
+    const httpParams = this.buildHttpParams(paramsWithDefaults);
+    
+    return this.http.get<AlpacaBarsResponse>(
+      `${this.dataBaseUrl}/stocks/${symbol}/bars`, 
+      { params: httpParams, headers: this.headers }
+    ).pipe(
       map(response => {
-        if (!response.bars) {
-          throw new Error('Formato de respuesta inesperado');
+        // Validar la estructura de la respuesta
+        if (!response.bars || !Array.isArray(response.bars)) {
+          console.warn('Formato de respuesta inesperado para barras:', response);
+          return [];
         }
-        return response.bars.map((bar: any) => ({
-          x: new Date(bar.t).getTime(), // Asegurar formato correcto para ApexCharts
-          y: bar.c
+        
+        // Transformar al formato StockBar esperado por la aplicación
+        return response.bars.map(bar => ({
+          t: bar.Timestamp,
+          o: bar.OpenPrice,
+          h: bar.HighPrice,
+          l: bar.LowPrice,
+          c: bar.ClosePrice,
+          v: bar.Volume
         }));
       }),
       catchError(error => {
-        console.error('Error en la API de Alpaca:', error);
-        return of([]); // Retornar array vacío en caso de error
+        console.error('Error al obtener barras históricas para', symbol, ':', error);
+        // Proporcionar información más específica sobre el error
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener barras para ${symbol}. Verifique su API Key.`
+          : `Error al obtener barras históricas para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
       })
     );
   }
 
-  /**
-   * Obtiene todos los activos disponibles
-   */
-  getAssets(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/assets`, { headers: this.headers }).pipe(
-      map(assets => assets.filter(asset => asset.tradable && asset.status === 'active')),
+  getAssets(paramsObj: AlpacaAssetsParams = {}): Observable<AlpacaAsset[]> {
+    // Parámetros predeterminados
+    const defaultParams: AlpacaAssetsParams = {
+      status: 'active',
+      asset_class: 'us_equity'
+    };
+    
+    // Mezclar parámetros predeterminados con los proporcionados
+    const params = { ...defaultParams, ...paramsObj };
+    
+    // Construir parámetros HTTP
+    let httpParams = new HttpParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        httpParams = httpParams.set(key, String(value));
+      }
+    });
+    
+    return this.http.get<AlpacaAsset[]>(`${this.baseUrl}/assets`, { params: httpParams, headers: this.headers }).pipe(
+      map(response => {
+        if (!Array.isArray(response)) {
+          console.warn('Formato de respuesta inesperado para assets:', response);
+          return [];
+        }
+        
+        // Por defecto, filtrar solo los activos negociables
+        return response.filter(asset => asset.tradable);
+      }),
       catchError(error => {
         console.error('Error al obtener assets de Alpaca:', error);
-        return throwError(() => new Error('Error al obtener assets de Alpaca'));
+        const errorMsg = error.status === 403 
+          ? 'Error de permisos (403) al obtener activos. Verifique su API Key.'
+          : 'Error al obtener activos de Alpaca';
+        return throwError(() => new Error(errorMsg));
       })
     );
   }
   
-  /**
-   * Obtiene el estado actual del mercado
-   */
-  getMarketStatus(): Observable<any> {
-    return this.http.get<any>(`${this.dataBaseUrl}/clock`, { headers: this.headers }).pipe(
+
+  getMarketStatus(): Observable<MarketClock> {
+    return this.http.get<MarketClock>(`${this.baseUrl}/clock`, { headers: this.headers }).pipe(
       catchError(error => {
-        console.error('Error al obtener estado del mercado:', error);
-        
-        // Valores predeterminados en caso de error
-        const now = new Date();
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(9, 30, 0, 0);
-        
-        return of({
-          timestamp: now.toISOString(),
-          is_open: false,
-          next_open: tomorrow.toISOString(),
-          next_close: tomorrow.toISOString()
-        });
+        console.error('Error al obtener estado de mercado:', error);
+        const errorMsg = error.status === 403 
+          ? 'Error de permisos (403) al obtener estado de mercado. Verifique su API Key.'
+          : 'Error al obtener estado del mercado';
+        return throwError(() => new Error(errorMsg));
       })
     );
   }
   
-  /**
-   * Obtiene noticias relacionadas con los activos
-   */
-  getNews(params: GetNewsParams): Observable<AlpacaNews[]> {
+
+  getMarketCalendar(start?: string, end?: string): Observable<any[]> {
+    let httpParams = new HttpParams();
+    if (start) httpParams = httpParams.set('start', start);
+    if (end) httpParams = httpParams.set('end', end);
+    
+    return this.http.get<any[]>(`${this.baseUrl}/calendar`, { params: httpParams, headers: this.headers }).pipe(
+      catchError(error => {
+        console.error('Error al obtener calendario del mercado:', error);
+        const errorMsg = error.status === 403 
+          ? 'Error de permisos (403) al obtener calendario. Verifique su API Key.'
+          : 'Error al obtener calendario del mercado';
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
+
+  getNews(paramsObj: GetNewsParams): Observable<AlpacaNews[]> {
+    // Valores predeterminados
+    const defaultSort = 'desc';
+    const defaultLimit = 10;
+    
+    // Construir los parámetros HTTP
     let httpParams = new HttpParams();
     
-    if (params.symbols && params.symbols.length > 0) {
-      httpParams = httpParams.set('symbols', params.symbols.join(','));
+    // Agregar primero el parámetro sort para que esté presente aunque venga en params
+    httpParams = httpParams.set('sort', (paramsObj.sort || defaultSort).toLowerCase());
+    
+    // Límite predeterminado si no se proporciona
+    if (!paramsObj.limit) {
+      httpParams = httpParams.set('limit', defaultLimit.toString());
+    } else {
+      httpParams = httpParams.set('limit', paramsObj.limit.toString());
     }
     
-    if (params.start) {
-      httpParams = httpParams.set('start', params.start);
+    // Agregar el resto de parámetros
+    if (paramsObj.symbols && paramsObj.symbols.length > 0) {
+      httpParams = httpParams.set('symbols', paramsObj.symbols.join(','));
     }
     
-    if (params.end) {
-      httpParams = httpParams.set('end', params.end);
+    if (paramsObj.start) {
+      httpParams = httpParams.set('start', paramsObj.start);
     }
     
-    if (params.limit) {
-      httpParams = httpParams.set('limit', params.limit.toString());
+    if (paramsObj.end) {
+      httpParams = httpParams.set('end', paramsObj.end);
     }
     
-    if (params.sort) {
-      httpParams = httpParams.set('sort', params.sort);
-    }
-    
-    return this.http.get<AlpacaNews[]>(`${this.dataBaseUrl}/news`, { headers: this.headers, params: httpParams }).pipe(
+    return this.http.get<any>(this.newsBaseUrl, { 
+      params: httpParams,
+      headers: this.headers 
+    }).pipe(
+      map(response => {
+        if (!response.news || !Array.isArray(response.news)) {
+          console.warn('Respuesta de noticias inesperada:', response);
+          return [];
+        }
+        return response.news as AlpacaNews[];
+      }),
       catchError(error => {
-        console.error('Error al obtener noticias de Alpaca:', error);
-        return this.getMockNews(params.symbols || []);
+        console.error('Error al obtener noticias de Alpaca (v1beta1):', error);
+        if (error.status === 403) {
+          console.warn('Posible error de permisos en la API Key de Alpaca para noticias');
+          return throwError(() => new Error('Error de permisos al obtener noticias de Alpaca. Verifique su API Key.'));
+        }
+        return throwError(() => new Error('Error al obtener noticias de Alpaca'));
       })
     );
   }
-  
-  /**
-   * Obtiene la cotización más reciente de una acción
-   */
+
   getShareQuote(symbol: string): Observable<any> {
-    return this.http.get<any>(`${this.dataBaseUrl}/stocks/${symbol}/quotes/latest`, { headers: this.headers }).pipe(
+    return this.http.get<AlpacaLatestQuoteResponse>(`${this.dataBaseUrl}/stocks/${symbol}/quotes/latest`, { headers: this.headers }).pipe(
       map(response => {
-        if (!response.quote) {
-          throw new Error('Formato de respuesta inesperado');
-        }
+        if (!response.quote) throw new Error('Formato de respuesta inesperado');
         return response.quote;
       }),
       catchError(error => {
         console.error(`Error al obtener cotización para ${symbol}:`, error);
-        return throwError(() => new Error(`Error al obtener cotización para ${symbol}`));
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener cotización para ${symbol}. Verifique su API Key.`
+          : `Error al obtener cotización para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
+  getQuotes(symbol: string, params: AlpacaQuotesParams): Observable<AlpacaQuoteResponse> {
+    // Construir parámetros HTTP
+    let httpParams = new HttpParams();
+    
+    // Agregar todos los parámetros proporcionados
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (Array.isArray(value)) {
+          httpParams = httpParams.set(key, value.join(','));
+        } else {
+          httpParams = httpParams.set(key, String(value));
+        }
+      }
+    });
+    
+    return this.http.get<AlpacaQuoteResponse>(
+      `${this.dataBaseUrl}/stocks/${symbol}/quotes`, 
+      { params: httpParams, headers: this.headers }
+    ).pipe(
+      catchError(error => {
+        console.error(`Error al obtener cotizaciones históricas para ${symbol}:`, error);
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener cotizaciones para ${symbol}. Verifique su API Key.`
+          : `Error al obtener cotizaciones históricas para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+  getAuctions(symbol: string, params: AlpacaAuctionsParams): Observable<AlpacaAuctionsResponse> {
+    // Usar el método utilitario para construir los parámetros HTTP
+    const httpParams = this.buildHttpParams(params);
+    
+    return this.http.get<AlpacaAuctionsResponse>(
+      `${this.dataBaseUrl}/stocks/${symbol}/auctions`, 
+      { params: httpParams, headers: this.headers }
+    ).pipe(
+      catchError(error => {
+        console.error('Error al obtener datos de subastas para', symbol, ':', error);
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener subastas para ${symbol}. Verifique su API Key.`
+          : `Error al obtener datos de subastas para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
+  getTrades(symbol: string, params: AlpacaTradesParams): Observable<AlpacaTradesResponse> {
+    // Usar el método utilitario para construir los parámetros HTTP
+    const httpParams = this.buildHttpParams(params);
+    
+    return this.http.get<AlpacaTradesResponse>(
+      `${this.dataBaseUrl}/stocks/${symbol}/trades`, 
+      { params: httpParams, headers: this.headers }
+    ).pipe(
+      catchError(error => {
+        console.error(`Error al obtener operaciones para ${symbol}:`, error);
+        const errorMsg = error.status === 403 
+          ? `Error de permisos (403) al obtener operaciones para ${symbol}. Verifique su API Key.`
+          : `Error al obtener operaciones para ${symbol}`;
+        return throwError(() => new Error(errorMsg));
       })
     );
   }
   
-  /**
-   * Método privado para obtener noticias simuladas (mock) en caso de error en la API
-   */
-  private getMockNews(symbols: string[]): Observable<AlpacaNews[]> {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+
+  private buildHttpParams(params: any): HttpParams {
+    let httpParams = new HttpParams();
     
-    const mockNews: AlpacaNews[] = [
-      {
-        ID: 1001,
-        Headline: 'Los mercados globales muestran signos de recuperación',
-        Author: 'Ana Martínez',
-        CreatedAt: yesterday.toISOString(),
-        UpdatedAt: yesterday.toISOString(),
-        Summary: 'Los principales índices bursátiles muestran una tendencia alcista tras las recientes medidas económicas.',
-        URL: 'https://example.com/news/1001',
-        Images: ['https://example.com/images/markets.jpg'],
-        Symbols: ['SPY', 'QQQ'],
-        Source: 'finanzas-hoy'
-      },
-      {
-        ID: 1002,
-        Headline: 'Apple anuncia nuevos productos para el próximo trimestre',
-        Author: 'Carlos Rodríguez',
-        CreatedAt: today.toISOString(),
-        UpdatedAt: today.toISOString(),
-        Summary: 'La compañía tecnológica sorprende con innovaciones en su línea de productos principales.',
-        URL: 'https://example.com/news/1002',
-        Images: ['https://example.com/images/apple-products.jpg'],
-        Symbols: ['AAPL'],
-        Source: 'tech-news'
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (Array.isArray(value)) {
+          httpParams = httpParams.set(key, value.join(','));
+        } else {
+          httpParams = httpParams.set(key, String(value));
+        }
       }
-    ];
+    });
     
-    // Si se especificaron símbolos, filtrar las noticias
-    if (symbols && symbols.length > 0) {
-      return of(mockNews.filter(news => 
-        news.Symbols.some(sym => symbols.includes(sym))
-      ));
-    }
-    
-    return of(mockNews);
+    return httpParams;
   }
 }

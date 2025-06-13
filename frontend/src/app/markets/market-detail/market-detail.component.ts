@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { SellStockModalComponent } from '../../shared/modals/sell-stock-modal/sell-stock-modal.component';
@@ -19,6 +20,7 @@ import { AlertDialogComponent } from '../../shared/modals/alert-dialog/alert-dia
 import { PortfolioService } from '../../services/portfolio.service';
 import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-market-detail',
@@ -31,7 +33,9 @@ import { takeUntil } from 'rxjs/operators';
     MatIconModule,
     MatListModule,
     FormsModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule,
+    RouterLink
   ],
   templateUrl: './market-detail.component.html',  
   animations: [
@@ -55,6 +59,9 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
   // Propiedades para acciones destacadas
   featuredShares: Share[] = [];
   
+  // Estado de inicialización
+  isInitialized = false;
+  
   // Para desuscribirse de observables
   private destroy$ = new Subject<void>();
   
@@ -65,16 +72,27 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
     private sharesService: SharesService,
     private alpacaService: AlpacaDataService,
     private portfolioService: PortfolioService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
   
   ngOnInit(): void {
+    // Primero verificamos si los mercados están inicializados
+    this.isInitialized = this.stocksService.areMarketsInitialized();
+    
+    if (!this.isInitialized) {
+      this.error = 'Los mercados no han sido inicializados. Por favor, regresa a la lista de mercados e inicializa primero.';
+      this.isLoading = false;
+      return;
+    }
+    
     this.route.params.subscribe(params => {
       const marketId = params['id'];
       if (marketId) {
         this.loadStockDetails(marketId);
       } else {
         this.error = 'No se pudo encontrar el ID del mercado';
+        this.isLoading = false;
       }
     });
     
@@ -164,6 +182,14 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
   }
   
   buyShare(share: Share): void {
+    // Verificar si el mercado está inicializado
+    if (!this.isInitialized) {
+      this.snackBar.open('Los mercados no están inicializados. Por favor, inicialícelos primero.', 'Cerrar', {
+        duration: 5000
+      });
+      return;
+    }
+    
     // Implementar lógica para comprar acción
     console.log('Comprar acción:', share);
     
