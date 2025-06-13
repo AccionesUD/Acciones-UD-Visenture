@@ -1,0 +1,12 @@
+#Se obtiene el rol de un usuario
+#Se debe pasar el bearer token de un usuario con el rol dependiendo de eso será la respuesta.
+#Ejemplo con rol de admin:
+GET http://localhost:3000/api/users/987654321/rol
+Authorization: Bearer <token_de_usuario_admin>
+Response:
+HTTP/1.1 200 OK
+{
+	"roles": [
+		"admin"
+	]
+}
