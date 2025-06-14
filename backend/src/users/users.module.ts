@@ -12,7 +12,7 @@ import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
   controllers: [UsersController],
   providers: [UsersService, ],
   exports: [UsersService],
-  imports: [AlpacaBrokerModule, AccountsModule,
+  imports: [AlpacaBrokerModule, 
     forwardRef(() => AccountsModule), 
     TypeOrmModule.forFeature([User, Account])],
 })

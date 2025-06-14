@@ -49,6 +49,10 @@ export class UsersService {
     } catch (error) {
       throw new RequestTimeoutException('Error en operacion en la BD', { description: 'Se presento un error en la operacion, intente luego' });
     }
+
+    
+
+    
   }
 
   async checkExistenceUser(id: string) {

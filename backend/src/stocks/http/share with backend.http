@@ -1,0 +1,13 @@
+POST http://localhost:3000/api/shares
+Content-Type: application/json
+
+
+{
+  "class": "Common Stock",
+  "ticker": "AAPL",
+  "name_share": "Apple Inc.",
+  "sector": "Technology",
+  "status": true,
+  "tradable": true,
+  "mic_stock_market": "XNAS"
+}

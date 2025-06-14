@@ -1,10 +1,6 @@
 import { Account } from "src/accounts/entities/account.entity"
 import { Entity } from "typeorm"
-
-
-/*
 @Entity()
-
 export class Order {
     id: string
     create_at: Date
@@ -23,4 +19,4 @@ export class Order {
     status: string
     time_in_force: string
     order_id_alpaca?: string
-}*/
+}

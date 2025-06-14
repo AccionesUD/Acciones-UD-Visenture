@@ -1,16 +1,17 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { AlpacaBrokerService } from './services/alpaca_broker.service';
 import { ValidateDataAccountProvider } from './services/validate_data_account.provider';
 import { FundCapitalAccount } from './services/fund_capital_account.provide';
+import { TransactionsModule } from 'src/transactions/transactions.module';
 
 
 @Module({
-    exports: [AlpacaBrokerService, ValidateDataAccountProvider],
+    exports: [AlpacaBrokerService, ValidateDataAccountProvider, FundCapitalAccount],
     providers: [AlpacaBrokerService, ValidateDataAccountProvider, FundCapitalAccount],
-    imports: [AccountsModule, ConfigModule, HttpModule.registerAsync({
+    imports: [forwardRef(() => AccountsModule), TransactionsModule, ConfigModule, HttpModule.registerAsync({
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
@@ -21,6 +22,5 @@ import { FundCapitalAccount } from './services/fund_capital_account.provide';
             }
         })
     })],
-    controllers: []
 })
 export class AlpacaBrokerModule {}
