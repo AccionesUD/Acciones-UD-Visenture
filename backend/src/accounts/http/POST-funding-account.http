@@ -1,0 +1,6 @@
+POST http://localhost:3000/api/accounts/funding
+Content-Type:application/json
+
+{
+    "idAccountAlpaca": "5c7437f9-880e-4ab6-af0d-92b8bbd89ef2"
+}

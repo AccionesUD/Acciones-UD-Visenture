@@ -6,24 +6,26 @@ import { CreateACHRelationDto } from "../dtos/create-ach-relation.dto";
 import { infoBankACH } from "../consts/info-bank-ach-relation.const";
 import { CreateTransferAchDto } from "../dtos/create-tranfer-ach.dto";
 import { infoTranferAch } from "../consts/info_tranfer_ach.const";
-import { response } from "express";
+import { TransactionsService } from "src/transactions/services/transaction.service";
+import { MakeFundignAccountDto } from "src/accounts/dtos/make-funding-account.dto";
 
 @Injectable()
 export class FundCapitalAccount {
     private path = 'v1/accounts/:account_id/ach_relationships'
 
     constructor(
-        private readonly httpservice: HttpService
+        private readonly httpservice: HttpService,
     ) { }
 
 
-    public async fundCapital(accountIdAlpaca: string, amountTransfer:number = 2000) {
-        const resolvePath = this.path.replace(':account_id', accountIdAlpaca)
-        let achRelation: null | string   = await this.checkACHRelation(accountIdAlpaca, resolvePath)
+    public async fundCapital(makeFundignAccountDto: MakeFundignAccountDto) {
+        const resolvePath = this.path.replace(':account_id', makeFundignAccountDto.idAccountAlpaca)
+        let achRelation: null | string   = await this.checkACHRelation(makeFundignAccountDto.idAccountAlpaca, resolvePath)
         if (achRelation === null) {
-            achRelation = await this.createACHRelation(accountIdAlpaca, resolvePath)
+            achRelation = await this.createACHRelation(makeFundignAccountDto.idAccountAlpaca, resolvePath)
         }
-        return this.transferCash(amountTransfer, achRelation, resolvePath)
+        const tranfer_id = this.transferCash(makeFundignAccountDto.amountTranfer, achRelation, resolvePath)
+        return tranfer_id
     }
 
 
@@ -35,7 +37,6 @@ export class FundCapitalAccount {
             amount: amountTransfer,
             direction: infoTranferAch.direction
         })
-        console.log(data)
         try {
             const response: AxiosResponse<any> = await firstValueFrom(
               this.httpservice.post(resolvePathAlter, data)

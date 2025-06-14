@@ -1,0 +1,20 @@
+#endpoint que permite obtener el perfil completo del usuario autenticado
+# Este endpoint permite obtener el perfil completo del usuario autenticado.
+# El usuario debe estar autenticado y enviar un token JWT válido en el encabezado Authorization.
+# Respuesta exitosa: 200 OK con los datos del perfil del usuario.
+
+GET /api/users/perfilCompleto HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5ODc2NTQzMjEiLCJlbWFpbCI6ImNkY2FzYXNkQHVkaXN0cml0YWwuZWR1LmNvIiwicm9sZXMiOltdLCJpYXQiOjE3NDk4NTQwNTksImV4cCI6MTc0OTg1NzY1OX0.SFMf3h09SjXuNYracmeiOLdJNxD-HUl73bAgA6aHO2g
+Host: localhost:3000
+
+Response:
+HTTP/1.1 200 OK
+
+{
+	"identity_document": "987654321",
+	"first_name": "Cris",
+	"last_name": "Casas",
+	"email": "cdcasasd@udistrital.edu.co",
+	"phone": "3101234567"
+}

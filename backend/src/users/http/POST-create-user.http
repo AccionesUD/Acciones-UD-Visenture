@@ -2,14 +2,14 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "identity_document": "463889514",
-  "first_name": "Kim",
-  "last_name": "Lao",
-  "phone": "+573158456214",
-  "birthdate": "2002-12-15",
-  "address": "cll115", 
+  "identity_document": "1423223121",
+  "first_name": "Ricardo",
+  "last_name": "Perez",
+  "phone": "+573151234567",
+  "birthdate": "2000-01-01",
+  "address": "Calle Falsa 123", 
   "account": {
-    "email": "kimlao@gmail.com",
+    "email": "ricke@gmail.com",
     "password": "A1#asdasadasda"
   }
 }

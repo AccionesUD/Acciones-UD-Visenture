@@ -16,8 +16,9 @@ import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
 import { OrdersModule } from './orders/orders.module';
 import { SharesModule } from './shares/shares.module';
+import { TransactionsModule } from './transactions/transactions.module'
 import { BriefcaseModule } from './briefcases/briefcases.module';
-
+import { RolesPermissionModule } from './roles-permission/roles-permission.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,6 +52,8 @@ import { BriefcaseModule } from './briefcases/briefcases.module';
     SharesModule,
     BriefcaseModule,
     StocksModule,
+    TransactionsModule,
+    RolesPermissionModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
