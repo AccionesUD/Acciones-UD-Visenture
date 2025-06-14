@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <ng-container *ngIf="!isLoading && client">
+  <div *ngIf="!isLoading && client">
     <!-- Información del cliente -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -54,20 +54,19 @@
             <div class="flex items-center">
               <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500 text-sm">calendar_today</mat-icon>
               <span>Cliente desde: {{ client.registration_date | date:'dd/MM/yyyy' }}</span>
-            </div>
-          </div>
+        </div>
         </div>
         <div class="mt-4 md:mt-0">
           <mat-chip class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100">
             <span *ngIf="client.status === 'active'">Cliente Activo</span>
             <span *ngIf="client.status === 'inactive'">Cliente Inactivo</span>
             <span *ngIf="client.status === 'pending'">Cliente Pendiente</span>
-          </mat-chip>
+            </mat-chip>
         </div>
       </div>
     </div>
-
-    <!-- KPIs principales -->
+  
+      <!-- KPIs principales -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <!-- Total invertido -->
       <mat-card class="bg-white dark:bg-gray-800 shadow-md">
@@ -144,41 +143,48 @@
         <div class="p-4">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Gráfica de Evolución del Portfolio -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+            <div class="chart-container">
               <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Evolución del Valor del Portfolio</h3>
-              <div *ngIf="portfolioChartOptions">
+              <div *ngIf="portfolioChartOptions" class="h-80 relative">
+                <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-10">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
                 <apx-chart
-                  [series]="portfolioChartOptions.series"
-                  [chart]="portfolioChartOptions.chart"
-                  [xaxis]="portfolioChartOptions.xaxis"
-                  [yaxis]="portfolioChartOptions.yaxis"
-                  [title]="portfolioChartOptions.title"
-                  [tooltip]="portfolioChartOptions.tooltip"
-                  [dataLabels]="portfolioChartOptions.dataLabels"
-                  [stroke]="portfolioChartOptions.stroke"
-                  [fill]="portfolioChartOptions.fill"
-                  [colors]="portfolioChartOptions.colors"
+                  #portfolioChart
+                  [series]="portfolioChartOptions.series || []"
+                  [chart]="portfolioChartOptions.chart || { type: 'line' }"
+                  [xaxis]="portfolioChartOptions.xaxis || {}"
+                  [yaxis]="portfolioChartOptions.yaxis || {}"
+                  [theme]="portfolioChartOptions.theme || {}"
+                  [tooltip]="portfolioChartOptions.tooltip || {}"
+                  [title]="portfolioChartOptions.title || {}"
+                  [dataLabels]="portfolioChartOptions.dataLabels || {}"
+                  [stroke]="portfolioChartOptions.stroke || {}"
+                  [plotOptions]="portfolioChartOptions.plotOptions || {}"
+                  [fill]="portfolioChartOptions.fill || {}"
+                  [colors]="portfolioChartOptions.colors || []"
                 ></apx-chart>
               </div>
             </div>
 
             <!-- Gráfica de ROI Comparativo -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+            <div class="chart-container">
               <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Comparativa de ROI</h3>
-              <div *ngIf="roiChartOptions">
+              <div *ngIf="roiChartOptions" class="h-80 relative">
+                <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-10">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
                 <apx-chart
-                  [series]="roiChartOptions.series"
-                  [chart]="roiChartOptions.chart"
-                  [xaxis]="roiChartOptions.xaxis"
-                  [yaxis]="roiChartOptions.yaxis"
-                  [title]="roiChartOptions.title"
-                  [dataLabels]="roiChartOptions.dataLabels"
-                  [stroke]="roiChartOptions.stroke"
-                  [plotOptions]="roiChartOptions.plotOptions"
-                  [fill]="roiChartOptions.fill"
-                  [tooltip]="roiChartOptions.tooltip"
-                  [colors]="roiChartOptions.colors"
-                ></apx-chart>
+                    #roiChart
+                    [series]="roiChartOptions.series || []"
+                    [chart]="roiChartOptions.chart || { type: 'bar' }"
+                    [xaxis]="roiChartOptions.xaxis || {}"
+                    [yaxis]="roiChartOptions.yaxis || {}"
+                    [theme]="roiChartOptions.theme || {}"
+                    [tooltip]="roiChartOptions.tooltip || {}"
+                    [title]="roiChartOptions.title || {}"
+                  ></apx-chart>
+                </div>
               </div>
             </div>
           </div>
@@ -224,16 +230,21 @@
         <div class="p-4">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Gráfica de Distribución de Activos -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+            <div class="chart-container">
               <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Distribución de Activos</h3>
-              <div *ngIf="assetsDistributionOptions">
+              <div *ngIf="assetsDistributionOptions" class="h-80 relative">
+                <div *ngIf="isLoadingAssets" 
+                     class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-800/70 z-10">
+                  <mat-spinner diameter="40"></mat-spinner>
+                </div>
                 <apx-chart
-                  [series]="assetsDistributionOptions.series"
-                  [chart]="assetsDistributionOptions.chart"
-                  [labels]="assetsDistributionOptions.labels"
-                  [responsive]="assetsDistributionOptions.responsive"
-                  [colors]="assetsDistributionOptions.colors"
-                  [title]="assetsDistributionOptions.title"
+                  #assetsChart
+                  [series]="assetsDistributionOptions.series || []"
+                  [chart]="assetsDistributionOptions.chart || { type: 'donut' }"
+                  [labels]="assetsDistributionOptions.labels || []"
+                  [responsive]="assetsDistributionOptions.responsive || []"
+                  [colors]="assetsDistributionOptions.colors || []"
+                  [title]="assetsDistributionOptions.title || {}"
                 ></apx-chart>
               </div>
             </div>
@@ -360,21 +371,26 @@
         <div class="p-4">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Gráfica de Comisiones Mensuales -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+            <div class="chart-container">
               <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Comisiones Mensuales</h3>
               <div *ngIf="monthlyCommissionsOptions">
-                <apx-chart
-                  [series]="monthlyCommissionsOptions.series"
-                  [chart]="monthlyCommissionsOptions.chart"
-                  [xaxis]="monthlyCommissionsOptions.xaxis"
-                  [yaxis]="monthlyCommissionsOptions.yaxis"
-                  [title]="monthlyCommissionsOptions.title"
-                  [dataLabels]="monthlyCommissionsOptions.dataLabels"
-                  [stroke]="monthlyCommissionsOptions.stroke"
-                  [plotOptions]="monthlyCommissionsOptions.plotOptions"
-                  [fill]="monthlyCommissionsOptions.fill"
-                  [colors]="monthlyCommissionsOptions.colors"
-                ></apx-chart>
+                <div class="h-80 relative">
+                  <div *ngIf="isLoadingMonthlyCommissions"
+                       class="absolute inset-0 flex items-center justify-center
+                              bg-white/70 dark:bg-gray-800/70 z-10">
+                    <mat-spinner diameter="40"></mat-spinner>
+                  </div>
+                  <apx-chart
+                    #monthlyCommissionsChart
+                    [series]="monthlyCommissionsOptions.series || []"
+                    [chart]="monthlyCommissionsOptions.chart   || { type: 'bar' }"
+                    [xaxis]="monthlyCommissionsOptions.xaxis   || {}"
+                    [yaxis]="monthlyCommissionsOptions.yaxis   || {}"
+                    [theme]="monthlyCommissionsOptions.theme   || {}"
+                    [tooltip]="monthlyCommissionsOptions.tooltip || {}"
+                    [title]="monthlyCommissionsOptions.title     || {}"
+                  ></apx-chart>
+                </div>
               </div>
             </div>
 
@@ -425,69 +441,207 @@
           <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm overflow-x-auto">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Detalle de Comisiones</h3>
             
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Filtrar comisiones</mat-label>
-              <input matInput (keyup)="commissionDataSource.filter = $any($event.target).value.trim().toLowerCase()" placeholder="Buscar por mes, estado, mercado...">
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
+            <!-- Filtros para comisiones -->
+            <div class="mb-4">
+              <div class="flex flex-wrap gap-2 mb-3">
+                <button 
+                  *ngFor="let status of ['todos', 'pagadas', 'aprobadas', 'pendientes']"
+                  (click)="filterCommissionsByStatus(status)"
+                  class="px-3 py-1 text-xs rounded-full transition-all duration-200 whitespace-nowrap"
+                  [ngClass]="{
+                    'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-medium': commissionFilterStatus === status,
+                    'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700': commissionFilterStatus !== status
+                  }">
+                  {{ status | titlecase }}
+                </button>
+              </div>
+              
+              <div class="relative">
+                <input 
+                  type="text" 
+                  placeholder="Buscar por mes, año, mercado..." 
+                  class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  (input)="applyCommissionFilter($event)">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
             
-            <table mat-table [dataSource]="commissionDataSource" matSort class="w-full">
-              <ng-container matColumnDef="month">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Mes</th>
-                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.month }}</td>
-              </ng-container>
-              
-              <ng-container matColumnDef="year">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Año</th>
-                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.year }}</td>
-              </ng-container>
-              
-              <ng-container matColumnDef="commissions_generated">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Comisiones</th>
-                <td mat-cell *matCellDef="let commission" class="font-medium text-emerald-600 dark:text-emerald-500">
-                  ${{ commission.commissions_generated | number:'1.2-2' }}
-                </td>
-              </ng-container>
-              
-              <ng-container matColumnDef="operations_count">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Operaciones</th>
-                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.operations_count }}</td>
-              </ng-container>
-              
-              <ng-container matColumnDef="market">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Mercado</th>
-                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.market }}</td>
-              </ng-container>
-              
-              <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Estado</th>
-                <td mat-cell *matCellDef="let commission">
-                  <mat-chip [ngClass]="{
-                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100': commission.status === 'paid',
-                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100': commission.status === 'approved',
-                    'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100': commission.status === 'pending'
-                  }" class="capitalize">
-                    {{ commission.status === 'paid' ? 'Pagada' : 
-                       commission.status === 'approved' ? 'Aprobada' : 'Pendiente' }}
-                  </mat-chip>
-                </td>
-              </ng-container>
-              
-              <tr mat-header-row *matHeaderRowDef="commissionColumns"></tr>
-              <tr mat-row *matRowDef="let row; columns: commissionColumns;" class="hover:bg-gray-50 dark:hover:bg-gray-700"></tr>
-              
-              <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell text-center p-4 text-gray-500 dark:text-gray-400" [attr.colspan]="commissionColumns.length">
-                  No se encontraron comisiones.
-                </td>
-              </tr>
-            </table>
+            <!-- Tabla moderna y transparente -->
+            <div class="overflow-x-auto rounded-lg">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider cursor-pointer"
+                        (click)="sortCommissions('month')">
+                      <div class="flex items-center">
+                        Mes
+                        <svg *ngIf="commissionSortColumn === 'month'" class="h-4 w-4 ml-1" [ngClass]="{'transform rotate-180': !commissionSortAscending}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider cursor-pointer"
+                        (click)="sortCommissions('year')">
+                      <div class="flex items-center">
+                        Año
+                        <svg *ngIf="commissionSortColumn === 'year'" class="h-4 w-4 ml-1" [ngClass]="{'transform rotate-180': !commissionSortAscending}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider cursor-pointer"
+                        (click)="sortCommissions('commissions_generated')">
+                      <div class="flex items-center">
+                        Comisiones
+                        <svg *ngIf="commissionSortColumn === 'commissions_generated'" class="h-4 w-4 ml-1" [ngClass]="{'transform rotate-180': !commissionSortAscending}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider cursor-pointer"
+                        (click)="sortCommissions('operations_count')">
+                      <div class="flex items-center">
+                        Operaciones
+                        <svg *ngIf="commissionSortColumn === 'operations_count'" class="h-4 w-4 ml-1" [ngClass]="{'transform rotate-180': !commissionSortAscending}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider cursor-pointer"
+                        (click)="sortCommissions('market')">
+                      <div class="flex items-center">
+                        Mercado
+                        <svg *ngIf="commissionSortColumn === 'market'" class="h-4 w-4 ml-1" [ngClass]="{'transform rotate-180': !commissionSortAscending}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Estado</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-transparent divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr *ngFor="let commission of displayedCommissions" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ commission.month }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ commission.year }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-500">
+                      ${{ commission.commissions_generated | number:'1.2-2' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ commission.operations_count }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ commission.market }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2.5 py-1 text-xs font-medium rounded-full capitalize"
+                            [ngClass]="{
+                              'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': commission.status === 'paid',
+                              'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300': commission.status === 'approved',
+                              'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': commission.status === 'pending'
+                            }">
+                        {{ commission.status === 'paid' ? 'Pagada' : 
+                           commission.status === 'approved' ? 'Aprobada' : 'Pendiente' }}
+                      </span>
+                    </td>
+                  </tr>
+                  
+                  <tr *ngIf="displayedCommissions.length === 0" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                      No se encontraron comisiones que coincidan con los criterios de búsqueda.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             
-            <mat-paginator #commissionPaginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons
-                          aria-label="Seleccionar página de comisiones"></mat-paginator>
+            <!-- Paginador personalizado -->
+            <div class="mt-4 flex items-center justify-between">
+              <div class="flex-1 flex justify-between sm:hidden">
+                <button 
+                  (click)="prevCommissionPage()"
+                  [disabled]="commissionCurrentPage === 0"
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                  Anterior
+                </button>
+                <button 
+                  (click)="nextCommissionPage()"
+                  [disabled]="(commissionCurrentPage + 1) * commissionPageSize >= filteredCommissions.length"
+                  class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                  Siguiente
+                </button>
+              </div>
+              <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm text-gray-700 dark:text-gray-300">
+                    Mostrando 
+                    <span class="font-medium">{{ filteredCommissions.length > 0 ? commissionCurrentPage * commissionPageSize + 1 : 0 }}</span>
+                    a
+                    <span class="font-medium">{{ Math.min((commissionCurrentPage + 1) * commissionPageSize, filteredCommissions.length) }}</span>
+                    de
+                    <span class="font-medium">{{ filteredCommissions.length }}</span>
+                    resultados
+                  </p>
+                </div>
+                <div>
+                  <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Paginación">
+                    <button
+                      (click)="commissionCurrentPage = 0"
+                      [disabled]="commissionCurrentPage === 0"
+                      class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                      <span class="sr-only">Primera</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M8.707 5.293a1 1 0 010 1.414L5.414 10l3.293 3.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <button
+                      (click)="prevCommissionPage()"
+                      [disabled]="commissionCurrentPage === 0"
+                      class="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                      <span class="sr-only">Anterior</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <!-- Páginas -->
+                    <ng-container *ngFor="let page of getCommissionPageRange(); let i = index">
+                      <button
+                        (click)="commissionCurrentPage = page"
+                        [disabled]="commissionCurrentPage === page"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium"
+                        [ngClass]="commissionCurrentPage === page ? 
+                                   'z-10 bg-emerald-50 dark:bg-emerald-900 border-emerald-500 dark:border-emerald-500 text-emerald-600 dark:text-emerald-200' : 
+                                   'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'">
+                        {{ page + 1 }}
+                      </button>
+                    </ng-container>
+                    <button
+                      (click)="nextCommissionPage()"
+                      [disabled]="(commissionCurrentPage + 1) * commissionPageSize >= filteredCommissions.length"
+                      class="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                      <span class="sr-only">Siguiente</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <button
+                      (click)="commissionCurrentPage = Math.max(0, Math.ceil(filteredCommissions.length / commissionPageSize) - 1)"
+                      [disabled]="(commissionCurrentPage + 1) * commissionPageSize >= filteredCommissions.length"
+                      class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50">
+                      <span class="sr-only">Última</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0
+                      20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M11.293 14.707a1 1 0 010-1.414L14.586 10l-3.293-3.293a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </mat-tab>
     </mat-tab-group>
-  </ng-container>
+  </div>
 </div>

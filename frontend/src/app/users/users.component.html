@@ -1,64 +1,116 @@
-<div class="container mx-auto p-4">
-  <mat-card class="mb-6">
-    <mat-card-header>
-      <mat-card-title>Gestión de Usuarios</mat-card-title>
-      <mat-card-subtitle>Administra los usuarios del sistema</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 items-end">
-        <mat-form-field appearance="outline" class="md:col-span-2">
-          <mat-label>Buscar por nombre o email</mat-label>
-          <input matInput formControlName="name" placeholder="Ej: Juan Perez">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Rol</mat-label>
-          <mat-select formControlName="role">
-            <mat-option value="">Todos</mat-option>
-            <mat-option *ngFor="let role of roles" [value]="role">{{ role | titlecase }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="">Todos</mat-option>
-            <mat-option *ngFor="let status of statuses" [value]="status">{{ status | titlecase }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <div class="flex space-x-2 md:col-start-4 justify-end">
-          <button mat-stroked-button color="primary" (click)="applyFilters()" matTooltip="Aplicar filtros">
-            <mat-icon>filter_list</mat-icon> Aplicar
-          </button>
-          <button mat-stroked-button (click)="clearFilters()" matTooltip="Limpiar filtros">
-            <mat-icon>clear</mat-icon> Limpiar
-          </button>
+<div class="p-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Gestión de Usuarios</h1>
+  <p class="text-gray-600 dark:text-gray-300 mb-6">Administra los usuarios del sistema</p>
+  
+  <!-- Tarjeta principal -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <!-- Filtros en formato chip -->
+    <div class="mb-6">
+      <!-- Filtro de rol -->
+      <div class="flex flex-wrap items-center mb-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400 mr-2">Rol:</div>
+        <div class="filter-chip" 
+            [class.active]="filterForm.get('role')?.value === ''"
+            (click)="filterForm.get('role')?.setValue(''); applyFilters()">
+            Todos
         </div>
-      </form>
-
-      <div class="mb-4 flex justify-between items-center">
-        <button mat-flat-button color="primary" (click)="deleteSelectedUsers()" [disabled]="selection.size === 0" matTooltip="Eliminar usuarios seleccionados">
-          <mat-icon>delete_sweep</mat-icon> Eliminar Seleccionados ({{selection.size}})
+        <div class="filter-chip" *ngFor="let role of roles" 
+            [class.active]="filterForm.get('role')?.value === role"
+            (click)="filterForm.get('role')?.setValue(role); applyFilters()">
+            {{ role | titlecase }}
+        </div>
+      </div>
+      
+      <!-- Filtro de estado -->
+      <div class="flex flex-wrap items-center mb-4">
+        <div class="text-sm text-gray-600 dark:text-gray-400 mr-2">Estado:</div>
+        <div class="filter-chip" 
+            [class.active]="filterForm.get('status')?.value === ''"
+            (click)="filterForm.get('status')?.setValue(''); applyFilters()">
+            Todos
+        </div>
+        <div class="filter-chip" *ngFor="let status of statuses" 
+            [class.active]="filterForm.get('status')?.value === status"
+            (click)="filterForm.get('status')?.setValue(status); applyFilters()">
+            {{ status | titlecase }}
+        </div>
+      </div>
+      
+      <!-- Búsqueda por nombre, email o teléfono -->
+      <div class="relative">
+        <input 
+          type="text"
+          [formControl]="filterForm.get('name')"
+          (keyup)="applyFilters()"
+          placeholder="Buscar por nombre, email o teléfono..."
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500
+                bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600
+                text-gray-700 dark:text-gray-200 pr-10"
+        >
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <button *ngIf="filterForm.get('name')?.value"
+          (click)="filterForm.get('name')?.setValue(''); applyFilters()"
+          class="absolute inset-y-0 right-0 flex items-center pr-10 cursor-pointer">
+          <svg class="w-4 h-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
         </button>
-        <button mat-flat-button color="accent" matTooltip="Crear nuevo usuario (funcionalidad pendiente)">
-          <mat-icon>add</mat-icon> Nuevo Usuario
-        </button>
       </div>
+    </div>
 
-      <div *ngIf="isLoading" class="flex justify-center items-center h-64">
-        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <!-- Botones de acción -->
+    <div class="mb-4 flex justify-between items-center">
+      <!-- Botón eliminar seleccionados -->
+      <button 
+        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500"
+        (click)="deleteSelectedUsers()" 
+        [disabled]="selection.size === 0">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+        Eliminar Seleccionados ({{selection.size}})
+      </button>
+      
+      <!-- Botón nuevo usuario -->
+      <button 
+        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
+        matTooltip="Crear nuevo usuario">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nuevo Usuario
+      </button>
+    </div>
+
+    <!-- Spinner de carga -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <mat-progress-spinner mode="indeterminate" diameter="50" color="accent"></mat-progress-spinner>
+      <div class="ml-4">
+        <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Cargando usuarios...</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Por favor espere</p>
       </div>
+    </div>
 
-      <div *ngIf="!isLoading && dataSource.data.length === 0" class="text-center py-8 text-gray-500">
-        <mat-icon class="text-6xl">people_outline</mat-icon>
-        <p class="mt-2 text-lg">No se encontraron usuarios con los filtros aplicados.</p>
-      </div>
+    <!-- Mensaje cuando no hay resultados -->
+    <div *ngIf="!isLoading && dataSource.data.length === 0" class="text-center py-8 text-gray-500">
+      <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+      </svg>
+      <p class="mt-2 text-lg dark:text-gray-300">No se encontraron usuarios con los filtros aplicados.</p>
+      <button 
+        class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+        (click)="clearFilters()">
+        Limpiar filtros
+      </button>
+    </div>
 
-      <div *ngIf="!isLoading && dataSource.data.length > 0" class="overflow-auto mat-elevation-z8">
-        <table mat-table [dataSource]="dataSource" matSort class="w-full">
-
+    <!-- Tabla de usuarios -->
+    <div *ngIf="!isLoading && dataSource.data.length > 0" class="overflow-x-auto rounded-lg">
+      <table mat-table [dataSource]="dataSource" matSort class="w-full">
           <!-- Columna de Selección -->
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>
@@ -78,7 +130,14 @@
           <!-- Columna Nombre -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre Completo </th>
-            <td mat-cell *matCellDef="let user"> {{user.first_name}} {{user.last_name}} </td>
+            <td mat-cell *matCellDef="let user" class="font-medium"> 
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-700 dark:text-emerald-300 mr-3">
+                  {{ user.first_name[0] + (user.last_name ? user.last_name[0] : '') }}
+                </div>
+                {{user.first_name}} {{user.last_name}} 
+              </div>
+            </td>
           </ng-container>
 
           <!-- Columna Email -->
@@ -93,9 +152,9 @@
             <td mat-cell *matCellDef="let user">
               <span class="px-2 py-1 text-xs font-medium rounded-full"
                     [ngClass]="{
-                      'bg-blue-100 text-blue-800': user.role === 'admin',
-                      'bg-green-100 text-green-800': user.role === 'commissioner',
-                      'bg-gray-100 text-gray-800': user.role === 'client'
+                      'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300': user.role === 'admin',
+                      'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': user.role === 'commissioner',
+                      'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300': user.role === 'client'
                     }">
                 {{user.role | titlecase}}
               </span>
@@ -108,11 +167,11 @@
             <td mat-cell *matCellDef="let user">
               <span class="px-2 py-1 text-xs font-medium rounded-full"
                     [ngClass]="{
-                      'bg-green-100 text-green-700': user.status === 'active',
-                      'bg-red-100 text-red-700': user.status === 'inactive',
-                      'bg-yellow-100 text-yellow-700': user.status === 'pending'
+                      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300': user.status === 'active',
+                      'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300': user.status === 'inactive',
+                      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300': user.status === 'pending'
                     }">
-                {{user.status | titlecase}}
+                {{user.status === 'active' ? 'Activo' : user.status === 'inactive' ? 'Inactivo' : 'Pendiente'}}
               </span>
             </td>
           </ng-container>
@@ -121,40 +180,63 @@
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef class="text-right"> Acciones </th>
             <td mat-cell *matCellDef="let user" class="text-right">
-              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones de usuario" matTooltip="Más acciones">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Acciones de usuario" 
+                    matTooltip="Más acciones"
+                    (click)="$event.stopPropagation()">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
+                <!-- Editar usuario -->
                 <button mat-menu-item (click)="editUser(user)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
+                
+                <!-- Cambiar estado (Activar/Desactivar) -->
                 <button mat-menu-item (click)="changeUserStatus(user, user.status === 'active' ? 'inactive' : 'active')">
                   <mat-icon>{{ user.status === 'active' ? 'toggle_off' : 'toggle_on' }}</mat-icon>
                   <span>{{ user.status === 'active' ? 'Desactivar' : 'Activar' }}</span>
                 </button>
-                 <button mat-menu-item *ngIf="user.status === 'pending'" (click)="changeUserStatus(user, 'active')">
+                
+                <!-- Aprobar usuario pendiente -->
+                <button mat-menu-item *ngIf="user.status === 'pending'" (click)="changeUserStatus(user, 'active')">
                   <mat-icon>check_circle_outline</mat-icon>
                   <span>Aprobar</span>
                 </button>
+                
+                <!-- Separador -->
                 <mat-divider></mat-divider>
-                <button mat-menu-item color="warn" (click)="deleteUser(user)">
-                  <mat-icon color="warn">delete</mat-icon>
+                
+                <!-- Eliminar usuario -->
+                <button mat-menu-item (click)="deleteUser(user)">
+                  <mat-icon class="text-red-600">delete</mat-icon>
                   <span class="text-red-600">Eliminar</span>
                 </button>
               </mat-menu>
             </td>
           </ng-container>
 
+          <!-- Definición de filas -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleSelection(row)" class="hover:bg-gray-50 cursor-pointer"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              (click)="editUser(row)"
+              class="cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+          </tr>
+          
+          <!-- Mensaje cuando no hay resultados -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center py-8 text-gray-500 dark:text-gray-400" [attr.colspan]="displayedColumns.length">
+              No se encontraron usuarios que coincidan con la búsqueda.
+            </td>
+          </tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" 
-                       showFirstLastButtons 
-                       aria-label="Selecciona página de usuarios">
+        <!-- Paginador -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 25]" 
+                     showFirstLastButtons 
+                     aria-label="Selecciona página de usuarios"
+                     class="bg-transparent">
         </mat-paginator>
       </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+    </div>
+  </div>

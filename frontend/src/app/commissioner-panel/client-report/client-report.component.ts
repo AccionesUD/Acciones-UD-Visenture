@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +22,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { Subject } from 'rxjs';
 
 import { CommissionerService } from '../../services/commissioner.service';
 import { ClientKpi, CommissionSummary, CommissionerClient } from '../../models/commissioner.model';
@@ -83,13 +84,17 @@ export type ChartOptions = {
   templateUrl: './client-report.component.html',
   styleUrl: './client-report.component.css'
 })
-export class ClientReportComponent implements OnInit {
+export class ClientReportComponent implements OnInit, OnDestroy {
   clientId!: number;
   client!: CommissionerClient;
   kpiDetails!: ClientKpi;
   commissions: CommissionSummary[] = [];
   transactions: any[] = [];
   portfolioHistory: any[] = [];
+  isLoadingAssets: boolean = false;
+  isLoadingMonthlyCommissions: boolean = false;
+  isLoading = false;
+  isExporting = false;
 
   // Resumen de comisiones
   totalCommissionsGenerated: number = 0;
@@ -99,9 +104,16 @@ export class ClientReportComponent implements OnInit {
   approvedCount: number = 0;
   pendingCount: number = 0;
 
-  // Para las tablas de datos
-  commissionDataSource: MatTableDataSource<CommissionSummary> = new MatTableDataSource<CommissionSummary>([]);
-  transactionDataSource: MatTableDataSource<any> = new MatTableDataSource<any>([]);
+  // Propiedades adicionales para la paginación y filtrado personalizado
+  filteredCommissions: CommissionSummary[] = [];
+  displayedCommissions: CommissionSummary[] = [];
+  commissionFilterStatus: string = 'todos';
+  commissionCurrentPage: number = 0;
+  commissionPageSize: number = 5;
+  commissionSortColumn: string = 'month';
+  commissionSortAscending: boolean = false;
+  commissionSearchQuery: string = '';
+  
   commissionColumns: string[] = ['month', 'year', 'commissions_generated', 'operations_count', 'market', 'status'];
   transactionColumns: string[] = ['date', 'type', 'symbol', 'shares', 'price', 'total', 'status'];
   
@@ -116,6 +128,10 @@ export class ClientReportComponent implements OnInit {
   @ViewChild('transactionPaginator') transactionPaginator!: MatPaginator;
   @ViewChild('transactionSort') transactionSort!: MatSort;
   
+  // Variable para mantener el estado del tema
+  isDarkMode = false;
+  private destroy$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -124,6 +140,15 @@ export class ClientReportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Detectar el tema actual
+    if (typeof window !== 'undefined') {
+      // Verificar modo oscuro inicial
+      this.isDarkMode = document.documentElement.classList.contains('dark');
+      
+      // Observer para detectar cambios en el tema
+      this.setupThemeObserver();
+    }
+    
     // Obtiene el ID del cliente de los parámetros de la ruta
     this.route.paramMap.subscribe(params => {
       const idParam = params.get('id');
@@ -136,6 +161,78 @@ export class ClientReportComponent implements OnInit {
       this.clientId = +idParam;
       this.loadClientData();
     });
+  }
+
+  /**
+   * Configura un observador para detectar cambios en la clase 'dark' del elemento root
+   * y actualiza los temas de la gráfica cuando cambian
+   */
+  setupThemeObserver(): void {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.attributeName === 'class' &&
+          mutation.target === document.documentElement
+        ) {
+          const isDark = document.documentElement.classList.contains('dark');
+          if (this.isDarkMode !== isDark) {
+            this.isDarkMode = isDark;
+            this.updateChartsTheme();
+          }
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+  }
+  
+  /**
+   * Actualiza el tema de todos los gráficos basado en el tema actual (claro/oscuro)
+   */
+  updateChartsTheme(): void {
+    const textColor = this.isDarkMode ? '#E5E7EB' : '#374151';
+    const gridColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    const backgroundColor = this.isDarkMode ? '#1F2937' : '#FFFFFF';
+    
+    // Actualizar tema para cada gráfico
+    const commonTheme = {
+      mode: this.isDarkMode ? 'dark' : 'light',
+      palette: this.isDarkMode ? 'palette10' : 'palette3',
+      monochrome: {
+        enabled: false,
+        color: this.isDarkMode ? '#10b981' : '#047857',
+        shadeTo: this.isDarkMode ? 'dark' : 'light',
+        shadeIntensity: 0.65
+      }
+    };
+    
+    if (this.portfolioChartOptions) {
+      this.portfolioChartOptions.theme = commonTheme;
+      // Actualiza también colores específicos si es necesario
+    }
+    
+    if (this.roiChartOptions) {
+      this.roiChartOptions.theme = commonTheme;
+    }
+    
+    if (this.assetsDistributionOptions) {
+      this.assetsDistributionOptions.theme = commonTheme;
+    }
+    
+    if (this.monthlyCommissionsOptions) {
+      this.monthlyCommissionsOptions.theme = commonTheme;
+    }
+  }
+  
+  ngOnDestroy(): void {
+    // Limpia el observador
+    if (this.destroy$) {
+      this.destroy$.next();
+      this.destroy$.complete();
+    }
   }
 
   loadClientData(): void {
@@ -169,8 +266,9 @@ export class ClientReportComponent implements OnInit {
                 // Genera datos mockeados para las transacciones y el historial del portfolio
                 this.generateMockData();
                 
-                // Configura los gráficos
+                // Configura los gráficos con el tema actual
                 this.setupCharts();
+                this.updateChartsTheme();
                 
                 this.isLoading = false;
                 
@@ -187,13 +285,22 @@ export class ClientReportComponent implements OnInit {
                   }
                 });
               },
-              error: (err) => this.handleError(err)
+              error: (err) => {
+                console.error('Error cargando comisiones:', err);
+                this.loadMockCompleteData();
+              }
             });
           },
-          error: (err) => this.handleError(err)
+          error: (err) => {
+            console.error('Error cargando KPIs:', err);
+            this.loadMockCompleteData();
+          }
         });
       },
-      error: (err) => this.handleError(err)
+      error: (err) => {
+        console.error('Error cargando cliente:', err);
+        this.loadMockCompleteData();
+      }
     });
   }
 
@@ -502,12 +609,315 @@ export class ClientReportComponent implements OnInit {
     this.showError('Error al cargar datos del cliente');
   }
 
-  private calculateCommissionSummary(): void {
-    this.totalCommissionsGenerated = this.commissions.reduce((sum, c) => sum + c.commissions_generated, 0);
-    this.totalOperationsCount = this.commissions.reduce((sum, c) => sum + c.operations_count, 0);
-    this.averageCommissionPerOperation = this.totalCommissionsGenerated / Math.max(1, this.totalOperationsCount);
-    this.paidCount = this.commissions.filter(c => c.status === 'paid').length;
-    this.approvedCount = this.commissions.filter(c => c.status === 'approved').length;
-    this.pendingCount = this.commissions.filter(c => c.status === 'pending').length;
+  /**
+   * Carga datos mock completos para todos los aspectos del reporte
+   */
+  loadMockCompleteData(): void {
+    this.snackBar.open('Cargando datos simulados debido a un error de conexión', 'Cerrar', { duration: 5000 });
+    
+    // Cliente mock
+    this.client = {
+      id: this.clientId,
+      name: 'Juan Pérez García',
+      email: 'juan.perez@example.com',
+      phone_number: '3001234567',
+      registration_date: '2021-06-15',
+      status: 'active',
+      total_investment: 25000,
+      roi_percentage: 12.5,
+      main_assets: ['AAPL', 'MSFT', 'GOOGL'],
+      last_operation_date: '2023-05-20'
+    };
+    
+    // KPIs mock
+    this.kpiDetails = {
+      total_invested: 25000,
+      current_value: 28125,
+      roi_percentage: 12.5,
+      operations_count: 42,
+      main_assets: [
+        { symbol: 'AAPL', name: 'Apple Inc.', value: 9000, percentage: 32 },
+        { symbol: 'MSFT', name: 'Microsoft Corp.', value: 7500, percentage: 26.7 },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.', value: 5625, percentage: 20 },
+        { symbol: 'AMZN', name: 'Amazon.com Inc.', value: 3750, percentage: 13.3 },
+        { symbol: 'META', name: 'Meta Platforms Inc.', value: 2250, percentage: 8 }
+      ]
+    };
+    
+    // Comisiones mock
+    this.commissions = [
+      {
+        id: 1,
+        client_id: this.clientId,
+        client_name: 'Juan Pérez García',
+        month: 'Enero',
+        year: 2023,
+        commissions_generated: 120,
+        operations_count: 8,
+        market: 'NASDAQ',
+        status: 'paid'
+      },
+      {
+        id: 2,
+        client_id: this.clientId,
+        client_name: 'Juan Pérez García',
+        month: 'Febrero',
+        year: 2023,
+        commissions_generated: 150,
+        operations_count: 10,
+        market: 'NASDAQ',
+        status: 'paid'
+      },
+      {
+        id: 3,
+        client_id: this.clientId,
+        client_name: 'Juan Pérez García',
+        month: 'Marzo',
+        year: 2023,
+        commissions_generated: 180,
+        operations_count: 12,
+        market: 'NYSE',
+        status: 'paid'
+      },
+      {
+        id: 4,
+        client_id: this.clientId,
+        client_name: 'Juan Pérez García',
+        month: 'Abril',
+        year: 2023,
+        commissions_generated: 135,
+        operations_count: 9,
+        market: 'BVC',
+        status: 'approved'
+      },
+      {
+        id: 5,
+        client_id: this.clientId,
+        client_name: 'Juan Pérez García',
+        month: 'Mayo',
+        year: 2023,
+        commissions_generated: 165,
+        operations_count: 11,
+        market: 'NASDAQ',
+        status: 'pending'
+      }
+    ];
+    
+    this.commissionDataSource = new MatTableDataSource(this.commissions);
+    
+    // Calcular resumen de comisiones
+    this.calculateCommissionSummary();
+    
+    // Generar datos simulados para transacciones y portfolio
+    this.generateMockData();
+    
+    // Configurar gráficos y aplicar tema
+    this.setupCharts();
+    this.updateChartsTheme();
+    
+    // Configuración de tablas
+    setTimeout(() => {
+      if (this.commissionDataSource) {
+        this.commissionDataSource.paginator = this.commissionPaginator;
+        this.commissionDataSource.sort = this.commissionSort;
+      }
+      
+      if (this.transactionDataSource) {
+        this.transactionDataSource.paginator = this.transactionPaginator;
+        this.transactionDataSource.sort = this.transactionSort;
+      }
+    });
+    
+    this.isLoading = false;
   }
-}
+  
+  /**
+   * Calcula el resumen de comisiones
+   */
+  calculateCommissionSummary(): void {
+    // Inicializa los contadores
+    this.totalCommissionsGenerated = 0;
+    this.totalOperationsCount = 0;
+    this.paidCount = 0;
+    this.approvedCount = 0;
+    this.pendingCount = 0;
+    
+    // Recorre las comisiones para calcular los totales
+    this.commissions.forEach(commission => {
+      this.totalCommissionsGenerated += commission.commissions_generated;
+      this.totalOperationsCount += commission.operations_count;
+      
+      // Contadores por estado
+      if (commission.status === 'paid') {
+        this.paidCount++;
+      } else if (commission.status === 'approved') {
+        this.approvedCount++;
+      } else if (commission.status === 'pending') {
+        this.pendingCount++;
+      }
+    });
+    
+    // Calcula promedio de comisión por operación
+    this.averageCommissionPerOperation = this.totalOperationsCount > 0 ? 
+      this.totalCommissionsGenerated / this.totalOperationsCount : 0;
+      
+    // Inicializa los filtros
+    this.filteredCommissions = [...this.commissions];
+    this.updateCommissionDisplay();
+  }
+  
+  /**
+   * Filtra las comisiones por estado
+   */
+  filterCommissionsByStatus(status: string): void {
+    this.commissionFilterStatus = status;
+    this.commissionCurrentPage = 0; // Resetear a la primera página
+    this.filterCommissions();
+  }
+  
+  /**
+   * Aplica el filtro de búsqueda para comisiones
+   */
+  applyCommissionFilter(event: Event): void {
+    this.commissionSearchQuery = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.commissionCurrentPage = 0; // Resetear a la primera página
+    this.filterCommissions();
+  }
+  
+  /**
+   * Filtra las comisiones según los criterios actuales
+   */
+  filterCommissions(): void {
+    // Copia todas las comisiones
+    let result = [...this.commissions];
+    
+    // Filtrar por estado
+    if (this.commissionFilterStatus !== 'todos') {
+      const statusMap: { [key: string]: string } = {
+        'pagadas': 'paid',
+        'aprobadas': 'approved',
+        'pendientes': 'pending'
+      };
+      result = result.filter(commission => 
+        commission.status === statusMap[this.commissionFilterStatus]
+      );
+    }
+    
+    // Filtrar por texto de búsqueda
+    if (this.commissionSearchQuery) {
+      result = result.filter(commission => 
+        commission.month.toLowerCase().includes(this.commissionSearchQuery) ||
+        commission.year.toString().includes(this.commissionSearchQuery) ||
+        commission.market.toLowerCase().includes(this.commissionSearchQuery) ||
+        commission.status.toLowerCase().includes(this.commissionSearchQuery)
+      );
+    }
+    
+    // Aplicar orden
+    this.sortCommissionsData(result);
+    
+    this.filteredCommissions = result;
+    this.updateCommissionDisplay();
+  }
+  
+  /**
+   * Ordena las comisiones por la columna especificada
+   */
+  sortCommissions(column: string): void {
+    // Si ya está ordenando por esta columna, invierte el orden
+    if (this.commissionSortColumn === column) {
+      this.commissionSortAscending = !this.commissionSortAscending;
+    } else {
+      this.commissionSortColumn = column;
+      this.commissionSortAscending = true;
+    }
+    
+    this.sortCommissionsData(this.filteredCommissions);
+    this.updateCommissionDisplay();
+  }
+  
+  /**
+   * Implementa el algoritmo de ordenamiento para los datos de comisiones
+   */
+  sortCommissionsData(data: CommissionSummary[]): void {
+    data.sort((a, b) => {
+      let valueA: any = a[this.commissionSortColumn as keyof CommissionSummary];
+      let valueB: any = b[this.commissionSortColumn as keyof CommissionSummary];
+      
+      // Convertir a números si es posible para comparación numérica
+      if (!isNaN(Number(valueA)) && !isNaN(Number(valueB))) {
+        valueA = Number(valueA);
+        valueB = Number(valueB);
+      } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+        valueA = valueA.toLowerCase();
+        valueB = valueB.toLowerCase();
+      }
+      
+      // Comparación
+      if (valueA < valueB) return this.commissionSortAscending ? -1 : 1;
+      if (valueA > valueB) return this.commissionSortAscending ? 1 : -1;
+      return 0;
+    });
+  }
+  
+  /**
+   * Actualiza los elementos mostrados según la paginación actual
+   */
+  updateCommissionDisplay(): void {
+    const startIndex = this.commissionCurrentPage * this.commissionPageSize;
+    this.displayedCommissions = this.filteredCommissions.slice(
+      startIndex, 
+      startIndex + this.commissionPageSize
+    );
+  }
+  
+  /**
+   * Avanza a la página siguiente
+   */
+  nextCommissionPage(): void {
+    if ((this.commissionCurrentPage + 1) * this.commissionPageSize < this.filteredCommissions.length) {
+      this.commissionCurrentPage++;
+      this.updateCommissionDisplay();
+    }
+  }
+  
+  /**
+   * Retrocede a la página anterior
+   */
+  prevCommissionPage(): void {
+    if (this.commissionCurrentPage > 0) {
+      this.commissionCurrentPage--;
+      this.updateCommissionDisplay();
+    }
+  }
+  
+  /**
+   * Obtiene el rango de páginas a mostrar en la paginación
+   */
+  getCommissionPageRange(): number[] {
+    const totalPages = Math.ceil(this.filteredCommissions.length / this.commissionPageSize);
+    const maxPagesToShow = 5; // Mostrar máximo 5 botones de página
+    
+    // Si hay pocas páginas, mostrar todas
+    if (totalPages <= maxPagesToShow) {
+      return Array.from({length: totalPages}, (_, i) => i);
+    }
+    
+    // Si estamos cerca del inicio
+    if (this.commissionCurrentPage < Math.floor(maxPagesToShow / 2)) {
+      return Array.from({length: maxPagesToShow}, (_, i) => i);
+    }
+    
+    // Si estamos cerca del final
+    if (this.commissionCurrentPage >= totalPages - Math.floor(maxPagesToShow / 2)) {
+      return Array.from({length: maxPagesToShow}, (_, i) => totalPages - maxPagesToShow + i);
+    }
+    
+    // Estamos en el medio
+    return Array.from(
+      {length: maxPagesToShow}, 
+      (_, i) => this.commissionCurrentPage - Math.floor(maxPagesToShow / 2) + i
+    );
+  }
+
+
