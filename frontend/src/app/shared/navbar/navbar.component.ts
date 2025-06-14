@@ -18,6 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   sidebarOpen = false;
   isDarkTheme = false;
   isLoading = true; // Estado de carga para controlar la visualización
+  isCommissioner = false; // Propiedad para verificar si el usuario es comisionista
   private authSubscription: Subscription = new Subscription();
   
   // Verifica si estamos en el navegador
@@ -51,6 +52,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       next: (user) => {
         this.isAuthenticated = !!user;
         this.username = user?.username || null;
+        // Verificar si el usuario tiene rol de comisionista o admin
+        this.isCommissioner = user?.role === 'commissioner' || user?.role === 'admin';
         this.isLoading = false; // Terminamos de cargar cuando tengamos datos de autenticación
       },
       error: (err) => {

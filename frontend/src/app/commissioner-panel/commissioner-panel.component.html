@@ -1,0 +1,506 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- Header -->
+  <div class="bg-emerald-700 dark:bg-emerald-800 text-white shadow-md">
+    <div class="container mx-auto px-4 py-6">
+      <h1 class="text-2xl font-bold mb-1">Panel de Comisionista</h1>
+      <p class="text-emerald-100">Gestión de clientes y seguimiento de comisiones</p>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="container mx-auto px-4 py-6">
+    <!-- Tarjetas de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Clientes</p>
+            <p class="text-xl font-semibold text-gray-800 dark:text-white">
+              <span *ngIf="statistics">{{statistics.total_clients}}</span>
+              <span *ngIf="!statistics" class="animate-pulse">--</span>
+            </p>
+          </div>
+        </div>
+        <div class="mt-2">
+          <span class="text-sm text-emerald-600 dark:text-emerald-400">
+            <span *ngIf="statistics">{{statistics.active_clients}}</span>
+            <span *ngIf="!statistics" class="animate-pulse">--</span>
+            activos
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Comisiones (Mes)</p>
+            <p class="text-xl font-semibold text-gray-800 dark:text-white">
+              <span *ngIf="statistics">${{statistics.total_commissions_month | number:'1.2-2'}}</span>
+              <span *ngIf="!statistics" class="animate-pulse">--</span>
+            </p>
+          </div>
+        </div>
+        <div class="mt-2">
+          <span class="text-sm text-blue-600 dark:text-blue-400" *ngIf="statistics">
+            Acumulado año: ${{statistics.total_commissions_year | number:'1.2-2'}}
+          </span>
+          <span *ngIf="!statistics" class="animate-pulse text-sm">--</span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">ROI Promedio</p>
+            <p class="text-xl font-semibold text-gray-800 dark:text-white">
+              <span *ngIf="statistics">{{statistics.average_roi_clients | number:'1.2-2'}}%</span>
+              <span *ngIf="!statistics" class="animate-pulse">--</span>
+            </p>
+          </div>
+        </div>
+        <div class="mt-2">
+          <span class="text-sm" [ngClass]="statistics && statistics.average_roi_clients > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+            <span *ngIf="statistics && statistics.average_roi_clients > 0">↑</span>
+            <span *ngIf="statistics && statistics.average_roi_clients < 0">↓</span>
+            <span *ngIf="!statistics" class="animate-pulse">--</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+            <mat-icon>account_balance</mat-icon>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Inversiones</p>
+            <p class="text-xl font-semibold text-gray-800 dark:text-white">
+              <span *ngIf="statistics">${{statistics.total_investments_managed | number:'1.2-2'}}</span>
+              <span *ngIf="!statistics" class="animate-pulse">--</span>
+            </p>
+          </div>
+        </div>
+        <div class="mt-2">
+          <span class="text-sm text-amber-600 dark:text-amber-400">
+            <span *ngIf="clients">{{clients.length}}</span>
+            <span *ngIf="!clients" class="animate-pulse">--</span>
+            portafolios
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas -->
+    <mat-tab-group mat-align-tabs="start" [(selectedIndex)]="activeTab" animationDuration="0ms" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700">
+      <!-- Pestaña de lista de clientes -->
+      <mat-tab label="Listado de Clientes">
+        <div class="p-6">
+          <!-- Filtros -->
+          <form [formGroup]="filterForm" class="mb-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Buscar Cliente</mat-label>
+              <input matInput formControlName="client_name" placeholder="Nombre del cliente">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Mercado</mat-label>
+              <mat-select formControlName="market">
+                <mat-option value="">Todos</mat-option>
+                <mat-option value="NYSE">NYSE</mat-option>
+                <mat-option value="NASDAQ">NASDAQ</mat-option>
+                <mat-option value="TSE">TSE</mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Estado</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="">Todos</mat-option>
+                <mat-option value="active">Activos</mat-option>
+                <mat-option value="inactive">Inactivos</mat-option>
+                <mat-option value="pending">Pendientes</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="flex items-end space-x-2">
+              <button mat-flat-button color="primary" (click)="applyFilters()" class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white">
+                <mat-icon>filter_list</mat-icon>
+                Filtrar
+              </button>
+              <button mat-stroked-button (click)="clearFilters()" class="ml-2">
+                <mat-icon>clear</mat-icon>
+                Limpiar
+              </button>
+            </div>
+          </form>
+
+          <!-- Tabla de clientes -->
+          <div class="overflow-x-auto">
+            <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+              <mat-spinner diameter="40"></mat-spinner>
+              <span class="ml-4 text-gray-600 dark:text-gray-400">Cargando datos...</span>
+            </div>
+
+            <table mat-table [dataSource]="clientDataSource" matSort *ngIf="!isLoading" class="w-full">
+              <!-- Nombre -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Cliente </th>
+                <td mat-cell *matCellDef="let client" class="py-3">
+                  <div class="font-medium">{{ client.name }}</div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">{{ client.email }}</div>
+                </td>
+              </ng-container>
+
+              <!-- Estado -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+                <td mat-cell *matCellDef="let client">
+                  <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="getClientStatusClass(client.status)">
+                    {{ client.status === 'active' ? 'Activo' : client.status === 'inactive' ? 'Inactivo' : 'Pendiente' }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Inversión total -->
+              <ng-container matColumnDef="total_investment">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Inversión Total </th>
+                <td mat-cell *matCellDef="let client">
+                  ${{ client.total_investment | number:'1.2-2' }}
+                </td>
+              </ng-container>
+
+              <!-- ROI -->
+              <ng-container matColumnDef="roi_percentage">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> ROI </th>
+                <td mat-cell *matCellDef="let client" [ngClass]="getRoiClass(client.roi_percentage)">
+                  {{ client.roi_percentage > 0 ? '+' : '' }}{{ client.roi_percentage | number:'1.2-2' }}%
+                </td>
+              </ng-container>
+
+              <!-- Principales activos -->
+              <ng-container matColumnDef="main_assets">
+                <th mat-header-cell *matHeaderCellDef> Principales Activos </th>
+                <td mat-cell *matCellDef="let client">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let asset of client.main_assets.slice(0, 3)" class="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">
+                      {{ asset }}
+                    </span>
+                    <span *ngIf="client.main_assets.length > 3" class="text-xs font-medium px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">
+                      +{{ client.main_assets.length - 3 }}
+                    </span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Última operación -->
+              <ng-container matColumnDef="last_operation_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Última Operación </th>
+                <td mat-cell *matCellDef="let client">
+                  {{ client.last_operation_date | date:'dd/MM/yyyy' }}
+                </td>
+              </ng-container>
+
+              <!-- Acciones -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let client">
+                  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opciones">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="selectClient(client)">
+                      <mat-icon>visibility</mat-icon>
+                      <span>Ver detalles</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="clientColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: clientColumns;" class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" (click)="selectClient(row)"></tr>
+            </table>
+
+            <!-- Mensaje sin resultados -->
+            <div *ngIf="!isLoading && clientDataSource.data.length === 0" class="text-center py-10 text-gray-500 dark:text-gray-400">
+              <mat-icon class="text-4xl mb-2">search_off</mat-icon>
+              <p>No se encontraron clientes con los filtros seleccionados</p>
+            </div>
+
+            <!-- Paginación -->
+            <mat-paginator #clientsPaginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+          </div>
+
+          <!-- Botones de exportación -->
+          <div class="mt-6 flex flex-wrap gap-4 justify-end">
+            <button mat-stroked-button [disabled]="isExporting" (click)="exportData('pdf')" class="flex items-center">
+              <mat-icon class="mr-1">picture_as_pdf</mat-icon>
+              Exportar PDF
+            </button>
+            <button mat-stroked-button [disabled]="isExporting" (click)="exportData('excel')" class="flex items-center">
+              <mat-icon class="mr-1">table_chart</mat-icon>
+              Exportar Excel
+            </button>
+            <button mat-stroked-button [disabled]="isExporting" (click)="exportData('csv')" class="flex items-center">
+              <mat-icon class="mr-1">download</mat-icon>
+              Exportar CSV
+            </button>
+            <div *ngIf="isExporting" class="flex items-center">
+              <mat-spinner diameter="20"></mat-spinner>
+              <span class="ml-2">Exportando...</span>
+            </div>
+          </div>
+
+          <!-- Gráficos de resumen -->
+          <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Comisiones por Cliente</h3>
+              <div *ngIf="!isLoading">
+                <apx-chart
+                  [series]="commissionChartOptions.series!"
+                  [chart]="commissionChartOptions.chart!"
+                  [xaxis]="commissionChartOptions.xaxis!"
+                  [yaxis]="commissionChartOptions.yaxis!"
+                  [dataLabels]="commissionChartOptions.dataLabels!"
+                  [plotOptions]="commissionChartOptions.plotOptions!"
+                  [fill]="commissionChartOptions.fill!"
+                  [tooltip]="commissionChartOptions.tooltip!"
+                  [stroke]="commissionChartOptions.stroke!"
+                ></apx-chart>
+              </div>
+              <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+                <mat-spinner diameter="40"></mat-spinner>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">ROI por Cliente</h3>
+              <div *ngIf="!isLoading">
+                <apx-chart
+                  [series]="roiChartOptions.series!"
+                  [chart]="roiChartOptions.chart!"
+                  [xaxis]="roiChartOptions.xaxis!"
+                  [yaxis]="roiChartOptions.yaxis!"
+                  [dataLabels]="roiChartOptions.dataLabels!"
+                  [plotOptions]="roiChartOptions.plotOptions!"
+                  [fill]="roiChartOptions.fill!"
+                  [tooltip]="roiChartOptions.tooltip!"
+                  [stroke]="roiChartOptions.stroke!"
+                ></apx-chart>
+              </div>
+              <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+                <mat-spinner diameter="40"></mat-spinner>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Distribución por Mercado</h3>
+              <div *ngIf="!isLoading">
+                <apx-chart
+                  [series]="marketShareChartOptions.series!"
+                  [chart]="marketShareChartOptions.chart!"
+                  [xaxis]="marketShareChartOptions.xaxis!"
+                  [responsive]="marketShareChartOptions.responsive!"
+                  [dataLabels]="marketShareChartOptions.dataLabels!"
+                ></apx-chart>
+              </div>
+              <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+                <mat-spinner diameter="40"></mat-spinner>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Comisiones Mensuales</h3>
+              <div *ngIf="!isLoading">
+                <apx-chart
+                  [series]="monthlyPerformanceChartOptions.series!"
+                  [chart]="monthlyPerformanceChartOptions.chart!"
+                  [xaxis]="monthlyPerformanceChartOptions.xaxis!"
+                  [dataLabels]="monthlyPerformanceChartOptions.dataLabels!"
+                  [stroke]="monthlyPerformanceChartOptions.stroke!"
+                  [grid]="monthlyPerformanceChartOptions.grid!"
+                ></apx-chart>
+              </div>
+              <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+                <mat-spinner diameter="40"></mat-spinner>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Pestaña de detalle de cliente -->
+      <mat-tab label="Detalle Cliente" [disabled]="!selectedClient">
+        <div class="p-6" *ngIf="selectedClient">
+          <!-- Encabezado con botón para volver -->
+          <div class="flex justify-between items-center mb-6">
+            <button mat-stroked-button (click)="backToList()" class="flex items-center">
+              <mat-icon>arrow_back</mat-icon>
+              <span class="ml-1">Volver a la lista</span>
+            </button>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Detalle de Cliente</h2>
+          </div>
+
+          <!-- Información del cliente -->
+          <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+            <div class="flex flex-col md:flex-row justify-between">
+              <div>
+                <h3 class="text-lg font-medium text-gray-800 dark:text-white">{{ selectedClient.name }}</h3>
+                <p class="text-gray-600 dark:text-gray-400">{{ selectedClient.email }}</p>
+                <p class="text-gray-600 dark:text-gray-400">{{ selectedClient.phone_number }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">Cliente desde {{ selectedClient.registration_date | date:'dd/MM/yyyy' }}</p>
+              </div>
+              <div class="mt-4 md:mt-0">
+                <span class="px-3 py-1 rounded-full text-sm font-medium" [ngClass]="getClientStatusClass(selectedClient.status)">
+                  {{ selectedClient.status === 'active' ? 'Activo' : selectedClient.status === 'inactive' ? 'Inactivo' : 'Pendiente' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPIs del cliente -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">KPIs del Cliente</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Inversión Total</p>
+                <p class="text-xl font-semibold text-gray-800 dark:text-white" *ngIf="selectedClientKpi">
+                  ${{ selectedClientKpi.total_invested | number:'1.2-2' }}
+                </p>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Valor Actual</p>
+                <p class="text-xl font-semibold text-gray-800 dark:text-white" *ngIf="selectedClientKpi">
+                  ${{ selectedClientKpi.current_value | number:'1.2-2' }}
+                </p>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">ROI</p>
+                <p class="text-xl font-semibold" *ngIf="selectedClientKpi" [ngClass]="getRoiClass(selectedClientKpi.roi_percentage)">
+                  {{ selectedClientKpi.roi_percentage > 0 ? '+' : '' }}{{ selectedClientKpi.roi_percentage | number:'1.2-2' }}%
+                  <span class="text-sm font-normal">${{ selectedClientKpi.roi_amount | number:'1.2-2' }}</span>
+                </p>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Número de Operaciones</p>
+                <p class="text-xl font-semibold text-gray-800 dark:text-white" *ngIf="selectedClientKpi">
+                  {{ selectedClientKpi.operations_count }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Principales activos -->
+          <div class="mb-6" *ngIf="selectedClientKpi">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Principales Activos</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <thead>
+                  <tr class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                    <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Símbolo</th>
+                    <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Nombre</th>
+                    <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Porcentaje</th>
+                    <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 dark:text-gray-300">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let asset of selectedClientKpi.main_assets" class="border-b border-gray-200 dark:border-gray-600">
+                    <td class="py-4 px-4 text-gray-800 dark:text-white">{{ asset.symbol }}</td>
+                    <td class="py-4 px-4 text-gray-800 dark:text-white">{{ asset.name }}</td>
+                    <td class="py-4 px-4 text-gray-800 dark:text-white">{{ asset.percentage }}%</td>
+                    <td class="py-4 px-4 text-gray-800 dark:text-white">${{ asset.value | number:'1.2-2' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tabla de comisiones -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Historial de Comisiones</h3>
+            <div class="overflow-x-auto">
+              <table mat-table [dataSource]="commissionDataSource" matSort class="w-full">
+                <!-- Cliente -->
+                <ng-container matColumnDef="client_name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cliente </th>
+                  <td mat-cell *matCellDef="let commission"> {{ commission.client_name }} </td>
+                </ng-container>
+
+                <!-- Mes -->
+                <ng-container matColumnDef="month">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Mes </th>
+                  <td mat-cell *matCellDef="let commission"> {{ commission.month }} </td>
+                </ng-container>
+
+                <!-- Año -->
+                <ng-container matColumnDef="year">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Año </th>
+                  <td mat-cell *matCellDef="let commission"> {{ commission.year }} </td>
+                </ng-container>
+
+                <!-- Comisiones generadas -->
+                <ng-container matColumnDef="commissions_generated">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Comisiones </th>
+                  <td mat-cell *matCellDef="let commission"> ${{ commission.commissions_generated | number:'1.2-2' }} </td>
+                </ng-container>
+
+                <!-- Número de operaciones -->
+                <ng-container matColumnDef="operations_count">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Operaciones </th>
+                  <td mat-cell *matCellDef="let commission"> {{ commission.operations_count }} </td>
+                </ng-container>
+
+                <!-- Mercado -->
+                <ng-container matColumnDef="market">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Mercado </th>
+                  <td mat-cell *matCellDef="let commission"> {{ commission.market }} </td>
+                </ng-container>
+
+                <!-- Estado -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+                  <td mat-cell *matCellDef="let commission">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="getCommissionStatusClass(commission.status)">
+                      {{ commission.status === 'approved' ? 'Aprobado' : commission.status === 'paid' ? 'Pagado' : 'Pendiente' }}
+                    </span>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="commissionColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: commissionColumns;" class="hover:bg-gray-50 dark:hover:bg-gray-700"></tr>
+              </table>
+
+              <!-- Sin resultados -->
+              <div *ngIf="commissionDataSource.data.length === 0" class="text-center py-10 text-gray-500 dark:text-gray-400">
+                <mat-icon class="text-4xl mb-2">inventory</mat-icon>
+                <p>No hay comisiones registradas para este cliente</p>
+              </div>
+
+              <mat-paginator #commissionsPaginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+            </div>
+          </div>
+
+          <!-- Botones de exportación -->
+          <div class="flex justify-end mt-6">
+            <button mat-stroked-button [disabled]="isExporting" (click)="exportData('pdf')" class="flex items-center">
+              <mat-icon class="mr-1">picture_as_pdf</mat-icon>
+              Exportar Reporte
+            </button>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

@@ -9,6 +9,8 @@ export interface User {
   email: string;
   phone_number: string;
   birthdate?: Date;
+  role?: 'admin' | 'commissioner' | 'client'; // Roles posibles
+  status?: 'active' | 'inactive' | 'pending'; // Estados posibles
 }
 
 /**

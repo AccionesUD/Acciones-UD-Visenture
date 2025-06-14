@@ -1,0 +1,493 @@
+<!-- Contenedor principal con tema claro/oscuro -->
+<div class="p-4 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <!-- Cabecera con información del cliente y navegación -->
+  <div class="mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+      <div>
+        <button mat-icon-button color="primary" (click)="navigateBack()" class="mb-2 text-emerald-600 dark:text-emerald-500">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white inline-block ml-2">Reporte de Cliente</h1>
+      </div>
+      
+      <!-- Botones de exportación -->
+      <div class="flex space-x-2 mt-4 sm:mt-0">
+        <button mat-flat-button color="primary" [disabled]="isExporting" (click)="exportReport('pdf')" 
+                class="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <mat-icon>picture_as_pdf</mat-icon>
+          <span class="ml-1">PDF</span>
+        </button>
+        <button mat-flat-button color="primary" [disabled]="isExporting" (click)="exportReport('excel')" 
+                class="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <mat-icon>table_chart</mat-icon>
+          <span class="ml-1">Excel</span>
+        </button>
+        <button mat-flat-button color="primary" [disabled]="isExporting" (click)="exportReport('csv')" 
+                class="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <mat-icon>download</mat-icon>
+          <span class="ml-1">CSV</span>
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+      <mat-spinner diameter="50" color="accent"></mat-spinner>
+      <span class="ml-4 text-gray-600 dark:text-gray-400">Cargando información del cliente...</span>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading && client">
+    <!-- Información del cliente -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">{{ client.name }}</h2>
+          <div class="flex flex-col sm:flex-row sm:space-x-8 mt-2 text-gray-600 dark:text-gray-300">
+            <div class="flex items-center mb-2 sm:mb-0">
+              <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500 text-sm">email</mat-icon>
+              <span>{{ client.email || 'No disponible' }}</span>
+            </div>
+            <div class="flex items-center mb-2 sm:mb-0">
+              <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500 text-sm">phone</mat-icon>
+              <span>{{ client.phone_number || 'No disponible' }}</span>
+            </div>
+            <div class="flex items-center">
+              <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500 text-sm">calendar_today</mat-icon>
+              <span>Cliente desde: {{ client.registration_date | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 md:mt-0">
+          <mat-chip class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100">
+            <span *ngIf="client.status === 'active'">Cliente Activo</span>
+            <span *ngIf="client.status === 'inactive'">Cliente Inactivo</span>
+            <span *ngIf="client.status === 'pending'">Cliente Pendiente</span>
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs principales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Total invertido -->
+      <mat-card class="bg-white dark:bg-gray-800 shadow-md">
+        <mat-card-content>
+          <div class="flex items-center">
+            <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full mr-4">
+              <mat-icon class="text-emerald-600 dark:text-emerald-500">account_balance</mat-icon>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Total Invertido</p>
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white">${{ kpiDetails.total_invested | number:'1.2-2' }}</h3>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Valor Actual -->
+      <mat-card class="bg-white dark:bg-gray-800 shadow-md">
+        <mat-card-content>
+          <div class="flex items-center">
+            <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full mr-4">
+              <mat-icon class="text-emerald-600 dark:text-emerald-500">trending_up</mat-icon>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Valor Actual</p>
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white">${{ kpiDetails.current_value | number:'1.2-2' }}</h3>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ROI -->
+      <mat-card class="bg-white dark:bg-gray-800 shadow-md">
+        <mat-card-content>
+          <div class="flex items-center">
+            <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full mr-4">
+              <mat-icon class="text-emerald-600 dark:text-emerald-500">assessment</mat-icon>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">ROI</p>
+              <h3 class="text-lg font-bold" [ngClass]="kpiDetails.roi_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-600 dark:text-red-500'">
+                {{ kpiDetails.roi_percentage | number:'1.2-2' }}%
+              </h3>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Operaciones -->
+      <mat-card class="bg-white dark:bg-gray-800 shadow-md">
+        <mat-card-content>
+          <div class="flex items-center">
+            <div class="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full mr-4">
+              <mat-icon class="text-emerald-600 dark:text-emerald-500">sync_alt</mat-icon>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Total Operaciones</p>
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white">{{ kpiDetails.operations_count }}</h3>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Pestañas para diferentes secciones del reporte -->
+    <mat-tab-group animationDuration="200ms" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <!-- Pestaña de Evolución del Portfolio -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500">trending_up</mat-icon>
+          <span class="text-gray-700 dark:text-gray-300">Evolución</span>
+        </ng-template>
+        
+        <div class="p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráfica de Evolución del Portfolio -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Evolución del Valor del Portfolio</h3>
+              <div *ngIf="portfolioChartOptions">
+                <apx-chart
+                  [series]="portfolioChartOptions.series"
+                  [chart]="portfolioChartOptions.chart"
+                  [xaxis]="portfolioChartOptions.xaxis"
+                  [yaxis]="portfolioChartOptions.yaxis"
+                  [title]="portfolioChartOptions.title"
+                  [tooltip]="portfolioChartOptions.tooltip"
+                  [dataLabels]="portfolioChartOptions.dataLabels"
+                  [stroke]="portfolioChartOptions.stroke"
+                  [fill]="portfolioChartOptions.fill"
+                  [colors]="portfolioChartOptions.colors"
+                ></apx-chart>
+              </div>
+            </div>
+
+            <!-- Gráfica de ROI Comparativo -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Comparativa de ROI</h3>
+              <div *ngIf="roiChartOptions">
+                <apx-chart
+                  [series]="roiChartOptions.series"
+                  [chart]="roiChartOptions.chart"
+                  [xaxis]="roiChartOptions.xaxis"
+                  [yaxis]="roiChartOptions.yaxis"
+                  [title]="roiChartOptions.title"
+                  [dataLabels]="roiChartOptions.dataLabels"
+                  [stroke]="roiChartOptions.stroke"
+                  [plotOptions]="roiChartOptions.plotOptions"
+                  [fill]="roiChartOptions.fill"
+                  [tooltip]="roiChartOptions.tooltip"
+                  [colors]="roiChartOptions.colors"
+                ></apx-chart>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historial del Valor del Portfolio -->
+          <div class="mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm overflow-x-auto">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Historial del Valor del Portfolio</h3>
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valor ($)</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Variación</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr *ngFor="let item of portfolioHistory; let i = index" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ item.date }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${{ item.value | number:'1.2-2' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <ng-container *ngIf="i < portfolioHistory.length - 1">
+                      <span [ngClass]="item.value > portfolioHistory[i+1].value ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-600 dark:text-red-500'">
+                        {{ ((item.value - portfolioHistory[i+1].value) / portfolioHistory[i+1].value * 100) | number:'1.2-2' }}%
+                        <mat-icon class="text-sm align-text-bottom">{{ item.value > portfolioHistory[i+1].value ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                      </span>
+                    </ng-container>
+                    <span *ngIf="i === portfolioHistory.length - 1" class="text-gray-500 dark:text-gray-400">-</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Pestaña de Activos y Composición -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500">pie_chart</mat-icon>
+          <span class="text-gray-700 dark:text-gray-300">Activos</span>
+        </ng-template>
+        
+        <div class="p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Gráfica de Distribución de Activos -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Distribución de Activos</h3>
+              <div *ngIf="assetsDistributionOptions">
+                <apx-chart
+                  [series]="assetsDistributionOptions.series"
+                  [chart]="assetsDistributionOptions.chart"
+                  [labels]="assetsDistributionOptions.labels"
+                  [responsive]="assetsDistributionOptions.responsive"
+                  [colors]="assetsDistributionOptions.colors"
+                  [title]="assetsDistributionOptions.title"
+                ></apx-chart>
+              </div>
+            </div>
+
+            <!-- Detalle de Activos -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Detalle de Activos</h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Activo</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Símbolo</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Valor</th>
+                      <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Porcentaje</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr *ngFor="let asset of kpiDetails.main_assets" class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ asset.name }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-500">{{ asset.symbol }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${{ asset.value | number:'1.2-2' }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <span class="text-sm text-gray-700 dark:text-gray-300 mr-2">{{ asset.percentage | number:'1.1-1' }}%</span>
+                          <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-emerald-600 dark:bg-emerald-500 h-2.5 rounded-full" [style.width]="asset.percentage + '%'"></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Pestaña de Transacciones -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500">swap_horiz</mat-icon>
+          <span class="text-gray-700 dark:text-gray-300">Transacciones</span>
+        </ng-template>
+        
+        <div class="p-4">
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm overflow-x-auto">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Historial de Transacciones</h3>
+            
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Filtrar transacciones</mat-label>
+              <input matInput (keyup)="transactionDataSource.filter = $any($event.target).value.trim().toLowerCase()" placeholder="Buscar por símbolo, tipo, etc...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <table mat-table [dataSource]="transactionDataSource" matSort class="w-full">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Fecha</th>
+                <td mat-cell *matCellDef="let transaction" class="text-gray-700 dark:text-gray-300">{{ transaction.date | date:'dd/MM/yyyy' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Tipo</th>
+                <td mat-cell *matCellDef="let transaction" class="capitalize">
+                  <span [ngClass]="transaction.type === 'compra' ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-600 dark:text-red-500'" class="font-medium">
+                    {{ transaction.type }}
+                  </span>
+                </td>
+              </ng-container>
+              
+              <ng-container matColumnDef="symbol">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Símbolo</th>
+                <td mat-cell *matCellDef="let transaction" class="font-medium text-emerald-600 dark:text-emerald-500">{{ transaction.symbol }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="shares">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Acciones</th>
+                <td mat-cell *matCellDef="let transaction" class="text-gray-700 dark:text-gray-300">{{ transaction.shares }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Precio</th>
+                <td mat-cell *matCellDef="let transaction" class="text-gray-700 dark:text-gray-300">${{ transaction.price | number:'1.2-2' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Total</th>
+                <td mat-cell *matCellDef="let transaction" class="font-medium text-gray-700 dark:text-gray-300">${{ transaction.total | number:'1.2-2' }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Estado</th>
+                <td mat-cell *matCellDef="let transaction" class="capitalize">
+                  <mat-chip [ngClass]="transaction.status === 'completada' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100'">
+                    {{ transaction.status }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="transactionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: transactionColumns;" class="hover:bg-gray-50 dark:hover:bg-gray-700"></tr>
+              
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell text-center p-4 text-gray-500 dark:text-gray-400" [attr.colspan]="transactionColumns.length">
+                  No se encontraron transacciones.
+                </td>
+              </tr>
+            </table>
+            
+            <mat-paginator #transactionPaginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons
+                         aria-label="Seleccionar página de transacciones"></mat-paginator>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Pestaña de Comisiones -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500">attach_money</mat-icon>
+          <span class="text-gray-700 dark:text-gray-300">Comisiones</span>
+        </ng-template>
+        
+        <div class="p-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Gráfica de Comisiones Mensuales -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Comisiones Mensuales</h3>
+              <div *ngIf="monthlyCommissionsOptions">
+                <apx-chart
+                  [series]="monthlyCommissionsOptions.series"
+                  [chart]="monthlyCommissionsOptions.chart"
+                  [xaxis]="monthlyCommissionsOptions.xaxis"
+                  [yaxis]="monthlyCommissionsOptions.yaxis"
+                  [title]="monthlyCommissionsOptions.title"
+                  [dataLabels]="monthlyCommissionsOptions.dataLabels"
+                  [stroke]="monthlyCommissionsOptions.stroke"
+                  [plotOptions]="monthlyCommissionsOptions.plotOptions"
+                  [fill]="monthlyCommissionsOptions.fill"
+                  [colors]="monthlyCommissionsOptions.colors"
+                ></apx-chart>
+              </div>
+            </div>
+
+            <!-- Resumen de Comisiones -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Resumen de Comisiones</h3>
+              <div class="space-y-4">
+                <div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Total de comisiones generadas</p>
+                  <h4 class="text-xl font-bold text-emerald-600 dark:text-emerald-500">
+                    ${{ totalCommissionsGenerated | number:'1.2-2' }}
+                  </h4>
+                </div>
+                <mat-divider></mat-divider>
+                <div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Total de operaciones</p>
+                  <h4 class="text-xl font-bold text-gray-800 dark:text-white">
+                    {{ totalOperationsCount }}
+                  </h4>
+                </div>
+                <mat-divider></mat-divider>
+                <div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Comisión promedio por operación</p>
+                  <h4 class="text-xl font-bold text-gray-800 dark:text-white">
+                    ${{ averageCommissionPerOperation | number:'1.2-2' }}
+                  </h4>
+                </div>
+                <mat-divider></mat-divider>
+                <div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Estado de comisiones</p>
+                  <div class="flex mt-2 space-x-2">
+                    <mat-chip class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100">
+                      Pagadas: {{ paidCount }}
+                    </mat-chip>
+                    <mat-chip class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100">
+                      Aprobadas: {{ approvedCount }}
+                    </mat-chip>
+                    <mat-chip class="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100">
+                      Pendientes: {{ pendingCount }}
+                    </mat-chip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de Comisiones -->
+          <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm overflow-x-auto">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Detalle de Comisiones</h3>
+            
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Filtrar comisiones</mat-label>
+              <input matInput (keyup)="commissionDataSource.filter = $any($event.target).value.trim().toLowerCase()" placeholder="Buscar por mes, estado, mercado...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <table mat-table [dataSource]="commissionDataSource" matSort class="w-full">
+              <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Mes</th>
+                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.month }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Año</th>
+                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.year }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="commissions_generated">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Comisiones</th>
+                <td mat-cell *matCellDef="let commission" class="font-medium text-emerald-600 dark:text-emerald-500">
+                  ${{ commission.commissions_generated | number:'1.2-2' }}
+                </td>
+              </ng-container>
+              
+              <ng-container matColumnDef="operations_count">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Operaciones</th>
+                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.operations_count }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="market">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Mercado</th>
+                <td mat-cell *matCellDef="let commission" class="text-gray-700 dark:text-gray-300">{{ commission.market }}</td>
+              </ng-container>
+              
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-gray-700 dark:text-gray-300">Estado</th>
+                <td mat-cell *matCellDef="let commission">
+                  <mat-chip [ngClass]="{
+                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-100': commission.status === 'paid',
+                    'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-100': commission.status === 'approved',
+                    'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-100': commission.status === 'pending'
+                  }" class="capitalize">
+                    {{ commission.status === 'paid' ? 'Pagada' : 
+                       commission.status === 'approved' ? 'Aprobada' : 'Pendiente' }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+              
+              <tr mat-header-row *matHeaderRowDef="commissionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: commissionColumns;" class="hover:bg-gray-50 dark:hover:bg-gray-700"></tr>
+              
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell text-center p-4 text-gray-500 dark:text-gray-400" [attr.colspan]="commissionColumns.length">
+                  No se encontraron comisiones.
+                </td>
+              </tr>
+            </table>
+            
+            <mat-paginator #commissionPaginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons
+                          aria-label="Seleccionar página de comisiones"></mat-paginator>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+</div>
