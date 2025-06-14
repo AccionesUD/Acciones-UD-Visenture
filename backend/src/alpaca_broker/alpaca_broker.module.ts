@@ -9,18 +9,27 @@ import { TransactionsModule } from 'src/transactions/transactions.module';
 
 
 @Module({
-    exports: [AlpacaBrokerService, ValidateDataAccountProvider, FundCapitalAccount],
-    providers: [AlpacaBrokerService, ValidateDataAccountProvider, FundCapitalAccount],
-    imports: [forwardRef(() => AccountsModule), TransactionsModule, ConfigModule, HttpModule.registerAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: (configService: ConfigService) => ({
-            baseURL: configService.get('ALPACA_BROKER_BASE_URL'),
-            timeout: configService.get(''),
-            headers: {
-                Authorization: `Basic ${configService.get('ALPACA_BROKER_CREDENTIAL_BASE64')}`
-            }
-        })
-    })],
+  exports: [AlpacaBrokerService, ValidateDataAccountProvider],
+  providers: [
+    AlpacaBrokerService,
+    ValidateDataAccountProvider,
+    FundCapitalAccount,
+  ],
+  imports: [
+    forwardRef(() => AccountsModule),
+    ConfigModule,
+    HttpModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        baseURL: configService.get('ALPACA_BROKER_BASE_URL'),
+        timeout: configService.get(''),
+        headers: {
+          Authorization: `Basic ${configService.get('ALPACA_BROKER_CREDENTIAL_BASE64')}`,
+        },
+      }),
+    }),
+  ],
+  controllers: [],
 })
 export class AlpacaBrokerModule {}

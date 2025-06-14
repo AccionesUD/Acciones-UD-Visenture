@@ -9,6 +9,10 @@ import { TokensModule } from 'src/tokens/tokens.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/users.entity';
+import { Role } from 'src/roles-permission/entities/role.entity';
+import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
 
 @Module({
   imports: [
@@ -16,14 +20,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     forwardRef(() => UsersModule), // Usar forwardRef para evitar dependencia circular
     forwardRef(() => AccountsModule), // Usar forwardRef para evitar dependencia circular,
     MailModule,
+    AlpacaBrokerModule,
     TokensModule,
+    TypeOrmModule.forFeature([User, Role]),
+    forwardRef(() => UsersModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'), 
+        secret: configService.get('JWT_SECRET'),
         signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
-      })
+      }),
     }),
   ],
   controllers: [AuthController],

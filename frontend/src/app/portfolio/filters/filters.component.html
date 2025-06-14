@@ -1,0 +1,43 @@
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <!-- Filtros por mercado -->
+  <div class="relative">
+    <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por mercado</label>
+    <select 
+      id="market-filter"
+      [(ngModel)]="selectedFilter"
+      (change)="onFilterChange()"
+      class="block w-full bg-green-400 dark:bg-emerald-800 border border-emerald-400 dark:border-slate-800 text-white dark:text-gray-200 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+      <option *ngFor="let filter of marketFilters" [value]="filter.value">
+        {{ filter.label }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Filtros por rendimiento -->
+  <div class="relative">
+    <label for="performance-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por rendimiento</label>
+    <select 
+      id="performance-filter"
+      [(ngModel)]="selectedPerformance"
+      (change)="onPerformanceFilterChange()"
+      class="block w-full bg-emerald-500 dark:bg-teal-800 border border-emerald-400 dark:border-slate-800 text-white dark:text-gray-200 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+      <option *ngFor="let option of performanceFilters" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Opciones de ordenamiento -->
+  <div class="relative">
+    <label for="sort-option" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordenar por</label>
+    <select 
+      id="sort-option"
+      [(ngModel)]="selectedSort"
+      (change)="onSortChange()"
+      class="block w-full bg-teal-600 dark:bg-teal-900 border border-emerald-400 dark:border-slate-800 text-white dark:text-gray-200 py-2 px-4 pr-8 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+      <option *ngFor="let option of sortOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+</div>

@@ -13,19 +13,16 @@ export class Share {
   id: number;
 
   @Column()
-  class: string;
-
-  @Column()
-  ticker: string;
+  symbol: string;
 
   @Column()
   name_share: string;
 
-  @Column()
-  sector: string;
+  @Column({nullable: true})
+  sector?: string;
 
   @Column()
-  status: boolean;
+  status: string;
 
   @Column()
   tradable: boolean;

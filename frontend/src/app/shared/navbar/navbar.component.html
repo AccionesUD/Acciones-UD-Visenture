@@ -1,0 +1,255 @@
+<nav class="bg-emerald-50 dark:bg-slate-900 shadow-lg py-4">
+  <div class="container mx-auto px-4 flex justify-between items-center">
+    <div class="flex items-center">
+      <div class="flex items-center">        <button *ngIf="isAuthenticated" (click)="toggleSidebar()"
+          class="text-gray-700 dark:text-gray-200 mr-3 focus:outline-none p-2 rounded-full transition-colors duration-200 hover:bg-emerald-100 dark:hover:bg-slate-800">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <a [routerLink]="['/home']" class="text-2xl font-bold text-emerald-500 dark:text-emerald-600">Visenture</a>
+      </div>
+    </div>    <!-- Navegación en pantallas grandes -->
+    <div class="hidden md:flex items-center space-x-4">
+      <!-- Estado de carga -->
+      <div *ngIf="isLoading" class="flex items-center space-x-2">
+        <div class="h-5 w-5 border-t-2 border-b-2 border-emerald-500 rounded-full animate-spin"></div>
+        <span class="text-sm text-gray-600 dark:text-gray-300">Cargando...</span>
+      </div>
+      
+      <!-- Contenido para usuarios no autenticados -->
+      <ng-container *ngIf="!isLoading && !isAuthenticated">
+        <a [routerLink]="['/login']" 
+           class="py-2 px-4 mr-2 rounded bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 transition duration-200">
+          Iniciar Sesión
+        </a>
+        <a [routerLink]="['/register']" 
+           class="py-2 px-4 mr-2 rounded border border-emerald-600 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 hover:text-emerald-700 dark:hover:text-emerald-300 transition duration-200">
+          Registrarse
+        </a>
+        <!-- Botón de cambio de tema para usuarios no autenticados -->
+        <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200 cursor-pointer" aria-label="Cambiar tema">
+          <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <svg *ngIf="isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+        </button>
+      </ng-container>
+        <ng-container *ngIf="!isLoading && isAuthenticated">
+          <!-- Notificaciones: menú desplegable al pasar el cursor -->
+          <div class="relative group mr-3">
+            <button aria-label="Notificaciones" class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition duration-200 text-gray-700 dark:text-gray-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="absolute right-0 mt-2 w-80 bg-gray-100 dark:bg-slate-900 rounded-md shadow-lg dark:shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 z-10">
+              <!-- Contenido de notificaciones -->
+            <div class="p-3 border-b border-gray-100 dark:border-slate-700">
+              <h3 class="font-semibold text-gray-900 dark:text-white">Notificaciones</h3>
+            </div>
+            <div class="max-h-60 overflow-y-auto">
+              <a href="#" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700 border-b border-gray-100 dark:border-slate-700">
+                <div class="flex">
+                  <div class="mr-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-full p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">Nueva transacción completada</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Hace 5 minutos</p>
+                  </div>
+                </div>
+              </a>
+              <!-- Más notificaciones irían aquí -->
+            </div>
+            <div class="block text-center p-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-slate-700">
+              <a href="#">Ver todas las notificaciones</a>
+            </div>
+          </div>
+        </div>
+        <div class="relative">
+          <button (click)="toggleTheme()" class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200 cursor-pointer" aria-label="Cambiar tema">
+            <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+            <svg *ngIf="isDarkTheme" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="relative group">
+          <button class="flex items-center justify-center rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 transition duration-200 p-1">
+            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+              {{ (username ? username.charAt(0) : 'U') | uppercase }}
+            </div>
+          </button>
+          <div class="absolute right-0 mt-2 w-48 bg-gray-100 dark:bg-slate-900 rounded-md shadow-lg dark:shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200 z-10">
+            <div class="block px-4 py-2 text-sm font-medium text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700">
+              {{ username || 'Usuario' }}
+            </div>
+            <a [routerLink]="['/markets']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Mercados</a>
+            <a [routerLink]="['/dashboard']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Mi Perfil</a>
+            <a [routerLink]="['/dashboard']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Configuración</a>
+            <button (click)="logout()" class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-emerald-50 dark:hover:bg-slate-700">Cerrar Sesión</button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    
+    <button (click)="toggleMobileMenu()" class="md:hidden text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path *ngIf="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <path *ngIf="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+  
+  <div *ngIf="mobileMenuOpen" class="md:hidden">
+    <div class="container mx-auto px-4 py-2 space-y-2">
+      <a [routerLink]="['/home']" routerLinkActive="text-emerald-600 dark:text-emerald-500" [routerLinkActiveOptions]="{exact: true}" 
+        class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200">
+        Inicio
+      </a>
+      
+      <ng-container *ngIf="isAuthenticated">
+        <a [routerLink]="['/dashboard']" routerLinkActive="text-emerald-600 dark:text-emerald-500" 
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200">
+          Dashboard
+        </a>
+        <a [routerLink]="['/mercados']" class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200">
+          Mercados
+        </a>        
+        <a href="#" class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200">Configuración</a>
+        <button (click)="logout()" class="w-full text-left block py-2 text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition duration-200">
+          Cerrar Sesión
+        </button>
+      </ng-container>
+      
+      <ng-container *ngIf="!isAuthenticated">
+        <a [routerLink]="['/login']" routerLinkActive="text-emerald-600 dark:text-emerald-500" 
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200">
+          Iniciar Sesión
+        </a>
+      </ng-container>
+    </div>
+  </div>
+</nav>
+<!-- backdrop-blur-sm bg-black/30 dark:bg-black/50 --> 
+<div *ngIf="sidebarOpen" class="fixed inset-0 z-40 flex">
+  <div (click)="toggleSidebar()" class="fixed inset-0  transition-opacity duration-300"></div>
+  <div class="relative flex-1 flex flex-col max-w-xs w-full bg-emerald-800 dark:bg-slate-800 shadow-xl transition-transform duration-300">
+    <div class="absolute top-0 right-0 -mr-12 pt-2">
+      <button (click)="toggleSidebar()" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+        <span class="sr-only">Cerrar menú</span>
+        <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <div class="flex-1 h-0 overflow-y-auto pt-5 pb-4">
+      <div class="flex-shrink-0 flex items-center px-4">
+        <a [routerLink]="['/home']" class="text-2xl font-bold text-white">Visenture</a>
+      </div>
+      
+      <div class="mt-5 px-4 text-white">
+        <p class="text-lg font-medium">Bienvenido, {{ username || 'Usuario' }}</p>
+      </div>
+      
+      <nav class="mt-5 px-2 space-y-1">
+        <a [routerLink]="['/dashboard']" (click)="navigateAndClose()" routerLinkActive="bg-emerald-700 dark:bg-slate-700" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Dashboard
+        </a>
+        
+        <a [routerLink]="['/notificaciones']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          Notificaciones
+        </a>
+        
+        <a [routerLink]="['/portfolio']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Portafolios
+        </a>
+        
+        <a [routerLink]="['/ordenes']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Órdenes
+        </a>
+        
+        <a [routerLink]="['/markets']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          Mercados
+        </a>
+        
+        <a [routerLink]="['/informes']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Informes
+        </a>
+        
+        <a [routerLink]="['/comisionista']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Comisionista
+        </a>
+        
+        <a [routerLink]="['/configuracion']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Configuración
+        </a>
+      </nav>
+    </div>
+    
+    <div class="flex-shrink-0 flex border-t border-emerald-700 dark:border-slate-700 p-4">
+      <button (click)="logout()" class="flex-shrink-0 group block w-full">
+        <div class="flex items-center">
+          <div class="mr-3 h-10 w-10 rounded-full bg-emerald-600 dark:bg-emerald-500 flex items-center justify-center text-white">
+            {{ (username ? username.charAt(0) : 'U') | uppercase }}
+          </div>
+          <div class="ml-3">
+            <p class="text-base font-medium text-white">{{ username || 'Usuario' }}</p>
+            <p class="text-sm text-emerald-200 group-hover:text-emerald-100">Cerrar sesión</p>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
