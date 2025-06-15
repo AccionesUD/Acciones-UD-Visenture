@@ -374,6 +374,9 @@ export class CommissionerService {
     total_commissions_year: 3580.60,
     average_roi_clients: 7.8,
     total_investments_managed: 103000,
+    commission_growth: 5.3,           // 5.3% de crecimiento respecto al mes anterior
+    totalOperations: 78,              // Total de operaciones
+    clients_with_negative_roi: 1,     // 1 cliente con ROI negativo
     top_performing_clients: [
       { client_id: 4, client_name: 'Ana García', roi_percentage: 15.7 },
       { client_id: 1, client_name: 'Pedro Pérez', roi_percentage: 12.5 },

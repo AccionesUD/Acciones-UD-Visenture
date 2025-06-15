@@ -59,6 +59,9 @@ export interface CommissionerStats {
   total_commissions_year: number;
   average_roi_clients: number;
   total_investments_managed: number;
+  commission_growth: number;           // Crecimiento de comisiones vs mes anterior (porcentaje)
+  totalOperations: number;             // Total de operaciones
+  clients_with_negative_roi: number;   // Cantidad de clientes con ROI negativo
   top_performing_clients: {
     client_id: number;
     client_name: string;

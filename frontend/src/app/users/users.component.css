@@ -1,287 +1,136 @@
-/* Estilos para el paginador */
-::ng-deep .mat-mdc-paginator {
-  background: transparent !important;
-  font-family: inherit;
+/* Estilos generales para el componente de usuarios */
+/* .users-container se estiliza principalmente con Tailwind en la plantilla */
+
+/* Estilos para la tabla de usuarios */
+.users-table-container {
+  /* Sombra y bordes redondeados ya aplicados con Tailwind (mat-elevation-z2, rounded-lg) */
+  /* Asegurar que el contenedor no tenga su propio fondo si la tabla debe ser transparente */
+  background-color: transparent; /* O el color de fondo deseado si no es transparente */
 }
 
-/* Estilos modo oscuro */
-::ng-deep .dark .mat-mdc-paginator-container {
-  color: #e2e8f0;
-}
-
-::ng-deep .dark .mat-mdc-paginator-range-label,
-::ng-deep .dark .mat-mdc-paginator-page-size-label {
-  color: #e2e8f0;
-  opacity: 1;
-}
-
-::ng-deep .dark .mat-mdc-icon-button .mat-mdc-button-persistent-ripple {
-  opacity: 0.2;
-}
-
-::ng-deep .dark .mdc-icon-button {
-  fill: #e2e8f0;
-}
-
-::ng-deep .dark .mat-mdc-icon-button {
-  color: #e2e8f0;
-}
-
-::ng-deep .dark .mat-mdc-icon-button:hover {
-  background-color: rgba(226, 232, 240, 0.1);
-}
-
-::ng-deep .dark .mat-mdc-icon-button[disabled] {
-  color: rgba(226, 232, 240, 0.5) !important;
-}
-
-::ng-deep .dark .mat-mdc-select-value-text {
-  color: #e2e8f0 !important;
-}
-
-::ng-deep .dark .mat-mdc-select-arrow {
-  color: #e2e8f0 !important;
-}
-
-::ng-deep .dark .mat-mdc-paginator-icon {
-  fill: #e2e8f0 !important;
-}
-
-/* Estilos modo claro */
-::ng-deep .mat-mdc-paginator-container {
-  color: #000000;
-}
-
-::ng-deep .mat-mdc-paginator-range-label,
-::ng-deep .mat-mdc-paginator-page-size-label {
-  color: #000000;
-  opacity: 1;
-}
-
-::ng-deep .mdc-icon-button {
-  fill: #000000;
-}
-
-::ng-deep .mat-mdc-icon-button {
-  color: #000000;
-}
-
-::ng-deep .mat-mdc-icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-::ng-deep .mat-mdc-icon-button[disabled] {
-  color: rgba(0, 0, 0, 0.38) !important;
-}
-
-::ng-deep .mat-mdc-select-value-text {
-  color: #000000 !important;
-}
-
-::ng-deep .mat-mdc-select-arrow {
-  color: #000000 !important;
-}
-
-::ng-deep .mat-mdc-paginator-icon {
-  fill: #000000 !important; 
-}
-
-/* Estilos específicos para los iconos del paginador */
-::ng-deep .mat-mdc-paginator-navigation-first .mat-mdc-paginator-icon,
-::ng-deep .mat-mdc-paginator-navigation-previous .mat-mdc-paginator-icon,
-::ng-deep .mat-mdc-paginator-navigation-next .mat-mdc-paginator-icon,
-::ng-deep .mat-mdc-paginator-navigation-last .mat-mdc-paginator-icon {
-  width: 24px;
-  height: 24px;
-}
-
-/* Mejora en la visibilidad del selector de items por página */
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  height: auto;
-}
-
-/* Enfatizar el cambio de hover */
-::ng-deep .mat-mdc-paginator-navigation-first:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-previous:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-next:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-last:not([disabled]):hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-::ng-deep .dark .mat-mdc-paginator-navigation-first:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-previous:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-next:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-last:not([disabled]):hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Estilos para scroll horizontal */
-.overflow-x-auto {
-  overflow-x: auto;
-  scrollbar-width: thin; /* Para Firefox */
-  scrollbar-color: rgba(156, 163, 175, 0.5) transparent; /* Para Firefox */
-  position: relative;
-  border-radius: 0.5rem;
-}
-
-/* Barra de desplazamiento personalizada para Chrome, Edge, y Safari */
-.overflow-x-auto::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 3px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
-  border-radius: 3px;
-}
-
-.overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(156, 163, 175, 0.8);
-}
-
-/* Estilos para modo oscuro */
-.dark .overflow-x-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(75, 85, 99, 0.5);
-}
-
-.dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(75, 85, 99, 0.7);
-}
-
-.dark .overflow-x-auto {
-  scrollbar-color: rgba(75, 85, 99, 0.5) transparent; /* Para Firefox en modo oscuro */
-}
-
-/* Estilos para las tablas transparentes */
-::ng-deep .mat-mdc-table {
-  background: transparent !important;
-}
-
-::ng-deep .mat-mdc-table .mdc-data-table__header-row {
-  background-color: rgba(20, 184, 166, 0.1) !important;
-  border-bottom: 1px solid rgba(20, 184, 166, 0.2) !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__header-row {
-  background-color: rgba(20, 184, 166, 0.05) !important;
-  border-bottom: 1px solid rgba(20, 184, 166, 0.1) !important;
-}
-
-::ng-deep .mat-mdc-table .mdc-data-table__header-cell {
-  color: #047857 !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__header-cell {
-  color: #10b981 !important;
-}
-
-::ng-deep .mat-mdc-table .mdc-data-table__row {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.5) !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__row {
-  border-bottom: 1px solid rgba(55, 65, 81, 0.5) !important;
-}
-
-::ng-deep .mat-mdc-table .mdc-data-table__row:hover {
-  background-color: rgba(229, 231, 235, 0.3) !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__row:hover {
-  background-color: rgba(55, 65, 81, 0.3) !important;
-}
-
-::ng-deep .mat-mdc-table .mdc-data-table__cell {
-  color: #374151 !important;
-  font-size: 0.875rem !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__cell {
-  color: #e5e7eb !important;
-}
-
-/* Estilos para las tarjetas */
-::ng-deep mat-card {
-  background: transparent !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
-  border: 1px solid rgba(229, 231, 235, 0.7) !important;
-}
-
-::ng-deep .dark mat-card {
-  border: 1px solid rgba(55, 65, 81, 0.3) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Estilos para los filtros en tiempo real */
-.filter-chip {
-  display: inline-flex;
-  align-items: center;
-  background-color: rgba(20, 184, 166, 0.1);
-  color: #047857;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.filter-chip:hover {
-  background-color: rgba(20, 184, 166, 0.2);
-}
-
-.filter-chip.active {
-  background-color: #047857;
-  color: white;
-}
-
-.dark .filter-chip {
-  background-color: rgba(20, 184, 166, 0.2);
-  color: #10b981;
-}
-
-.dark .filter-chip:hover {
-  background-color: rgba(20, 184, 166, 0.3);
-}
-
-.dark .filter-chip.active {
-  background-color: #10b981;
-  color: #1f2937;
-}
-
-/* Estilos para los campos de formulario */
-::ng-deep .mat-mdc-form-field {
+.users-table {
   width: 100%;
+  /* Estilos para hacer la tabla transparente si es necesario */
+  /* background-color: transparent !important; */ /* Descomentar si se necesita transparencia total */
 }
 
-::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-  color: rgba(156, 163, 175, 0.5) !important;
+/* Celdas de la tabla */
+.mat-header-cell,
+.mat-cell {
+  padding: 12px 16px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  /* Los colores de borde se manejan con Tailwind y clases de tema oscuro/claro */
 }
 
-::ng-deep .dark .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-  color: rgba(75, 85, 99, 0.5) !important;
+.mat-header-cell {
+  font-weight: 500;
+  /* Color de texto para encabezados, manejado por Tailwind */
 }
 
-/* Estilo para los botones de acción en las tablas */
-.action-button {
-  padding: 0.25rem;
-  border-radius: 9999px;
-  transition: background-color 0.2s;
+/* Cabeceras pegajosas */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  /* El color de fondo se maneja con Tailwind (bg-white dark:bg-gray-800) */
 }
 
-.action-button:hover {
-  background-color: rgba(229, 231, 235, 0.5);
+/* Paginador pegajoso */
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  /* El color de fondo se maneja con Tailwind (bg-white dark:bg-gray-800) */
 }
 
-.dark .action-button:hover {
-  background-color: rgba(55, 65, 81, 0.5);
+/* Estilo para la fila de "no hay datos" */
+.mat-row:has(td.mat-cell.text-center) {
+    height: auto; /* Ajustar altura si es necesario */
 }
+
+.mat-row:has(td.mat-cell.text-center) .mat-cell {
+    padding: 2rem;
+    color: var(--text-color-secondary); /* Usar variables de tema si están definidas */
+}
+
+/* Estilos para los badges de estado y rol (ya definidos en TS con getRoleClass/getStatusClass) */
+/* Se pueden añadir estilos base aquí si es necesario */
+
+/* Clases específicas para los colores de estado (usadas en getStatusClass y getStatusIndicatorClass) */
+/* Estas clases utilizan @apply de Tailwind CSS. Asegúrate de que tu proceso de build procese este archivo CSS con Tailwind. */
+/* Si no usas Tailwind con @apply en este archivo, define estas clases con CSS estándar */
+/* Ejemplo:
+.status-active-bg { background-color: #D1FAE5; } .dark .status-active-bg { background-color: #065F46; }
+.status-active-text { color: #065F46; } .dark .status-active-text { color: #A7F3D0; }
+.status-active-indicator { color: #10B981; } .dark .status-active-indicator { color: #34D399; }
+*/
+
+/* Estilos para los gráficos */
+/* .chart-card se estiliza principalmente con Tailwind en la plantilla */
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .mat-header-cell,
+  .mat-cell {
+    padding: 8px 10px;
+    font-size: 0.875rem; /* 14px */
+  }
+
+  .users-container {
+    padding: 1rem; /* Reducir padding en móviles */
+  }
+
+  /* Ocultar columnas menos importantes en pantallas pequeñas si es necesario */
+  /* Por ejemplo, para ocultar 'email' en móviles: */
+  /*
+  .users-table .mat-column-email {
+    display: none;
+  }
+  */
+}
+
+/* Estilos para que la tabla y el paginador usen el fondo del contenedor principal */
+:host ::ng-deep .mat-mdc-table {
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-mdc-paginator {
+  background-color: transparent !important;
+}
+
+/* Para asegurar que el fondo de las filas de la tabla también sea transparente */
+:host ::ng-deep .mat-mdc-row, :host ::ng-deep .mat-mdc-header-row, :host ::ng-deep .mat-mdc-footer-row {
+    background-color: transparent !important;
+}
+
+/* Estilo para el contenedor de la tabla para que tenga el fondo deseado */
+/* .users-table-container.bg-white.dark\:bg-gray-800 se estiliza con Tailwind */
+
+/* .dark .users-table-container.bg-white.dark\:bg-gray-800 se estiliza con Tailwind */
+
+/* Asegurar que el texto en la tabla y paginador sea legible en ambos temas */
+/* Se recomienda definir estas variables CSS en un archivo global (styles.css o custom-theme.scss) */
+:host ::ng-deep .mat-mdc-header-cell {
+  color: var(--text-color-primary, currentColor); /* currentColor como fallback */
+}
+
+:host ::ng-deep .mat-mdc-cell {
+  color: var(--text-color-secondary, currentColor);
+}
+
+:host ::ng-deep .mat-mdc-paginator-range-label,
+:host ::ng-deep .mat-mdc-paginator-page-size-label,
+:host ::ng-deep .mat-mdc-paginator-page-size-value {
+  color: var(--text-color-secondary, currentColor);
+}
+
+:host ::ng-deep .mat-mdc-icon-button .mat-mdc-paginator-icon {
+  fill: var(--text-color-secondary, currentColor);
+}
+
+/* Estilos para los chips de rol y estado para que coincidan con el diseño */
+/* Las clases de Tailwind ya se aplican dinámicamente desde el TS */
+
+/* Para asegurar que los gráficos ApexCharts se actualicen correctamente con el tema */
+/* Esto se maneja principalmente en el TS con la lógica de MutationObserver y actualización de opciones */

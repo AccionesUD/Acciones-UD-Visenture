@@ -1,3 +1,37 @@
+/* Estilos para el componente de reporte de cliente */
+
+/* Personalización de tarjetas de estadísticas */
+.stat-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Personalización para tarjetas */
+mat-card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Personalización de tablas */
+.mat-mdc-table {
+  background-color: transparent !important;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.dark .mat-mdc-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
 /* Estilos para el paginador */
 ::ng-deep .mat-mdc-paginator {
   background: transparent !important;
