@@ -1,5 +1,14 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, NotFoundException, UnauthorizedException, Param, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CompleteLoginDto } from './dto/complete-login.dto';
@@ -7,11 +16,12 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ValidateTokenDto } from './dto/validate-token.dto'; // Asegúrate de que este DTO esté definido
 import { UsersService } from '../users/services/users.service';
 import { MailService } from 'src/mail/mail.service';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { ResetPasswordDto } from './dto/reset-password.dto'; // Añadir esta línea
-import * as bcrypt from 'bcrypt';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { ResendToken2fmadDto } from './dto/resend-token2mfa';
+import { ChangePasswordDto } from 'src/users/dtos/change-password.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,10 +30,11 @@ export class AuthController {
     private readonly accountsService: AccountsService,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    console.log('Intentando login con clave:', loginDto.password);
     return await this.authService.validateUser(loginDto);
   }
 
@@ -35,7 +46,7 @@ export class AuthController {
 
   @Post('resend-token2fma')
   async resendToken2fma(@Body() resendToken2fmaDto: ResendToken2fmadDto) {
-    return await this.authService.generateTokenLogin(resendToken2fmaDto.email)
+    return await this.authService.generateTokenLogin(resendToken2fmaDto.email);
   }
 
   @Post('forgot-password')
@@ -48,7 +59,7 @@ export class AuthController {
   async validateResetToken(@Body() validateTokenDto: ValidateTokenDto) {
     return this.authService.validatePasswordResetToken(
       validateTokenDto.email,
-      validateTokenDto.token
+      validateTokenDto.token,
     );
   }
 
@@ -57,8 +68,17 @@ export class AuthController {
     return this.authService.resetPassword(
       resetPasswordDto.email,
       resetPasswordDto.token,
-      resetPasswordDto.newPassword
+      resetPasswordDto.newPassword,
     );
   }
 
+  @Patch('perfil/password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Req() req: import('express').Request & { user?: { userId: string } },
+    @Body() body: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = req.user as { userId: string };
+    return await this.authService.changePassword(user.userId, body);
+  }
 }

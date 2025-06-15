@@ -102,6 +102,10 @@ export class AccountsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+
+    console.log('Actualizando password en la base para account id:', accountId);
+    console.log('Nuevo password:', newPassword);
+    console.log('Nuevo hash a guardar:', hashedPassword);
   }
   // accounts.service.ts
   async findByUserId(accountId: number): Promise<Account | null> {
@@ -134,5 +138,14 @@ export class AccountsService {
     account.roles = roles;
     await this.accountRepository.save(account);
     return { message: 'Roles actualizados', roles: roles.map((r) => r.name) };
+  }
+
+  async updateEmail(accountId: number, newEmail: string) {
+    const account = await this.accountRepository.findOne({
+      where: { id: accountId },
+    });
+    if (!account) throw new NotFoundException('Cuenta no encontrada');
+    account.email = newEmail;
+    return this.accountRepository.save(account);
   }
 }
