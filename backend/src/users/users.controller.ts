@@ -4,6 +4,7 @@ import { UsersService } from './services/users.service';
 import { Get, UseGuards, Req } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AuthUser } from 'src/auth/interfaces/auth-user.interface';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -68,4 +69,11 @@ export class UsersController {
   // ) {
   //   return this.usersService.updateUserRole(id, body.roleIds);
   // }
+
+  @Get('perfilCompleto')
+  @UseGuards(JwtAuthGuard)
+  async getProfileCompleto(@Req() req: Request & { user: AuthUser }) {
+    const identity_document: string = String(req.user.userId);
+    return this.usersService.getProfileCompleto(identity_document);
+  }
 }
