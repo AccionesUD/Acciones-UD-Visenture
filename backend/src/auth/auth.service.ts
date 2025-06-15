@@ -99,8 +99,8 @@ export class AuthService {
     let roles: string[] = [];
     try {
       if (account.identity_document && account.user.identity_document) {
-        if (account?.user?.roles) {
-          roles = account.user.roles.map((r) => r.name);
+        if (account?.roles) {
+          roles = account.roles.map((r) => r.name);
         }
       }
     } catch (err) {

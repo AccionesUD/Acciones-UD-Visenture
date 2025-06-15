@@ -57,7 +57,7 @@ export class UsersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    user.roles = [rolUsuario]; // <- importante, así queda asociado al crear
+    //user.roles = [rolUsuario]; // <- importante, así queda asociado al crear
 
     // -- resto de lógica (asociar account, crear cuenta Alpaca, etc.) --
     const accountAlpca: string =
@@ -102,17 +102,17 @@ export class UsersService {
     });
   }
 
-  async updateUserRole(id: string, roleIds: number[]) {
-    const user = await this.userRepository.findOne({
-      where: { identity_document: id },
-      relations: ['roles'], // importante para que cargue la relación
-    });
-    if (!user) throw new NotFoundException('Usuario no encontrado');
+  // async updateUserRole(id: string, roleIds: number[]) {
+  //   const user = await this.userRepository.findOne({
+  //     where: { identity_document: id },
+  //     relations: ['roles'], // importante para que cargue la relación
+  //   });
+  //   if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    // Busca los roles
-    const roles = await this.roleRepository.findByIds(roleIds);
-    user.roles = roles;
-    await this.userRepository.save(user);
-    return { message: 'Rol actualizado', roles: user.roles.map((r) => r.name) };
-  }
+  //   // Busca los roles
+  //   const roles = await this.roleRepository.findByIds(roleIds);
+  //   user.roles = roles;
+  //   await this.userRepository.save(user);
+  //   return { message: 'Rol actualizado', roles: user.roles.map((r) => r.name) };
+  // }
 }

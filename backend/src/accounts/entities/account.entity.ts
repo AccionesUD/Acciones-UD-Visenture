@@ -5,10 +5,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Role } from 'src/roles-permission/entities/role.entity';
 
 @Entity()
 export class Account {
@@ -43,4 +47,8 @@ export class Account {
     referencedColumnName: 'identity_document',
   })
   user: User;
+
+  @ManyToMany(() => Role, (role) => role.accounts, { cascade: true })
+  @JoinTable()
+  roles: Role[];
 }

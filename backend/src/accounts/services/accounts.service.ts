@@ -5,25 +5,43 @@ import { CreateAccountDto } from '../dtos/create-account.dto';
 import {
   HttpException,
   HttpStatus,
+  NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
+import { Role } from 'src/roles-permission/entities/role.entity';
 
 export class AccountsService {
   constructor(
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
     private hashingProvider: HashingProvider,
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
-    console.log(createAccountDto);
     const hashedPassword = await this.hashingProvider.hashPassword(
       createAccountDto.password,
     );
+
+    // Busca el rol por defecto "usuario"
+    const rolUsuario = await this.roleRepository.findOne({
+      where: { name: 'usuario' },
+    });
+
+    if (!rolUsuario) {
+      throw new HttpException(
+        'Rol por defecto "usuario" no encontrado',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Crea la cuenta con el rol asociado
     const account = this.accountRepository.create({
       ...createAccountDto,
       password: hashedPassword,
+      roles: [rolUsuario], // <-- Aquí se asigna el rol
     });
 
     try {
@@ -90,5 +108,31 @@ export class AccountsService {
     return this.accountRepository.findOne({
       where: { id: accountId }, // Busca por el ID autoincremental de la cuenta
     });
+  }
+
+  // Encuentra cuenta con sus roles
+  async findByIdWithRoles(id: number): Promise<Account | null> {
+    return await this.accountRepository.findOne({
+      where: { id },
+      relations: ['roles'],
+    });
+  }
+
+  // Actualiza los roles de la cuenta
+  async updateAccountRoles(
+    id: number,
+    roleIds: number[],
+  ): Promise<{ message: string; roles: string[] }> {
+    const account = await this.accountRepository.findOne({
+      where: { id },
+      relations: ['roles'],
+    });
+    if (!account) throw new NotFoundException('Cuenta no encontrada');
+
+    // ¡No olvides tener roleRepository inyectado!
+    const roles = await this.roleRepository.findByIds(roleIds);
+    account.roles = roles;
+    await this.accountRepository.save(account);
+    return { message: 'Roles actualizados', roles: roles.map((r) => r.name) };
   }
 }
