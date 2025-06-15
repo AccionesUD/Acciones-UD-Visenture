@@ -103,8 +103,8 @@ export class AuthService {
     let roles: string[] = [];
     try {
       if (account.identity_document && account.user.identity_document) {
-        if (account?.user?.roles) {
-          roles = account.user.roles.map((r) => r.name);
+        if (account?.roles) {
+          roles = account.roles.map((r) => r.name);
         }
       }
     } catch (err) {
@@ -112,10 +112,10 @@ export class AuthService {
       roles = [];
     }
 
-    // --- Armado del payload ---
     const payload = {
-      sub: account.user.identity_document, // <-- Ahora el sub es el identity_document (string)
+      sub: account.id, // id de cuenta
       email: account.email,
+      userId: account.user.identity_document,
       roles,
     };
 
@@ -193,10 +193,10 @@ export class AuthService {
 
   // auth.service.ts
   async changePassword(identity_document: string, data: ChangePasswordDto) {
-    // Busca el usuario y su cuenta (con join en relations)
     const user = await this.usersService.findById(identity_document, [
       'account',
     ]);
+    console.log('Buscando usuario con:', identity_document, 'Resultado:', user);
     if (!user || !user.account)
       throw new NotFoundException('Usuario no encontrado');
 

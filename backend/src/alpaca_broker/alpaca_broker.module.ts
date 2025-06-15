@@ -7,7 +7,6 @@ import { ValidateDataAccountProvider } from './services/validate_data_account.pr
 import { FundCapitalAccount } from './services/fund_capital_account.provide';
 import { TransactionsModule } from 'src/transactions/transactions.module';
 
-
 @Module({
   exports: [AlpacaBrokerService, ValidateDataAccountProvider],
   providers: [
@@ -17,6 +16,7 @@ import { TransactionsModule } from 'src/transactions/transactions.module';
   ],
   imports: [
     forwardRef(() => AccountsModule),
+    forwardRef(() => TransactionsModule),
     ConfigModule,
     HttpModule.registerAsync({
       imports: [ConfigModule],
