@@ -42,11 +42,13 @@ export interface UserEditDialogData {
     MatDividerModule,
     MatSnackBarModule
   ],
-  templateUrl: './user-edit-dialog.component.html'
+  templateUrl: './user-edit-dialog.component.html',
+  styleUrls: ['./user-edit-dialog.component.css']
 })
 export class UserEditDialogComponent implements OnInit {
   userForm: FormGroup;
   isNewUser: boolean;
+  isSaving: boolean = false;
   user: any;
   roles: { value: string, label: string }[];
   statuses: { value: string, label: string }[];
@@ -86,8 +88,7 @@ export class UserEditDialogComponent implements OnInit {
   
   /**
    * Envía el formulario
-   */
-  submitForm(): void {
+   */  submitForm(): void {
     if (this.userForm.invalid) {
       Object.keys(this.userForm.controls).forEach(key => {
         const controlErrors = this.userForm.get(key)?.errors;
@@ -97,6 +98,8 @@ export class UserEditDialogComponent implements OnInit {
       });
       return;
     }
+    
+    this.isSaving = true;
     
     // Crear el objeto de usuario a retornar
     const userData = {
@@ -110,7 +113,11 @@ export class UserEditDialogComponent implements OnInit {
       userData.status = this.user.status;
     }
     
-    this.dialogRef.close(userData);
+    // Simulamos un pequeño retraso para mostrar el estado de guardado
+    setTimeout(() => {
+      this.dialogRef.close(userData);
+      this.isSaving = false;
+    }, 500);
   }
   
   /**

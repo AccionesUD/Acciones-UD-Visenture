@@ -1,14 +1,14 @@
-<div class="dark:bg-gray-900 dark:text-white min-w-[600px] max-w-3xl">
+<div class="min-w-[600px] max-w-3xl">
   <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-semibold" mat-dialog-title>Detalles del Usuario</h2>
+    <h2 class="text-2xl font-semibold text-emerald-800 dark:text-emerald-100" mat-dialog-title>Detalles del Usuario</h2>
     <button mat-icon-button mat-dialog-close>
-      <mat-icon>close</mat-icon>
+      <mat-icon class="text-gray-600 dark:text-gray-300">close</mat-icon>
     </button>
   </div>
   
   <mat-dialog-content class="min-h-[300px]">
     <!-- Tarjeta de información básica del usuario -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+    <div class="rounded-lg shadow-md p-6 mb-6 info-card">
       <div class="flex items-center mb-4">
         <div class="p-3 rounded-full" 
              [ngClass]="{
@@ -19,8 +19,8 @@
           <mat-icon>{{user.role === 'admin' ? 'admin_panel_settings' : user.role === 'commissioner' ? 'business_center' : 'person'}}</mat-icon>
         </div>
         <div class="ml-4">
-          <h3 class="text-xl font-bold">{{user.first_name}} {{user.last_name}}</h3>
-          <p class="text-gray-500 dark:text-gray-400">
+          <h3 class="text-xl font-bold detail-value">{{user.first_name}} {{user.last_name}}</h3>
+          <p class="detail-label">
             {{getRoleLabel(user.role)}}
             <span class="inline-block mx-2">•</span>
             <span class="px-2 py-0.5 rounded-full text-xs" 
@@ -39,29 +39,27 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Documento</p>
-          <p class="font-medium">{{user.identity_document || 'No especificado'}}</p>
+          <p class="text-sm detail-label">Documento</p>
+          <p class="font-medium detail-value">{{user.identity_document || 'No especificado'}}</p>
         </div>
         <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Email</p>
-          <p class="font-medium">{{user.email}}</p>
+          <p class="text-sm detail-label">Email</p>
+          <p class="font-medium detail-value">{{user.email}}</p>
+        </div>        <div>
+          <p class="text-sm detail-label">Teléfono</p>
+          <p class="font-medium detail-value">{{user.phone_number || 'No especificado'}}</p>
         </div>
         <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Teléfono</p>
-          <p class="font-medium">{{user.phone_number || 'No especificado'}}</p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Fecha de Nacimiento</p>
-          <p class="font-medium">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
+          <p class="text-sm detail-label">Fecha de Nacimiento</p>
+          <p class="font-medium detail-value">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
         </div>
       </div>
     </div>
-    
-    <!-- Pestañas con información adicional -->
-    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <!-- Pestañas con información adicional -->
+    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg shadow-md info-card">
       <mat-tab label="Actividad">
         <div class="p-6">
-          <h3 class="text-lg font-semibold mb-4">Historial de Actividad</h3>
+          <h3 class="text-lg font-semibold mb-4 section-title">Historial de Actividad</h3>
           
           <!-- Mensaje para cuando no hay datos -->
           <div class="text-center py-12 text-gray-500 dark:text-gray-400">

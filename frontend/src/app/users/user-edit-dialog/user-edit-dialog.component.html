@@ -1,119 +1,226 @@
-<div class="dark:bg-gray-900 dark:text-white min-w-[600px]">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-semibold" mat-dialog-title>
+<div class="bg-white dark:bg-gray-900 dark:text-white min-w-[900px] max-w-6xl user-edit-dialog">
+  <div class="flex justify-between items-center mb-6 border-b border-emerald-200 dark:border-gray-700 pb-4">
+    <h2 class="text-2xl font-semibold text-emerald-800 dark:text-emerald-100" mat-dialog-title>
       {{ isNewUser ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}
     </h2>
-    <button mat-icon-button (click)="cancel()">
-      <mat-icon>close</mat-icon>
-    </button>
+    <div class="flex items-center">
+      <div *ngIf="isSaving" class="mr-3 flex items-center text-sm text-indigo-600 dark:text-indigo-400">
+        <div class="w-5 h-5 border-2 border-t-transparent border-indigo-500 rounded-full animate-spin mr-2"></div>
+        Guardando...
+      </div>
+      <button (click)="cancel()" class="p-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
   </div>
-  
-  <mat-dialog-content>
-    <form [formGroup]="userForm" class="py-2">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <mat-dialog-content class="pb-6">
+    <form [formGroup]="userForm" class="py-2 space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Nombre -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="first_name" placeholder="Ingrese el nombre">
-          <mat-error *ngIf="userForm.get('first_name')?.hasError('required')">
-            El nombre es requerido
-          </mat-error>
-          <mat-error *ngIf="userForm.get('first_name')?.hasError('maxlength')">
-            El nombre debe tener máximo 50 caracteres
-          </mat-error>
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              formControlName="first_name" 
+              placeholder="Ingrese el nombre"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+              [ngClass]="{
+                'border-red-500 dark:border-red-400': userForm.get('first_name')?.invalid && (userForm.get('first_name')?.touched || userForm.get('first_name')?.dirty)
+              }"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">person</mat-icon>
+            </div>
+          </div>
+          <div *ngIf="userForm.get('first_name')?.invalid && (userForm.get('first_name')?.touched || userForm.get('first_name')?.dirty)" class="text-red-500 text-sm">
+            <span *ngIf="userForm.get('first_name')?.hasError('required')">El nombre es requerido</span>
+            <span *ngIf="userForm.get('first_name')?.hasError('maxlength')">El nombre debe tener máximo 50 caracteres</span>
+          </div>
+        </div>
         
         <!-- Apellido -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Apellido</mat-label>
-          <input matInput formControlName="last_name" placeholder="Ingrese el apellido">
-          <mat-error *ngIf="userForm.get('last_name')?.hasError('required')">
-            El apellido es requerido
-          </mat-error>
-          <mat-error *ngIf="userForm.get('last_name')?.hasError('maxlength')">
-            El apellido debe tener máximo 50 caracteres
-          </mat-error>
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              formControlName="last_name" 
+              placeholder="Ingrese el apellido"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+              [ngClass]="{
+                'border-red-500 dark:border-red-400': userForm.get('last_name')?.invalid && (userForm.get('last_name')?.touched || userForm.get('last_name')?.dirty)
+              }"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">person</mat-icon>
+            </div>
+          </div>
+          <div *ngIf="userForm.get('last_name')?.invalid && (userForm.get('last_name')?.touched || userForm.get('last_name')?.dirty)" class="text-red-500 text-sm">
+            <span *ngIf="userForm.get('last_name')?.hasError('required')">El apellido es requerido</span>
+            <span *ngIf="userForm.get('last_name')?.hasError('maxlength')">El apellido debe tener máximo 50 caracteres</span>
+          </div>
+        </div>
         
         <!-- Email -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" placeholder="ejemplo@correo.com" type="email">
-          <mat-error *ngIf="userForm.get('email')?.hasError('required')">
-            El email es requerido
-          </mat-error>
-          <mat-error *ngIf="userForm.get('email')?.hasError('email')">
-            Ingrese un email válido
-          </mat-error>
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
+          <div class="relative">
+            <input 
+              type="email" 
+              formControlName="email" 
+              placeholder="ejemplo@correo.com" 
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+              [ngClass]="{
+                'border-red-500 dark:border-red-400': userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)
+              }"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">email</mat-icon>
+            </div>
+          </div>
+          <div *ngIf="userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)" class="text-red-500 text-sm">
+            <span *ngIf="userForm.get('email')?.hasError('required')">El email es requerido</span>
+            <span *ngIf="userForm.get('email')?.hasError('email')">Ingrese un email válido</span>
+          </div>
+        </div>
         
         <!-- Teléfono -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="phone_number" placeholder="Ej. +57 300 123 4567">
-          <mat-error *ngIf="userForm.get('phone_number')?.hasError('pattern')">
-            Ingrese un número de teléfono válido
-          </mat-error>
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              formControlName="phone_number" 
+              placeholder="Ej. +57 300 123 4567"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+              [ngClass]="{
+                'border-red-500 dark:border-red-400': userForm.get('phone_number')?.invalid && (userForm.get('phone_number')?.touched || userForm.get('phone_number')?.dirty)
+              }"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">phone</mat-icon>
+            </div>
+          </div>
+          <div *ngIf="userForm.get('phone_number')?.invalid && (userForm.get('phone_number')?.touched || userForm.get('phone_number')?.dirty)" class="text-red-500 text-sm">
+            <span *ngIf="userForm.get('phone_number')?.hasError('pattern')">Ingrese un número de teléfono válido</span>
+          </div>
+        </div>
         
         <!-- Documento de Identidad -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Documento de Identidad</mat-label>
-          <input matInput formControlName="identity_document" placeholder="Ej. 1020304050">
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documento de Identidad</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              formControlName="identity_document" 
+              placeholder="Ej. 1020304050"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">badge</mat-icon>
+            </div>
+          </div>
+        </div>
         
         <!-- Fecha de Nacimiento -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha de Nacimiento</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="birthdate">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Nacimiento</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              [matDatepicker]="picker" 
+              formControlName="birthdate"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            >
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+              <mat-datepicker-toggle [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </div>
+          </div>
+        </div>
         
         <!-- Rol (solo para administradores) -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Rol</mat-label>
-          <mat-select formControlName="role">
-            <mat-option *ngFor="let role of roles" [value]="role.value">
-              {{ role.label }}
-            </mat-option>
-          </mat-select>
-          <mat-hint *ngIf="!isAdmin">Solo los administradores pueden cambiar el rol</mat-hint>
-        </mat-form-field>
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Rol</label>
+            <span *ngIf="!isAdmin" class="text-xs text-blue-500 dark:text-blue-400">Solo administradores</span>
+          </div>
+          <div class="relative">
+            <select 
+              formControlName="role"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+              [attr.disabled]="!isAdmin ? true : null"
+            >
+              <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">admin_panel_settings</mat-icon>
+            </div>
+          </div>
+        </div>
         
         <!-- Estado (solo para administradores) -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option *ngFor="let status of statuses" [value]="status.value">
-              {{ status.label }}
-            </mat-option>
-          </mat-select>
-          <mat-hint *ngIf="!isAdmin">Solo los administradores pueden cambiar el estado</mat-hint>
-        </mat-form-field>
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
+            <span *ngIf="!isAdmin" class="text-xs text-blue-500 dark:text-blue-400">Solo administradores</span>
+          </div>
+          <div class="relative">
+            <select 
+              formControlName="status"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
+              [attr.disabled]="!isAdmin ? true : null"
+            >
+              <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <mat-icon class="text-gray-400">verified_user</mat-icon>
+            </div>
+          </div>
+        </div>
       </div>
       
       <!-- Sección para contraseña (solo en creación) -->
-      <div *ngIf="isNewUser" class="mt-6">
-        <mat-divider class="mb-4"></mat-divider>
-        <p class="text-gray-500 dark:text-gray-400 mb-4">
-          Se enviará un email al usuario con instrucciones para crear su contraseña.
-        </p>
+      <div *ngIf="isNewUser" class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <mat-icon class="text-blue-500">info</mat-icon>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Información de acceso</h3>
+            <p class="text-sm text-blue-700 dark:text-blue-400 mt-1">
+              Se enviará un email al usuario con instrucciones para crear su contraseña.
+            </p>
+          </div>
+        </div>
       </div>
     </form>
   </mat-dialog-content>
-  
-  <mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()" class="mr-2">
+  <mat-dialog-actions align="end" class="border-t border-blue-200 dark:border-gray-700 pt-4">
+    <button 
+      (click)="cancel()" 
+      class="px-4 py-2 mr-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors"
+      [disabled]="isSaving"
+    >
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
       Cancelar
     </button>
     <button 
-      mat-flat-button 
       (click)="submitForm()"
-      color="primary"
-      class="bg-emerald-500 hover:bg-emerald-600 text-white"
-      [disabled]="userForm.invalid">
-      {{ isNewUser ? 'Crear Usuario' : 'Guardar Cambios' }}
+      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-gray-400 disabled:dark:bg-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed transition-colors"
+      [disabled]="userForm.invalid || isSaving">
+      <div *ngIf="isSaving" class="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+      <svg *ngIf="!isSaving && isNewUser" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+      </svg>
+      <svg *ngIf="!isSaving && !isNewUser" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+      </svg>      {{ isSaving ? 'Guardando...' : (isNewUser ? 'Crear Usuario' : 'Guardar Cambios') }}
     </button>
   </mat-dialog-actions>
 </div>

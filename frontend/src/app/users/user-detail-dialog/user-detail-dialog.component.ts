@@ -32,6 +32,7 @@ export interface UserDetailData {
     MatChipsModule
   ],
   templateUrl: './user-detail-dialog.component.html',
+  styleUrls: ['./user-detail-dialog.component.css'],
 })
 export class UserDetailDialogComponent implements OnInit {
   user: any;

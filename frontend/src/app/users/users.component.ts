@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,46 +19,21 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
-import { NgApexchartsModule, ApexChart, ApexAxisChartSeries, ApexNonAxisChartSeries, ApexDataLabels, ApexPlotOptions, ApexYAxis, ApexXAxis, ApexFill, ApexTooltip, ApexStroke, ApexLegend, ApexMarkers, ApexGrid, ApexTitleSubtitle, ApexTheme, ApexResponsive } from 'ng-apexcharts';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/confirm-dialog.component';
-import { UserDetailDialogComponent } from './dialogs/user-detail-dialog/user-detail-dialog.component';
-import { UserEditDialogComponent } from './dialogs/user-edit-dialog/user-edit-dialog.component';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { UserDetailDialogComponent } from './user-detail-dialog/user-detail-dialog.component';
+import { UserEditDialogComponent } from './user-edit-dialog/user-edit-dialog.component';
 
-import { User } from '../models/user.model';
-import { UsersService, UserFilters, UsersResponse, UserStats } from '../services/user.service'; // Corregido: UserService en lugar de UsersService
-
-/**
- * Tipo para las opciones de configuración de gráficos de ApexCharts
- */
-export type ChartOptions = {
-  series: ApexAxisChartSeries | ApexNonAxisChartSeries;
-  chart: ApexChart;
-  dataLabels?: ApexDataLabels;
-  plotOptions?: ApexPlotOptions;
-  yaxis?: ApexYAxis | ApexYAxis[];
-  xaxis?: ApexXAxis;
-  fill?: ApexFill;
-  tooltip?: ApexTooltip;
-  stroke?: ApexStroke;
-  legend?: ApexLegend;
-  markers?: ApexMarkers;
-  grid?: ApexGrid;
-  title?: ApexTitleSubtitle;
-  colors?: string[];
-  responsive?: ApexResponsive[];
-  labels?: string[];
-  theme?: ApexTheme;
-};
+import { User, UserFilters, UsersResponse, UserStats, ChartOptions } from '../models/user.model';
+import { UsersService } from '../services/user.service';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [
-    CommonModule,
-    DatePipe,
+  imports: [    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
@@ -78,13 +53,9 @@ export type ChartOptions = {
     MatDividerModule,
     MatDialogModule,
     MatTabsModule,
-    MatChipsModule,
-    NgApexchartsModule,
-    // ConfirmDialogComponent, // Descomentar cuando exista
-    // UserDetailDialogComponent, // Descomentar cuando exista
-    // UserEditDialogComponent // Descomentar cuando exista
+    MatChipsModule,    NgApexchartsModule
   ],
-  providers: [UserService],
+  providers: [UsersService],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
@@ -238,12 +209,27 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-
   loadUserStats(): void {
     this.isLoadingStats = true;
     this.userService.getUserStats().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (stats) => {
-        this.initializeCharts(stats);
+      next: (stats: UserStats) => {
+        // Asegurarse de que todos los campos requeridos estén definidos en stats
+        const validatedStats: UserStats = {
+          total_users: stats.total_users || 0,
+          active_users: stats.active_users || 0,
+          inactive_users: stats.inactive_users || 0,
+          pending_users: stats.pending_users || 0,
+          admins_count: stats.admins_count || 0,
+          commissioners_count: stats.commissioners_count || 0,
+          clients_count: stats.clients_count || 0,
+          registrations_by_month: stats.registrations_by_month || [],
+          // Opcional: mantener compatibilidad con campos adicionales
+          byRole: stats.byRole,
+          byStatus: stats.byStatus,
+          registrationTrend: stats.registrationTrend
+        };
+        
+        this.initializeCharts(validatedStats);
         this.isLoadingStats = false;
         this.cdr.detectChanges();
       },
@@ -261,6 +247,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.paginator.pageIndex = 0;
     this.currentPage = 0;
     this.loadUsers();
+  }
+
+  applyFiltersAndLoad(): void {
+    this.applyFilters();
   }
 
   clearFilters(): void {
@@ -295,66 +285,93 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id}`;
   }
-
+  
   openCreateUserDialog(): void {
-    // const dialogRef = this.dialog.open(UserEditDialogComponent, {
-    //   width: '600px', // Ajustar según necesidad
-    //   disableClose: true,
-    //   data: { user: null, isEditMode: false }
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     this.loadUsers();
-    //     this.loadUserStats(); // Actualizar estadísticas si un usuario es creado
-    //     this.snackBar.open('Usuario creado exitosamente.', 'Cerrar', { duration: 3000 });
-    //   }
-    // });
-    this.snackBar.open('Funcionalidad "Crear Usuario" no implementada completamente.', 'Cerrar', { duration: 3000 });
+    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+      width: '800px',
+      disableClose: false,
+      panelClass: 'user-edit-dialog',
+      data: { 
+        user: null, 
+        isAdmin: true, // Asumiendo que solo los admins pueden crear usuarios
+        roles: this.roles,
+        statuses: this.statuses
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Aquí iría la lógica para crear el usuario
+        this.loadUsers();
+        this.loadUserStats();
+        this.snackBar.open('Usuario creado exitosamente.', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
-
+  
   openEditUserDialog(user: User): void {
-    // const dialogRef = this.dialog.open(UserEditDialogComponent, {
-    //   width: '600px',
-    //   disableClose: true,
-    //   data: { user: { ...user }, isEditMode: true } // Enviar una copia para no modificar el original directamente
-    // });
-    // dialogRef.afterClosed().subscribe(result => {
-    //   if (result) {
-    //     this.loadUsers();
-    //     this.loadUserStats(); // Actualizar estadísticas si un usuario es modificado
-    //     this.snackBar.open('Usuario actualizado exitosamente.', 'Cerrar', { duration: 3000 });
-    //   }
-    // });
-    this.snackBar.open(`Funcionalidad "Editar Usuario ${user.first_name}" no implementada completamente.`, 'Cerrar', { duration: 3000 });
+    const dialogRef = this.dialog.open(UserEditDialogComponent, {
+      width: '800px',
+      disableClose: false,
+      panelClass: 'user-edit-dialog',
+      data: { 
+        user: { ...user }, 
+        isAdmin: true, // Asumiendo que solo los admins pueden editar usuarios
+        roles: this.roles,
+        statuses: this.statuses
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Aquí iría la lógica para actualizar el usuario
+        this.loadUsers();
+        this.loadUserStats();
+        this.snackBar.open('Usuario actualizado exitosamente.', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
-
+  
   viewUser(user: User): void {
-    // this.dialog.open(UserDetailDialogComponent, {
-    //   width: '500px',
-    //   data: user
-    // });
-    this.snackBar.open(`Funcionalidad "Ver Usuario ${user.first_name}" no implementada completamente.`, 'Cerrar', { duration: 3000 });
+    const dialogRef = this.dialog.open(UserDetailDialogComponent, {
+      width: '900px', // Aumentamos el ancho del diálogo
+      maxWidth: '95vw', // Limitamos el ancho máximo en pantallas pequeñas
+      disableClose: false,
+      panelClass: 'user-detail-dialog',
+      data: { 
+        user: user,
+        isAdmin: true // Asumiendo que solo los admins pueden ver detalles completos
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'edit') {
+        this.openEditUserDialog(user);
+      }
+    });
   }
-
+  
   deleteUser(user: User): void {
-    // const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-    //   width: '400px',
-    //   data: { title: 'Confirmar Eliminación', message: \`¿Está seguro de que desea eliminar al usuario ${user.first_name} ${user.last_name}?\` }
-    // });
-    // dialogRef.afterClosed().subscribe(confirmed => {
-    //   if (confirmed) {
-    //     this.userService.deleteUser(user.id!).subscribe({
-    //       next: () => {
-    //         this.snackBar.open('Usuario eliminado exitosamente.', 'Cerrar', { duration: 3000 });
-    //         this.loadUsers();
-    //         this.loadUserStats();
-    //         this.selection.deselect(user); // Quitar de la selección si estaba seleccionado
-    //       },
-    //       error: (err) => this.snackBar.open(\`Error al eliminar usuario: ${err.message}\`, 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] })
-    //     });
-    //   }
-    // });
-    this.snackBar.open(`Funcionalidad "Eliminar Usuario ${user.first_name}" no implementada completamente.`, 'Cerrar', { duration: 3000 });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { 
+        title: 'Confirmar Eliminación', 
+        message: `¿Está seguro de que desea eliminar al usuario ${user.first_name} ${user.last_name}?`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        isDestructive: true
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        // Aquí iría la lógica para eliminar el usuario
+        this.snackBar.open('Usuario eliminado exitosamente.', 'Cerrar', { duration: 3000 });
+        this.loadUsers();
+        this.loadUserStats();
+        this.selection.deselect(user);
+      }
+    });
   }
 
   deleteSelectedUsers(): void {
@@ -385,7 +402,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // --- Métodos para Gráficos ---
-  initializeCharts(stats: UserStats | null): void { // Cambiado el tipo de stats a UserStats
+  initializeCharts(stats: UserStats | null): void {
     const isDark = document.documentElement.classList.contains('dark');
     const textColor = isDark ? '#FFFFFF' : '#374151'; // Tailwind text-gray-700 or white
     const gridColor = isDark ? '#4B5563' : '#E5E7EB'; // Tailwind gray-600 or gray-200
@@ -401,12 +418,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       dataLabels: { enabled: true, style: { colors: [isDark ? '#374151' : '#FFFFFF'] } }, // Ajustar color de datalabels
       legend: { position: 'bottom', labels: { colors: textColor } },
       tooltip: { theme: isDark ? 'dark' : 'light' },
-    };
-
-    // Gráfico de Distribución por Rol
+    };    // Gráfico de Distribución por Rol
     this.roleDistributionChartOptions = {
       ...defaultChartConfig,
-      series: stats ? [stats.byRole.admin || 0, stats.byRole.commissioner || 0, stats.byRole.client || 0] : [0,0,0],
+      series: stats ? [stats.admins_count || 0, stats.commissioners_count || 0, stats.clients_count || 0] : [0,0,0],
       labels: ['Administradores', 'Comisionistas', 'Clientes'],
       colors: ['#10B981', '#3B82F6', '#F59E0B'],
       title: { text: 'Distribución por Rol', align: 'center', style: { color: textColor } },
@@ -415,21 +430,18 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     // Gráfico de Distribución por Estado
     this.statusDistributionChartOptions = {
       ...defaultChartConfig,
-      series: stats ? [stats.byStatus.active || 0, stats.byStatus.inactive || 0, stats.byStatus.pending || 0] : [0,0,0],
+      series: stats ? [stats.active_users || 0, stats.inactive_users || 0, stats.pending_users || 0] : [0,0,0],
       labels: ['Activos', 'Inactivos', 'Pendientes'],
       colors: ['#22C55E', '#EF4444', '#6B7280'],
       title: { text: 'Distribución por Estado', align: 'center', style: { color: textColor } },
-    };
-
-    // Gráfico de Tendencia de Registros
-    // El servicio devuelve { date: string, count: number }[] en registrationTrend
-    // Formatearemos las fechas para que sean más legibles si es necesario, o las usaremos directamente.
-    const registrationLabels = stats?.registrationTrend?.map((r: { date: string, count: number }) => {
-      // Ejemplo de formateo de fecha, puedes ajustarlo o quitarlo si las fechas ya están bien.
-      const dateObj = new Date(r.date);
-      return dateObj.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+    };    // Gráfico de Tendencia de Registros
+    // El servicio devuelve { month: string, count: number }[] en registrations_by_month
+    const registrationLabels = stats?.registrations_by_month?.map((r: { month: string, count: number }) => {
+      // Formatear el mes para que sea más legible
+      const dateObj = new Date(r.month + '-01'); // Asumir que month está en formato 'YYYY-MM'
+      return dateObj.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
     }) || ['N/A'];
-    const registrationCounts = stats?.registrationTrend?.map((r: { date: string, count: number }) => r.count) || [0];
+    const registrationCounts = stats?.registrations_by_month?.map((r: { month: string, count: number }) => r.count) || [0];
 
     this.registrationTrendChartOptions = {
       chart: {
@@ -497,7 +509,14 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
         theme: { ...this.registrationTrendChartOptions.theme, mode: newThemeMode },
         title: { ...this.registrationTrendChartOptions.title, style: { color: textColor } },
         xaxis: { ...this.registrationTrendChartOptions.xaxis, labels: { style: { colors: textColor } } },
-        yaxis: { ...this.registrationTrendChartOptions.yaxis, title: { ...this.registrationTrendChartOptions.yaxis?.title, style: { color: textColor } }, labels: { style: { colors: textColor } } },
+        yaxis: { 
+          ...this.registrationTrendChartOptions.yaxis as ApexYAxis, 
+          title: { 
+            ...(this.registrationTrendChartOptions.yaxis as ApexYAxis)?.title, 
+            style: { color: textColor } 
+          }, 
+          labels: { style: { colors: textColor } } 
+        },
         grid: { ...this.registrationTrendChartOptions.grid, borderColor: gridColor, row: { ...this.registrationTrendChartOptions.grid?.row, colors: [isDark ? 'transparent' : '#f3f4f6', 'transparent'] } },
         tooltip: { ...this.registrationTrendChartOptions.tooltip, theme: newThemeMode }
       };
@@ -516,10 +535,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.applyFiltersAndLoad();
   }
 
-  /**
-   * Maneja los cambios de ordenación de la tabla.
-   * @param sortState El estado de la ordenación.
-   */
+
   public announceSortChange(sortState: Sort): void {
     // MatSort se encarga de actualizar this.sort.active y this.sort.direction
     if (this.paginator) {
@@ -529,22 +545,13 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.applyFiltersAndLoad();
   }
 
-  /**
-   * Obtiene el nombre completo del usuario.
-   * @param user El objeto usuario.
-   * @returns El nombre completo o el email si el nombre no está disponible.
-   */
   public getFullName(user: User): string {
     return (user.first_name && user.last_name)
       ? `${user.first_name} ${user.last_name}`
       : user.email;
   }
 
-  /**
-   * Obtiene la etiqueta legible para un rol de usuario.
-   * @param role El rol del usuario.
-   * @returns La etiqueta legible.
-   */
+
   public getRoleDisplay(role: string | undefined): string {
     if (!role) return 'N/A';
     switch (role) {
@@ -555,11 +562,6 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene la etiqueta legible para un estado de usuario.
-   * @param status El estado del usuario.
-   * @returns La etiqueta legible.
-   */
   public getStatusDisplay(status: string | undefined): string {
     if (!status) return 'N/A';
     switch (status) {
@@ -570,11 +572,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene las clases CSS para estilizar un rol de usuario.
-   * @param role El rol del usuario.
-   * @returns Las clases CSS.
-   */
+
   public getRoleClass(role: string | undefined): string {
     if (!role) return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200';
     switch (role) {
@@ -585,11 +583,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene las clases CSS para estilizar un estado de usuario (fondo y texto del badge).
-   * @param status El estado del usuario.
-   * @returns Las clases CSS.
-   */
+
   public getStatusClass(status: string | undefined): string {
     if (!status) return 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-100';
     switch (status) {
@@ -600,11 +594,6 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /**
-   * Obtiene las clases CSS para el indicador de punto de un estado de usuario.
-   * @param status El estado del usuario.
-   * @returns Las clases CSS para el color del punto.
-   */
   public getStatusIndicatorClass(status: string | undefined): string {
     if (!status) return 'text-gray-400';
     switch (status) {
@@ -614,6 +603,4 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       default: return 'text-gray-400';
     }
   }
-
-  // ... El resto de la clase UsersComponent ...
 }

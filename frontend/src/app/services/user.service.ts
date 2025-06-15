@@ -1,47 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, delay, map } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User, ProfileUpdateResponse } from '../models/user.model';
-
-/**
- * Interface para los filtros de usuario
- */
-export interface UserFilters {
-  search?: string;
-  role?: string;
-  status?: string;
-  sort_by?: string;
-  sort_order?: 'asc' | 'desc';
-  page?: number;
-  limit?: number;
-}
-
-/**
- * Interface para la respuesta paginada de usuarios
- */
-export interface UsersResponse {
-  success: boolean;
-  data: User[];
-  pagination: {
-    total: number;
-    current_page: number;
-    per_page: number;
-    total_pages: number;
-  };
-  // Añadido para incluir estadísticas en la misma respuesta si es posible, o tener un endpoint separado
-  stats?: UserStats; 
-}
-
-/**
- * Interface para las estadísticas de usuario
- */
-export interface UserStats {
-  byRole: { [key: string]: number };
-  byStatus: { [key: string]: number };
-  registrationTrend: { date: string; count: number }[];
-}
-
+import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -105,7 +66,8 @@ export class UsersService {
       email: userData.email || '',
       phone_number: userData.phone_number || '',
       role: userData.role as 'admin' | 'commissioner' | 'client' || 'client',
-      status: userData.status as 'active' | 'inactive' | 'pending' || 'pending'
+      status: userData.status as 'active' | 'inactive' | 'pending' || 'pending',
+      email_verified_at: userData.email_verified_at || new Date().toISOString(),
     };
     
     this.mockUsers.push(newUser);
@@ -210,8 +172,7 @@ export class UsersService {
 
     return this.updateUser(userId, { status });
   }
-  
-  /**
+    /**
    * Obtiene estadísticas de usuarios (para los gráficos)
    */
   getUserStats(): Observable<UserStats> {
@@ -219,7 +180,27 @@ export class UsersService {
     // return this.http.get<UserStats>(`${this.apiUrl}/admin/users/stats`);
 
     // Mock para desarrollo:
-    const stats = this.generateMockUserStats();
+    const mockData = this.generateMockUserStats();
+      // Adapta el formato de los datos mock a la estructura de UserStats
+    const stats: UserStats = {
+      total_users: Object.values(mockData.byRole).reduce((sum, val) => sum + val, 0),
+      active_users: mockData.byStatus["active"] || 0,
+      inactive_users: mockData.byStatus["inactive"] || 0,
+      pending_users: mockData.byStatus["pending"] || 0,
+      admins_count: mockData.byRole["admin"] || 0,
+      commissioners_count: mockData.byRole["commissioner"] || 0,
+      clients_count: mockData.byRole["client"] || 0,
+      // Convertir el formato de fecha a formato de mes para registrations_by_month
+      registrations_by_month: mockData.registrationTrend.map(item => ({
+        month: item.date.substring(0, 7), // Extrae YYYY-MM de YYYY-MM-DD
+        count: item.count
+      })),
+      // Mantener los datos originales para compatibilidad con código existente
+      byRole: mockData.byRole,
+      byStatus: mockData.byStatus,
+      registrationTrend: mockData.registrationTrend
+    };
+    
     return of(stats).pipe(delay(400));
   }
 
@@ -325,8 +306,15 @@ export class UsersService {
       }
     };
   }
-
-  private generateMockUserStats(): UserStats {
+  /**
+   * Genera estadísticas de usuarios para los datos mock
+   * @returns Objeto con estadísticas de usuarios
+   */
+  private generateMockUserStats(): {
+    byRole: { [key: string]: number };
+    byStatus: { [key: string]: number };
+    registrationTrend: { date: string; count: number }[];
+  } {
     const byRole: { [key: string]: number } = { admin: 0, commissioner: 0, client: 0 };
     const byStatus: { [key: string]: number } = { active: 0, inactive: 0, pending: 0 };
     const registrationTrend: { date: string; count: number }[] = [];
@@ -359,7 +347,6 @@ export class UsersService {
     });
     
     registrationTrend.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
 
     return { byRole, byStatus, registrationTrend };
   }
