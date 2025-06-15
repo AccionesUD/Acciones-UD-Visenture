@@ -24,7 +24,6 @@ export class RolesSeedService implements OnApplicationBootstrap {
         await this.roleRepo.save(rol);
       }
     }
-    // Puedes poner un console.log para depurar:
     console.log('Roles básicos inicializados (usuario, comisionista, admin)');
   }
 }

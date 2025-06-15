@@ -2,14 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
   OneToOne,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Account } from 'src/accounts/entities/account.entity';
-import { Role } from 'src/roles-permission/entities/role.entity';
 
 @Entity()
 export class User {
@@ -39,8 +36,4 @@ export class User {
 
   @OneToOne(() => Account, (account) => account.user)
   account: Account;
-
-  @ManyToMany(() => Role, (role) => role.users, { cascade: true })
-  @JoinTable()
-  roles: Role[];
 }
