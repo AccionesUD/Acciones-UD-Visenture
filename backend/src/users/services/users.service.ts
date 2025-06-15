@@ -103,10 +103,10 @@ export class UsersService {
 
   // src/users/services/users.service.ts
 
-  async findById(id: string, p0?: string[]): Promise<User | null> {
-    return this.userRepository.findOne({
+  async findById(id: string, relations: string[] = []): Promise<User | null> {
+    return await this.userRepository.findOne({
       where: { identity_document: String(id) },
-      relations: ['roles', 'account'],
+      relations: ['account'],
     });
   }
 
@@ -126,10 +126,12 @@ export class UsersService {
 
   // Obtener perfil
   async getProfileCompleto(identity_document: string) {
+    //console.log('Buscando user con document:', identity_document);
     const user = await this.userRepository.findOne({
       where: { identity_document },
       relations: ['account'],
     });
+    //console.log('Resultado findOne:', user);
 
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
@@ -145,7 +147,8 @@ export class UsersService {
   async updateProfile(identity_document: string, data: UpdateProfileDto) {
     const forbiddenFields = ['first_name', 'last_name', 'identity_document'];
     for (const field of forbiddenFields) {
-      if (field in UpdateProfileDto) {
+      if (field in data) {
+        // <-- Cambiado aquí
         throw new BadRequestException(
           `No está permitido cambiar el campo: ${field}`,
         );
@@ -159,6 +162,9 @@ export class UsersService {
 
     if (!user) {
       throw new BadRequestException('Usuario no encontrado');
+    }
+    if (!user.account) {
+      throw new BadRequestException('No hay cuenta asociada a este usuario');
     }
 
     // Cambia el teléfono directamente

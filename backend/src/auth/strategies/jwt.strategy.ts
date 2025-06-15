@@ -4,13 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AccountsService } from 'src/accounts/services/accounts.service';
-import { UsersService } from 'src/users/services/users.service'; // Ajusta la ruta según tu proyecto
+import { JwtPayloadUser } from '../interfaces/jwt-payload-user.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
     private readonly accountsService: AccountsService,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
@@ -24,14 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: number; email: string }) {
-    // Busca la cuenta con roles
-    const account = await this.accountsService.findByIdWithRoles(payload.sub);
-    const roles = account?.roles?.map((r) => r.name) || [];
-    return {
-      userId: account?.user?.identity_document,
-      email: account?.email,
-      roles,
-    };
+  // src/auth/strategies/jwt.strategy.ts
+
+  validate(payload: JwtPayloadUser): JwtPayloadUser {
+    console.log('Payload recibido en validate:', payload);
+    return { ...payload };
   }
 }

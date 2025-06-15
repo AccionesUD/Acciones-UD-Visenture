@@ -4,10 +4,10 @@ import { UsersService } from './services/users.service';
 import { Get, UseGuards, Req } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { AuthUser } from 'src/auth/interfaces/auth-user.interface';
 import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtPayloadUser } from 'src/auth/interfaces/jwt-payload-user.interface';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -76,25 +76,22 @@ export class UsersController {
   // ) {
   //   return this.usersService.updateUserRole(id, body.roleIds);
   // }
-
   @Get('perfilCompleto')
   @UseGuards(JwtAuthGuard)
-  async getProfileCompleto(@Req() req: Request & { user: AuthUser }) {
-    const identity_document: string = String(req.user.userId);
-    return this.usersService.getProfileCompleto(identity_document);
+  async getProfileCompleto(@Req() req: Request) {
+    const { userId } = req.user as JwtPayloadUser;
+    //console.log('identity_document extraído:', userId);
+    return this.usersService.getProfileCompleto(userId);
   }
 
   @Put('perfil')
   @UseGuards(JwtAuthGuard)
-  async updateProfile(
-    @Req() req: Request & { user: AuthUser },
-    @Body() body: UpdateProfileDto,
-  ) {
-    const identity_document = String(req.user.userId); // Asegura que sea string
-    return this.usersService.updateProfile(identity_document, body);
+  async updateProfile(@Req() req: Request, @Body() body: UpdateProfileDto) {
+    const { userId } = req.user as JwtPayloadUser;
+    return this.usersService.updateProfile(userId, body);
   }
 
-  // // users.controller.ts
+  //users.controller.ts
   // @Patch('perfil/password')
   // @UseGuards(JwtAuthGuard)
   // async changePassword(

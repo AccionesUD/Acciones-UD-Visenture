@@ -16,20 +16,14 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<{ user: AuthUser }>();
     const { user } = request;
+    console.log('user:', user);
+    console.log('roles:', user.roles);
 
-    // Asegura que user.roles sea array de strings, aunque vengan como objetos
+    // Mapeo seguro a string
     const userRoles: string[] = Array.isArray(user?.roles)
       ? user.roles
-          .map((r) =>
-            typeof r === 'string'
-              ? r
-              : r &&
-                  typeof r === 'object' &&
-                  typeof (r as { name?: unknown }).name === 'string'
-                ? (r as { name: string }).name
-                : '',
-          )
-          .filter((role) => !!role)
+          .map((r) => (typeof r === 'string' ? r : r.name))
+          .filter((name): name is string => typeof name === 'string')
       : [];
 
     const hasRole = userRoles.some((role) => requiredRoles.includes(role));
@@ -41,6 +35,7 @@ export class RolesGuard implements CanActivate {
       '¿Acceso?',
       hasRole,
     );
+
     return hasRole;
   }
 }

@@ -79,7 +79,7 @@ export class AccountsService {
   async findByEmailWithUserAndRoles(email: string): Promise<Account> {
     const account = await this.accountRepository.findOne({
       where: { email },
-      relations: ['user', 'user.roles'],
+      relations: ['user', 'roles'],
     });
     if (!account) {
       throw new HttpException('Cuenta no encontrada', HttpStatus.NOT_FOUND);
