@@ -1,0 +1,344 @@
+<div class="min-h-screen bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950 p-4 transition-colors duration-300">
+  <!-- Contenedor principal con efecto de tarjeta -->
+  <div class="mx-auto max-w-7xl">
+    <!-- Cabecera con botón de regreso -->
+    <div class="flex items-center mb-6">
+      <button 
+        (click)="goBack()" 
+        class="mr-3 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors"
+        matTooltip="Volver al panel"
+      >
+        <mat-icon class="text-emerald-800 dark:text-emerald-400">arrow_back</mat-icon>
+      </button>
+      <div>
+        <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">
+          Reporte de Cliente: {{ client ? client.name : 'Cargando...' }}
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">Vista detallada de actividad y rendimiento</p>
+      </div>
+    </div>
+
+    <!-- Estado de carga -->
+    <div *ngIf="isLoading" class="flex justify-center py-10">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Estado de error -->
+    <div *ngIf="!isLoading && error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
+      <div class="flex items-center mb-4 md:mb-0">
+        <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
+        <div>
+          <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+          <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+        </div>
+      </div>
+      <button 
+        (click)="loadClientData(true)" 
+        class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+        Reintentar
+      </button>
+    </div>
+
+    <!-- Contenido principal -->
+    <div *ngIf="!isLoading && !error" class="space-y-6">
+      <!-- Tarjeta de información del cliente -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 animate-fade-in-up">
+        <div class="md:flex">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+                <mat-icon style="transform: scale(1.5);">person</mat-icon>
+              </div>
+              <div class="ml-4">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ client.name }}</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Cliente desde {{ client.registration_date | date:'dd/MM/yyyy' }}</p>
+              </div>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Email</p>
+                <p class="text-gray-900 dark:text-gray-100">{{ client.email || 'No disponible' }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Teléfono</p>
+                <p class="text-gray-900 dark:text-gray-100">{{ client.phone_number || 'No disponible' }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Estado</p>
+                <span class="inline-block px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(client.status || '')">
+                  {{ getStatusLabel(client.status || '') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjetas de KPIs del cliente -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up delay-100">
+        <!-- Inversión total -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Inversión Total</p>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">
+                ${{ clientKpis && clientKpis.total_invested ? clientKpis.total_invested.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}
+              </h3>
+            </div>
+            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <mat-icon class="text-blue-600 dark:text-blue-300">account_balance</mat-icon>
+            </div>
+          </div>
+          <div class="mt-2">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Valor actual: ${{ clientKpis && clientKpis.current_value ? clientKpis.current_value.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
+          </div>
+        </div>
+
+        <!-- ROI -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card" 
+             [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'positive' : 'negative'">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">ROI</p>
+              <h3 class="text-xl font-bold mt-2" 
+                  [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                {{ clientKpis && clientKpis.roi_percentage ? clientKpis.roi_percentage.toFixed(2) : '0.00' }}%
+              </h3>
+            </div>
+            <div class="p-2 rounded-lg" 
+                 [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900'">
+              <mat-icon [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'">
+                {{ clientKpis && clientKpis.roi_percentage >= 0 ? 'trending_up' : 'trending_down' }}
+              </mat-icon>
+            </div>
+          </div>
+          <div class="mt-2">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Ganancia: ${{ clientKpis && clientKpis.roi_amount ? clientKpis.roi_amount.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
+          </div>
+        </div>
+
+        <!-- Operaciones -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Operaciones</p>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">{{ clientKpis && clientKpis.operations_count ? clientKpis.operations_count : 0 }}</h3>
+            </div>
+            <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <mat-icon class="text-purple-600 dark:text-purple-300">sync_alt</mat-icon>
+            </div>
+          </div>
+          <div class="mt-2">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Última operación: {{ clientKpis && clientKpis.last_operation_date ? (clientKpis.last_operation_date | date:'dd/MM/yyyy') : 'N/A' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Activos principales -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos Principales</p>
+              <div class="flex flex-wrap gap-1 mt-2">
+                <span *ngFor="let asset of clientKpis && clientKpis.main_assets ? clientKpis.main_assets.slice(0, 3) : []"
+                      class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300">
+                  {{ asset.symbol }}
+                </span>
+                <span *ngIf="clientKpis && clientKpis.main_assets && clientKpis.main_assets.length > 3"
+                      class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                  +{{ clientKpis.main_assets.length - 3 }}
+                </span>
+              </div>
+            </div>
+            <div class="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg">
+              <mat-icon class="text-amber-600 dark:text-amber-300">pie_chart</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-md border border-gray-100 dark:border-slate-700 animate-fade-in-up delay-200">
+        <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Filtro por período -->
+          <div>
+            <label for="period-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Período</label>
+            <select 
+              id="period-filter"
+              formControlName="period" 
+              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200"
+            >
+              <option *ngFor="let period of periods" [value]="period.value">{{ period.label }}</option>
+            </select>
+          </div>
+
+          <!-- Filtro por mercado -->
+          <div>
+            <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mercado</label>
+            <select 
+              id="market-filter"
+              formControlName="market" 
+              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200"
+            >
+              <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
+            </select>
+          </div>
+
+          <!-- Acciones -->
+          <div class="flex items-end justify-between">
+            <button 
+              type="button"
+              (click)="exportData('pdf')"
+              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm"
+            >
+              <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
+              Exportar PDF
+            </button>
+            <button 
+              type="button"
+              (click)="exportData('excel')"
+              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm"
+            >
+              <mat-icon class="mr-1 text-sm">table_chart</mat-icon>
+              Exportar Excel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up delay-300">
+        <!-- Gráfico de evolución de comisiones -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
+          <div class="chart-container">
+            <apx-chart
+              [series]="commissionsTrendChartOptions.series!"
+              [chart]="commissionsTrendChartOptions.chart!"
+              [xaxis]="commissionsTrendChartOptions.xaxis!"
+              [yaxis]="commissionsTrendChartOptions.yaxis!"
+              [colors]="commissionsTrendChartOptions.colors!"
+              [title]="commissionsTrendChartOptions.title!"
+              [subtitle]="commissionsTrendChartOptions.subtitle!"
+              [dataLabels]="commissionsTrendChartOptions.dataLabels!"
+              [stroke]="commissionsTrendChartOptions.stroke!"
+              [tooltip]="commissionsTrendChartOptions.tooltip!"
+              [grid]="commissionsTrendChartOptions.grid!"
+              [fill]="commissionsTrendChartOptions.fill!"
+            ></apx-chart>
+          </div>
+        </div>
+
+        <!-- Gráfico de distribución de activos -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
+          <div class="chart-container">
+            <apx-chart
+              [series]="assetDistributionChartOptions.series!"
+              [chart]="assetDistributionChartOptions.chart!"
+              [labels]="assetDistributionChartOptions.labels!"
+              [colors]="assetDistributionChartOptions.colors!"
+              [title]="assetDistributionChartOptions.title!"
+              [subtitle]="assetDistributionChartOptions.subtitle!"
+              [dataLabels]="assetDistributionChartOptions.dataLabels!"
+              [legend]="assetDistributionChartOptions.legend!"
+              [tooltip]="assetDistributionChartOptions.tooltip!"
+              [plotOptions]="assetDistributionChartOptions.plotOptions!"
+            ></apx-chart>
+          </div>
+        </div>
+
+        <!-- Gráfico de tendencia ROI vs benchmark -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
+          <div class="chart-container">
+            <apx-chart
+              [series]="roiTrendChartOptions.series!"
+              [chart]="roiTrendChartOptions.chart!"
+              [xaxis]="roiTrendChartOptions.xaxis!"
+              [yaxis]="roiTrendChartOptions.yaxis!"
+              [colors]="roiTrendChartOptions.colors!"
+              [title]="roiTrendChartOptions.title!"
+              [subtitle]="roiTrendChartOptions.subtitle!"
+              [dataLabels]="roiTrendChartOptions.dataLabels!"
+              [stroke]="roiTrendChartOptions.stroke!"
+              [legend]="roiTrendChartOptions.legend!"
+              [tooltip]="roiTrendChartOptions.tooltip!"
+              [grid]="roiTrendChartOptions.grid!"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de comisiones -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 animate-fade-in-up delay-400">
+        <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Historial de Comisiones</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Detalle de comisiones generadas por este cliente</p>
+        </div>
+        
+        <div class="p-5">
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSourceCommissions" matSort class="w-full" [ngClass]="{'dark': true}">
+              <!-- Columna Mes -->
+              <ng-container matColumnDef="month">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Mes </th>
+                <td mat-cell *matCellDef="let commission"> {{ commission.month }} </td>
+              </ng-container>
+
+              <!-- Columna Año -->
+              <ng-container matColumnDef="year">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Año </th>
+                <td mat-cell *matCellDef="let commission"> {{ commission.year }} </td>
+              </ng-container>
+
+              <!-- Columna comisiones generadas -->
+              <ng-container matColumnDef="commissions_generated">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Comisiones </th>
+                <td mat-cell *matCellDef="let commission"> ${{ commission.commissions_generated.toFixed(2) }} </td>
+              </ng-container>
+
+              <!-- Columna operaciones -->
+              <ng-container matColumnDef="operations_count">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Operaciones </th>
+                <td mat-cell *matCellDef="let commission"> {{ commission.operations_count }} </td>
+              </ng-container>
+
+              <!-- Columna mercado -->
+              <ng-container matColumnDef="market">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Mercado </th>
+                <td mat-cell *matCellDef="let commission"> {{ commission.market }} </td>
+              </ng-container>
+
+              <!-- Columna estado -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
+                <td mat-cell *matCellDef="let commission">
+                  <span class="status-badge" [ngClass]="getStatusClass(commission.status)">
+                    {{ getStatusLabel(commission.status) }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Definición de filas -->
+              <tr mat-header-row *matHeaderRowDef="displayedColumnsCommissions"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsCommissions;"></tr>
+
+              <!-- Fila para cuando no hay datos -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell py-4 text-center text-gray-500 dark:text-gray-400" [attr.colspan]="displayedColumnsCommissions.length">
+                  No se encontraron comisiones para este cliente.
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Paginador -->
+          <mat-paginator 
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            [pageSize]="10"
+            aria-label="Seleccionar página de comisiones">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

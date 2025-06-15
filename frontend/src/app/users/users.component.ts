@@ -526,6 +526,8 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * Maneja el envío del formulario de filtros.
+   * Este método se mantiene para compatibilidad con el botón de filtrar,
+   * aunque los filtros se aplican automáticamente gracias a la suscripción a valueChanges.
    */
   public onFilterSubmit(): void {
     if (this.paginator) {
