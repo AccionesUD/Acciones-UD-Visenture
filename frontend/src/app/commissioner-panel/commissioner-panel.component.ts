@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { CommissionerService } from '../services/commissioner.service';
 import { 
@@ -54,7 +54,6 @@ export type ChartOptions = {
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
@@ -155,6 +154,17 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   ngAfterViewInit(): void {
     // Configurar paginadores y ordenadores después de que las vistas se inicialicen
     this.configureDataTable();
+    
+    // Forzar actualización de los gráficos para garantizar que se rendericen correctamente
+    setTimeout(() => {
+      this.updateCharts();
+      
+      // Actualizar el tema de los gráficos
+      let isDark = document.documentElement.classList.contains('dark');
+      this.updateChartsTheme(isDark);
+      
+      this.cdr.detectChanges();
+    }, 200);
   }
   
   ngOnDestroy(): void {
@@ -256,23 +266,58 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
   
+  /**
+   * Configura los oyentes para los filtros en vivo
+   * Cada vez que cambia un valor en el formulario, se ejecuta la búsqueda
+   * después de un pequeño retraso para evitar múltiples solicitudes
+   */
   private setupFilterListeners(): void {
     // Aplicar filtros automáticamente al cambiar los valores
     this.filterForm.valueChanges
       .pipe(
         takeUntil(this.destroy$),
-        debounceTime(500) // Esperar 500ms después de que el usuario deje de escribir
+        debounceTime(300), // Esperar 300ms después de que el usuario deje de escribir
+        distinctUntilChanged((prev: any, curr: any) => JSON.stringify(prev) === JSON.stringify(curr)) // Evita peticiones duplicadas
       )
       .subscribe(() => {
+        // Resetear paginadores
+        if (this.paginator) {
+          this.paginator.pageIndex = 0;
+        }
+        if (this.commissionsPaginator) {
+          this.commissionsPaginator.pageIndex = 0;
+        }
+        
+        // Cargar datos con los nuevos filtros
         this.loadData();
+        
+        // Actualizar los gráficos después de aplicar los filtros
+        setTimeout(() => {
+          this.updateCharts();
+          const isDark = document.documentElement.classList.contains('dark');
+          this.updateChartsTheme(isDark);
+        }, 200);
       });
   }
   
+  /**
+   * Maneja el envío del formulario de filtros.
+   * Este método se mantiene por compatibilidad, pero los filtros se aplican 
+   * automáticamente gracias a la suscripción a valueChanges implementada en setupFilterListeners.
+   */
   onFilterSubmit(): void {
+    // Esta función se llama cuando el usuario presiona el botón "Aplicar"
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+    if (this.commissionsPaginator) {
+      this.commissionsPaginator.pageIndex = 0;
+    }
     this.loadData(true);
   }
   
   resetFilters(): void {
+    // Reiniciar todos los campos del formulario
     this.filterForm.reset({
       client_name: '',
       market: '',
@@ -282,7 +327,8 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         end: null
       }
     });
-    this.loadData(true);
+    
+    // No es necesario llamar a loadData aquí, ya que el valueChanges del form lo disparará
   }
   
   viewClientDetails(client: any): void {
@@ -333,6 +379,12 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   }
   
   private initCharts(): void {
+    // Detectar tema inicial
+    const isDark = document.documentElement.classList.contains('dark');
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const subtitleColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? '#334155' : '#e5e7eb';
+    
     this.clientDistributionChartOptions = {
       series: [],
       chart: {
@@ -344,7 +396,10 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         animations: {
           enabled: true,
           speed: 300
-        }
+        },
+        fontFamily: 'Inter, sans-serif',
+        background: 'transparent',
+        foreColor: textColor
       },
       colors: ['#10B981', '#F59E0B', '#EF4444'],
       labels: ['Activos', 'Pendientes', 'Inactivos'],
@@ -352,6 +407,9 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         enabled: true,
         formatter: function(val: number) {
           return Math.round(val) + '%';
+        },
+        style: {
+          colors: [textColor]
         }
       },
       plotOptions: {
@@ -365,7 +423,8 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
                 label: 'Total',
                 formatter: function(w: any) {
                   return w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
-                }
+                },
+                color: textColor
               }
             }
           }
@@ -375,8 +434,12 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         position: 'bottom',
         horizontalAlign: 'center',
         labels: {
-          colors: ['#333', '#333', '#333']
-        }
+          colors: textColor
+        },
+        fontFamily: 'Inter, sans-serif'
+      },
+      theme: {
+        mode: isDark ? 'dark' : 'light'
       }
     };
 
@@ -391,14 +454,18 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         animations: {
           enabled: true,
           speed: 300
-        }
+        },
+        fontFamily: 'Inter, sans-serif',
+        background: 'transparent',
+        foreColor: textColor
       },
       plotOptions: {
         bar: {
           horizontal: false,
           columnWidth: '55%',
           endingShape: 'rounded',
-          borderRadius: 4
+          borderRadius: 4,
+          distributed: false
         },
       },
       colors: ['#10B981'],
@@ -414,29 +481,55 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         categories: [],
         labels: {
           style: {
-            colors: ['#333', '#333', '#333', '#333']
+            colors: Array(10).fill(textColor)
           }
+        },
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
         }
       },
       yaxis: {
         title: {
-          text: 'Comisiones ($)'
+          text: 'Comisiones ($)',
+          style: {
+            color: subtitleColor,
+            fontFamily: 'Inter, sans-serif'
+          }
         },
         labels: {
           formatter: function(val: number) {
             return '$' + val.toFixed(0);
+          },
+          style: {
+            colors: textColor
           }
         }
       },
       fill: {
-        opacity: 1
+        opacity: 0.85
       },
       tooltip: {
+        theme: isDark ? 'dark' : 'light',
         y: {
           formatter: function(val: number) {
             return '$ ' + val.toFixed(2);
           }
         }
+      },
+      grid: {
+        borderColor: gridColor,
+        strokeDashArray: 4,
+        yaxis: {
+          lines: {
+            show: true
+          }
+        }
+      },
+      theme: {
+        mode: isDark ? 'dark' : 'light'
       }
     };
     
@@ -475,9 +568,20 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   
   private setupThemeObserver(): void {
     // Observar cambios en el tema (claro/oscuro)
-    const observer = new MutationObserver(() => {
-      const isDarkTheme = document.documentElement.classList.contains('dark');
-      this.updateChartsTheme(isDarkTheme);
+    let themeChangeTimeout: any = null;
+    
+    const observer = new MutationObserver((mutations) => {
+      // Evitamos múltiples actualizaciones consecutivas
+      if (themeChangeTimeout) {
+        clearTimeout(themeChangeTimeout);
+      }
+      
+      themeChangeTimeout = setTimeout(() => {
+        const isDark = document.documentElement.classList.contains('dark');
+        this.updateChartsTheme(isDark);
+        // Forzar actualización de los gráficos tras cambio de tema
+        this.updateCharts();
+      }, 100);
     });
     
     observer.observe(document.documentElement, {
@@ -486,52 +590,100 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     });
     
     // Configurar tema inicial
-    const isDarkTheme = document.documentElement.classList.contains('dark');
-    this.updateChartsTheme(isDarkTheme);
+    const isDark = document.documentElement.classList.contains('dark');
+    this.updateChartsTheme(isDark);
+    
+    // Limpieza del observer al destruir el componente
+    this.destroy$.subscribe(() => {
+      observer.disconnect();
+    });
   }
   
-  private updateChartsTheme(isDarkTheme: boolean): void {
+  private updateChartsTheme(isDark: boolean): void {
     // Actualizar colores de los gráficos según el tema
-    const textColor = isDarkTheme ? '#E2E8F0' : '#333333';
-    const gridColor = isDarkTheme ? '#374151' : '#E5E7EB';
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const subtitleColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? '#334155' : '#e5e7eb';
+    const backgroundColor = 'transparent';
     
     // Actualizar el gráfico de distribución de clientes
-    if (this.clientDistributionChartOptions && this.clientDistributionChartOptions.legend) {
-      this.clientDistributionChartOptions.legend.labels = {
-        colors: [textColor, textColor, textColor]
+    if (this.clientDistributionChartOptions) {
+      // Actualizar leyenda
+      if (this.clientDistributionChartOptions.legend) {
+        this.clientDistributionChartOptions.legend.labels = {
+          colors: textColor
+        };
+      }
+      
+      // Actualizar etiquetas
+      if (this.clientDistributionChartOptions.dataLabels) {
+        this.clientDistributionChartOptions.dataLabels.style = {
+          colors: [textColor]
+        };
+      }
+      
+      // Aplicar tema
+      this.clientDistributionChartOptions.chart = {
+        ...this.clientDistributionChartOptions.chart,
+        background: backgroundColor,
+        foreColor: textColor
       };
+      
       this.clientDistributionChartOptions.theme = {
-        mode: isDarkTheme ? 'dark' : 'light'
+        mode: isDark ? 'dark' : 'light'
       };
     }
     
     // Actualizar el gráfico de comisiones por mercado
     if (this.commissionsByMarketChartOptions) {
+      // Actualizar ejes
       if (this.commissionsByMarketChartOptions.xaxis && this.commissionsByMarketChartOptions.xaxis.labels) {
         this.commissionsByMarketChartOptions.xaxis.labels.style = {
-          colors: [textColor, textColor, textColor, textColor, textColor]
+          colors: Array(10).fill(textColor) // Asegurar suficientes colores para todas las categorías
         };
       }
       
       if (this.commissionsByMarketChartOptions.yaxis && this.commissionsByMarketChartOptions.yaxis.title) {
         this.commissionsByMarketChartOptions.yaxis.title.style = {
-          color: textColor
+          color: subtitleColor
         };
       }
       
+      if (this.commissionsByMarketChartOptions.yaxis && this.commissionsByMarketChartOptions.yaxis.labels) {
+        this.commissionsByMarketChartOptions.yaxis.labels.style = {
+          colors: textColor
+        };
+      }
+      
+      // Actualizar grilla
       this.commissionsByMarketChartOptions.grid = {
-        borderColor: gridColor
+        borderColor: gridColor,
+        strokeDashArray: 4,
+        yaxis: {
+          lines: {
+            show: true
+          }
+        }
+      };
+      
+      // Aplicar tema
+      this.commissionsByMarketChartOptions.chart = {
+        ...this.commissionsByMarketChartOptions.chart,
+        background: backgroundColor,
+        foreColor: textColor
       };
       
       this.commissionsByMarketChartOptions.theme = {
-        mode: isDarkTheme ? 'dark' : 'light'
+        mode: isDark ? 'dark' : 'light'
       };
     }
     
-    // Actualizar más gráficos aquí
+    // Actualizar más gráficos aquí si se agregan en el futuro
     
     // Forzar actualización de los gráficos
-    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 100);
   }
   
   // Helper para formatear fechas

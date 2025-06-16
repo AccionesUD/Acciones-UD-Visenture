@@ -1,89 +1,210 @@
+/* Estilos para la tabla */
+.commissioner-table-container {
+  background-color: transparent;
+}
+
+.commissioner-table {
+  width: 100%;
+}
+
+/* Estilos para los iconos de acciones */
+.action-icon {
+  color: #065f46; /* emerald-800 */
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.15);
+  color: #047857; /* emerald-700 */
+}
+
+.dark .action-icon {
+  color: #a7f3d0; /* emerald-100 */
+}
+
+.dark .action-icon:hover {
+  color: #6ee7b7; /* emerald-300 */
+}
+
 /* Estilos para el paginador */
 ::ng-deep .mat-mdc-paginator {
   background: transparent !important;
   font-family: inherit;
 }
 
-/* Estilos modo oscuro */
+/* Estilos modo oscuro para paginador */
 ::ng-deep .dark .mat-mdc-paginator-container {
-  color: #e2e8f0;
+  color: #e2e8f0 !important;
 }
 
 ::ng-deep .dark .mat-mdc-paginator-range-label,
 ::ng-deep .dark .mat-mdc-paginator-page-size-label {
-  color: #e2e8f0;
-  opacity: 1;
-}
-
-::ng-deep .dark .mat-mdc-icon-button .mat-mdc-button-persistent-ripple {
-  opacity: 0.2;
+  color: #e2e8f0 !important;
 }
 
 ::ng-deep .dark .mdc-icon-button {
-  fill: #e2e8f0;
-}
-
-::ng-deep .dark .mat-mdc-icon-button {
-  color: #e2e8f0;
-}
-
-::ng-deep .dark .mat-mdc-icon-button:hover {
-  background-color: rgba(226, 232, 240, 0.1);
-}
-
-::ng-deep .dark .mat-mdc-icon-button[disabled] {
-  color: rgba(226, 232, 240, 0.5) !important;
-}
-
-::ng-deep .dark .mat-mdc-select-value-text {
-  color: #e2e8f0 !important;
-}
-
-::ng-deep .dark .mat-mdc-select-arrow {
-  color: #e2e8f0 !important;
-}
-
-::ng-deep .dark .mat-mdc-paginator-icon {
   fill: #e2e8f0 !important;
 }
 
-/* Estilos modo claro */
-::ng-deep .mat-mdc-paginator-container {
-  color: #000000;
+::ng-deep .dark .mat-mdc-icon-button {
+  color: #e2e8f0 !important;
 }
 
-::ng-deep .mat-mdc-paginator-range-label,
-::ng-deep .mat-mdc-paginator-page-size-label {
-  color: #000000;
-  opacity: 1;
+/* Celdas de la tabla */
+::ng-deep .mat-mdc-header-cell,
+::ng-deep .mat-mdc-cell {
+  padding: 12px 16px !important;
+  color: #1f2937 !important;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: #e5e7eb !important;
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 
-::ng-deep .mdc-icon-button {
-  fill: #000000;
+/* Modo oscuro para encabezado y celdas de tabla */
+::ng-deep .dark .mat-mdc-header-cell,
+::ng-deep .dark .mat-mdc-cell {
+  color: #e2e8f0 !important;
+  border-bottom-color: #374151 !important;
+  background-color: transparent !important;
 }
 
-::ng-deep .mat-mdc-icon-button {
-  color: #000000;
+/* Color de texto para encabezados en modo oscuro */
+::ng-deep .dark .mat-mdc-header-row {
+  background-color: transparent !important;
 }
 
-::ng-deep .mat-mdc-icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+/* Estilos para la cabecera en modo oscuro */
+::ng-deep .dark .mat-mdc-header-cell {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  background-color: transparent !important;
 }
 
-::ng-deep .mat-mdc-icon-button[disabled] {
-  color: rgba(0, 0, 0, 0.38) !important;
+/* Estilos para el fondo de la tabla en modo oscuro */
+::ng-deep .dark .mat-mdc-table {
+  background-color: #1e293b !important; /* slate-800 */
 }
 
-::ng-deep .mat-mdc-select-value-text {
-  color: #000000 !important;
+/* Borde para la tabla */
+::ng-deep .mat-mdc-table {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f0fdf4 !important; /* emerald-100 */
 }
 
-::ng-deep .mat-mdc-select-arrow {
-  color: #000000 !important;
+::ng-deep .dark .mat-mdc-table {
+  border-color: #374151;
+  background-color: #1e293b !important; /* slate-800 */
 }
 
-::ng-deep .mat-mdc-paginator-icon {
-  fill: #000000 !important; 
+/* Mejoras para el fondo de la tabla en modo oscuro */
+::ng-deep .dark .mat-mdc-table {
+  background-color: transparent !important;
+  color: #e2e8f0 !important;
+}
+
+/* Mejorar el estilo de las filas al pasar el mouse */
+::ng-deep .mat-mdc-row:hover {
+  background-color: rgba(229, 231, 235, 0.4) !important;
+}
+
+::ng-deep .dark .mat-mdc-row:hover {
+  background-color: rgba(55, 65, 81, 0.3) !important;
+}
+
+/* Mejorar selección de fila */
+::ng-deep .mat-mdc-row.selected-row {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+::ng-deep .dark .mat-mdc-row.selected-row {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  font-weight: 600 !important;
+  background-color: #f0f9ff !important; /* bg-blue-50 */
+}
+
+::ng-deep .dark .mat-mdc-header-cell {
+  background-color: #1e293b !important; /* dark:bg-slate-800 */
+}
+
+/* Cabeceras pegajosas */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: 600 !important;
+  color: #4b5563 !important;
+  background-color: #f9fafb !important;
+}
+
+.dark .sticky-header {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+/* Paginador pegajoso */
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+/* Estilo para la fila de "no hay datos" */
+.mat-row:has(td.mat-cell.text-center) {
+  height: auto;
+}
+
+/* Estilos para los botones de Material */
+:host ::ng-deep .mat-mdc-button,
+:host ::ng-deep .mat-mdc-raised-button,
+:host ::ng-deep .mat-mdc-outlined-button,
+:host ::ng-deep .mat-mdc-unelevated-button {
+  height: 42px !important;
+  border-radius: 0.375rem !important;
+}
+
+/* Mejorar los botones de acción en la tabla */
+:host ::ng-deep .mat-icon-button {
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+:host ::ng-deep .mat-icon-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Estilos para ApexCharts en modo oscuro */
+:host-context(.dark) .apexcharts-yaxis-label,
+:host-context(.dark) .apexcharts-xaxis-label {
+  fill: #FFFFFF !important;
+}
+
+:host-context(.dark) .apexcharts-gridline {
+  stroke: #555555 !important;
+}
+
+:host-context(.dark) .apexcharts-xaxis-label tspan,
+:host-context(.dark) .apexcharts-yaxis-label tspan {
+  fill: #FFFFFF !important;
+}
+
+:host-context(.dark) .apexcharts-tooltip.apexcharts-theme-light {
+  background: rgba(30, 30, 30, 0.9) !important;
+  color: #FFFFFF !important;
+  border: 1px solid #888888 !important;
+}
+
+:host-context(.dark) .apexcharts-tooltip-title,
+:host-context(.dark) .apexcharts-tooltip-text {
+  color: #FFFFFF !important;
+}
+
+:host-context(.dark) .apexcharts-tooltip-marker {
+  background-color: #FFFFFF !important;
 }
 
 /* Estilos específicos para los iconos del paginador */

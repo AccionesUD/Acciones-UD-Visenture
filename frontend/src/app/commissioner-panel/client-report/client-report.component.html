@@ -162,35 +162,37 @@
       <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-md border border-gray-100 dark:border-slate-700 animate-fade-in-up delay-200">
         <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Filtro por período -->
-          <div>
+          <div class="relative">
             <label for="period-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Período</label>
-            <select 
-              id="period-filter"
-              formControlName="period" 
-              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200"
-            >
-              <option *ngFor="let period of periods" [value]="period.value">{{ period.label }}</option>
-            </select>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Período</mat-label>
+              <mat-select formControlName="period">
+                <mat-option *ngFor="let period of periods" [value]="period.value">
+                  {{ period.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
 
           <!-- Filtro por mercado -->
-          <div>
+          <div class="relative">
             <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mercado</label>
-            <select 
-              id="market-filter"
-              formControlName="market" 
-              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2 px-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200"
-            >
-              <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
-            </select>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>Mercado</mat-label>
+              <mat-select formControlName="market">
+                <mat-option *ngFor="let market of markets" [value]="market.value">
+                  {{ market.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
 
           <!-- Acciones -->
-          <div class="flex items-end justify-between">
+          <div class="flex items-end justify-between space-x-2">
             <button 
               type="button"
               (click)="exportData('pdf')"
-              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm"
+              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
             >
               <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
               Exportar PDF
@@ -198,7 +200,7 @@
             <button 
               type="button"
               (click)="exportData('excel')"
-              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm"
+              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
             >
               <mat-icon class="mr-1 text-sm">table_chart</mat-icon>
               Exportar Excel
@@ -276,43 +278,53 @@
         </div>
         
         <div class="p-5">
-          <div class="table-container">
-            <table mat-table [dataSource]="dataSourceCommissions" matSort class="w-full" [ngClass]="{'dark': true}">
+          <div class="overflow-x-auto">
+            <table mat-table [dataSource]="dataSourceCommissions" matSort class="min-w-full bg-white dark:bg-slate-800">
               <!-- Columna Mes -->
               <ng-container matColumnDef="month">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Mes </th>
-                <td mat-cell *matCellDef="let commission"> {{ commission.month }} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mes </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
+                  {{ commission.month }} 
+                </td>
               </ng-container>
 
               <!-- Columna Año -->
               <ng-container matColumnDef="year">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Año </th>
-                <td mat-cell *matCellDef="let commission"> {{ commission.year }} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Año </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
+                  {{ commission.year }} 
+                </td>
               </ng-container>
 
               <!-- Columna comisiones generadas -->
               <ng-container matColumnDef="commissions_generated">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Comisiones </th>
-                <td mat-cell *matCellDef="let commission"> ${{ commission.commissions_generated.toFixed(2) }} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Comisiones </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-400"> 
+                  ${{ commission.commissions_generated.toFixed(2) }} 
+                </td>
               </ng-container>
 
               <!-- Columna operaciones -->
               <ng-container matColumnDef="operations_count">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Operaciones </th>
-                <td mat-cell *matCellDef="let commission"> {{ commission.operations_count }} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Operaciones </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
+                  {{ commission.operations_count }} 
+                </td>
               </ng-container>
 
               <!-- Columna mercado -->
               <ng-container matColumnDef="market">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Mercado </th>
-                <td mat-cell *matCellDef="let commission"> {{ commission.market }} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mercado </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
+                  {{ commission.market }} 
+                </td>
               </ng-container>
 
               <!-- Columna estado -->
               <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
-                <td mat-cell *matCellDef="let commission">
-                  <span class="status-badge" [ngClass]="getStatusClass(commission.status)">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Estado </th>
+                <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(commission.status)">
                     {{ getStatusLabel(commission.status) }}
                   </span>
                 </td>
@@ -320,12 +332,15 @@
 
               <!-- Definición de filas -->
               <tr mat-header-row *matHeaderRowDef="displayedColumnsCommissions"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumnsCommissions;"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumnsCommissions;" class="hover:bg-emerald-200 dark:hover:bg-slate-700"></tr>
 
               <!-- Fila para cuando no hay datos -->
               <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell py-4 text-center text-gray-500 dark:text-gray-400" [attr.colspan]="displayedColumnsCommissions.length">
-                  No se encontraron comisiones para este cliente.
+                <td class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700" [attr.colspan]="displayedColumnsCommissions.length">
+                  <div class="flex flex-col items-center">
+                    <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
+                    <p>No se encontraron comisiones para este cliente con los filtros seleccionados.</p>
+                  </div>
                 </td>
               </tr>
             </table>
@@ -335,7 +350,9 @@
           <mat-paginator 
             [pageSizeOptions]="[5, 10, 25, 100]"
             [pageSize]="10"
-            aria-label="Seleccionar página de comisiones">
+            showFirstLastButtons
+            aria-label="Seleccionar página de comisiones"
+            class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
           </mat-paginator>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { CommissionerService } from '../../services/commissioner.service';
 import { 
@@ -52,7 +52,6 @@ export type ChartOptions = {
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
@@ -75,7 +74,7 @@ export type ChartOptions = {
   templateUrl: './client-report.component.html',
   styleUrls: ['./client-report.component.css']
 })
-export class ClientReportComponent implements OnInit, OnDestroy {
+export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
   // Variables para clientes
   clientId: number = 0;
   client!: CommissionerClient;
@@ -148,16 +147,52 @@ export class ClientReportComponent implements OnInit, OnDestroy {
     });
 
     // Filtros en vivo
+    this.setupFilterListeners();
+    
+    // Configurar observador para cambios de tema
+    this.setupThemeObserver();
+  }
+  
+  /**
+   * Configura los listeners para los filtros en vivo
+   * Cada cambio en un filtro ejecuta la búsqueda con un pequeño retraso
+   */
+  private setupFilterListeners(): void {
     this.filterForm.valueChanges
-      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .pipe(
+        takeUntil(this.destroy$), 
+        debounceTime(300), 
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+      )
       .subscribe(() => {
+        if (this.commissionsPaginator) {
+          this.commissionsPaginator.pageIndex = 0; // Reset paginator to first page on filter change
+        }
         this.applyFilters();
       });
   }
 
+  ngAfterViewInit(): void {
+    // Asegurar que los gráficos se rendericen correctamente después de que la vista esté inicializada
+    setTimeout(() => {
+      this.configureDataTable();
+      this.cdr.detectChanges();
+    });
+  }
+  
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+  
+  /**
+   * Configura la tabla de datos, paginación y ordenación
+   */
+  private configureDataTable(): void {
+    if (this.dataSourceCommissions && this.commissionsPaginator && this.commissionsSort) {
+      this.dataSourceCommissions.paginator = this.commissionsPaginator;
+      this.dataSourceCommissions.sort = this.commissionsSort;
+    }
   }
 
   loadClientData(forceRefresh: boolean = false): void {
@@ -208,14 +243,7 @@ export class ClientReportComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (commissions) => {
           this.dataSourceCommissions.data = commissions;
-          
-          setTimeout(() => {
-            if (this.commissionsPaginator && this.commissionsSort) {
-              this.dataSourceCommissions.paginator = this.commissionsPaginator;
-              this.dataSourceCommissions.sort = this.commissionsSort;
-            }
-          });
-          
+          this.configureDataTable();
           this.setupCharts();
           this.isLoading = false;
           this.cdr.detectChanges();
@@ -564,6 +592,211 @@ export class ClientReportComponent implements OnInit, OnDestroy {
     };
   }
 
+  /**
+   * Configura un observador para detectar cambios en el tema (claro/oscuro)
+   */
+  private setupThemeObserver(): void {
+    // Observar cambios en el tema (claro/oscuro)
+    const observer = new MutationObserver(() => {
+      const isDarkTheme = document.documentElement.classList.contains('dark');
+      this.updateChartsTheme(isDarkTheme);
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+    
+    // Configurar tema inicial
+    const isDarkTheme = document.documentElement.classList.contains('dark');
+    this.updateChartsTheme(isDarkTheme);
+  }
+  
+  /**
+   * Actualiza el tema de todos los gráficos según el modo claro/oscuro
+   */
+  private updateChartsTheme(isDarkTheme: boolean): void {
+    // Actualizar colores y estilos para modo claro/oscuro
+    const textColor = isDarkTheme ? '#e2e8f0' : '#334155';
+    const subtitleColor = isDarkTheme ? '#94a3b8' : '#64748b';
+    const gridColor = isDarkTheme ? '#334155' : '#f1f5f9';
+    const backgroundColor = isDarkTheme ? 'transparent' : 'transparent';
+    
+    // Comisiones Trend Chart
+    if (this.commissionsTrendChartOptions) {
+      // Actualizar título y estilos
+      if (this.commissionsTrendChartOptions.title) {
+        this.commissionsTrendChartOptions.title.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: textColor
+        };
+      }
+      
+      if (this.commissionsTrendChartOptions.subtitle) {
+        this.commissionsTrendChartOptions.subtitle.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: subtitleColor
+        };
+      }
+      
+      // Actualizar ejes
+      if (this.commissionsTrendChartOptions.xaxis) {
+        this.commissionsTrendChartOptions.xaxis.labels = {
+          ...this.commissionsTrendChartOptions.xaxis.labels,
+          style: { colors: textColor }
+        };
+        
+        if (this.commissionsTrendChartOptions.xaxis.title) {
+          this.commissionsTrendChartOptions.xaxis.title.style = {
+            fontFamily: 'Inter, sans-serif',
+            color: subtitleColor
+          };
+        }
+      }
+      
+      if (this.commissionsTrendChartOptions.yaxis) {
+        this.commissionsTrendChartOptions.yaxis.labels = {
+          ...this.commissionsTrendChartOptions.yaxis.labels,
+          style: { colors: textColor }
+        };
+        
+        if (this.commissionsTrendChartOptions.yaxis.title) {
+          this.commissionsTrendChartOptions.yaxis.title.style = {
+            fontFamily: 'Inter, sans-serif',
+            color: subtitleColor
+          };
+        }
+      }
+      
+      // Actualizar grilla
+      this.commissionsTrendChartOptions.grid = {
+        ...this.commissionsTrendChartOptions.grid,
+        borderColor: gridColor
+      };
+      
+      // Aplicar tema
+      this.commissionsTrendChartOptions.chart = {
+        ...this.commissionsTrendChartOptions.chart,
+        background: backgroundColor,
+        foreColor: textColor
+      };
+      
+      this.commissionsTrendChartOptions.theme = {
+        mode: isDarkTheme ? 'dark' : 'light'
+      };
+    }
+    
+    // Asset Distribution Chart
+    if (this.assetDistributionChartOptions) {
+      // Actualizar título y estilos
+      if (this.assetDistributionChartOptions.title) {
+        this.assetDistributionChartOptions.title.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: textColor
+        };
+      }
+      
+      if (this.assetDistributionChartOptions.subtitle) {
+        this.assetDistributionChartOptions.subtitle.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: subtitleColor
+        };
+      }
+      
+      // Actualizar leyenda
+      if (this.assetDistributionChartOptions.legend) {
+        this.assetDistributionChartOptions.legend.labels = {
+          colors: textColor
+        };
+      }
+      
+      // Aplicar tema
+      this.assetDistributionChartOptions.chart = {
+        ...this.assetDistributionChartOptions.chart,
+        background: backgroundColor,
+        foreColor: textColor
+      };
+      
+      this.assetDistributionChartOptions.theme = {
+        mode: isDarkTheme ? 'dark' : 'light'
+      };
+    }
+    
+    // ROI Trend Chart
+    if (this.roiTrendChartOptions) {
+      // Actualizar título y estilos
+      if (this.roiTrendChartOptions.title) {
+        this.roiTrendChartOptions.title.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: textColor
+        };
+      }
+      
+      if (this.roiTrendChartOptions.subtitle) {
+        this.roiTrendChartOptions.subtitle.style = {
+          fontFamily: 'Inter, sans-serif',
+          color: subtitleColor
+        };
+      }
+      
+      // Actualizar ejes
+      if (this.roiTrendChartOptions.xaxis) {
+        this.roiTrendChartOptions.xaxis.labels = {
+          ...this.roiTrendChartOptions.xaxis.labels,
+          style: { colors: textColor }
+        };
+        
+        if (this.roiTrendChartOptions.xaxis.title) {
+          this.roiTrendChartOptions.xaxis.title.style = {
+            fontFamily: 'Inter, sans-serif',
+            color: subtitleColor
+          };
+        }
+      }
+      
+      if (this.roiTrendChartOptions.yaxis) {
+        this.roiTrendChartOptions.yaxis.labels = {
+          ...this.roiTrendChartOptions.yaxis.labels,
+          style: { colors: textColor }
+        };
+        
+        if (this.roiTrendChartOptions.yaxis.title) {
+          this.roiTrendChartOptions.yaxis.title.style = {
+            fontFamily: 'Inter, sans-serif',
+            color: subtitleColor
+          };
+        }
+      }
+      
+      // Actualizar leyenda
+      if (this.roiTrendChartOptions.legend) {
+        this.roiTrendChartOptions.legend.labels = {
+          colors: textColor
+        };
+      }
+      
+      // Actualizar grilla
+      this.roiTrendChartOptions.grid = {
+        ...this.roiTrendChartOptions.grid,
+        borderColor: gridColor
+      };
+      
+      // Aplicar tema
+      this.roiTrendChartOptions.chart = {
+        ...this.roiTrendChartOptions.chart,
+        background: backgroundColor,
+        foreColor: textColor
+      };
+      
+      this.roiTrendChartOptions.theme = {
+        mode: isDarkTheme ? 'dark' : 'light'
+      };
+    }
+    
+    // Forzar actualización de los gráficos
+    this.cdr.detectChanges();
+  }
+
   applyFilters(): void {
     const filters = this.filterForm.value;
     
@@ -597,6 +830,19 @@ export class ClientReportComponent implements OnInit, OnDestroy {
     
     // Actualizar gráficos
     this.setupCharts();
+  }
+
+  /**
+   * Verifica si hay filtros activos actualmente
+   * @returns booleano que indica si hay al menos un filtro activo
+   */
+  hasActiveFilters(): boolean {
+    const filters = this.filterForm.value;
+    return !!(
+      (filters.period && filters.period !== 'all') || 
+      filters.market || 
+      filters.status
+    );
   }
 
   getMonthNumber(month: string): number {

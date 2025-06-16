@@ -54,13 +54,13 @@
           <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
           Filtros
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Campo de búsqueda -->
           <div class="relative">
-            <label for="search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar cliente</label>
+            <label for="client-search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar cliente</label>
             <div class="relative">
               <input 
-                id="search-filter"
+                id="client-search-filter"
                 formControlName="client_name" 
                 placeholder="Nombre, email..." 
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
@@ -74,46 +74,59 @@
           <!-- Filtro por mercado -->
           <div class="relative">
             <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mercado</label>
-            <select 
-              id="market-filter"
-              formControlName="market" 
-              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
-            >
-              <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
-            </select>
+            <div class="relative">
+              <select 
+                id="market-filter"
+                formControlName="market"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
+                <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-indigo-500 dark:text-indigo-400">public</mat-icon>
+              </div>
+            </div>
           </div>
 
           <!-- Filtro por estado -->
           <div class="relative">
             <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
-            <select 
-              id="status-filter"
-              formControlName="status" 
-              class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
-            >
-              <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
-            </select>
-          </div>
-
-          <!-- Acciones de filtro -->
-          <div class="flex items-end justify-end space-x-2">
-            <button 
-              type="button" 
-              (click)="resetFilters()" 
-              class="py-2.5 px-4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-transparent text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <mat-icon class="mr-1">clear</mat-icon>
-              Limpiar
-            </button>
-            <!-- El botón Aplicar ya no es necesario porque los filtros se aplican automáticamente -->
-            <!-- Para mantener la consistencia visual, lo dejamos pero lo transformamos en un indicador de filtros activos -->
-            <div 
-              *ngIf="hasActiveFilters()"
-              class="py-2.5 px-4 bg-emerald-600 text-white rounded-lg flex items-center animate-pulse transition-all duration-300"
-            >
-              <mat-icon class="mr-1">filter_list</mat-icon>
-              Filtros activos
+            <div class="relative">
+              <select 
+                id="status-filter"
+                formControlName="status"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
+                <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-purple-500 dark:text-purple-400">verified_user</mat-icon>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción para los filtros -->
+        <div class="flex justify-end mt-4 space-x-2">
+          <button 
+            type="button" 
+            (click)="resetFilters()" 
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">clear</mat-icon>
+            Limpiar
+          </button>
+          <button 
+            type="submit" 
+            class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">search</mat-icon>
+            Aplicar
+          </button>
+          <div 
+            *ngIf="hasActiveFilters()"
+            class="py-2 px-3 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm"
+          >
+            <mat-icon class="mr-1 text-sm">filter_list</mat-icon>
+            Filtros activos
           </div>
         </div>
       </form>
@@ -131,9 +144,9 @@
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Clientes Totales</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats?.total_clients || 0 }}</div>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats.total_clients || 0 }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span class="font-medium text-green-600 dark:text-green-400">{{ commissionerStats?.active_clients || 0 }}</span> activos
+                        <span class="font-medium text-green-600 dark:text-green-400">{{ commissionerStats.active_clients || 0 }}</span> activos
                       </div>
                     </div>
                     <div class="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
@@ -147,10 +160,10 @@
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Comisiones (Mes)</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(commissionerStats?.total_commissions_month || 0) }}</div>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(commissionerStats.total_commissions_month || 0) }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span [ngClass]="commissionerStats?.commission_growth! >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                          {{ commissionerStats?.commission_growth! >= 0 ? '+' : '' }}{{ commissionerStats?.commission_growth || 0 }}%
+                        <span [ngClass]="commissionerStats.commission_growth >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                          {{ commissionerStats.commission_growth >= 0 ? '+' : '' }}{{ commissionerStats.commission_growth || 0 }}%
                         </span> vs. último mes
                       </div>
                     </div>
@@ -165,9 +178,9 @@
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">ROI Promedio</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatPercentage(commissionerStats?.average_roi_clients || 0) }}</div>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatPercentage(commissionerStats.average_roi_clients || 0) }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span class="font-medium text-red-600 dark:text-red-400">{{ commissionerStats?.clients_with_negative_roi || 0 }}</span> clientes con ROI negativo
+                        <span class="font-medium text-red-600 dark:text-red-400">{{ commissionerStats.clients_with_negative_roi || 0 }}</span> clientes con ROI negativo
                       </div>
                     </div>
                     <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
@@ -181,7 +194,7 @@
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Operaciones</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats?.totalOperations || 0 }}</div>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats.totalOperations || 0 }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Este mes
                       </div>
@@ -272,36 +285,36 @@
           <!-- Tab de clientes -->
           <mat-tab label="Clientes">
             <div class="py-6">
-              <div class="overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
-                <table mat-table [dataSource]="dataSource" matSort class="min-w-full bg-white dark:bg-slate-800">
+              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+                <table mat-table [dataSource]="dataSource" matSort class="min-w-full commissioner-table">
                   <!-- Nombre Column -->
                   <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Nombre </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Nombre </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
                       {{ client.name }}
                     </td>
                   </ng-container>
 
                   <!-- Email Column -->
                   <ng-container matColumnDef="email">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Email </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Email </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ client.email }}
                     </td>
                   </ng-container>
 
                   <!-- Fecha de registro Column -->
                   <ng-container matColumnDef="registration_date">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Registro </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Registro </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ formatDate(client.registration_date) }}
                     </td>
                   </ng-container>
 
                   <!-- Status Column -->
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Estado </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Estado </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                       <span [ngClass]="getStatusClass(client.status)" class="px-2 py-1 text-xs font-medium rounded-full">
                         {{ getStatusText(client.status) }}
                       </span>
@@ -310,16 +323,16 @@
 
                   <!-- Inversión total Column -->
                   <ng-container matColumnDef="total_investment">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Inversión </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Inversión </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ formatCurrency(client.total_investment) }}
                     </td>
                   </ng-container>
 
                   <!-- ROI Column -->
                   <ng-container matColumnDef="roi_percentage">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> ROI </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm"
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> ROI </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm border-b border-gray-200 dark:border-gray-700"
                         [ngClass]="client.roi_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'">
                       {{ formatPercentage(client.roi_percentage) }}
                     </td>
@@ -327,30 +340,29 @@
 
                   <!-- Última operación Column -->
                   <ng-container matColumnDef="last_operation_date">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Última Operación </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Última Operación </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ client.last_operation_date ? formatDate(client.last_operation_date) : 'N/A' }}
                     </td>
                   </ng-container>
 
                   <!-- Actions Column -->
                   <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Acciones </th>
-                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                    <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Acciones </th>
+                    <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
                       <button 
                         (click)="viewClientDetails(client)" 
                         mat-icon-button 
-                        color="primary" 
-                        class="text-indigo-600 dark:text-indigo-400"
+                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
                         matTooltip="Ver detalles del cliente"
                       >
-                        <mat-icon class="action-icon">visibility</mat-icon>
+                        <mat-icon>visibility</mat-icon>
                       </button>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-emerald-200 dark:hover:bg-slate-700"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-emerald-50/50 dark:hover:bg-slate-700/50 transition-colors"></tr>
                 </table>
 
                 <!-- Sin resultados -->
@@ -364,7 +376,7 @@
                   [pageSize]="10"
                   showFirstLastButtons
                   aria-label="Seleccionar página"
-                  class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+                  class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
                 </mat-paginator>
               </div>
             </div>
@@ -373,60 +385,60 @@
           <!-- Tab de comisiones -->
           <mat-tab label="Comisiones">
             <div class="py-6">
-              <div class="overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
-                <table mat-table [dataSource]="dataSourceCommissions" matSort #commissionsSort="matSort" class="min-w-full bg-white dark:bg-slate-800">
+              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+                <table mat-table [dataSource]="dataSourceCommissions" matSort #commissionsSort="matSort" class="min-w-full commissioner-table">
                   <!-- Cliente Column -->
                   <ng-container matColumnDef="client_name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Cliente </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Cliente </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
                       {{ commission.client_name }}
                     </td>
                   </ng-container>
 
                   <!-- Mes Column -->
                   <ng-container matColumnDef="month">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mes </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Mes </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ commission.month }}
                     </td>
                   </ng-container>
 
                   <!-- Año Column -->
                   <ng-container matColumnDef="year">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Año </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Año </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ commission.year }}
                     </td>
                   </ng-container>
 
                   <!-- Comisiones generadas Column -->
                   <ng-container matColumnDef="commissions_generated">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Comisión </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Comisión </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-400 border-b border-gray-200 dark:border-gray-700">
                       {{ formatCurrency(commission.commissions_generated) }}
                     </td>
                   </ng-container>
 
                   <!-- Operaciones Column -->
                   <ng-container matColumnDef="operations_count">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Operaciones </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Operaciones </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ commission.operations_count }}
                     </td>
                   </ng-container>
 
                   <!-- Mercado Column -->
                   <ng-container matColumnDef="market">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mercado </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Mercado </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       {{ commission.market }}
                     </td>
                   </ng-container>
 
                   <!-- Estado Column -->
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Estado </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Estado </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                       <span class="px-2 py-1 text-xs font-medium rounded-full"
                             [ngClass]="{
                               'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': commission.status === 'paid',
@@ -440,22 +452,21 @@
 
                   <!-- Actions Column -->
                   <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Acciones </th>
-                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                    <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Acciones </th>
+                    <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
                       <button 
                         (click)="viewClientReport(commission.client_id, commission.client_name)" 
                         mat-icon-button 
-                        color="primary" 
-                        class="text-indigo-600 dark:text-indigo-400"
+                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
                         matTooltip="Ver detalles del cliente"
                       >
-                        <mat-icon class="action-icon">visibility</mat-icon>
+                        <mat-icon>visibility</mat-icon>
                       </button>
                     </td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsCommissions"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumnsCommissions;" class="hover:bg-emerald-200 dark:hover:bg-slate-700"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsCommissions;" class="hover:bg-emerald-50/50 dark:hover:bg-slate-700/50 transition-colors"></tr>
                 </table>
 
                 <!-- Sin resultados -->
@@ -470,7 +481,7 @@
                   [pageSize]="10"
                   showFirstLastButtons
                   aria-label="Seleccionar página"
-                  class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+                  class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
                 </mat-paginator>
               </div>
             </div>
