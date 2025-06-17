@@ -4,7 +4,7 @@ import { delay, tap, catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 import { JwtService } from './jwt.service';
 import { AuthStateService } from './auth-state.service';
 import { LoginCredentials, MfaVerification, User, AuthResponse } from '../models/auth.model';

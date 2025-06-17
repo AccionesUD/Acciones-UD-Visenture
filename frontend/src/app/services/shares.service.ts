@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 import { Share, CreateShareDto } from '../models/share.model';
 
 @Injectable({

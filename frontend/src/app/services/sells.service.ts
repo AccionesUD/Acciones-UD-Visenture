@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap, map, switchMap } from 'rxjs/operators';
 import { PortfolioShare, PortfolioPosition } from '../models/portfolio.model'; 
 import { SellOrder, SellResponse } from '../models/sell.model';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 import { PortfolioService } from './portfolio.service';
 
 @Injectable({
