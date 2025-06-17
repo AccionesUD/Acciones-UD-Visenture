@@ -8,7 +8,9 @@ import { Observable, of } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { NotificationsService } from '../../services/notifications.service';
 import { ProfileService } from '../../services/profile.service';
+import { UsersService } from '../../services/user.service';
 import { PriceAlert, NotificationMethod, NotificationSettings, UserPreferences } from '../../models/notification.model';
+
 
 @Component({
   selector: 'app-preferences',  standalone: true,  imports: [
@@ -25,6 +27,9 @@ import { PriceAlert, NotificationMethod, NotificationSettings, UserPreferences }
 export class PreferencesComponent implements OnInit, AfterViewInit {
   @ViewChild('tabsNav') tabsNavRef!: ElementRef;
   @ViewChild('tabsContainer') tabsContainerRef!: ElementRef;
+  activeTabIndex: number = 0;
+  //Rol del usuario
+  userRole: string | null = null;
 
   // Variables para control de desplazamiento
   showLeftScrollButton: boolean = false;
@@ -62,11 +67,13 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
     settings: false,
     saving: false
   };
-  activeTabIndex = 0;
-  editingAlertId: number | null = null;  constructor(
+  editingAlertId: number | null = null;
+
+  constructor(
     private fb: FormBuilder,
     private notificationsService: NotificationsService,
     private profileService: ProfileService,
+    private userService: UsersService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {
@@ -94,7 +101,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       refresh_interval: [5, [Validators.required, Validators.min(1), Validators.max(60)]],
       show_after_hours: [true]
     });
-      // Configuración para operaciones
+    // Configuración para operaciones
     this.tradeSettingsForm = this.fb.group({
       default_order_type: ['market', Validators.required],
       max_operations_per_day: [10, [Validators.required, Validators.min(1), Validators.max(100)]],
@@ -102,7 +109,12 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
       enable_stop_loss: [true],
       stop_loss_percentage: [10, [Validators.required, Validators.min(1), Validators.max(50)]]
     });
-  }  ngOnInit(): void {
+  }
+
+  ngOnInit(): void {
+    this.userService.getUserRole().subscribe({
+      next: role => this.userRole = role ?? null
+    });
     this.loadPriceAlerts();
     this.loadNotificationSettings();
     this.loadUserPreferences();

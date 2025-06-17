@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Subscription } from 'rxjs';
+import { UsersService } from '../../services/user.service';
+import { User } from '../../models/auth.model';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+  userRole: string | null = null;
   isAuthenticated = false;
   username: string | null = null;
   mobileMenuOpen = false;
@@ -28,6 +31,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private authState: AuthStateService,
+    private userService: UsersService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (this.isBrowser) {
@@ -47,6 +51,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     // Suscribirse al estado de autenticación
+    
+    if (this.isAuthenticated) {
+    this.userService.getUserRole().subscribe({
+      next: role => this.userRole = role ?? null,
+      error: err => console.error('Error obteniendo rol', err)
+    });
+  }
     this.isLoading = true;
     this.authSubscription = this.authService.currentUser$.subscribe({
       next: (user) => {
