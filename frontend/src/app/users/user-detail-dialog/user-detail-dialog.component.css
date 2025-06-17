@@ -1,0 +1,187 @@
+/* Estilos para el componente de detalle de usuario */
+:host {
+  display: block;
+}
+
+/* Aumentar el tamaño del diálogo */
+::ng-deep .user-detail-dialog {
+  min-width: 800px !important;
+  max-width: 90vw !important;
+}
+
+/* Estilos para el diálogo en ambos modos */
+::ng-deep .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: white !important;
+}
+
+/* Estilo para el fondo del diálogo en modo oscuro */
+::ng-deep .dark .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #1e293b !important; /* slate-800 */
+}
+
+/* Asegurar que el diálogo esté centrado */
+::ng-deep .cdk-global-overlay-wrapper {
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Asegurar que el diálogo se cierre al hacer clic fuera */
+::ng-deep .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  opacity: 0.5 !important;
+}
+
+/* Mejorar el aspecto de las pestañas */
+::ng-deep .mat-mdc-tab-header {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.dark ::ng-deep .mat-mdc-tab-header {
+  border-bottom: 1px solid #374151;
+}
+
+::ng-deep .mat-mdc-tab {
+  height: 48px !important;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .mat-mdc-tab.mdc-tab--active {
+  opacity: 1;
+}
+
+/* Texto en las pestañas para modo oscuro */
+.dark ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+/* Indicador de pestaña activa para modo oscuro */
+.dark ::ng-deep .mat-mdc-tab-header .mat-mdc-tab-label-container .mat-mdc-tab-list .mdc-tab-indicator .mdc-tab-indicator__content--underline {
+  border-color: #10b981 !important; /* Color emerald-600 */
+}
+
+/* Color del texto de detalles */
+.detail-label {
+  color: #6B7280; /* gray-500 */
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  color: #111827; /* gray-900 */
+  font-weight: 500;
+  margin-top: 0;
+}
+
+/* Estilos para modo oscuro */
+.dark .detail-label {
+  color: #9CA3AF; /* gray-400 */
+}
+
+.dark .detail-value {
+  color: #FFFFFF; /* white */
+}
+
+/* Estilos para las tarjetas de información en ambos modos */
+.info-card {
+  background-color: #f0fdf4 !important; /* emerald-50 */
+  border: 1px solid #d1fae5; /* emerald-100 */
+}
+
+.dark .info-card {
+  background-color: #10271e !important; /* emerald-950/60 */
+  border: 1px solid #065f46; /* emerald-800 */
+}
+
+/* Estilos para el título de sección */
+.section-title {
+  color: #065f46; /* emerald-800 */
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.dark .section-title {
+  color: #a7f3d0; /* emerald-200 */
+}
+
+.dark .detail-label {
+  color: #9CA3AF; /* gray-400 */
+}
+
+.detail-value {
+  color: #111827; /* gray-900 */
+}
+
+.dark .detail-value {
+  color: #F9FAFB; /* gray-50 */
+}
+
+/* Estilos para botones en modo oscuro */
+.dark ::ng-deep .mat-mdc-raised-button {
+  background-color: #1F2937 !important; /* gray-800 */
+  color: white !important;
+}
+
+.dark ::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #10b981 !important; /* emerald-600 */
+}
+
+.dark ::ng-deep .mat-mdc-button, 
+.dark ::ng-deep .mat-mdc-outlined-button {
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+/* Iconos y divisores en modo oscuro */
+.dark ::ng-deep .mat-icon {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark ::ng-deep .mat-divider {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Tarjeta de información del usuario */
+.info-card {
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .info-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Mejorar animaciones de transición */
+.detail-section {
+  transition: all 0.3s ease-in-out;
+}
+
+.detail-section:hover {
+  transform: translateY(-2px);
+}
+
+/* Estilo para los botones de acción */
+.action-button {
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dark .action-button:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+}
+
+/* Estilo para badges y chips */
+.status-badge, .role-badge {
+  transition: all 0.2s ease;
+}
+
+.status-badge:hover, .role-badge:hover {
+  filter: brightness(1.05);
+}

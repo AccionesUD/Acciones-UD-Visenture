@@ -9,6 +9,10 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthRedirectGuard } from './auth/guards/auth-redirect.guard';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { ProfileComponent } from './profile/profile.component';
+import { UsersComponent } from './users/users.component';
+import { CommissionerGuard } from './auth/commissioner.guard';
+import { CommissionerPanelComponent } from './commissioner-panel/commissioner-panel.component';
+import { ClientReportComponent } from './commissioner-panel/client-report/client-report.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -25,6 +29,10 @@ export const routes: Routes = [
     path: 'markets', 
     loadChildren: () => import('./markets/markets.module').then(m => m.MarketsModule),
   },
-  { path: 'profile', component: ProfileComponent,},
+  { path: 'profile', component: ProfileComponent },
+  // Rutas del panel de comisionista y usuarios
+  { path: 'users', component: UsersComponent },
+  { path: 'commissioner-panel', component: CommissionerPanelComponent },
+  { path: 'commissioner-panel/client/:id', component: ClientReportComponent },
   { path: '**', redirectTo: 'home' }
 ];

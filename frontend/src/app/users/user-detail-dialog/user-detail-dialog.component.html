@@ -1,0 +1,115 @@
+<div class="min-w-[600px] max-w-3xl">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold text-emerald-800 dark:text-emerald-100" mat-dialog-title>Detalles del Usuario</h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon class="text-gray-600 dark:text-gray-300">close</mat-icon>
+    </button>
+  </div>
+  
+  <mat-dialog-content class="min-h-[300px]">
+    <!-- Tarjeta de información básica del usuario -->
+    <div class="rounded-lg shadow-md p-6 mb-6 info-card">
+      <div class="flex items-center mb-4">
+        <div class="p-3 rounded-full" 
+             [ngClass]="{
+               'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400': user.role === 'admin',
+               'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400': user.role === 'commissioner',
+               'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400': user.role === 'client'
+             }">
+          <mat-icon>{{user.role === 'admin' ? 'admin_panel_settings' : user.role === 'commissioner' ? 'business_center' : 'person'}}</mat-icon>
+        </div>
+        <div class="ml-4">
+          <h3 class="text-xl font-bold detail-value">{{user.first_name}} {{user.last_name}}</h3>
+          <p class="detail-label">
+            {{getRoleLabel(user.role)}}
+            <span class="inline-block mx-2">•</span>
+            <span class="px-2 py-0.5 rounded-full text-xs" 
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200': user.status === 'active',
+                    'bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-200': user.status === 'inactive',
+                    'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200': user.status === 'pending'
+                  }">
+              {{getStatusLabel(user.status)}}
+            </span>
+          </p>
+        </div>
+      </div>
+      
+      <mat-divider class="mb-4"></mat-divider>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm detail-label">Documento</p>
+          <p class="font-medium detail-value">{{user.identity_document || 'No especificado'}}</p>
+        </div>
+        <div>
+          <p class="text-sm detail-label">Email</p>
+          <p class="font-medium detail-value">{{user.email}}</p>
+        </div>        <div>
+          <p class="text-sm detail-label">Teléfono</p>
+          <p class="font-medium detail-value">{{user.phone_number || 'No especificado'}}</p>
+        </div>
+        <div>
+          <p class="text-sm detail-label">Fecha de Nacimiento</p>
+          <p class="font-medium detail-value">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
+        </div>
+      </div>
+    </div>
+      <!-- Pestañas con información adicional -->
+    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg shadow-md info-card">
+      <mat-tab label="Actividad">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold mb-4 section-title">Historial de Actividad</h3>
+          
+          <!-- Mensaje para cuando no hay datos -->
+          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+            <mat-icon class="text-4xl mb-2">history</mat-icon>
+            <p>No hay datos de actividad disponibles para este usuario.</p>
+          </div>
+        </div>
+      </mat-tab>
+      
+      <!-- Solo mostrar para clientes -->
+      <mat-tab label="Portafolio" *ngIf="user.role === 'client'">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold mb-4">Resumen del Portafolio</h3>
+          
+          <!-- Mensaje para cuando no hay datos -->
+          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+            <mat-icon class="text-4xl mb-2">account_balance</mat-icon>
+            <p>No hay datos de portafolio disponibles para este usuario.</p>
+          </div>
+        </div>
+      </mat-tab>
+      
+      <!-- Solo mostrar para comisionistas -->
+      <mat-tab label="Clientes" *ngIf="user.role === 'commissioner'">
+        <div class="p-6">
+          <h3 class="text-lg font-semibold mb-4">Clientes Asignados</h3>
+          
+          <!-- Mensaje para cuando no hay datos -->
+          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+            <mat-icon class="text-4xl mb-2">groups</mat-icon>
+            <p>No hay clientes asignados a este comisionista.</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end" class="mt-4">
+    <button mat-stroked-button mat-dialog-close class="mr-2">Cerrar</button>
+    
+    <!-- Acciones administrativas (solo visibles para administradores) -->
+    <ng-container *ngIf="isAdmin">
+      <button 
+        mat-flat-button 
+        color="primary" 
+        [matDialogClose]="'edit'"
+        class="bg-emerald-500 hover:bg-emerald-600 text-white">
+        <mat-icon class="mr-1">edit</mat-icon>
+        Editar usuario
+      </button>
+    </ng-container>
+  </mat-dialog-actions>
+</div>
