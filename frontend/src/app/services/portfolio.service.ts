@@ -4,13 +4,13 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Portfolio, PortfolioShare, PortfolioSummary, PortfolioPosition } from '../models/portfolio.model';
 import { SellOrder, SellResponse } from '../models/sell.model';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioService {
-  private apiUrl = `${environment.apiUrl}/portfolio`;
+  private apiUrl = `${environmentExample.apiUrl}/portfolio`;
 
   constructor(private http: HttpClient) {}
 
@@ -40,7 +40,7 @@ export class PortfolioService {
    * Usamos endpoint de shares y en caso de error retornamos mocks
    */
   getPortfolioStocks(): Observable<PortfolioShare[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/shares`).pipe(
+    return this.http.get<any[]>(`${environmentExample.apiUrl}/shares`).pipe(
       map(shares => shares.map(s => ({
         id: s.symbol,
         companyName: s.name_share,
