@@ -41,8 +41,11 @@ export class FiltersComponent implements OnInit {
     { label: 'En pérdida (<0%)', value: 'loss', max: 0 }
   ];
   constructor() { }
-
   ngOnInit(): void {
+    // Trigger initial filter states to ensure parent component is updated
+    this.onFilterChange();
+    this.onSortChange();
+    this.onPerformanceFilterChange();
   }
 
   onFilterChange(): void {
@@ -64,22 +67,15 @@ export class FiltersComponent implements OnInit {
   
   /**
    * Reinicia los selectores a sus valores por defecto
-   */
-  resetAllFilters(): void {
+   */  resetAllFilters(): void {
     this.selectedFilter = this.DEFAULT_FILTER;
     this.selectedSort = this.DEFAULT_SORT;
     this.selectedPerformance = this.DEFAULT_PERFORMANCE;
     
     // Emitir eventos para informar al componente padre
-    this.filterChange.emit(this.selectedFilter);
-    const defaultSortOption = this.sortOptions.find(option => option.value === this.DEFAULT_SORT);
-    if (defaultSortOption) {
-      this.sortChange.emit(defaultSortOption);
-    }
-    
-    const defaultPerformanceOption = this.performanceFilters.find(option => option.value === this.DEFAULT_PERFORMANCE);
-    if (defaultPerformanceOption) {
-      this.performanceFilterChange.emit(defaultPerformanceOption);
-    }
+    // Using the existing event handler methods to ensure consistency
+    this.onFilterChange();
+    this.onSortChange();
+    this.onPerformanceFilterChange();
   }
 }

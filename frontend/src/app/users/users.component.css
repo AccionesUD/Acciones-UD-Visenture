@@ -1,9 +1,9 @@
-/* Estilos generales para/* Estilos para la tabla */
-.users-table-container {
+/* Estilos para la tabla */
+.commissioner-table-container {
   background-color: transparent;
 }
 
-.users-table {
+.commissioner-table {
   width: 100%;
 }
 
@@ -52,10 +52,6 @@
 /* Estilos para la tabla */
 .users-table-container {
   background-color: transparent;
-}
-
-.users-table {
-  width: 100%;
 }
 
 /* Celdas de la tabla */

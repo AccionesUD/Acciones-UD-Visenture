@@ -128,21 +128,21 @@
       </form>
 
       <!-- Tabla de Usuarios -->
-      <div *ngIf="!isLoading && !error" class="users-table-container mat-elevation-z2 bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+      <div *ngIf="!isLoading && !error" class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
-                class="w-full users-table">
+                class="min-w-full commissioner-table">
 
             <!-- Columna de Selección -->
             <ng-container matColumnDef="select">
-              <th mat-header-cell *matHeaderCellDef class="mat-header-cell sticky-header">
+              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                               [checked]="selection.hasValue() && isAllSelected()"
                               [indeterminate]="selection.hasValue() && !isAllSelected()"
                               [aria-label]="checkboxLabel()">
                 </mat-checkbox>
               </th>
-              <td mat-cell *matCellDef="let row" class="mat-cell">
+              <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="$event ? selection.toggle(row) : null"
                               [checked]="selection.isSelected(row)"
@@ -153,20 +153,20 @@
 
             <!-- Columna Nombre -->
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="mat-header-cell sticky-header">Nombre</th>
-              <td mat-cell *matCellDef="let user" class="mat-cell">{{ getFullName(user) }}</td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Nombre</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">{{ getFullName(user) }}</td>
             </ng-container>
 
             <!-- Columna Email -->
             <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="mat-header-cell sticky-header">Email</th>
-              <td mat-cell *matCellDef="let user" class="mat-cell">{{ user.email }}</td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Email</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">{{ user.email }}</td>
             </ng-container>
 
             <!-- Columna Rol -->
             <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="mat-header-cell sticky-header">Rol</th>
-              <td mat-cell *matCellDef="let user" class="mat-cell">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Rol</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getRoleClass(user.role)">
                   {{ getRoleDisplay(user.role) }}
                 </span>
@@ -175,10 +175,10 @@
 
             <!-- Columna Estado -->
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="mat-header-cell sticky-header">Estado</th>
-              <td mat-cell *matCellDef="let user" class="mat-cell">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(user.status)">
-                  <svg class="mr-1.5 h-2 w-2" [ngClass]="getStatusIndicatorClass(user.status)" fill="currentColor" viewBox="0 0 8 8">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Estado</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
+                <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(user.status)">
+                  <svg class="inline-block mr-1.5 h-2 w-2" [ngClass]="getStatusIndicatorClass(user.status)" fill="currentColor" viewBox="0 0 8 8">
                     <circle cx="4" cy="4" r="3" />
                   </svg>
                   {{ getStatusDisplay(user.status) }}
@@ -188,32 +188,37 @@
             
             <!-- Columna Acciones -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="mat-header-cell sticky-header text-right">Acciones</th>
-              <td mat-cell *matCellDef="let user" class="mat-cell text-right">
-                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" matTooltip="Ver Detalles">
-                  <mat-icon class="action-icon">visibility</mat-icon>
+              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Acciones</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
+                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" matTooltip="Ver Detalles" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors">
+                  <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" matTooltip="Editar Usuario">
-                  <mat-icon class="action-icon">edit</mat-icon>
+                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" matTooltip="Editar Usuario" class="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors">
+                  <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" matTooltip="Eliminar Usuario">
-                  <mat-icon class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-transform hover:scale-110">delete</mat-icon>
+                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" matTooltip="Eliminar Usuario" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="mat-header-row"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)" class="mat-row hover:bg-emerald-200 dark:hover:bg-slate-700 cursor-pointer transition-colors"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)" class="hover:bg-emerald-50/50 dark:hover:bg-slate-700/50 transition-colors"></tr>
             
             <!-- Fila para cuando no hay datos -->
             <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell text-center py-4" [attr.colspan]="displayedColumns.length">
-                <ng-container *ngIf="!isLoading && dataSource.data.length === 0 && (filterForm.dirty || (totalUsers === 0 && !filterForm.dirty))">
-                  No se encontraron usuarios que coincidan con los filtros.
-                </ng-container>
-                <ng-container *ngIf="!isLoading && totalUsers === 0 && !filterForm.dirty && !error">
-                  No hay usuarios registrados en el sistema.
-                </ng-container>
+              <td class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700" [attr.colspan]="displayedColumns.length">
+                <div class="flex flex-col items-center">
+                  <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
+                  <p>
+                    <ng-container *ngIf="!isLoading && dataSource.data.length === 0 && (filterForm.dirty || (totalUsers === 0 && !filterForm.dirty))">
+                      No se encontraron usuarios que coincidan con los filtros.
+                    </ng-container>
+                    <ng-container *ngIf="!isLoading && totalUsers === 0 && !filterForm.dirty && !error">
+                      No hay usuarios registrados en el sistema.
+                    </ng-container>
+                  </p>
+                </div>
               </td>
             </tr>
           </table>
@@ -226,7 +231,7 @@
                       [pageIndex]="currentPage"
                       (page)="handlePageEvent($event)"
                       aria-label="Seleccionar página de usuarios"
-                      class="sticky-paginator bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                      class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
         </mat-paginator>
       </div>
 

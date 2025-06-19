@@ -25,6 +25,8 @@
     "@angular/router": "^19.2.0",
     "@angular/ssr": "^19.2.12",
     "@auth0/angular-jwt": "^5.2.0",
+    "@ngx-translate/core": "^16.0.4",
+    "@ngx-translate/http-loader": "^16.0.1",
     "@tailwindcss/postcss": "^4.1.7",
     "@types/highcharts": "^7.0.0",
     "apexcharts": "^4.7.0",
