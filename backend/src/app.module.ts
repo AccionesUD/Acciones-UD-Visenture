@@ -20,6 +20,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
 import { PremiumModule } from './premium/premium.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -56,6 +57,7 @@ import { PremiumModule } from './premium/premium.module';
     TransactionsModule,
     RolesPermissionModule,
     PremiumModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],

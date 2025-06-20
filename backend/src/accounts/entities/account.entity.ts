@@ -1,5 +1,6 @@
 // account.entity.ts
 import { User } from 'src/users/users.entity';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -51,4 +53,8 @@ export class Account {
   @ManyToMany(() => Role, (role) => role.accounts, { cascade: true })
   @JoinTable()
   roles: Role[];
+
+  // Relación uno-a-muchos con Subscription
+  @OneToMany(() => Subscription, (subscription) => subscription.account)
+  subscriptions: Subscription[];
 }
