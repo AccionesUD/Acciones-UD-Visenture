@@ -16,9 +16,10 @@ import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
 import { OrdersModule } from './orders/orders.module';
 import { SharesModule } from './shares/shares.module';
-import { TransactionsModule } from './transactions/transactions.module'
+import { TransactionsModule } from './transactions/transactions.module';
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
+import { PremiumModule } from './premium/premium.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,6 +55,7 @@ import { RolesPermissionModule } from './roles-permission/roles-permission.modul
     StocksModule,
     TransactionsModule,
     RolesPermissionModule,
+    PremiumModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
