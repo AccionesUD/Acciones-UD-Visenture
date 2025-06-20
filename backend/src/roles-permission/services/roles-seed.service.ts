@@ -19,11 +19,11 @@ export class RolesSeedService implements OnApplicationBootstrap {
       {
         name: 'auditor',
         description: 'Rol de auditor (supervisión y revisión)',
-      }, // <--- Añadido
+      },
       {
         name: 'usuario_premium',
         description: 'Usuario con suscripción premium',
-      }, // <--- Añadido
+      },
     ];
 
     for (const rol of roles) {

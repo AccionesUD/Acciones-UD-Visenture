@@ -5,12 +5,13 @@ import { RolesPermissionService } from './services/roles-permission.service';
 import { RolesPermissionController } from './controllers/roles-permission/roles-permission.controller';
 import { Permission } from './entities/permission.entity';
 import { RolesSeedService } from './services/roles-seed.service';
+import { PermissionsSeedService } from './services/permissions-seed.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Role, Permission]), // <-- Importante
   ],
-  providers: [RolesPermissionService, RolesSeedService],
+  providers: [RolesPermissionService, RolesSeedService, PermissionsSeedService],
   controllers: [RolesPermissionController],
   exports: [RolesPermissionService],
 })
