@@ -1,226 +1,170 @@
-<div class="bg-white dark:bg-gray-900 dark:text-white min-w-[900px] max-w-6xl user-edit-dialog">
-  <div class="flex justify-between items-center mb-6 border-b border-emerald-200 dark:border-gray-700 pb-4">
-    <h2 class="text-2xl font-semibold text-emerald-800 dark:text-emerald-100" mat-dialog-title>
-      {{ isNewUser ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}
+<div class="min-w-[800px] max-w-4xl p-6">
+  <!-- Cabecera del diálogo -->
+  <div class="flex justify-between items-center border-b border-gray-700 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent">
+      Editar Usuario
     </h2>
-    <div class="flex items-center">
-      <div *ngIf="isSaving" class="mr-3 flex items-center text-sm text-indigo-600 dark:text-indigo-400">
-        <div class="w-5 h-5 border-2 border-t-transparent border-indigo-500 rounded-full animate-spin mr-2"></div>
-        Guardando...
-      </div>
-      <button (click)="cancel()" class="p-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
+    </button>
   </div>
-  <mat-dialog-content class="pb-6">
-    <form [formGroup]="userForm" class="py-2 space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Nombre -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
-          <div class="relative">
-            <input 
-              type="text" 
-              formControlName="first_name" 
-              placeholder="Ingrese el nombre"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-              [ngClass]="{
-                'border-red-500 dark:border-red-400': userForm.get('first_name')?.invalid && (userForm.get('first_name')?.touched || userForm.get('first_name')?.dirty)
-              }"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">person</mat-icon>
-            </div>
-          </div>
-          <div *ngIf="userForm.get('first_name')?.invalid && (userForm.get('first_name')?.touched || userForm.get('first_name')?.dirty)" class="text-red-500 text-sm">
-            <span *ngIf="userForm.get('first_name')?.hasError('required')">El nombre es requerido</span>
-            <span *ngIf="userForm.get('first_name')?.hasError('maxlength')">El nombre debe tener máximo 50 caracteres</span>
-          </div>
-        </div>
+  
+  <mat-dialog-content class="min-h-[400px] max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <!-- Formulario de edición -->
+    <form [formGroup]="editForm" (ngSubmit)="onSave()" class="space-y-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700 shadow-md p-6">
         
-        <!-- Apellido -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
-          <div class="relative">
-            <input 
-              type="text" 
-              formControlName="last_name" 
-              placeholder="Ingrese el apellido"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-              [ngClass]="{
-                'border-red-500 dark:border-red-400': userForm.get('last_name')?.invalid && (userForm.get('last_name')?.touched || userForm.get('last_name')?.dirty)
-              }"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">person</mat-icon>
-            </div>
+        <!-- Información del usuario que se está editando -->
+        <div class="flex items-center mb-6 pb-4 border-b border-gray-700 dark:border-gray-700">
+          <div class="p-3 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+            <mat-icon>edit</mat-icon>
           </div>
-          <div *ngIf="userForm.get('last_name')?.invalid && (userForm.get('last_name')?.touched || userForm.get('last_name')?.dirty)" class="text-red-500 text-sm">
-            <span *ngIf="userForm.get('last_name')?.hasError('required')">El apellido es requerido</span>
-            <span *ngIf="userForm.get('last_name')?.hasError('maxlength')">El apellido debe tener máximo 50 caracteres</span>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100">Editando información de</h3>
+            <p class="text-gray-600 dark:text-gray-400">{{user.first_name}} {{user.last_name}} ({{user.email}})</p>
           </div>
         </div>
-        
-        <!-- Email -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
-          <div class="relative">
-            <input 
-              type="email" 
-              formControlName="email" 
-              placeholder="ejemplo@correo.com" 
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-              [ngClass]="{
-                'border-red-500 dark:border-red-400': userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)
-              }"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">email</mat-icon>
+
+        <!-- Campos del formulario -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Nombre -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="first_name" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('first_name')"
+                [class.focus:border-red-500]="hasFieldError('first_name')"
+                [class.focus:ring-red-500]="hasFieldError('first_name')"
+                placeholder="Ingresa el nombre"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('first_name')">person</mat-icon>
+              </div>
             </div>
-          </div>
-          <div *ngIf="userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)" class="text-red-500 text-sm">
-            <span *ngIf="userForm.get('email')?.hasError('required')">El email es requerido</span>
-            <span *ngIf="userForm.get('email')?.hasError('email')">Ingrese un email válido</span>
-          </div>
-        </div>
-        
-        <!-- Teléfono -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
-          <div class="relative">
-            <input 
-              type="text" 
-              formControlName="phone_number" 
-              placeholder="Ej. +57 300 123 4567"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-              [ngClass]="{
-                'border-red-500 dark:border-red-400': userForm.get('phone_number')?.invalid && (userForm.get('phone_number')?.touched || userForm.get('phone_number')?.dirty)
-              }"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">phone</mat-icon>
-            </div>
-          </div>
-          <div *ngIf="userForm.get('phone_number')?.invalid && (userForm.get('phone_number')?.touched || userForm.get('phone_number')?.dirty)" class="text-red-500 text-sm">
-            <span *ngIf="userForm.get('phone_number')?.hasError('pattern')">Ingrese un número de teléfono válido</span>
-          </div>
-        </div>
-        
-        <!-- Documento de Identidad -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documento de Identidad</label>
-          <div class="relative">
-            <input 
-              type="text" 
-              formControlName="identity_document" 
-              placeholder="Ej. 1020304050"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">badge</mat-icon>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Fecha de Nacimiento -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Nacimiento</label>
-          <div class="relative">
-            <input 
-              type="text" 
-              [matDatepicker]="picker" 
-              formControlName="birthdate"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
-            >
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-              <mat-datepicker-toggle [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Rol (solo para administradores) -->
-        <div class="space-y-2">
-          <div class="flex justify-between items-center">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Rol</label>
-            <span *ngIf="!isAdmin" class="text-xs text-blue-500 dark:text-blue-400">Solo administradores</span>
-          </div>
-          <div class="relative">
-            <select 
-              formControlName="role"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
-              [attr.disabled]="!isAdmin ? true : null"
-            >
-              <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
-            </select>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">admin_panel_settings</mat-icon>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Estado (solo para administradores) -->
-        <div class="space-y-2">
-          <div class="flex justify-between items-center">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
-            <span *ngIf="!isAdmin" class="text-xs text-blue-500 dark:text-blue-400">Solo administradores</span>
-          </div>
-          <div class="relative">
-            <select 
-              formControlName="status"
-              class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-500 focus:ring-opacity-50"
-              [attr.disabled]="!isAdmin ? true : null"
-            >
-              <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
-            </select>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <mat-icon class="text-gray-400">verified_user</mat-icon>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Sección para contraseña (solo en creación) -->
-      <div *ngIf="isNewUser" class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-100 dark:border-blue-800 shadow-sm">
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <mat-icon class="text-blue-500">info</mat-icon>
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Información de acceso</h3>
-            <p class="text-sm text-blue-700 dark:text-blue-400 mt-1">
-              Se enviará un email al usuario con instrucciones para crear su contraseña.
+            <p *ngIf="hasFieldError('first_name')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('first_name') }}
             </p>
           </div>
+
+          <!-- Apellido -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Apellido <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="last_name" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('last_name')"
+                [class.focus:border-red-500]="hasFieldError('last_name')"
+                [class.focus:ring-red-500]="hasFieldError('last_name')"
+                placeholder="Ingresa el apellido"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('last_name')">person_outline</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('last_name')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('last_name') }}
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Correo Electrónico <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="email" 
+                formControlName="email" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('email')"
+                [class.focus:border-red-500]="hasFieldError('email')"
+                [class.focus:ring-red-500]="hasFieldError('email')"
+                placeholder="usuario@ejemplo.com"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('email')">email</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('email')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('email') }}
+            </p>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Número de Teléfono <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="tel" 
+                formControlName="phone_number" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('phone_number')"
+                [class.focus:border-red-500]="hasFieldError('phone_number')"
+                [class.focus:ring-red-500]="hasFieldError('phone_number')"
+                placeholder="+1 234 567 890"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('phone_number')">phone</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('phone_number')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('phone_number') }}
+            </p>
+          </div>
+
         </div>
+
+        <!-- Información adicional -->
+        <div class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
+          <div class="flex items-start space-x-3 text-sm text-gray-600 dark:text-gray-400">
+            <mat-icon class="text-blue-500 mt-0.5">info</mat-icon>
+            <div>
+              <p class="font-medium">Información importante:</p>
+              <ul class="mt-1 space-y-1 list-disc list-inside">
+                <li>Los campos marcados con (*) son obligatorios</li>
+                <li>El correo electrónico debe ser único en el sistema</li>
+                <li>Los cambios se aplicarán inmediatamente</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
       </div>
     </form>
   </mat-dialog-content>
-  <mat-dialog-actions align="end" class="border-t border-blue-200 dark:border-gray-700 pt-4">
+
+  <!-- Acciones del diálogo -->
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
     <button 
-      (click)="cancel()" 
-      class="px-4 py-2 mr-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors"
+      mat-stroked-button 
+      (click)="cancelEdit()" 
       [disabled]="isSaving"
+      class="mr-2"
     >
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
       Cancelar
     </button>
+    
     <button 
-      (click)="submitForm()"
-      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-gray-400 disabled:dark:bg-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed transition-colors"
-      [disabled]="userForm.invalid || isSaving">
-      <div *ngIf="isSaving" class="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-      <svg *ngIf="!isSaving && isNewUser" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-      </svg>
-      <svg *ngIf="!isSaving && !isNewUser" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
-      </svg>      {{ isSaving ? 'Guardando...' : (isNewUser ? 'Crear Usuario' : 'Guardar Cambios') }}
+      mat-flat-button 
+      (click)="onSave()"
+      [disabled]="isSaving || editForm.invalid"
+      class="flex items-center"
+    >
+      <mat-icon class="mr-1.5 h-5 w-5" *ngIf="!isSaving">save</mat-icon>
+      <mat-icon class="mr-1.5 h-5 w-5 animate-spin" *ngIf="isSaving">refresh</mat-icon>
+      {{ isSaving ? 'Guardando...' : 'Guardar Cambios' }}
     </button>
   </mat-dialog-actions>
 </div>

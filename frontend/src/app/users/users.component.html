@@ -190,13 +190,13 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Acciones</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
-                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" matTooltip="Ver Detalles" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors">
+                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" matTooltip="Ver Detalles" class="action-icon">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" matTooltip="Editar Usuario" class="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors">
+                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" matTooltip="Editar Usuario" class="action-icon">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" matTooltip="Eliminar Usuario" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
+                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" matTooltip="Eliminar Usuario" class="action-icon-delete">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>

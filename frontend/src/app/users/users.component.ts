@@ -312,7 +312,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   openEditUserDialog(user: User): void {
     const dialogRef = this.dialog.open(UserEditDialogComponent, {
       width: '800px',
-      disableClose: false,
+      maxWidth: '95vw',
+      disableClose: true, // Prevenir cierre accidental
+      autoFocus: false, // Evitar el autofocus que puede ser problemático
       panelClass: 'user-edit-dialog',
       data: { 
         user: { ...user }, 

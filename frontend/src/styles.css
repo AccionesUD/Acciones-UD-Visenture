@@ -49,7 +49,6 @@ html.dark textarea:-webkit-autofill,
 html.dark select:-webkit-autofill {
   -webkit-text-fill-color: #e2e8f0 !important;
   -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
-  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Forzar estilo consistente para campos autofill */
@@ -85,6 +84,43 @@ html.dark .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
 
 .mat-button-focus-overlay {
   background-color: transparent;
+}
+
+/* Estilos para Angular Material Dialogs */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: white !important;
+  --mdc-dialog-with-divider-divider-color: #e2e8f0 !important;
+  --mdc-dialog-subhead-color: #111827 !important;
+  --mdc-dialog-supporting-text-color: #374151 !important;
+}
+
+html.dark .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #1e293b !important; /* slate-800 */
+  --mdc-dialog-with-divider-divider-color: #475569 !important; /* slate-600 */
+  --mdc-dialog-subhead-color: #e2e8f0 !important; /* slate-200 */
+  --mdc-dialog-supporting-text-color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Estilos para los diálogos personalizados */
+.user-edit-dialog .mat-mdc-dialog-surface,
+.user-detail-dialog .mat-mdc-dialog-surface {
+  background-color: white !important;
+  color: #111827 !important;
+}
+
+html.dark .user-edit-dialog .mat-mdc-dialog-surface,
+html.dark .user-detail-dialog .mat-mdc-dialog-surface {
+  background-color: #1e293b !important; /* slate-800 */
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* Overlay del diálogo */
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+html.dark .cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 html, body { height: 100%; }

@@ -20,20 +20,49 @@
 /* Estilos para los iconos de acciones */
 .action-icon {
   color: #065f46; /* emerald-800 */
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  opacity: 0.9;
 }
 
 .action-icon:hover {
   transform: scale(1.15);
   color: #047857; /* emerald-700 */
+  opacity: 1;
 }
 
 .dark .action-icon {
-  color: #10B981; /* emerald-500 - actualizado para coincidir con commissioner-panel */
+  color: #10B981; /* emerald-500 */
+  opacity: 0.9;
 }
 
 .dark .action-icon:hover {
   color: #6ee7b7; /* emerald-300 */
+  opacity: 1;
+  box-shadow: 0 0 4px rgba(110, 231, 183, 0.4); /* emerald-300 con transparencia */
+}
+
+/* Estilos específicos para el icono de eliminar */
+.action-icon-delete {
+  color: #dc2626; /* red-600 */
+  transition: all 0.2s ease;
+  opacity: 0.9;
+}
+
+.action-icon-delete:hover {
+  transform: scale(1.15);
+  color: #b91c1c; /* red-700 */
+  opacity: 1;
+}
+
+.dark .action-icon-delete {
+  color: #f87171; /* red-400 */
+  opacity: 0.9;
+}
+
+.dark .action-icon-delete:hover {
+  color: #fca5a5; /* red-300 */
+  opacity: 1;
+  box-shadow: 0 0 4px rgba(252, 165, 165, 0.4); /* red-300 con transparencia */
 }
 /* Estilos para el paginador */
 ::ng-deep .mat-mdc-paginator {
