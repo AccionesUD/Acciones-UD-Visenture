@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, catchError } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 import { MarketClock } from '../models/stock.model';
 import { StockBar } from '../models/share.model';
 import { AlpacaNews, GetNewsParams } from '../models/news.model';

@@ -4,7 +4,7 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 
 @Injectable({
   providedIn: 'root'

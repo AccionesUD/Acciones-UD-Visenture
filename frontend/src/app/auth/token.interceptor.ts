@@ -4,7 +4,7 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 
 // Interceptor funcional para Angular 17+
 export function tokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {  // Rutas públicas que no necesitan autenticación

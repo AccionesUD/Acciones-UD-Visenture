@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environment } from '../../Enviroments/enviroment';
 import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
 
 /**
