@@ -27,7 +27,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly hashingProvider: HashingProvider,
     private readonly generateToken2MFA: GenerateToken2MFA,
-  ) {}
+  ) { }
 
   async validateUser(loginDto: LoginDto) {
     const account = await this.accountsService.findByEmail(loginDto.email);
@@ -121,6 +121,7 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload);
 
+
     return {
       success: true,
       message: accessToken,
@@ -128,10 +129,10 @@ export class AuthService {
   }
 
   async requestPasswordReset(email: string) {
-    //  const account = await this.accountsService.findByEmail(email);
-    // if (!account) {
-    //  throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
-    //}
+    const account = await this.accountsService.findByEmail(email);
+    if (!account) {
+    throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
+    }
     const token = this.generateToken2MFA.generateToken();
     await this.tokensService.storeToken(
       email,
