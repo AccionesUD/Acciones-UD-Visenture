@@ -1,8 +1,9 @@
-<div class="min-h-screen bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950 p-4 transition-colors duration-300">
-  <!-- Contenedor principal con efecto de tarjeta -->
-  <div class="mx-auto max-w-7xl">
-    <!-- Cabecera con botón de regreso -->
-    <div class="flex items-center mb-6">
+<div class="min-h-screen bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-900 p-4 transition-colors duration-300">
+  <!-- Card Principal -->
+  <div class="flex justify-center pb-6">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
+      <!-- Cabecera con botón de regreso -->
+      <div class="flex items-center mb-6">
       <button 
         (click)="goBack()" 
         class="mr-3 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors"
@@ -42,7 +43,7 @@
     <!-- Contenido principal -->
     <div *ngIf="!isLoading && !error" class="space-y-6">
       <!-- Tarjeta de información del cliente -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 animate-fade-in-up">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-500 dark:border-slate-700 animate-fade-in-up">
         <div class="md:flex">
           <div class="p-6">
             <div class="flex items-center">
@@ -159,112 +160,171 @@
       </div>
 
       <!-- Filtros -->
-      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-md border border-gray-100 dark:border-slate-700 animate-fade-in-up delay-200">
-        <form [formGroup]="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="mb-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700 animate-fade-in-up delay-200">
+        <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
+          <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
+          Filtros
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Filtro por período -->
           <div class="relative">
             <label for="period-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Período</label>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Período</mat-label>
-              <mat-select formControlName="period">
-                <mat-option *ngFor="let period of periods" [value]="period.value">
-                  {{ period.label }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <div class="relative">
+              <select 
+                id="period-filter"
+                formControlName="period"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200">
+                <option *ngFor="let period of periods" [value]="period.value">{{ period.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-blue-500 dark:text-blue-400">date_range</mat-icon>
+              </div>
+            </div>
           </div>
 
           <!-- Filtro por mercado -->
           <div class="relative">
             <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mercado</label>
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>Mercado</mat-label>
-              <mat-select formControlName="market">
-                <mat-option *ngFor="let market of markets" [value]="market.value">
-                  {{ market.label }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+            <div class="relative">
+              <select 
+                id="market-filter"
+                formControlName="market"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
+                <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-indigo-500 dark:text-indigo-400">public</mat-icon>
+              </div>
+            </div>
           </div>
 
-          <!-- Acciones -->
-          <div class="flex items-end justify-between space-x-2">
-            <button 
-              type="button"
-              (click)="exportData('pdf')"
-              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
-            >
-              <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
-              Exportar PDF
-            </button>
-            <button 
-              type="button"
-              (click)="exportData('excel')"
-              class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
-            >
-              <mat-icon class="mr-1 text-sm">table_chart</mat-icon>
-              Exportar Excel
-            </button>
+          <!-- Filtro por estado -->
+          <div class="relative">
+            <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
+            <div class="relative">
+              <select 
+                id="status-filter"
+                formControlName="status"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
+                <option value="">Todos</option>
+                <option value="active">Activo</option>
+                <option value="inactive">Inactivo</option>
+                <option value="pending">Pendiente</option>
+                <option value="paid">Pagado</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-purple-500 dark:text-purple-400">verified_user</mat-icon>
+              </div>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <!-- Botones de acción para los filtros -->
+        <div class="flex justify-end mt-4 space-x-2">
+          <button 
+            type="button" 
+            (click)="resetFilters()" 
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">clear</mat-icon>
+            Limpiar
+          </button>
+          <button 
+            type="submit" 
+            class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">search</mat-icon>
+            Aplicar
+          </button>
+          <div 
+            *ngIf="hasActiveFilters()"
+            class="py-2 px-3 bg-emerald-50 dark:bg-emerald-900/30 border border-gray-500 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm"
+          >
+            <mat-icon class="mr-1 text-sm">filter_list</mat-icon>
+            Filtros activos
+          </div>
+        </div>
+
+        <!-- Botones de exportación -->
+        <div class="flex items-center justify-start mt-4 space-x-3">
+          <button 
+            type="button"
+            (click)="exportData('pdf')"
+            class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
+          >
+            <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
+            Exportar PDF
+          </button>
+          <button 
+            type="button"
+            (click)="exportData('excel')"
+            class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
+          >
+            <mat-icon class="mr-1 text-sm">table_chart</mat-icon>
+            Exportar Excel
+          </button>
+        </div>
+      </form>
 
       <!-- Gráficos -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in-up delay-300">
-        <!-- Gráfico de evolución de comisiones -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
-          <div class="chart-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Gráfico de tendencia de comisiones -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-500/50 dark:border-slate-700 chart-container">
+          <div *ngIf="commissionsTrendChartOptions" class="h-[350px] w-full">
             <apx-chart
-              [series]="commissionsTrendChartOptions.series!"
-              [chart]="commissionsTrendChartOptions.chart!"
-              [xaxis]="commissionsTrendChartOptions.xaxis!"
-              [yaxis]="commissionsTrendChartOptions.yaxis!"
-              [colors]="commissionsTrendChartOptions.colors!"
-              [title]="commissionsTrendChartOptions.title!"
-              [subtitle]="commissionsTrendChartOptions.subtitle!"
-              [dataLabels]="commissionsTrendChartOptions.dataLabels!"
-              [stroke]="commissionsTrendChartOptions.stroke!"
-              [tooltip]="commissionsTrendChartOptions.tooltip!"
-              [grid]="commissionsTrendChartOptions.grid!"
-              [fill]="commissionsTrendChartOptions.fill!"
+              [series]="commissionsTrendChartOptions.series || []"
+              [chart]="commissionsTrendChartOptions.chart || {}"
+              [xaxis]="commissionsTrendChartOptions.xaxis || {}"
+              [yaxis]="commissionsTrendChartOptions.yaxis || {}"
+              [title]="commissionsTrendChartOptions.title || {}"
+              [subtitle]="commissionsTrendChartOptions.subtitle || {}"
+              [stroke]="commissionsTrendChartOptions.stroke || {}"
+              [colors]="commissionsTrendChartOptions.colors || []"
+              [dataLabels]="commissionsTrendChartOptions.dataLabels || {}"
+              [tooltip]="commissionsTrendChartOptions.tooltip || {}"
+              [fill]="commissionsTrendChartOptions.fill || {}"
+              [grid]="commissionsTrendChartOptions.grid || {}"
+              [theme]="commissionsTrendChartOptions.theme || {}"
             ></apx-chart>
           </div>
         </div>
-
+        
         <!-- Gráfico de distribución de activos -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
-          <div class="chart-container">
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-500/50 dark:border-slate-700 chart-container">
+          <div *ngIf="assetDistributionChartOptions" class="h-[350px] w-full">
             <apx-chart
-              [series]="assetDistributionChartOptions.series!"
-              [chart]="assetDistributionChartOptions.chart!"
-              [labels]="assetDistributionChartOptions.labels!"
-              [colors]="assetDistributionChartOptions.colors!"
-              [title]="assetDistributionChartOptions.title!"
-              [subtitle]="assetDistributionChartOptions.subtitle!"
-              [dataLabels]="assetDistributionChartOptions.dataLabels!"
-              [legend]="assetDistributionChartOptions.legend!"
-              [tooltip]="assetDistributionChartOptions.tooltip!"
-              [plotOptions]="assetDistributionChartOptions.plotOptions!"
+              [series]="assetDistributionChartOptions.series || []"
+              [chart]="assetDistributionChartOptions.chart || {}"
+              [labels]="assetDistributionChartOptions.labels || []"
+              [colors]="assetDistributionChartOptions.colors || []"
+              [title]="assetDistributionChartOptions.title || {}"
+              [subtitle]="assetDistributionChartOptions.subtitle || {}"
+              [dataLabels]="assetDistributionChartOptions.dataLabels || {}"
+              [plotOptions]="assetDistributionChartOptions.plotOptions || {}"
+              [legend]="assetDistributionChartOptions.legend || {}"
+              [tooltip]="assetDistributionChartOptions.tooltip || {}"
+              [theme]="assetDistributionChartOptions.theme || {}"
             ></apx-chart>
           </div>
         </div>
-
-        <!-- Gráfico de tendencia ROI vs benchmark -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 p-5">
-          <div class="chart-container">
+        
+        <!-- Gráfico de ROI vs Benchmark -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-md border border-gray-500/50 dark:border-slate-700 chart-container lg:col-span-2">
+          <div *ngIf="roiTrendChartOptions" class="h-[350px] w-full">
             <apx-chart
-              [series]="roiTrendChartOptions.series!"
-              [chart]="roiTrendChartOptions.chart!"
-              [xaxis]="roiTrendChartOptions.xaxis!"
-              [yaxis]="roiTrendChartOptions.yaxis!"
-              [colors]="roiTrendChartOptions.colors!"
-              [title]="roiTrendChartOptions.title!"
-              [subtitle]="roiTrendChartOptions.subtitle!"
-              [dataLabels]="roiTrendChartOptions.dataLabels!"
-              [stroke]="roiTrendChartOptions.stroke!"
-              [legend]="roiTrendChartOptions.legend!"
-              [tooltip]="roiTrendChartOptions.tooltip!"
-              [grid]="roiTrendChartOptions.grid!"
+              [series]="roiTrendChartOptions.series || []"
+              [chart]="roiTrendChartOptions.chart || {}"
+              [xaxis]="roiTrendChartOptions.xaxis || {}"
+              [yaxis]="roiTrendChartOptions.yaxis || {}"
+              [title]="roiTrendChartOptions.title || {}"
+              [subtitle]="roiTrendChartOptions.subtitle || {}"
+              [stroke]="roiTrendChartOptions.stroke || {}"
+              [colors]="roiTrendChartOptions.colors || []"
+              [dataLabels]="roiTrendChartOptions.dataLabels || {}"
+              [legend]="roiTrendChartOptions.legend || {}"
+              [tooltip]="roiTrendChartOptions.tooltip || {}"
+              [grid]="roiTrendChartOptions.grid || {}"
+              [theme]="roiTrendChartOptions.theme || {}"
             ></apx-chart>
           </div>
         </div>
@@ -352,10 +412,11 @@
             [pageSize]="10"
             showFirstLastButtons
             aria-label="Seleccionar página de comisiones"
-            class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+            class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
           </mat-paginator>
         </div>
       </div>
     </div>
   </div>
+</div>
 </div>

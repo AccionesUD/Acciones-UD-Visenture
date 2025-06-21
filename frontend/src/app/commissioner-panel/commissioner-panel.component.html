@@ -49,7 +49,7 @@
       </div>
 
       <!-- Filtros -->
-      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-emerald-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700">
         <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
           <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
           Filtros
@@ -63,7 +63,7 @@
                 id="client-search-filter"
                 formControlName="client_name" 
                 placeholder="Nombre, email..." 
-                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
               >
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-blue-500 dark:text-blue-400">search</mat-icon>
@@ -78,7 +78,7 @@
               <select 
                 id="market-filter"
                 formControlName="market"
-                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
                 <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -94,7 +94,7 @@
               <select 
                 id="status-filter"
                 formControlName="status"
-                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
                 <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -123,7 +123,7 @@
           </button>
           <div 
             *ngIf="hasActiveFilters()"
-            class="py-2 px-3 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm"
+            class="py-2 px-3 bg-emerald-50 dark:bg-emerald-900/30 border border-gray-500 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm"
           >
             <mat-icon class="mr-1 text-sm">filter_list</mat-icon>
             Filtros activos
@@ -133,17 +133,17 @@
 
       <!-- Panel principal con tabs -->
       <div *ngIf="!isLoading && !error">
-        <mat-tab-group animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start" class="commissioner-tabs">
+        <mat-tab-group animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start" class="commissioner-tabs" (selectedTabChange)="onTabChange($event)">
           <!-- Tab de resumen -->
           <mat-tab label="Resumen">
             <div class="py-6">
               <!-- Cards de estadísticas -->
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 <!-- Total de clientes -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
-                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Clientes Totales</h3>
+                      <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Clientes Totales</h3>
                       <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats.total_clients || 0 }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <span class="font-medium text-green-600 dark:text-green-400">{{ commissionerStats.active_clients || 0 }}</span> activos
@@ -156,7 +156,7 @@
                 </div>
 
                 <!-- Comisiones del mes -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Comisiones (Mes)</h3>
@@ -174,7 +174,7 @@
                 </div>
 
                 <!-- ROI promedio -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">ROI Promedio</h3>
@@ -190,7 +190,7 @@
                 </div>
 
                 <!-- Total de operaciones -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Operaciones</h3>
@@ -209,7 +209,7 @@
               <!-- Gráficos -->
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Distribución de clientes -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
                   <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Distribución de Clientes</h3>
                   <div *ngIf="clientDistributionChartOptions" class="h-[300px] w-full">
                     <apx-chart
@@ -226,7 +226,7 @@
                 </div>
 
                 <!-- Comisiones por mercado -->
-                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700">
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
                   <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Comisiones por Mercado</h3>
                   <div *ngIf="commissionsByMarketChartOptions" class="h-[300px] w-full">
                     <apx-chart
@@ -247,7 +247,7 @@
               </div>
 
               <!-- Top clientes -->
-              <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 mb-6">
+              <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 mb-6">
                 <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Mejores Clientes por ROI</h3>
                 <div class="overflow-x-auto">
                   <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -269,7 +269,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                           <button 
                             (click)="viewClientDetails(client)"
-                            class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
+                            class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
                           >
                             Ver detalles
                           </button>
@@ -285,7 +285,7 @@
           <!-- Tab de clientes -->
           <mat-tab label="Clientes">
             <div class="py-6">
-              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-500 dark:border-gray-700 rounded-lg">
                 <table mat-table [dataSource]="dataSource" matSort class="min-w-full commissioner-table">
                   <!-- Nombre Column -->
                   <ng-container matColumnDef="name">
@@ -353,10 +353,10 @@
                       <button 
                         (click)="viewClientDetails(client)" 
                         mat-icon-button 
-                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+                        class="detail-button transition-colors"
                         matTooltip="Ver detalles del cliente"
                       >
-                        <mat-icon>visibility</mat-icon>
+                        <mat-icon class="action-icon">visibility</mat-icon>
                       </button>
                     </td>
                   </ng-container>
@@ -366,7 +366,7 @@
                 </table>
 
                 <!-- Sin resultados -->
-                <div *ngIf="dataSource.data.length === 0" class="flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+                <div *ngIf="dataSource.data.length === 0" class="flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 border-t border-gray-500 dark:border-gray-700">
                   <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
                   <p class="text-gray-500 dark:text-gray-400">No se encontraron clientes con los filtros seleccionados</p>
                 </div>
@@ -385,7 +385,7 @@
           <!-- Tab de comisiones -->
           <mat-tab label="Comisiones">
             <div class="py-6">
-              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div class="commissioner-table-container overflow-x-auto shadow border border-gray-500 dark:border-gray-700 rounded-lg">
                 <table mat-table [dataSource]="dataSourceCommissions" matSort #commissionsSort="matSort" class="min-w-full commissioner-table">
                   <!-- Cliente Column -->
                   <ng-container matColumnDef="client_name">
@@ -457,10 +457,10 @@
                       <button 
                         (click)="viewClientReport(commission.client_id, commission.client_name)" 
                         mat-icon-button 
-                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 transition-colors"
+                        class="detail-button transition-colors"
                         matTooltip="Ver detalles del cliente"
                       >
-                        <mat-icon>visibility</mat-icon>
+                        <mat-icon class="action-icon">visibility</mat-icon>
                       </button>
                     </td>
                   </ng-container>
@@ -470,7 +470,7 @@
                 </table>
 
                 <!-- Sin resultados -->
-                <div *ngIf="dataSourceCommissions.data.length === 0" class="flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+                <div *ngIf="dataSourceCommissions.data.length === 0" class="flex flex-col items-center justify-center p-8 bg-white dark:bg-slate-800 border-t border-gray-500 dark:border-gray-700">
                   <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
                   <p class="text-gray-500 dark:text-gray-400">No se encontraron comisiones con los filtros seleccionados</p>
                 </div>
@@ -480,7 +480,7 @@
                   [pageSizeOptions]="[5, 10, 25, 100]"
                   [pageSize]="10"
                   showFirstLastButtons
-                  aria-label="Seleccionar página"
+                  aria-label="Seleccionar página de comisiones"
                   class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
                 </mat-paginator>
               </div>

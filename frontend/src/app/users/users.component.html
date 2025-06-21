@@ -2,11 +2,11 @@
 
   <!-- Card Principal -->
   <div class="flex justify-center pb-6">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300 border border-gray-500 dark:border-gray-700">
       
       <!-- Encabezado y Acciones -->
-      <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-700 to-teal-800 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-4 sm:mb-0">Gestión de Usuarios</h1>
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-500 dark:border-gray-700">
+        <h1 class="text-2xl font-bold text-center bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent mb-4 sm:mb-0">Gestión de Usuarios</h1>
         <div class="flex space-x-3">
           <button 
             (click)="loadUsers(true)" 
@@ -38,7 +38,7 @@
       </div>
 
       <!-- Estado de error principal -->
-      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
+      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-gray-500 dark:border-red-800 rounded-lg p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
         <div class="flex items-center mb-4 md:mb-0">
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Filtros -->
-      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-emerald-100 dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-emerald-100 dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700">
         <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
           <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
           Filtros
@@ -128,7 +128,7 @@
       </form>
 
       <!-- Tabla de Usuarios -->
-      <div *ngIf="!isLoading && !error" class="commissioner-table-container overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+      <div *ngIf="!isLoading && !error" class="commissioner-table-container overflow-x-auto shadow border border-gray-500 dark:border-gray-700 rounded-lg">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
                 class="min-w-full commissioner-table">
@@ -237,7 +237,7 @@
 
       <!-- Sección de Gráficos -->
       <div *ngIf="!isLoading && !error && totalUsers > 0" class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Distribución por Rol</h3>
           <div id="userRoleChart" style="min-height: 350px;">
             <apx-chart
@@ -254,7 +254,7 @@
           </div>
         </div>
 
-        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Distribución por Estado</h3>
           <div id="userStatusChart" style="min-height: 350px;">
             <apx-chart
@@ -271,7 +271,7 @@
           </div>
         </div>
 
-        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md lg:col-span-2">
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Tendencia de Registros</h3>
           <div id="userRegistrationChart" style="min-height: 365px;">
             <apx-chart

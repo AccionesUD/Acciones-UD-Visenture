@@ -567,16 +567,222 @@ tr.hover\:bg-gray-700:hover {
   cursor: not-allowed;
 }
 
-/* Responsive adaptations */
-@media (max-width: 640px) {
-  .filter-chip {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem;
+/* Estilos para gráficos - consistentes con el commissioner-panel */
+.chart-container {
+  background-color: transparent;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.chart-container:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para los filtros */
+.filter-form {
+  background-color: #ecfdf5; /* emerald-100 */
+}
+
+.dark .filter-form {
+  background-color: #1e293b; /* slate-800 */
+}
+
+.form-input {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus {
+  border-color: #4f46e5; /* indigo-600 */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.dark .form-input:focus {
+  border-color: #6366f1; /* indigo-500 */
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+/* Estilos para iconos en los filtros */
+.filter-icon {
+  transition: color 0.2s ease;
+}
+
+.filter-icon:hover {
+  opacity: 0.8;
+}
+
+/* Estilos para paginador - consistentes con commissioner-panel */
+::ng-deep .mat-mdc-paginator {
+  background: transparent !important;
+  font-family: inherit;
+}
+
+/* Estilos modo oscuro para paginador */
+::ng-deep .dark .mat-mdc-paginator-container {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-paginator-range-label,
+::ng-deep .dark .mat-mdc-paginator-page-size-label {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mdc-icon-button {
+  fill: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-icon-button {
+  color: #e2e8f0 !important;
+}
+
+/* Estilos para los gráficos de ApexCharts */
+::ng-deep .apexcharts-tooltip {
+  border: 0 !important;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+::ng-deep .dark .apexcharts-tooltip {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+::ng-deep .dark .apexcharts-tooltip-title {
+  background: #0f172a !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+::ng-deep .apexcharts-legend-text {
+  font-family: 'Inter', sans-serif !important;
+}
+
+::ng-deep .dark .apexcharts-legend-text {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .apexcharts-gridline {
+  stroke: #334155 !important;
+}
+
+::ng-deep .dark .apexcharts-xaxis-label,
+::ng-deep .dark .apexcharts-yaxis-label {
+  fill: #94a3b8 !important;
+}
+
+::ng-deep .dark .apexcharts-xaxis-title,
+::ng-deep .dark .apexcharts-yaxis-title {
+  fill: #94a3b8 !important;
+}
+
+::ng-deep .dark .apexcharts-text {
+  fill: #e2e8f0 !important;
+}
+
+::ng-deep .apexcharts-title-text,
+::ng-deep .apexcharts-subtitle-text {
+  font-family: 'Inter', sans-serif !important;
+}
+
+::ng-deep .dark .apexcharts-title-text {
+  fill: #e2e8f0 !important;
+}
+
+::ng-deep .dark .apexcharts-subtitle-text {
+  fill: #94a3b8 !important;
+}
+
+/* Animaciones para los gráficos */
+.chart-container {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .pagination-item {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.75rem;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+/* Estilos mejorados para las tarjetas de gráficos */
+.chart-container {
+  border-width: 2px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 1;
+}
+
+.chart-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: #047857; /* emerald-700 on hover */
+}
+
+.dark .chart-container:hover {
+  border-color: #10B981; /* emerald-500 on hover in dark mode */
+}
+
+/* Mejoras para el fondo de los gráficos en modo claro */
+::ng-deep .apexcharts-canvas {
+  background: white;
+}
+
+::ng-deep .dark .apexcharts-canvas {
+  background: transparent !important;
+}
+
+/* Ajustes adicionales para ApexCharts */
+::ng-deep .apexcharts-menu {
+  background: white !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+::ng-deep .dark .apexcharts-menu {
+  background: #1E293B !important;
+  border: 1px solid #334155 !important;
+}
+
+::ng-deep .apexcharts-toolbar {
+  z-index: 10 !important;
+}
+
+/* Unificar bordes en todos los elementos del client-report */
+:host ::ng-deep [class*="border-gray-100"],
+:host ::ng-deep [class*="border-gray-200"],
+:host ::ng-deep [class*="border-gray-300"] {
+  border-color: #6b7280 !important; /* gray-500 */
+}
+
+/* Solo afectar a bordes en modo claro */
+:host ::ng-deep .dark [class*="border-gray"] {
+  border-color: inherit !important;
+}
+
+/* Unificar estilos de las tarjetas */
+.bg-white, .dark .bg-slate-800 {
+  border-radius: 0.75rem !important;
+}
+
+/* Estilo uniforme para las tablas */
+:host ::ng-deep .commissioner-table-container {
+  background-color: transparent !important;
+  border: 1px solid #6b7280 !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .dark .commissioner-table-container {
+  border-color: #374151 !important; /* gray-700 */
 }

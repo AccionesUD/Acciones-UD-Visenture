@@ -163,8 +163,15 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
       let isDark = document.documentElement.classList.contains('dark');
       this.updateChartsTheme(isDark);
       
+      // Forzar detección de cambios para asegurar que las gráficas se rendericen
       this.cdr.detectChanges();
-    }, 200);
+      
+      // Segundo timeout para garantizar que las gráficas se rendericen después de que Angular haya procesado cambios
+      setTimeout(() => {
+        this.updateCharts();
+        this.cdr.detectChanges();
+      }, 300);
+    }, 500);
   }
   
   ngOnDestroy(): void {
@@ -536,8 +543,18 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     // Configurar más gráficos aquí
   }
   
+  /**
+   * Actualiza los datos y la visualización de todos los gráficos
+   * Implementa una estrategia robusta para asegurar que los gráficos se rendericen correctamente
+   */
   private updateCharts(): void {
-    if (this.commissionerStats) {
+    // Verificar si tenemos estadísticas
+    if (!this.commissionerStats) {
+      console.warn('No hay estadísticas disponibles para actualizar las gráficas.');
+      return;
+    }
+
+    try {
       // Actualizar gráfico de distribución de clientes
       if (this.clientDistributionChartOptions && this.clientDistributionChartOptions.series) {
         this.clientDistributionChartOptions.series = [
@@ -562,8 +579,52 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         }
       }
       
-      // Actualizar más gráficos aquí
+      // Actualizar tendencia de comisiones si existe ese gráfico y los datos correspondientes
+      if (this.commissionsTrendChartOptions && this.commissionsTrendChartOptions.series) {
+        // Usar casting a any para evitar errores de tipado
+        const statsAny = this.commissionerStats as any;
+        
+        if (statsAny.hasOwnProperty('monthly_commissions') && 
+            Array.isArray(statsAny.monthly_commissions) && 
+            statsAny.monthly_commissions.length > 0) {
+          
+          const monthlyData = statsAny.monthly_commissions;
+          
+          this.commissionsTrendChartOptions.series = [{
+            name: 'Comisiones',
+            data: monthlyData.map((m: any) => m.amount)
+          }];
+          
+          if (this.commissionsTrendChartOptions.xaxis) {
+            this.commissionsTrendChartOptions.xaxis.categories = 
+              monthlyData.map((m: any) => `${m.month}/${m.year}`);
+          }
+        }
+      }
+      
+      // Actualizar distribución de ROI si existe ese gráfico
+      if (this.roiDistributionChartOptions && this.roiDistributionChartOptions.series) {
+        // Usar casting a any para evitar errores de tipado
+        const statsAny = this.commissionerStats as any;
+        
+        // Verificar si tenemos datos de distribución de ROI
+        if (statsAny.hasOwnProperty('roi_distribution') && 
+            Array.isArray(statsAny.roi_distribution)) {
+          this.roiDistributionChartOptions.series = statsAny.roi_distribution;
+        }
+      }
+    } catch (error) {
+      console.error('Error al actualizar las gráficas:', error);
     }
+    
+    // Forzar la detección de cambios con una serie de timeouts para garantizar renderizado
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 50);
+    
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 200);
   }
   
   private setupThemeObserver(): void {
@@ -578,9 +639,21 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
       
       themeChangeTimeout = setTimeout(() => {
         const isDark = document.documentElement.classList.contains('dark');
+        
+        // Actualizar tema una sola vez
         this.updateChartsTheme(isDark);
-        // Forzar actualización de los gráficos tras cambio de tema
+        
+        // Actualizar gráficas con una secuencia optimizada
+        // Primera actualización inmediata
         this.updateCharts();
+        this.cdr.detectChanges();
+        
+        // Segunda actualización después de un breve retraso para asegurar que todos los cambios de tema
+        // hayan sido procesados completamente por Angular
+        setTimeout(() => {
+          this.updateCharts();
+          this.cdr.detectChanges();
+        }, 200);
       }, 100);
     });
     
@@ -738,5 +811,37 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     const filters = this.getFiltersFromForm();
     return !!(filters.client_name || filters.market || filters.status || 
               (filters.date_range?.start || filters.date_range?.end));
+  }
+  
+  /**
+   * Maneja el cambio entre pestañas para actualizar las gráficas cuando se regresa a la pestaña de Resumen
+   * Implementa una estrategia de carga eficiente para evitar múltiples actualizaciones innecesarias
+   */
+  onTabChange(event: any): void {
+    // Solo actualizamos las gráficas cuando cambiamos a la pestaña "Resumen" (índice 0)
+    if (event.index === 0) {
+      // Detección del tema actual
+      const isDark = document.documentElement.classList.contains('dark');
+
+      // Aplicamos el tema correcto inmediatamente
+      this.updateChartsTheme(isDark);
+      
+      // Secuencia robusta de actualizaciones para garantizar el renderizado correcto
+      // Primera actualización inmediata
+      this.updateCharts();
+      this.cdr.detectChanges();
+      
+      // Serie de actualizaciones adicionales con retrasos para asegurar que las gráficas 
+      // se rendericen completamente, incluso en condiciones no ideales
+      setTimeout(() => {
+        this.updateCharts();
+        this.cdr.detectChanges();
+        
+        setTimeout(() => {
+          this.updateCharts();
+          this.cdr.detectChanges();
+        }, 300);
+      }, 100);
+    }
   }
 }
