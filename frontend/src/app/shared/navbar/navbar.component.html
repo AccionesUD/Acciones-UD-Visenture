@@ -46,6 +46,14 @@
         </button>
       </ng-container>
         <ng-container *ngIf="!isLoading && isAuthenticated">
+          <!-- Botón para agregar fondos -->
+          <a [routerLink]="['/funds']" class="flex items-center mr-3 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600 text-white rounded-full transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            <span class="text-sm">Agregar Fondos</span>
+          </a>
+          
           <!-- Notificaciones: menú desplegable al pasar el cursor -->
           <div class="relative group mr-3">
             <button aria-label="Notificaciones" class="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition duration-200 text-gray-700 dark:text-gray-200">
@@ -110,6 +118,13 @@
               {{ username || 'Usuario' }}
             </div>
             <a [routerLink]="['/markets']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Mercados</a>
+            <!-- Opción de gestión de fondos -->
+            <a [routerLink]="['/funds']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              Gestionar Fondos
+            </a>
             <!-- Opción del Panel de Comisionista en el menú desplegable, temporalmente visible para todos -->
             <a [routerLink]="['/commissioner-panel']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Panel de Comisionista</a>
             <a [routerLink]="['/profile']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400">Mi Perfil</a>

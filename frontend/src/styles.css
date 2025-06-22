@@ -123,5 +123,26 @@ html.dark .cdk-overlay-dark-backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Estilos para los SnackBars personalizados */
+.success-snackbar {
+  background: #059669 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+.success-snackbar .mdc-snackbar__surface,
+.error-snackbar .mdc-snackbar__surface {
+  background-color: transparent !important;
+}
+
+.success-snackbar .mat-simple-snackbar-action,
+.error-snackbar .mat-simple-snackbar-action {
+  color: white !important;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
