@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 
 import { Role } from 'src/roles-permission/entities/role.entity';
+import { NotificationSettings } from 'src/notifications/entities/notifications-settings.entity';
 
 @Entity()
 export class Account {
@@ -51,4 +52,10 @@ export class Account {
   @ManyToMany(() => Role, (role) => role.accounts, { cascade: true })
   @JoinTable()
   roles: Role[];
+
+  @OneToOne(() => NotificationSettings, settings => settings.account, { 
+    cascade: true,
+    eager: true // Cargar siempre con la cuenta
+  })
+  notificationSettings: NotificationSettings;
 }
