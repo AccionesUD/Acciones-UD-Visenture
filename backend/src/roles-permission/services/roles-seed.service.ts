@@ -16,6 +16,14 @@ export class RolesSeedService implements OnApplicationBootstrap {
       { name: 'usuario', description: 'Rol de usuario estándar' },
       { name: 'comisionista', description: 'Rol de comisionista' },
       { name: 'admin', description: 'Rol de administrador' },
+      {
+        name: 'auditor',
+        description: 'Rol de auditor (supervisión y revisión)',
+      },
+      {
+        name: 'usuario_premium',
+        description: 'Usuario con suscripción premium',
+      },
     ];
 
     for (const rol of roles) {
@@ -24,6 +32,8 @@ export class RolesSeedService implements OnApplicationBootstrap {
         await this.roleRepo.save(rol);
       }
     }
-    console.log('Roles básicos inicializados (usuario, comisionista, admin)');
+    console.log(
+      'Roles básicos inicializados (usuario, comisionista, admin, auditor, usuario_premium)',
+    );
   }
 }
