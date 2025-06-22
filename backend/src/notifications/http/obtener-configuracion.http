@@ -1,0 +1,14 @@
+# Obtenemos la configuracion de notificaciones de usuario actual
+
+GET http://localhost:3000/api/notification-settings
+Auth Bearer Token <>
+
+{
+  "success": true,
+  "data": {
+    "emailEnabled": true,
+    "smsEnabled": false,
+    "whatsappEnabled": false,
+    "phoneNumber": null
+  }
+}

@@ -19,8 +19,11 @@ import { SharesModule } from './shares/shares.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -56,6 +59,8 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     StocksModule,
     TransactionsModule,
     RolesPermissionModule,
+    NotificationsModule,
+    AdvisorModule
     PremiumModule,
     SubscriptionsModule,
   ],
