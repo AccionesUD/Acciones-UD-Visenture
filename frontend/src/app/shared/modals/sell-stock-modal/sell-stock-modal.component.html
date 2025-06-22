@@ -67,6 +67,15 @@
     </div>
   </div>
 
+  <!-- Indicador de orden para cliente (si aplica) -->
+  <div *ngIf="data.clientId" class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-6 flex items-center">
+    <mat-icon class="text-amber-600 dark:text-amber-400 mr-2">supervisor_account</mat-icon>
+    <div>
+      <p class="text-sm font-medium text-amber-800 dark:text-amber-300">Orden para cliente</p>
+      <p class="text-xs text-amber-700 dark:text-amber-400">Esta orden será realizada en nombre de un cliente.</p>
+    </div>
+  </div>
+
   <!-- Estado de carga -->
   <div *ngIf="isLoading" class="flex justify-center my-4">
     <mat-spinner diameter="40"></mat-spinner>

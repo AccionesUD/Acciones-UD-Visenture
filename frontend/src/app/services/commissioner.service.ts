@@ -129,6 +129,21 @@ export class CommissionerService {
     );
   }
 
+  /**
+   * Obtiene los clientes asignados al comisionista actual con un formato adecuado para la selección en diálogos
+   * @returns Lista de clientes con ID, nombre completo y correo electrónico
+   */
+  getAssignedClientsForOrderSelection(): Observable<any[]> {
+    return this.getAssignedClients().pipe(
+      map(clients => clients.map(client => ({
+        id: client.id,
+        fullName: client.name,
+        email: client.email || 'Sin correo',
+        status: client.status
+      })))
+    );
+  }
+
   // Datos de muestra para desarrollo
   private mockClients: CommissionerClient[] = [
     {

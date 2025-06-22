@@ -264,4 +264,45 @@ export class StocksService {
     
     return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
   }
+  
+  /**
+   * Busca stocks/acciones por nombre o símbolo
+   * @param query Texto a buscar
+   * @returns Observable con los resultados de la búsqueda
+   */
+  searchStocks(query: string): Observable<any[]> {
+    // En producción: return this.http.get<any[]>(`${this.apiUrl}/search`, { params: { query } });
+    
+    // Para desarrollo, usar datos en caché o simular búsqueda
+    if (this.stocksCache && this.stocksCache.length > 0) {
+      // Convertimos a any[] para manejar las propiedades dinámicas
+      const results = (this.stocksCache as any[]).filter(stock => 
+        (stock.symbol && stock.symbol.toLowerCase().includes(query.toLowerCase())) || 
+        (stock.name && stock.name.toLowerCase().includes(query.toLowerCase()))
+      );
+      return of(results.slice(0, 10));
+    }
+    
+    // Si no hay cache, hacer una petición y simular resultados
+    // Datos de ejemplo para desarrollo
+    const mockStocks = [
+      { symbol: 'AAPL', name: 'Apple Inc.', current_price: 175.34 },
+      { symbol: 'MSFT', name: 'Microsoft Corporation', current_price: 340.67 },
+      { symbol: 'GOOGL', name: 'Alphabet Inc.', current_price: 130.45 },
+      { symbol: 'AMZN', name: 'Amazon.com Inc.', current_price: 178.23 },
+      { symbol: 'META', name: 'Meta Platforms Inc.', current_price: 481.09 },
+      { symbol: 'TSLA', name: 'Tesla Inc.', current_price: 177.56 },
+      { symbol: 'NFLX', name: 'Netflix Inc.', current_price: 630.78 },
+      { symbol: 'NVDA', name: 'NVIDIA Corporation', current_price: 950.32 },
+      { symbol: 'V', name: 'Visa Inc.', current_price: 270.41 },
+      { symbol: 'JPM', name: 'JPMorgan Chase & Co.', current_price: 187.63 }
+    ];
+    
+    const filteredStocks = mockStocks.filter(stock => 
+      stock.symbol.toLowerCase().includes(query.toLowerCase()) || 
+      stock.name.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    return of(filteredStocks.slice(0, 10));
+  }
 }

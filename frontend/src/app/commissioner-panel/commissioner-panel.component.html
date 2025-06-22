@@ -211,7 +211,7 @@
                 <!-- Distribución de clientes -->
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
                   <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Distribución de Clientes</h3>
-                  <div *ngIf="clientDistributionChartOptions" class="h-[300px] w-full">
+                  <div *ngIf="clientDistributionChartOptions" class="h-[300px] w-full chart-container" id="distribution-chart-container">
                     <apx-chart
                       [series]="clientDistributionChartOptions.series || []"
                       [chart]="clientDistributionChartOptions.chart || {}"
@@ -228,7 +228,7 @@
                 <!-- Comisiones por mercado -->
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
                   <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Comisiones por Mercado</h3>
-                  <div *ngIf="commissionsByMarketChartOptions" class="h-[300px] w-full">
+                  <div *ngIf="commissionsByMarketChartOptions" class="h-[300px] w-full chart-container" id="market-chart-container">
                     <apx-chart
                       [series]="commissionsByMarketChartOptions.series || []"
                       [chart]="commissionsByMarketChartOptions.chart || {}"
@@ -350,14 +350,37 @@
                   <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700"> Acciones </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
-                      <button 
-                        (click)="viewClientDetails(client)" 
-                        mat-icon-button 
-                        class="detail-button transition-colors"
-                        matTooltip="Ver detalles del cliente"
-                      >
-                        <mat-icon class="action-icon">visibility</mat-icon>
-                      </button>
+                      <div class="flex justify-end items-center space-x-2">
+                        <!-- Botón para realizar una orden de compra para el cliente -->
+                        <button 
+                          (click)="openTradeDialog(client, 'buy')" 
+                          mat-icon-button 
+                          class="buy-button transition-colors text-emerald-600 hover:text-emerald-800 dark:text-emerald-500 dark:hover:text-emerald-400"
+                          matTooltip="Comprar acciones para este cliente"
+                        >
+                          <mat-icon class="action-icon">shopping_cart</mat-icon>
+                        </button>
+
+                        <!-- Botón para realizar una orden de venta para el cliente -->
+                        <button 
+                          (click)="openTradeDialog(client, 'sell')" 
+                          mat-icon-button 
+                          class="sell-button transition-colors text-amber-600 hover:text-amber-800 dark:text-amber-500 dark:hover:text-amber-400"
+                          matTooltip="Vender acciones de este cliente"
+                        >
+                          <mat-icon class="action-icon">sell</mat-icon>
+                        </button>
+
+                        <!-- Botón para ver detalles del cliente -->
+                        <button 
+                          (click)="viewClientDetails(client)" 
+                          mat-icon-button 
+                          class="detail-button transition-colors"
+                          matTooltip="Ver detalles del cliente"
+                        >
+                          <mat-icon class="action-icon">visibility</mat-icon>
+                        </button>
+                      </div>
                     </td>
                   </ng-container>
 

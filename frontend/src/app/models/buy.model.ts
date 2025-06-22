@@ -7,6 +7,7 @@ export interface BuyOrder {
   limitPrice?: number;
   timeInForce: 'day' | 'gtc' | 'ioc';
   extendedHours: boolean;
+  clientId?: number; // ID del cliente si el comisionista está haciendo la orden para un cliente
 }
 
 export interface BuyResponse {

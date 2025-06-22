@@ -9,6 +9,7 @@ export interface SellOrder {
   accountId?: string; // id_account - cuenta desde la cual se ejecuta la orden
   timeInForce?: 'day' | 'gtc' | 'ioc'; // time_in_force - Vigencia de la orden
   extendedHours?: boolean; // extended_hours - Operación fuera de horario regular
+  clientId?: number; // ID del cliente si el comisionista está haciendo la orden para un cliente
 }
 
 // Interface para la respuesta de la venta
