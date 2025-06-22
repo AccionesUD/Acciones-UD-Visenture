@@ -9,8 +9,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NotificationSettings } from './entities/notifications-settings.entity';
 import { Account } from '../accounts/entities/account.entity';
 import { NotificationSettingsService } from './notification-settings.service';
+import { NotificationSettingsController } from './notification-settings.controller';
 
 @Module({
+  controllers: [NotificationSettingsController],
   imports: [
     TypeOrmModule.forFeature([NotificationSettings, Account]), // ¡Añade esto primero!
     BullModule.forRootAsync({

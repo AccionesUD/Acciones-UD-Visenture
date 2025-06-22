@@ -1,4 +1,4 @@
-import { Injectable, Logger, RequestTimeoutException } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
@@ -9,16 +9,25 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
 
   constructor(private readonly configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      service: configService.get('MAIL_SERVICE'),
-      auth: {
-        user: this.configService.get('MAIL_ADDRESS'),
-        pass: this.configService.get('MAIL_PASS'),
-      },
-    });
+    try {
+      this.transporter = nodemailer.createTransport({
+        service: configService.get('MAIL_SERVICE'),
+        auth: {
+          user: this.configService.get('MAIL_ADDRESS'),
+          pass: this.configService.get('MAIL_PASS'),
+        },
+      });
+      this.logger.log('Servicio de correo configurado correctamente');
+    } catch (error) {
+      this.logger.error('Error configurando el servicio de correo', error.stack);
+      throw new HttpException(
+        'Error en la configuración del servicio de correo',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
-  async sendMail(options: MailOptions): Promise<void> {
+  async sendMail(options: MailOptions): Promise<{ success: boolean; message?: string }> {
     try {
       await this.transporter.sendMail({
         from: `"Acciones UD" <${this.configService.get('MAIL_ADDRESS')}>`,
@@ -28,28 +37,47 @@ export class MailService {
         html: options.html,
       });
       this.logger.log(`Email enviado a: ${options.to}`);
+      return { success: true };
     } catch (error) {
       this.logger.error(`Error enviando email: ${error.message}`);
-      throw error;
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Error al enviar el correo electrónico',
+          details: error.message,
+        },
+        HttpStatus.SERVICE_UNAVAILABLE
+      );
     }
   }
 
-  async sendLoginToken(email: string, token: string): Promise<void> {
-  try {
-    await this.sendMail({
-      to: email,
-      subject: 'Tu código de acceso',
-      html: this.buildLoginTokenHtml(token),
-    });
-  } catch (error) {
-    throw new RequestTimeoutException('Error en el envío de token', {
-      description: `No ha sido exitoso el envío del token, revise las credenciales. ${error}`
-    });
-  }
-}
+  async sendLoginToken(email: string, token: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      const result = await this.sendMail({
+        to: email,
+        subject: 'Tu código de acceso',
+        html: this.buildLoginTokenHtml(token),
+      });
 
-private buildLoginTokenHtml(token: string): string {
-  return `
+      return {
+        success: true,
+        message: 'Token de acceso enviado correctamente'
+      };
+    } catch (error) {
+      this.logger.error(`Error enviando token de acceso: ${error.message}`);
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Error al enviar el token de acceso',
+          details: 'Por favor revise las credenciales del servicio de correo',
+        },
+        HttpStatus.SERVICE_UNAVAILABLE
+      );
+    }
+  }
+
+  private buildLoginTokenHtml(token: string): string {
+    return `
     <div style="
       font-family: 'Arial', sans-serif;
       max-width: 600px;
@@ -84,13 +112,13 @@ private buildLoginTokenHtml(token: string): string {
           margin-bottom: 20px;
         ">
           Fecha: ${new Date().toLocaleString('es-CO', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })}
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })}
         </p>
 
         <h2 style="
@@ -156,20 +184,37 @@ private buildLoginTokenHtml(token: string): string {
       </div>
     </div>
   `;
-}
+  }
 
-  async sendPasswordResetEmail(email: string, token: string): Promise<void> {
-  const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
-  
-  await this.sendMail({
-    to: email,
-    subject: 'Restablecimiento de contraseña',
-    html: this.buildPasswordResetHtml(resetLink)
-  });
-}
+  async sendPasswordResetEmail(email: string, token: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
 
-private buildPasswordResetHtml(resetLink: string): string {
-  return `
+      const result = await this.sendMail({
+        to: email,
+        subject: 'Restablecimiento de contraseña',
+        html: this.buildPasswordResetHtml(resetLink)
+      });
+
+      return {
+        success: true,
+        message: 'Correo de restablecimiento enviado correctamente'
+      };
+    } catch (error) {
+      this.logger.error(`Error enviando correo de restablecimiento: ${error.message}`);
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Error al enviar el correo de restablecimiento',
+          details: error.message,
+        },
+        HttpStatus.SERVICE_UNAVAILABLE
+      );
+    }
+  }
+
+  private buildPasswordResetHtml(resetLink: string): string {
+    return `
     <div style="
       font-family: 'Arial', sans-serif;
       max-width: 600px;
@@ -204,13 +249,13 @@ private buildPasswordResetHtml(resetLink: string): string {
           margin-bottom: 20px;
         ">
           Fecha: ${new Date().toLocaleString('es-CO', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })}
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })}
         </p>
 
         <h2 style="
@@ -292,18 +337,35 @@ private buildPasswordResetHtml(resetLink: string): string {
       </div>
     </div>
   `;
-}
+  }
 
   async sendAdvisorAssignedNotification(
-    advisorEmail: string, 
-    advisorName: string, 
+    advisorEmail: string,
+    advisorName: string,
     clientName: string
-  ): Promise<void> {
-    await this.sendMail({
-      to: advisorEmail,
-      subject: 'Nuevo inversor asignado',
-      html: this.buildAdvisorNotificationHtml(advisorName, clientName)
-    });
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const result = await this.sendMail({
+        to: advisorEmail,
+        subject: 'Nuevo inversor asignado',
+        html: this.buildAdvisorNotificationHtml(advisorName, clientName)
+      });
+
+      return {
+        success: true,
+        message: 'Notificación de asignación enviada correctamente'
+      };
+    } catch (error) {
+      this.logger.error(`Error enviando notificación de asignación: ${error.message}`);
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Error al enviar la notificación de asignación',
+          details: 'El comisionista fue asignado pero no se pudo enviar la notificación',
+        },
+        HttpStatus.SERVICE_UNAVAILABLE
+      );
+    }
   }
 
   private buildAdvisorNotificationHtml(advisorName: string, clientName: string): string {
@@ -342,13 +404,13 @@ private buildPasswordResetHtml(resetLink: string): string {
           margin-bottom: 20px;
         ">
           Fecha: ${new Date().toLocaleString('es-CO', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          })}
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    })}
         </p>
 
         <h2 style="

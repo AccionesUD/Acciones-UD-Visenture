@@ -120,7 +120,7 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload);
-
+    console.log('Su token de acceso es:', accessToken);
 
     return {
       success: true,
@@ -131,7 +131,7 @@ export class AuthService {
   async requestPasswordReset(email: string) {
     const account = await this.accountsService.findByEmail(email);
     if (!account) {
-    throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
+      throw new UnauthorizedException('No existe una cuenta con ese correo electrónico');
     }
     const token = this.generateToken2MFA.generateToken();
     await this.tokensService.storeToken(

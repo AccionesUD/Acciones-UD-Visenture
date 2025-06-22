@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NotificationSettings } from './entities/notifications-settings.entity';
@@ -7,6 +7,8 @@ import { UpdateNotificationSettingsDto } from './dto/update-notification-setting
 
 @Injectable()
 export class NotificationSettingsService {
+  private readonly logger = new Logger(NotificationSettingsService.name);
+
   constructor(
     @InjectRepository(NotificationSettings)
     private readonly settingsRepo: Repository<NotificationSettings>,
@@ -14,62 +16,90 @@ export class NotificationSettingsService {
     private readonly accountRepo: Repository<Account>,
   ) {}
 
-  // Crear configuración por defecto
   async createDefaultSettings(account: Account): Promise<NotificationSettings> {
-    const settings = this.settingsRepo.create({
-      account,
-      emailEnabled: true,
-      smsEnabled: false,
-      whatsappEnabled: false
-    });
-    return this.settingsRepo.save(settings);
+    try {
+      const settings = this.settingsRepo.create({
+        account,
+        emailEnabled: true,
+        smsEnabled: false,
+        whatsappEnabled: false
+      });
+      return await this.settingsRepo.save(settings);
+    } catch (error) {
+      this.logger.error(`Error creando configuración por defecto: ${error.message}`);
+      throw new HttpException('Error al crear configuración de notificaciones', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  // Actualizar configuración
   async updateSettings(
     accountId: string,
     updateDto: UpdateNotificationSettingsDto
-  ): Promise<NotificationSettings> {
-    const account = await this.accountRepo.findOne({
-      where: { identity_document: accountId },
-      relations: ['notificationSettings']
-    });
+  ): Promise<{ success: boolean; data: NotificationSettings; message?: string }> {
+    try {
+      const account = await this.accountRepo.findOne({
+        where: { identity_document: accountId },
+        relations: ['notificationSettings']
+      });
 
-    if (!account) {
-      throw new NotFoundException('Cuenta no encontrada');
-    }
+      if (!account) {
+        throw new HttpException('Cuenta no encontrada', HttpStatus.NOT_FOUND);
+      }
 
-    // Si no existe configuración, creamos una
-    if (!account.notificationSettings) {
-      account.notificationSettings = await this.createDefaultSettings(account);
-    }
+      if (!account.notificationSettings) {
+        account.notificationSettings = await this.createDefaultSettings(account);
+      }
 
-    // Actualizar campos
-    if (updateDto.emailEnabled !== undefined) {
-      account.notificationSettings.emailEnabled = updateDto.emailEnabled;
-    }
-    if (updateDto.smsEnabled !== undefined) {
-      account.notificationSettings.smsEnabled = updateDto.smsEnabled;
-    }
-    if (updateDto.whatsappEnabled !== undefined) {
-      account.notificationSettings.whatsappEnabled = updateDto.whatsappEnabled;
-    }
-    if (updateDto.phoneNumber !== undefined) {
-      account.notificationSettings.phoneNumber = updateDto.phoneNumber;
-    }
+      // Actualizar campos
+      if (updateDto.emailEnabled !== undefined) {
+        account.notificationSettings.emailEnabled = updateDto.emailEnabled;
+      }
+      if (updateDto.smsEnabled !== undefined) {
+        account.notificationSettings.smsEnabled = updateDto.smsEnabled;
+      }
+      if (updateDto.whatsappEnabled !== undefined) {
+        account.notificationSettings.whatsappEnabled = updateDto.whatsappEnabled;
+      }
+      if (updateDto.phoneNumber !== undefined) {
+        account.notificationSettings.phoneNumber = updateDto.phoneNumber;
+      }
 
-    return this.settingsRepo.save(account.notificationSettings);
+      const savedSettings = await this.settingsRepo.save(account.notificationSettings);
+      
+      return {
+        success: true,
+        data: savedSettings,
+        message: 'Configuración de notificaciones actualizada exitosamente'
+      };
+    } catch (error) {
+      this.logger.error(`Error actualizando configuración: ${error.message}`);
+      
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      throw new HttpException('Error al actualizar configuración de notificaciones', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  // Obtener configuración
-  async getSettings(accountId: string): Promise<NotificationSettings> {
+  async getSettings(accountId: string): Promise<{ 
+  success: boolean; 
+  data?: {
+    emailEnabled: boolean;
+    smsEnabled: boolean;
+    whatsappEnabled: boolean;
+    phoneNumber?: string;
+  }; 
+  message?: string 
+}> {
+  try {
     const account = await this.accountRepo.findOne({
       where: { identity_document: accountId },
-      relations: ['notificationSettings']
+      relations: ['notificationSettings'],
+      select: ['id', 'notificationSettings'] // Solo seleccionamos lo necesario
     });
 
     if (!account) {
-      throw new NotFoundException('Cuenta no encontrada');
+      throw new HttpException('Cuenta no encontrada', HttpStatus.NOT_FOUND);
     }
 
     // Si no existe configuración, creamos una por defecto
@@ -78,6 +108,26 @@ export class NotificationSettingsService {
       await this.accountRepo.save(account);
     }
 
-    return account.notificationSettings;
+    // Extraemos solo los campos relevantes
+    const { emailEnabled, smsEnabled, whatsappEnabled, phoneNumber } = account.notificationSettings;
+
+    return {
+      success: true,
+      data: {
+        emailEnabled,
+        smsEnabled,
+        whatsappEnabled,
+        phoneNumber
+      }
+    };
+  } catch (error) {
+    this.logger.error(`Error obteniendo configuración: ${error.message}`);
+    
+    if (error instanceof HttpException) {
+      throw error;
+    }
+    
+    throw new HttpException('Error al obtener configuración de notificaciones', HttpStatus.INTERNAL_SERVER_ERROR);
   }
+}
 }
