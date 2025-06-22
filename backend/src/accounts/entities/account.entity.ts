@@ -1,5 +1,6 @@
 // account.entity.ts
 import { User } from 'src/users/users.entity';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -58,4 +60,8 @@ export class Account {
     eager: true // Cargar siempre con la cuenta
   })
   notificationSettings: NotificationSettings;
+
+  // Relación uno-a-muchos con Subscription
+  @OneToMany(() => Subscription, (subscription) => subscription.account)
+  subscriptions: Subscription[];
 }
