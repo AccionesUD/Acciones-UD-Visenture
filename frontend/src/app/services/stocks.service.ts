@@ -305,4 +305,60 @@ export class StocksService {
     
     return of(filteredStocks.slice(0, 10));
   }
+  
+  /**
+   * Actualiza el horario de apertura personalizado para una acción/mercado específico
+   * @param mic Identificador del mercado a actualizar
+   * @param customTime Hora de apertura personalizada en formato 'HH:MM'
+   */
+  updateCustomOpeningTime(mic: string, customTime: string): Observable<Stock> {
+    // En una implementación real, este endpoint debería existir en el backend
+    // return this.http.patch<Stock>(`${this.apiUrl}/${mic}/custom-opening`, { custom_opening_time: customTime });
+    
+    // Como alternativa temporal, actualizamos la caché y simulamos una respuesta exitosa
+    const index = this.stocksCache.findIndex(stock => stock.mic === mic);
+    
+    if (index !== -1) {
+      const updatedStock = {
+        ...this.stocksCache[index],
+        custom_opening_time: customTime
+      };
+      
+      this.stocksCache[index] = updatedStock;
+      this.stocksSubject.next([...this.stocksCache]);
+      
+      // Simulamos almacenar esta configuración en localStorage para persistencia
+      if (typeof localStorage !== 'undefined') {
+        const customTimesKey = 'custom_opening_times';
+        const storedTimes = JSON.parse(localStorage.getItem(customTimesKey) || '{}');
+        storedTimes[mic] = customTime;
+        localStorage.setItem(customTimesKey, JSON.stringify(storedTimes));
+      }
+      
+      return of(updatedStock);
+    }
+    
+    return throwError(() => new Error(`No se encontró el mercado con MIC: ${mic}`));
+  }
+  
+  /**
+   * Obtiene el horario de apertura personalizado para un mercado específico
+   * @param mic Identificador del mercado
+   */
+  getCustomOpeningTime(mic: string): string | null {
+    // Primero intentamos obtenerlo del caché
+    const stock = this.stocksCache.find(s => s.mic === mic);
+    if (stock?.custom_opening_time) {
+      return stock.custom_opening_time;
+    }
+    
+    // Si no está en caché, buscamos en localStorage
+    if (typeof localStorage !== 'undefined') {
+      const customTimesKey = 'custom_opening_times';
+      const storedTimes = JSON.parse(localStorage.getItem(customTimesKey) || '{}');
+      return storedTimes[mic] || null;
+    }
+    
+    return null;
+  }
 }

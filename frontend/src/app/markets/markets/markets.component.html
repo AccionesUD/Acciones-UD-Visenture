@@ -3,6 +3,18 @@
     <div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
       <h3 class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-600 to-teal-700 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-6">Mercados Disponibles</h3>
 
+      <!-- Panel informativo para gestión de horarios (visible para todos) -->
+      <div class="mb-8 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800 p-4">
+        <h4 class="text-lg font-medium text-indigo-700 dark:text-indigo-300 mb-2">Panel de Gestión de Horarios</h4>
+        <p class="text-sm text-indigo-600 dark:text-indigo-400 mb-3">
+          Puedes personalizar el horario de apertura de cada mercado. Haz clic en el botón de edición junto a la hora de apertura de cada mercado para configurar un horario personalizado.
+        </p>
+        <div class="flex items-center text-xs text-indigo-500 dark:text-indigo-300">
+          <mat-icon class="text-sm mr-1">info</mat-icon>
+          <span>Los horarios personalizados se muestran en color verde y se aplican solo a la visualización en la aplicación.</span>
+        </div>
+      </div>
+
       <!-- Panel de administración (Testing) -->
       <div *ngIf="stocks.length === 0" class="mb-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 p-4">
         <h4 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-2">Panel de Administración (Testing)</h4>
@@ -114,7 +126,23 @@
                 
                 <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
                   <span class="font-medium">Horario:</span>
-                  <span>{{ stock.opening_time }} - {{ stock.closing_time }}</span>
+                  <div class="flex items-center">
+                    <span [class.text-emerald-600]="stock.custom_opening_time">{{ getDisplayOpeningTime(stock) }} - {{ stock.closing_time }}</span>
+                    
+                    <!-- Botón de edición de horario visible para todos -->
+                    <button mat-icon-button 
+                            class="ml-1 text-gray-500 hover:text-emerald-600"
+                            matTooltip="Editar hora de apertura"
+                            (click)="openEditOpeningTimeDialog(stock, $event)">
+                      <mat-icon class="text-sm">edit</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- Indicador de horario personalizado -->
+                <div *ngIf="stock.custom_opening_time" class="mb-2 text-xs text-emerald-600 dark:text-emerald-400 flex items-center">
+                  <mat-icon class="text-xs mr-1">schedule</mat-icon>
+                  <span>Horario personalizado (oficial: {{ stock.opening_time }})</span>
                 </div>
                 
                 <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
