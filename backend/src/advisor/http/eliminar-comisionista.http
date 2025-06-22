@@ -1,9 +1,0 @@
-# Endpoint para eliminar comisionista
-
-DELETE http://localhost:3000/api/advisor/unassign
-Authorization: Bearer <token_de_usuario>
-
-{
-  "success": true,
-  "message": "Comisionista eliminado exitosamente"
-}
