@@ -170,4 +170,34 @@ export class AdvisorService {
             );
         }
     }
+
+    async unassignAdvisor(userId: string): Promise<{ success: boolean; message: string }> {
+        try {
+            const client = await this.accountRepo.findOne({
+                where: { identity_document: userId },
+                relations: ['user']
+            });
+
+            if (!client) {
+                throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
+            }
+
+            if (!client.commissioner) {
+                throw new HttpException('El cliente no tiene comisionista asignado', HttpStatus.BAD_REQUEST);
+            }
+
+            client.commissioner = 0;
+            await this.accountRepo.save(client);
+
+            return {
+                success: true,
+                message: 'Comisionista eliminado exitosamente'
+            };
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException('Error al eliminar el comisionista', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

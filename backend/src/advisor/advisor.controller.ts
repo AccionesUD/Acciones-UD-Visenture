@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { AdvisorService } from "./advisor.service";
 import { AuthenticatedRequest } from "./dto/auth-request.dto";
@@ -29,5 +29,16 @@ export class AdvisorController {
     async getMyAdvisor(@Req() req: AuthenticatedRequest) {
         const userId = req.user.userId;
         return await this.advisorService.getAssignedAdvisor(userId);
+    }
+
+    @Delete('unassign')
+    async unassignAdvisor(
+        @Req() req: AuthenticatedRequest,
+    ) {
+        if (!req.user || !req.user.userId) {
+            throw new HttpException('Usuario no autenticado', HttpStatus.UNAUTHORIZED);
+        }
+        const userId = req.user.userId;
+        return this.advisorService.unassignAdvisor(userId);
     }
 }
