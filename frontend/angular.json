@@ -12,9 +12,9 @@
       "i18n": {
         "sourceLocale": "es",
         "locales": {
-          "en": "src/locale/messages.en.xlf",
-          "fr": "src/locale/messages.fr.xlf",
-          "ru": "src/locale/messages.ru.xlf"
+          "en": "src/assets/locale/messages.en.xlf",
+          "fr": "src/assets/locale/messages.fr.xlf",
+          "ru": "src/assets/locale/messages.ru.xlf"
         }
       },
       "architect": {
@@ -33,7 +33,13 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }            ],
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              }
+            ],
             "styles": [
               "src/custom-theme.scss",
               "src/styles.css"
@@ -81,7 +87,8 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "localize": false
             }
           },
           "defaultConfiguration": "production"
