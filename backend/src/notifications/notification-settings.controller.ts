@@ -1,3 +1,4 @@
+//backend\src\notifications\notification-settings.controller.ts
 import {
   Controller,
   Get,
