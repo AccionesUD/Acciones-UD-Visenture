@@ -56,3 +56,42 @@ import { SubscriptionGuard } from 'src/subscriptions/guards/subscription.guard';
 getAdminPremiumReport(@Req() req: Request & { user: JwtPayloadUser }) {
   // lógica...  
 }
+```
+
+## 4. Tipado recomendado para usuario JWT
+
+Para mayor seguridad y evitar warnings de TypeScript, utiliza el tipado así:
+
+```typescript
+@Req() req: Request & { user: JwtPayloadUser }
+```
+Donde JwtPayloadUser es tu interface de payload, por ejemplo:
+
+```typescript
+export interface JwtPayloadUser {
+  sub: number;
+  userId: string;
+  email: string;
+  roles: string[];
+}
+
+```
+
+Buenas prácticas y recomendaciones
+Siempre pon JwtAuthGuard de primero en la cadena de guards.
+
+Si cambias el payload del JWT, actualiza los tipos y la lógica de guards/controladores.
+
+Para permisos granulares, crea decoradores y guards personalizados (ej: @Permissions('manage_users')).
+
+## 6. Ejemplo de endpoint completo
+
+```typescript
+
+@UseGuards(JwtAuthGuard, RolesGuard, SubscriptionGuard)
+@Roles('usuario_premium')
+@Get('premium/data')
+getPremiumData(@Req() req: Request & { user: JwtPayloadUser }) {
+  return { data: 'Solo usuarios premium pueden ver esto' };
+}
+```
