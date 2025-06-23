@@ -16,6 +16,7 @@ import {
 
 import { Role } from 'src/roles-permission/entities/role.entity';
 import { NotificationSettings } from 'src/notifications/entities/notifications-settings.entity';
+import { PreferenceAccount } from 'src/preferences/entities/preference-account.entity';
 
 @Entity()
 export class Account {
@@ -64,4 +65,11 @@ export class Account {
   // Relación uno-a-muchos con Subscription
   @OneToMany(() => Subscription, (subscription) => subscription.account)
   subscriptions: Subscription[];
+
+  @OneToOne(() => PreferenceAccount, preference => preference.account, {
+    cascade: true,
+    eager: true, // Opcional: cargar automáticamente
+  })
+  preference: PreferenceAccount;
+  
 }

@@ -1,3 +1,4 @@
+//backend\src\notifications\entities\notifications-settings.entity.ts
 import { Account } from 'src/accounts/entities/account.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 
