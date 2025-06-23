@@ -65,6 +65,7 @@ import { PaymentsModule } from './payments/payments.module';
     PremiumModule,
     SubscriptionsModule,
     PaymentsModule,
+
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
