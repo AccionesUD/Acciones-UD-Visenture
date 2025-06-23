@@ -6,10 +6,14 @@ import { Account } from 'src/accounts/entities/account.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PremiumPlan } from 'src/premium/entities/premium-plan.entity';
 import { SubscriptionsSeedService } from 'src/accounts/services/subscriptions-seed.service';
+import { Role } from 'src/roles-permission/entities/role.entity';
+import { PaymentsService } from 'src/payments/services/payments.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Subscription, Account, PremiumPlan])],
-  providers: [SubscriptionsService, SubscriptionsSeedService],
+  imports: [
+    TypeOrmModule.forFeature([Subscription, Account, PremiumPlan, Role]),
+  ],
+  providers: [SubscriptionsService, SubscriptionsSeedService, PaymentsService],
   controllers: [SubscriptionsController],
   exports: [SubscriptionsService],
 })
