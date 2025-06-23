@@ -1,0 +1,13 @@
+# Ejemplo de solicitud HTTP para acceder a la funcionalidad premium de suscripciones
+# Asegúrate de que el servidor esté corriendo en localhost:3000
+# Puedes usar herramientas como Postman o Insomnia para probar esta solicitud
+
+
+GET /api/subscriptions/charts/premium HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA1NzQ1MTQsImV4cCI6MTc1MDU3ODExNH0.6CzQUfbYpPCsyXlnG3yJy5bSvG0nghLCmfXiTlzW-Bk
+Host: localhost:3000
+
+#Debes asegurarte de que el token JWT sea válido y tenga los permisos necesarios para acceder a la funcionalidad premium.
+# El token JWT debe ser generado por el servidor y debe incluir los roles necesarios para acceder a la funcionalidad premium.
+# En este caso, el token debe incluir el rol "usuario_premium" para poder acceder a la funcionalidad premium de suscripciones.

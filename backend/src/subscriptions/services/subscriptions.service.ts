@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, HttpException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import {
   Subscription,
   SubscriptionStatus,
@@ -107,5 +107,16 @@ export class SubscriptionsService {
     }
 
     return { message: 'Suscripción premium activada', plan: plan.name };
+  }
+
+  async hasActiveSubscription(accountId: number): Promise<boolean> {
+    const today = new Date();
+    return await this.subscriptionRepo.exist({
+      where: {
+        account: { id: accountId },
+        status: SubscriptionStatus.ACTIVE,
+        end_date: MoreThan(today),
+      },
+    });
   }
 }
