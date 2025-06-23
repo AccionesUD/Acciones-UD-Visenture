@@ -5,8 +5,8 @@
     <!-- Cabecera y título -->
     <div class="flex flex-wrap justify-between items-center mb-6 border-b border-gray-200 dark:border-slate-700 pb-4">
       <div>
-        <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Gestión de Fondos</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">Recarga tu cuenta y consulta tu historial de transacciones.</p>
+        <h1 i18n="funds|Page title" class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Gestión de Fondos</h1>
+        <p i18n="funds|Page description" class="text-gray-600 dark:text-gray-400 mt-1">Recarga tu cuenta y consulta tu historial de transacciones.</p>
       </div>
     </div>
 
@@ -15,7 +15,7 @@
       <mat-tab>
           <ng-template mat-tab-label>
               <mat-icon class="mr-2">add_circle_outline</mat-icon>
-              Añadir Fondos
+              <ng-container i18n="funds|Add funds tab">Añadir Fondos</ng-container>
           </ng-template>
           <div class="py-6">
             <app-add-funds></app-add-funds>
@@ -24,7 +24,7 @@
       <mat-tab>
           <ng-template mat-tab-label>
               <mat-icon class="mr-2">history</mat-icon>
-              Historial de Transacciones
+              <ng-container i18n="funds|Transaction history tab">Historial de Transacciones</ng-container>
           </ng-template>
       </mat-tab>
     </mat-tab-group>

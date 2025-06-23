@@ -8,14 +8,17 @@
         (click)="goBack()" 
         class="mr-3 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors"
         matTooltip="Volver al panel"
+        i18n-matTooltip="@@client-report.back.tooltip"
       >
         <mat-icon class="text-emerald-800 dark:text-emerald-400">arrow_back</mat-icon>
       </button>
       <div>
-        <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">
+        <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400" 
+            i18n="@@client-report.header.title">
           Reporte de Cliente: {{ client ? client.name : 'Cargando...' }}
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">Vista detallada de actividad y rendimiento</p>
+        <p class="text-gray-600 dark:text-gray-400 mt-1" 
+           i18n="@@client-report.header.subtitle">Vista detallada de actividad y rendimiento</p>
       </div>
     </div>
 
@@ -30,12 +33,14 @@
         <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
         <div>
           <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
-          <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+          <p class="text-xs text-red-600 dark:text-red-400 mt-1" 
+             i18n="@@client-report.error.help-text">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
         </div>
       </div>
       <button 
         (click)="loadClientData(true)" 
-        class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+        class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors"
+        i18n="@@client-report.error.retry-button">
         Reintentar
       </button>
     </div>
@@ -52,20 +57,24 @@
               </div>
               <div class="ml-4">
                 <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ client.name }}</h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Cliente desde {{ client.registration_date | date:'dd/MM/yyyy' }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400" 
+                   i18n="@@client-report.client.member-since">Cliente desde {{ client.registration_date | date:'dd/MM/yyyy' }}</p>
               </div>
             </div>
             <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Email</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400" 
+                   i18n="@@client-report.client.email-label">Email</p>
                 <p class="text-gray-900 dark:text-gray-100">{{ client.email || 'No disponible' }}</p>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Teléfono</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400" 
+                   i18n="@@client-report.client.phone-label">Teléfono</p>
                 <p class="text-gray-900 dark:text-gray-100">{{ client.phone_number || 'No disponible' }}</p>
               </div>
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Estado</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400" 
+                   i18n="@@client-report.client.status-label">Estado</p>
                 <span class="inline-block px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(client.status || '')">
                   {{ getStatusLabel(client.status || '') }}
                 </span>
@@ -81,7 +90,8 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Inversión Total</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400" 
+                 i18n="@@client-report.kpi.total-investment.label">Inversión Total</p>
               <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">
                 ${{ clientKpis && clientKpis.total_invested ? clientKpis.total_invested.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}
               </h3>
@@ -91,7 +101,8 @@
             </div>
           </div>
           <div class="mt-2">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Valor actual: ${{ clientKpis && clientKpis.current_value ? clientKpis.current_value.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400" 
+               i18n="@@client-report.kpi.current-value.label">Valor actual: ${{ clientKpis && clientKpis.current_value ? clientKpis.current_value.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
           </div>
         </div>
 
@@ -100,7 +111,8 @@
              [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'positive' : 'negative'">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">ROI</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400" 
+                 i18n="@@client-report.kpi.roi.label">ROI</p>
               <h3 class="text-xl font-bold mt-2" 
                   [ngClass]="clientKpis && clientKpis.roi_percentage >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
                 {{ clientKpis && clientKpis.roi_percentage ? clientKpis.roi_percentage.toFixed(2) : '0.00' }}%
@@ -114,7 +126,8 @@
             </div>
           </div>
           <div class="mt-2">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Ganancia: ${{ clientKpis && clientKpis.roi_amount ? clientKpis.roi_amount.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400" 
+               i18n="@@client-report.kpi.gain.label">Ganancia: ${{ clientKpis && clientKpis.roi_amount ? clientKpis.roi_amount.toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '0.00' }}</p>
           </div>
         </div>
 
@@ -122,7 +135,8 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Operaciones</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400" 
+                 i18n="@@client-report.kpi.operations.label">Operaciones</p>
               <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">{{ clientKpis && clientKpis.operations_count ? clientKpis.operations_count : 0 }}</h3>
             </div>
             <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
@@ -130,7 +144,8 @@
             </div>
           </div>
           <div class="mt-2">
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-gray-500 dark:text-gray-400" 
+               i18n="@@client-report.kpi.last-operation.label">
               Última operación: {{ clientKpis && clientKpis.last_operation_date ? (clientKpis.last_operation_date | date:'dd/MM/yyyy') : 'N/A' }}
             </p>
           </div>
@@ -140,7 +155,8 @@
         <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-slate-700 p-5 kpi-card neutral">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Activos Principales</p>
+              <p class="text-sm font-medium text-gray-500 dark:text-gray-400" 
+                 i18n="@@client-report.kpi.main-assets.label">Activos Principales</p>
               <div class="flex flex-wrap gap-1 mt-2">
                 <span *ngFor="let asset of clientKpis && clientKpis.main_assets ? clientKpis.main_assets.slice(0, 3) : []"
                       class="inline-block px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300">
@@ -163,12 +179,14 @@
       <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="mb-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700 animate-fade-in-up delay-200">
         <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
           <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
-          Filtros
+          <span i18n="@@client-report.filters.title">Filtros</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Filtro por período -->
           <div class="relative">
-            <label for="period-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Período</label>
+            <label for="period-filter" 
+                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" 
+                   i18n="@@client-report.filters.period.label">Período</label>
             <div class="relative">
               <select 
                 id="period-filter"
@@ -184,7 +202,9 @@
 
           <!-- Filtro por mercado -->
           <div class="relative">
-            <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mercado</label>
+            <label for="market-filter" 
+                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" 
+                   i18n="@@client-report.filters.market.label">Mercado</label>
             <div class="relative">
               <select 
                 id="market-filter"
@@ -200,17 +220,19 @@
 
           <!-- Filtro por estado -->
           <div class="relative">
-            <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Estado</label>
+            <label for="status-filter" 
+                   class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" 
+                   i18n="@@client-report.filters.status.label">Estado</label>
             <div class="relative">
               <select 
                 id="status-filter"
                 formControlName="status"
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
-                <option value="">Todos</option>
-                <option value="active">Activo</option>
-                <option value="inactive">Inactivo</option>
-                <option value="pending">Pendiente</option>
-                <option value="paid">Pagado</option>
+                <option value="" i18n="@@client-report.filters.status.all">Todos</option>
+                <option value="active" i18n="@@client-report.filters.status.active">Activo</option>
+                <option value="inactive" i18n="@@client-report.filters.status.inactive">Inactivo</option>
+                <option value="pending" i18n="@@client-report.filters.status.pending">Pendiente</option>
+                <option value="paid" i18n="@@client-report.filters.status.paid">Pagado</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-purple-500 dark:text-purple-400">verified_user</mat-icon>
@@ -227,21 +249,21 @@
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             [disabled]="isLoading">
             <mat-icon class="mr-1">clear</mat-icon>
-            Limpiar
+            <span i18n="@@client-report.filters.clear-button">Limpiar</span>
           </button>
           <button 
             type="submit" 
             class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             [disabled]="isLoading">
             <mat-icon class="mr-1">search</mat-icon>
-            Aplicar
+            <span i18n="@@client-report.filters.apply-button">Aplicar</span>
           </button>
           <div 
             *ngIf="hasActiveFilters()"
             class="py-2 px-3 bg-emerald-50 dark:bg-emerald-900/30 border border-gray-500 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm"
           >
             <mat-icon class="mr-1 text-sm">filter_list</mat-icon>
-            Filtros activos
+            <span i18n="@@client-report.filters.active-filters">Filtros activos</span>
           </div>
         </div>
 
@@ -253,7 +275,7 @@
             class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
           >
             <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
-            Exportar PDF
+            <span i18n="@@client-report.export.pdf-button">Exportar PDF</span>
           </button>
           <button 
             type="button"
@@ -261,7 +283,7 @@
             class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
           >
             <mat-icon class="mr-1 text-sm">table_chart</mat-icon>
-            Exportar Excel
+            <span i18n="@@client-report.export.excel-button">Exportar Excel</span>
           </button>
         </div>
       </form>
@@ -333,8 +355,10 @@
       <!-- Tabla de comisiones -->
       <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-slate-700 animate-fade-in-up delay-400">
         <div class="p-5 border-b border-gray-200 dark:border-gray-700">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Historial de Comisiones</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Detalle de comisiones generadas por este cliente</p>
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100" 
+              i18n="@@client-report.commissions-table.title">Historial de Comisiones</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400" 
+             i18n="@@client-report.commissions-table.subtitle">Detalle de comisiones generadas por este cliente</p>
         </div>
         
         <div class="p-5">
@@ -342,7 +366,9 @@
             <table mat-table [dataSource]="dataSourceCommissions" matSort class="min-w-full bg-white dark:bg-slate-800">
               <!-- Columna Mes -->
               <ng-container matColumnDef="month">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mes </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.month-header"> Mes </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
                   {{ commission.month }} 
                 </td>
@@ -350,7 +376,9 @@
 
               <!-- Columna Año -->
               <ng-container matColumnDef="year">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Año </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.year-header"> Año </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
                   {{ commission.year }} 
                 </td>
@@ -358,7 +386,9 @@
 
               <!-- Columna comisiones generadas -->
               <ng-container matColumnDef="commissions_generated">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Comisiones </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.commissions-header"> Comisiones </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-400"> 
                   ${{ commission.commissions_generated.toFixed(2) }} 
                 </td>
@@ -366,7 +396,9 @@
 
               <!-- Columna operaciones -->
               <ng-container matColumnDef="operations_count">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Operaciones </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.operations-header"> Operaciones </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
                   {{ commission.operations_count }} 
                 </td>
@@ -374,7 +406,9 @@
 
               <!-- Columna mercado -->
               <ng-container matColumnDef="market">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Mercado </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.market-header"> Mercado </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"> 
                   {{ commission.market }} 
                 </td>
@@ -382,7 +416,9 @@
 
               <!-- Columna estado -->
               <ng-container matColumnDef="status">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"> Estado </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header 
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" 
+                    i18n="@@client-report.commissions-table.status-header"> Estado </th>
                 <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(commission.status)">
                     {{ getStatusLabel(commission.status) }}
@@ -399,7 +435,7 @@
                 <td class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700" [attr.colspan]="displayedColumnsCommissions.length">
                   <div class="flex flex-col items-center">
                     <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
-                    <p>No se encontraron comisiones para este cliente con los filtros seleccionados.</p>
+                    <p i18n="@@client-report.commissions-table.no-data">No se encontraron comisiones para este cliente con los filtros seleccionados.</p>
                   </div>
                 </td>
               </tr>
@@ -412,6 +448,7 @@
             [pageSize]="10"
             showFirstLastButtons
             aria-label="Seleccionar página de comisiones"
+            i18n-aria-label="@@client-report.commissions-table.paginator-aria-label"
             class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
           </mat-paginator>
         </div>

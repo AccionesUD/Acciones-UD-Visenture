@@ -1,8 +1,8 @@
 <div class="sell-stock-modal p-6 max-w-lg bg-white dark:bg-slate-800 rounded-xl max-h-[90vh] flex flex-col">
   <!-- Encabezado fijo -->
   <div class="flex justify-between items-center mb-6 flex-shrink-0">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Vender acciones</h2>
-    <button mat-icon-button (click)="cancel()" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
+    <h2 i18n="sellStockModal|Modal title" class="text-xl font-bold text-gray-900 dark:text-gray-100">Vender acciones</h2>
+    <button mat-icon-button (click)="cancel()" i18n-aria-label="sellStockModal|Close modal button" aria-label="Cerrar modal" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -50,18 +50,18 @@
       
       <!-- Precio actual -->
       <div class="ml-auto text-right">
-        <div class="text-sm text-gray-600 dark:text-gray-400">Precio actual</div>
+        <div i18n="sellStockModal|Current price label" class="text-sm text-gray-600 dark:text-gray-400">Precio actual</div>
         <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
       </div>
     </div>
     
     <div class="mt-4 bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-600">
       <div class="flex justify-between text-sm">
-        <span class="text-gray-700 dark:text-gray-300">Cantidad disponible:</span>
-        <span class="font-bold text-gray-900 dark:text-white">{{ data.stock.quantity }} acciones</span>
+        <span i18n="sellStockModal|Available quantity label" class="text-gray-700 dark:text-gray-300">Cantidad disponible:</span>
+        <ng-container i18n="sellStockModal|Available shares count">{data.stock.quantity, plural, =1 {1 acción} other {{{data.stock.quantity}} acciones}}</ng-container>
       </div>
       <div class="flex justify-between text-sm mt-1">
-        <span class="text-gray-700 dark:text-gray-300">Valor total de tenencia:</span>
+        <span i18n="sellStockModal|Total holding value label" class="text-gray-700 dark:text-gray-300">Valor total de tenencia:</span>
         <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ data.stock.totalValue | currency:'COP':'symbol':'1.0-0' }}</span>
       </div>
     </div>
@@ -71,8 +71,8 @@
   <div *ngIf="data.clientId" class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-6 flex items-center">
     <mat-icon class="text-amber-600 dark:text-amber-400 mr-2">supervisor_account</mat-icon>
     <div>
-      <p class="text-sm font-medium text-amber-800 dark:text-amber-300">Orden para cliente</p>
-      <p class="text-xs text-amber-700 dark:text-amber-400">Esta orden será realizada en nombre de un cliente.</p>
+      <p i18n="sellStockModal|Client order title" class="text-sm font-medium text-amber-800 dark:text-amber-300">Orden para cliente</p>
+      <p i18n="sellStockModal|Client order description" class="text-xs text-amber-700 dark:text-amber-400">Esta orden será realizada en nombre de un cliente.</p>
     </div>
   </div>
 

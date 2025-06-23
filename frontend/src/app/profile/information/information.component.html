@@ -1,6 +1,8 @@
 <div class="w-full">
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Información Personal</h2>      <button 
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white" 
+        i18n="@@profile.information.title">Información Personal</h2>
+    <button 
         mat-flat-button
         [ngClass]="!isEditing ? 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white' : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100'" 
         (click)="toggleEdit()"
@@ -8,14 +10,16 @@
         class="rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
       >
         <mat-icon class="mr-1">{{ !isEditing ? 'edit' : 'close' }}</mat-icon>
-        {{ !isEditing ? 'Editar' : 'Cancelar' }}
+        <span *ngIf="!isEditing" i18n="@@profile.information.edit-button">Editar</span>
+        <span *ngIf="isEditing" i18n="@@profile.information.cancel-button">Cancelar</span>
       </button>
   </div>
   
   <!-- Estado de carga -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-8">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-    <span class="ml-3 text-gray-600 dark:text-gray-400">Cargando información...</span>
+    <span class="ml-3 text-gray-600 dark:text-gray-400" 
+          i18n="@@profile.information.loading">Cargando información...</span>
   </div>
   
   <!-- Error de guardado -->
@@ -37,7 +41,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Nombre -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+               i18n="@@profile.information.first-name.label">Nombre</label>
         <div class="relative">
           <input 
             type="text" 

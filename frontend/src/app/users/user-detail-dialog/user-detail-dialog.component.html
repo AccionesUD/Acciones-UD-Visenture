@@ -1,7 +1,7 @@
 <div class="min-w-[800px] max-w-4xl p-6">
   <!-- Cabecera del diálogo -->
   <div class="flex justify-between items-center border-b border-gray-700 dark:border-gray-700 pb-4 mb-6">
-    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent" i18n="@@user.detail.dialog.title">
       Detalles del Usuario
     </h2>
     <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
@@ -43,11 +43,11 @@
         <!-- Datos de registro -->
         <div class="ml-0 md:ml-auto text-right">
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Fecha de registro: 
+            <span i18n="@@user.detail.registration.date">Fecha de registro:</span>
             <span class="font-medium text-gray-800 dark:text-gray-200">{{ user.created_at ? (user.created_at | date:'dd/MM/yyyy') : 'No disponible' }}</span>
           </p>
           <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Último acceso: 
+            <span i18n="@@user.detail.last.access">Último acceso:</span> 
             <span class="font-medium text-gray-800 dark:text-gray-200">{{ user.last_login ? (user.last_login | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}</span>
           </p>
         </div>

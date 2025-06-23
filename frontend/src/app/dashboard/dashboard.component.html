@@ -2,20 +2,21 @@
   <!-- Main Content -->
   <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>      <button 
+      <h1 i18n="dashboard|Page title" class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
+      <button 
         (click)="toggleDataMode()"
         class="px-4 py-2 rounded-lg text-sm font-medium"
         [class.bg-emerald-600]="!useMockData"
         [class.bg-yellow-500]="useMockData"
         [class.text-white]="true"
       >
-        {{ useMockData ? 'Usar Datos Reales' : 'Usar Datos Simulados' }}
+        <ng-container i18n="dashboard|Data mode toggle">{useMockData, select, true {Usar Datos Reales} other {Usar Datos Simulados}}</ng-container>
       </button>
     </div>
     
     <!-- Controls -->
     <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md mb-6 border border-emerald-100 dark:border-slate-700">
-      <h3 class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Seleccionar acción:</h3>
+      <h3 i18n="dashboard|Select stock label" class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Seleccionar acción:</h3>
       <div class="flex flex-wrap gap-2">
         <button 
           *ngFor="let share of watchlistShares"
@@ -39,7 +40,7 @@
     <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md mb-6 border border-emerald-100 dark:border-slate-700 flex flex-wrap items-center justify-between">
       <div class="flex items-center space-x-4">
         <div>
-          <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Periodo:</label>          <select 
+          <label i18n="dashboard|Period label" class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Periodo:</label>          <select 
             [(ngModel)]="selectedPeriod"
             (ngModelChange)="changeTimeSettings($event)"
             class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
@@ -50,7 +51,7 @@
           </select>
         </div>
         <div>
-          <label class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Intervalo:</label>          <select 
+          <label i18n="dashboard|Interval label" class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Intervalo:</label>          <select 
             [(ngModel)]="selectedTimeframe"
             (ngModelChange)="changeTimeSettings($event)"
             class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"

@@ -4,7 +4,7 @@
     <!-- Tarjeta de Saldo Actual -->
     <div class="balance-card p-6 mb-6 rounded-xl shadow-lg">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold">Saldo de Cuenta</h2>
+        <h2 i18n="addFunds|Account balance title" class="text-xl font-semibold">Saldo de Cuenta</h2>
         <div class="rounded-full p-1">
           <mat-icon>account_balance</mat-icon>
         </div>
@@ -20,7 +20,7 @@
             <div class="balance-icon-wrapper">
               <mat-icon class="balance-icon">account_balance_wallet</mat-icon>
             </div>
-            <span>Saldo Total</span>
+            <span i18n="addFunds|Total balance label">Saldo Total</span>
           </div>
           <div class="balance-value">{{ formatCurrency(accountBalance.balance) }}</div>
         </div>
@@ -30,7 +30,7 @@
             <div class="balance-icon-wrapper">
               <mat-icon class="balance-icon">payments</mat-icon>
             </div>
-            <span>Saldo Disponible</span>
+            <span i18n="addFunds|Available balance label">Saldo Disponible</span>
           </div>
           <div class="balance-value">{{ formatCurrency(accountBalance.available_balance) }}</div>
         </div>
@@ -40,7 +40,7 @@
             <div class="balance-icon-wrapper">
               <mat-icon class="balance-icon">hourglass_empty</mat-icon>
             </div>
-            <span>Fondos Pendientes</span>
+            <span i18n="addFunds|Pending funds label">Fondos Pendientes</span>
           </div>
           <div class="text-lg font-bold">{{ formatCurrency(accountBalance.pending_funds) }}</div>
         </div>
@@ -48,7 +48,7 @@
         <mat-divider class="my-4 bg-white bg-opacity-20"></mat-divider>
         
         <div *ngIf="accountBalance.last_deposit" class="mt-4">
-          <div class="font-semibold text-sm">Último Depósito:</div>
+          <div i18n="addFunds|Last deposit label" class="font-semibold text-sm">Último Depósito:</div>
           <div class="flex justify-between items-center mt-2 bg-transparent rounded-lg p-2">
             <div class="flex items-center">
               <div class="rounded-full p-1 mr-2">
@@ -62,8 +62,7 @@
                     'bg-yellow-200 text-yellow-800': accountBalance.last_deposit.status === 'pending',
                     'bg-red-200 text-red-800': accountBalance.last_deposit.status === 'failed'
                   }">
-              {{ accountBalance.last_deposit.status === 'completed' ? 'Completado' : 
-                 accountBalance.last_deposit.status === 'pending' ? 'Pendiente' : 'Fallido' }}
+              <ng-container i18n="addFunds|Deposit status">{accountBalance.last_deposit.status, select, completed {Completado} pending {Pendiente} failed {Fallido} other {Desconocido}}</ng-container>
             </span>
           </div>
           <div class="text-xs mt-2 opacity-80">
@@ -76,7 +75,7 @@
         <div class="rounded-full bg-white bg-opacity-20 p-2 inline-flex mb-3">
           <mat-icon class="text-3xl">error_outline</mat-icon>
         </div>
-        <p>No se pudo cargar la información de la cuenta</p>
+        <p i18n="addFunds|Cannot load account info">No se pudo cargar la información de la cuenta</p>
       </div>
     </div>
 
@@ -86,7 +85,7 @@
         <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-2 mr-3">
           <mat-icon class="text-blue-600 dark:text-blue-400">info_outline</mat-icon>
         </div>
-        <h3 class="font-semibold text-gray-800 dark:text-gray-100">Información Importante</h3>
+        <h3 i18n="addFunds|Important information title" class="font-semibold text-gray-800 dark:text-gray-100">Información Importante</h3>
       </div>
       
       <ul class="space-y-4 text-gray-600 dark:text-gray-300 pl-2">
@@ -94,19 +93,19 @@
           <div class="rounded-full bg-blue-50 dark:bg-blue-900/20 p-1 mr-3 mt-0.5">
             <mat-icon class="text-blue-500 dark:text-blue-400 text-base">schedule</mat-icon>
           </div>
-          <span class="text-sm">Los fondos pueden tardar hasta <strong class="text-gray-800 dark:text-gray-200">24 horas</strong> en ser procesados dependiendo del método de pago.</span>
+          <span i18n="addFunds|Processing time info" class="text-sm">Los fondos pueden tardar hasta <strong class="text-gray-800 dark:text-gray-200">24 horas</strong> en ser procesados dependiendo del método de pago.</span>
         </li>
         <li class="flex items-start">
           <div class="rounded-full bg-blue-50 dark:bg-blue-900/20 p-1 mr-3 mt-0.5">
             <mat-icon class="text-blue-500 dark:text-blue-400 text-base">attach_money</mat-icon>
           </div>
-          <span class="text-sm">El monto mínimo de depósito es de <strong class="text-gray-800 dark:text-gray-200">$10.00</strong>.</span>
+          <span i18n="addFunds|Minimum deposit amount info" class="text-sm">El monto mínimo de depósito es de <strong class="text-gray-800 dark:text-gray-200">$10.00</strong>.</span>
         </li>
         <li class="flex items-start">
           <div class="rounded-full bg-blue-50 dark:bg-blue-900/20 p-1 mr-3 mt-0.5">
             <mat-icon class="text-blue-500 dark:text-blue-400 text-base">support_agent</mat-icon>
           </div>
-          <span class="text-sm">Para asistencia con tus depósitos, contacta a nuestro <strong class="text-gray-800 dark:text-gray-200">soporte técnico</strong>.</span>
+          <span i18n="addFunds|Support contact info" class="text-sm">Para asistencia con tus depósitos, contacta a nuestro <strong class="text-gray-800 dark:text-gray-200">soporte técnico</strong>.</span>
         </li>
       </ul>
     </div>

@@ -6,7 +6,7 @@
       
       <!-- Encabezado y Acciones -->
       <div class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-500 dark:border-gray-700">
-        <h1 class="text-2xl font-bold text-center bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent mb-4 sm:mb-0">Gestión de Usuarios</h1>
+        <h1 class="text-2xl font-bold text-center bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent mb-4 sm:mb-0" i18n="@@users.management.title">Gestión de Usuarios</h1>
         <div class="flex space-x-3">
           <button 
             (click)="loadUsers(true)" 
@@ -15,7 +15,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Refrescar
+            <span i18n="@@common.actions.refresh">Refrescar</span>
           </button>
           <button 
             (click)="openCreateUserDialog()" 
@@ -23,7 +23,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Crear Usuario
+            <span i18n="@@users.actions.create.user">Crear Usuario</span>
           </button>
         </div>
       </div>
@@ -32,8 +32,8 @@
       <div *ngIf="isLoading" class="flex justify-center items-center py-12">
         <mat-spinner diameter="50" color="primary"></mat-spinner>
         <div class="ml-4">
-          <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Cargando usuarios...</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Esto puede tardar unos segundos</p>
+          <p class="text-lg font-medium text-gray-600 dark:text-gray-300" i18n="@@users.loading.title">Cargando usuarios...</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@common.loading.wait.message">Esto puede tardar unos segundos</p>
         </div>
       </div>
 
@@ -43,11 +43,11 @@
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
             <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
-            <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@commissioner.error.contact.support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
           </div>
         </div>
         <button mat-stroked-button color="warn" (click)="loadUsers(true)" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
-          Reintentar
+          <span i18n="@@common.actions.retry">Reintentar</span>
         </button>
       </div>
 
@@ -55,16 +55,17 @@
       <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-emerald-100 dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700">
         <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
           <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
-          Filtros
+          <span i18n="@@common.filters.title">Filtros</span>
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Campo de búsqueda -->
           <div class="relative">
-            <label for="search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar usuario</label>
+            <label for="search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.search.label">Buscar usuario</label>
             <div class="relative">
               <input 
                 id="search-filter"
                 formControlName="search" 
+                i18n-placeholder="@@users.filters.search.placeholder"
                 placeholder="Nombre, email..." 
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
               >
@@ -76,7 +77,7 @@
 
           <!-- Filtro por rol -->
           <div class="relative">
-            <label for="role-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filtrar por rol</label>
+            <label for="role-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.role.label">Filtrar por rol</label>
             <div class="relative">
               <select 
                 id="role-filter"
@@ -92,7 +93,7 @@
 
           <!-- Filtro por estado -->
           <div class="relative">
-            <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filtrar por estado</label>
+            <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.status.label">Filtrar por estado</label>
             <div class="relative">
               <select 
                 id="status-filter"
@@ -115,14 +116,14 @@
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             [disabled]="isLoading">
             <mat-icon class="mr-1">clear</mat-icon>
-            Limpiar
+            <span i18n="@@common.actions.clear">Limpiar</span>
           </button>
           <button 
             type="submit" 
             class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             [disabled]="isLoading">
             <mat-icon class="mr-1">search</mat-icon>
-            Aplicar
+            <span i18n="@@common.actions.apply">Aplicar</span>
           </button>
         </div>
       </form>
@@ -153,19 +154,19 @@
 
             <!-- Columna Nombre -->
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Nombre</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.name.label">Nombre</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">{{ getFullName(user) }}</td>
             </ng-container>
 
             <!-- Columna Email -->
             <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Email</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.email.label">Email</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">{{ user.email }}</td>
             </ng-container>
 
             <!-- Columna Rol -->
             <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Rol</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.role.label">Rol</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getRoleClass(user.role)">
                   {{ getRoleDisplay(user.role) }}
@@ -175,7 +176,7 @@
 
             <!-- Columna Estado -->
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Estado</th>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.status.label">Estado</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(user.status)">
                   <svg class="inline-block mr-1.5 h-2 w-2" [ngClass]="getStatusIndicatorClass(user.status)" fill="currentColor" viewBox="0 0 8 8">
@@ -188,15 +189,15 @@
             
             <!-- Columna Acciones -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Acciones</th>
+              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.actions.label">Acciones</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
-                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" matTooltip="Ver Detalles" class="action-icon">
+                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.view.details.tooltip" matTooltip="Ver Detalles" class="action-icon">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" matTooltip="Editar Usuario" class="action-icon">
+                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.edit.user.tooltip" matTooltip="Editar Usuario" class="action-icon">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" matTooltip="Eliminar Usuario" class="action-icon-delete">
+                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.delete.user.tooltip" matTooltip="Eliminar Usuario" class="action-icon-delete">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -212,10 +213,10 @@
                   <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
                   <p>
                     <ng-container *ngIf="!isLoading && dataSource.data.length === 0 && (filterForm.dirty || (totalUsers === 0 && !filterForm.dirty))">
-                      No se encontraron usuarios que coincidan con los filtros.
+                      <span i18n="@@users.no.results.filters">No se encontraron usuarios que coincidan con los filtros.</span>
                     </ng-container>
                     <ng-container *ngIf="!isLoading && totalUsers === 0 && !filterForm.dirty && !error">
-                      No hay usuarios registrados en el sistema.
+                      <span i18n="@@users.no.users.registered">No hay usuarios registrados en el sistema.</span>
                     </ng-container>
                   </p>
                 </div>
@@ -230,6 +231,7 @@
                       [pageSizeOptions]="pageSizeOptions"
                       [pageIndex]="currentPage"
                       (page)="handlePageEvent($event)"
+                      i18n-aria-label="@@users.paginator.aria.label"
                       aria-label="Seleccionar página de usuarios"
                       class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
         </mat-paginator>
@@ -238,7 +240,7 @@
       <!-- Sección de Gráficos -->
       <div *ngIf="!isLoading && !error && totalUsers > 0" class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Distribución por Rol</h3>
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.role.distribution.title">Distribución por Rol</h3>
           <div id="userRoleChart" style="min-height: 350px;">
             <apx-chart
               [series]="roleDistributionChartOptions.series!"
@@ -255,7 +257,7 @@
         </div>
 
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Distribución por Estado</h3>
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.status.distribution.title">Distribución por Estado</h3>
           <div id="userStatusChart" style="min-height: 350px;">
             <apx-chart
               [series]="statusDistributionChartOptions.series!"
@@ -272,7 +274,7 @@
         </div>
 
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
-          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3">Tendencia de Registros</h3>
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.registration.trend.title">Tendencia de Registros</h3>
           <div id="userRegistrationChart" style="min-height: 365px;">
             <apx-chart
               [series]="registrationTrendChartOptions.series!"

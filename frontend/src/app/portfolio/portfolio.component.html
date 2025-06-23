@@ -3,13 +3,13 @@
   <!-- Sección Acciones Compradas -->
   <div class="flex justify-center pb-10">
     <div class="bg-emerald-100 dark:bg-slate-900 p-8 rounded-xl shadow-2xl w-full max-w-6xl transition-all duration-300">
-      <h3 class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-700 to-teal-800 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-6">Mis acciones</h3>
+      <h3 i18n="portfolio|Portfolio title" class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-700 to-teal-800 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-6">Mis acciones</h3>
         <!-- Estado de carga -->
       <div *ngIf="isLoading" class="flex justify-center items-center py-12">
         <mat-spinner diameter="50" color="accent"></mat-spinner>
         <div class="ml-4">
-          <p class="text-lg font-medium text-gray-600 dark:text-gray-300">Cargando acciones...</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Esto puede tardar unos segundos</p>
+          <p i18n="portfolio|Loading stocks message" class="text-lg font-medium text-gray-600 dark:text-gray-300">Cargando acciones...</p>
+          <p i18n="portfolio|Loading wait message" class="text-sm text-gray-500 dark:text-gray-400">Esto puede tardar unos segundos</p>
         </div>
       </div>
 
@@ -19,19 +19,21 @@
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
             <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
-            <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+            <p i18n="portfolio|Error contact support message" class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
           </div>
         </div>
-        <button mat-stroked-button color="warn" (click)="ngOnInit()" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+        <button mat-stroked-button color="warn" (click)="ngOnInit()" i18n="portfolio|Retry button" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
           Reintentar
         </button>
-      </div>      <!-- Estado vacío (sin acciones en el portfolio) -->
+      </div>
+
+      <!-- Estado vacío (sin acciones en el portfolio) -->
       <div *ngIf="!isLoading && !error && stocks.length === 0" class="bg-gray-50 dark:bg-slate-700 rounded-lg p-8 text-center shadow-md">
         <div class="flex flex-col items-center">
           <mat-icon class="text-gray-400 dark:text-gray-500 text-5xl mb-4">account_balance_wallet</mat-icon>
-          <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No has realizado compras aún</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-4">No tienes acciones en tu portafolio. Comienza a invertir para ver tus activos.</p>
-          <button mat-raised-button color="primary" routerLink="/markets" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
+          <h3 i18n="portfolio|No purchases yet title" class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No has realizado compras aún</h3>
+          <p i18n="portfolio|No purchases yet description" class="text-gray-600 dark:text-gray-300 mb-4">No tienes acciones en tu portafolio. Comienza a invertir para ver tus activos.</p>
+          <button mat-raised-button color="primary" routerLink="/markets" i18n="portfolio|Explore markets button" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
             Explorar mercados
           </button>
         </div>
@@ -50,27 +52,27 @@
       <div *ngIf="!isLoading && !error && stocks.length > 0 && filteredStocks.length === 0" class="bg-gray-50 dark:bg-slate-700 rounded-lg p-8 mt-6 text-center shadow-md">
         <div class="flex flex-col items-center">
           <mat-icon class="text-gray-400 dark:text-gray-500 text-5xl mb-4">filter_alt_off</mat-icon>
-          <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No hay acciones que coincidan con los filtros</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-4">Intenta con otros criterios de búsqueda.</p>
-          <button mat-raised-button color="primary" (click)="resetFilters()" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
+          <h3 i18n="portfolio|No matches title" class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">No hay acciones que coincidan con los filtros</h3>
+          <p i18n="portfolio|No matches description" class="text-gray-600 dark:text-gray-300 mb-4">Intenta con otros criterios de búsqueda.</p>
+          <button mat-raised-button color="primary" (click)="resetFilters()" i18n="portfolio|Remove filters button" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
             Quitar filtros
           </button>
         </div>
       </div>      <!-- Tabla de Acciones -->
       <div *ngIf="!isLoading && !error && filteredStocks.length > 0" class="commissioner-table-container overflow-x-auto mt-6 shadow border border-gray-200 dark:border-gray-700 rounded-lg" #stocksTable>
         <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-800">
-          <h3 class="text-lg text-gray-800 dark:text-gray-100">Detalle de Acciones</h3>
+          <h3 i18n="portfolio|Stock details title" class="text-lg text-gray-800 dark:text-gray-100">Detalle de Acciones</h3>
           <span class="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium">
-            {{ filteredStocks.length }} acciones encontradas
+            <ng-container i18n="portfolio|Stocks found count">{filteredStocks.length, plural, =1 {1 acción encontrada} other {{{filteredStocks.length}} acciones encontradas}}</ng-container>
             <span *ngIf="filteredStocks.length > pageSize">
-              (mostrando {{ pageIndex * pageSize + 1 }}-{{ pageIndex * pageSize + displayedStocks.length }})
+              <ng-container i18n="portfolio|Showing range">(mostrando {{pageIndex * pageSize + 1}}-{{pageIndex * pageSize + displayedStocks.length}})</ng-container>
             </span>
           </span>
         </div>
         <table mat-table [dataSource]="dataSource" class="min-w-full commissioner-table">
           <!-- Columna Símbolo -->
           <ng-container matColumnDef="symbol">
-            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Símbolo</th>
+            <th mat-header-cell *matHeaderCellDef i18n="portfolio|Symbol column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Símbolo</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
               {{ stock.symbol }}
             </td>
@@ -78,7 +80,7 @@
 
           <!-- Columna Mercado -->
           <ng-container matColumnDef="marketName">
-            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Mercado</th>
+            <th mat-header-cell *matHeaderCellDef i18n="portfolio|Market column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Mercado</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
               <span class="px-2 py-1 text-xs font-medium rounded-full"
                     [ngClass]="{
@@ -93,7 +95,7 @@
 
           <!-- Columna Cantidad -->
           <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Cantidad</th>
+            <th mat-header-cell *matHeaderCellDef i18n="portfolio|Quantity column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Cantidad</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
               {{ stock.quantity }}
             </td>

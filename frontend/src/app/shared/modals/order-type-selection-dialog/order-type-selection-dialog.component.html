@@ -1,23 +1,23 @@
 <div class="dialog-container">
   <h2 mat-dialog-title class="flex items-center">
     <mat-icon class="mr-2">{{ data.orderType === 'buy' ? 'shopping_cart' : 'sell' }}</mat-icon>
-    Confirmar Tipo de Orden ({{ data.shareSymbol }})
+    <span i18n="@@order.type.selection.title">Confirmar Tipo de Orden ({{ data.shareSymbol }})</span>
   </h2>
   
   <mat-dialog-content class="py-4">
-    <p class="mb-4">¿Para quién deseas realizar esta orden?</p>
+    <p class="mb-4" i18n="@@order.type.selection.question">¿Para quién deseas realizar esta orden?</p>
     
     <mat-radio-group [(ngModel)]="orderFor" (change)="onOrderForChange()" class="flex flex-col space-y-3">
       <mat-radio-button value="self" class="flex items-center">
         <div class="flex items-center">
           <mat-icon class="mr-2">person</mat-icon>
-          <span>Para mí (orden personal)</span>
+          <span i18n="@@order.type.selection.for.self">Para mí (orden personal)</span>
         </div>
       </mat-radio-button>
       <mat-radio-button value="client" class="flex items-center">
         <div class="flex items-center">
           <mat-icon class="mr-2">supervisor_account</mat-icon>
-          <span>Para un cliente</span>
+          <span i18n="@@order.type.selection.for.client">Para un cliente</span>
         </div>
       </mat-radio-button>
     </mat-radio-group>
@@ -25,12 +25,12 @@
     <div *ngIf="orderFor === 'client'" class="mt-6 client-selection-container">
       <div *ngIf="isLoadingClients" class="flex items-center justify-center py-4">
         <mat-spinner diameter="30"></mat-spinner>
-        <span class="ml-3">Cargando clientes...</span>
+        <span class="ml-3" i18n="@@order.type.selection.loading.clients">Cargando clientes...</span>
       </div>
       
       <div *ngIf="!isLoadingClients && clients.length > 0">
         <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Seleccionar Cliente</mat-label>
+          <mat-label i18n="@@order.type.selection.select.client.label">Seleccionar Cliente</mat-label>
           <mat-select [(ngModel)]="selectedClientId" required>
             <mat-option *ngFor="let client of clients" [value]="client.id">
               {{ client.fullName }} ({{ client.email }})
@@ -40,18 +40,19 @@
       </div>
 
       <div *ngIf="!isLoadingClients && clients.length === 0" class="text-center text-gray-500 py-4">
-        <p>No tienes clientes asignados.</p>
+        <p i18n="@@order.type.selection.no.clients">No tienes clientes asignados.</p>
       </div>
     </div>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="p-4 bg-gray-50 dark:bg-slate-800">
-    <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+    <button mat-stroked-button (click)="onCancel()" i18n="@@common.actions.cancel">Cancelar</button>
     <button 
       mat-flat-button 
       color="primary" 
       (click)="onConfirm()" 
-      [disabled]="orderFor === 'client' && !selectedClientId">
+      [disabled]="orderFor === 'client' && !selectedClientId"
+      i18n="@@common.actions.continue">
       Continuar
     </button>
   </mat-dialog-actions>

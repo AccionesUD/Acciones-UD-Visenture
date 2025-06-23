@@ -1,9 +1,12 @@
 import { Component, OnInit, PLATFORM_ID, Inject, OnDestroy } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Subscription } from 'rxjs';
+
+// Declara la función global para que TypeScript la reconozca
+declare function changeAppLanguage(lang: string): void;
 
 @Component({
   selector: 'app-navbar',
@@ -17,44 +20,49 @@ export class NavbarComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   sidebarOpen = false;
   isDarkTheme = false;
-  isLoading = true; // Estado de carga para controlar la visualización
-  isCommissioner = false; // Propiedad para verificar si el usuario es comisionista
-  private authSubscription: Subscription = new Subscription();
+  isLoading = true;
+  isCommissioner = false;
   
-  // Verifica si estamos en el navegador
+  showLanguageMenu = false;
+  currentLanguage = 'es';
+  
+  private authSubscription: Subscription = new Subscription();
+
   private get isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
+
   constructor(
     private authService: AuthService,
     private authState: AuthStateService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(DOCUMENT) private document: Document
   ) {
     if (this.isBrowser) {
-      // Inicializar el estado del tema basado en localStorage o preferencia del sistema
       const storedTheme = localStorage.getItem('theme');
+      // FIX: Usar la clave correcta de localStorage para el idioma
+      this.currentLanguage = localStorage.getItem('preferred-language') || 'es';
+
       if (storedTheme) {
         this.isDarkTheme = storedTheme === 'dark';
       } else {
-        // Usar preferencia del sistema
         this.isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
-      // Aplicar el tema inicial
+      
       if (this.isDarkTheme) {
         document.documentElement.classList.add('dark');
       }
     }
   }
+
   ngOnInit(): void {
-    // Suscribirse al estado de autenticación
     this.isLoading = true;
     this.authSubscription = this.authService.currentUser$.subscribe({
       next: (user) => {
         this.isAuthenticated = !!user;
         this.username = user?.username || null;
-        // Verificar si el usuario tiene rol de comisionista o admin
         this.isCommissioner = user?.role === 'commissioner' || user?.role === 'admin';
-        this.isLoading = false; // Terminamos de cargar cuando tengamos datos de autenticación
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error al obtener el usuario actual:', err);
@@ -64,7 +72,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    // Limpiamos la suscripción para evitar memory leaks
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
@@ -73,7 +80,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleTheme(): void {
     if (!this.isBrowser) return;
 
-    // Cambiar el tema
     this.isDarkTheme = !this.isDarkTheme;
 
     if (this.isDarkTheme) {
@@ -94,13 +100,35 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.sidebarOpen = false; // Cerrar sidebar al hacer logout
+    this.sidebarOpen = false;
     this.authService.logout();
   }
 
-  // Método para navegar y cerrar sidebar automáticamente
   navigateAndClose(): void {
     this.sidebarOpen = false;
-    // Comentario: Método simplificado para cerrar el sidebar al navegar
+  }
+
+  changeLanguage(lang: string): void {
+    if (this.isBrowser) {
+      console.log(`🌍 User changing language to: ${lang}`);
+      this.showLanguageMenu = false;
+      // Llama a la función global que recargará la aplicación
+      changeAppLanguage(lang);
+    }
+  }
+
+  toggleLanguageMenu(): void {
+    this.showLanguageMenu = !this.showLanguageMenu;
+  }
+
+  getLanguageDisplayName(locale: string): string {
+    switch (locale) {
+      case 'en': return 'English';
+      case 'es': return 'Español';
+      case 'fr': return 'Français';
+      case 'ru': return 'Русский';
+      default: return locale;
+    }
   }
 }
+

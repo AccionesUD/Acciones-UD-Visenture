@@ -5,17 +5,17 @@
     <div class="container mx-auto px-4 py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <div>          
-          <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white" i18n="@@home.hero.title">
             Potencia tu Trading con <span class="text-emerald-600 dark:text-emerald-500">Visenture</span>
           </h1>
-          <p class="text-xl text-gray-700 dark:text-gray-300 mb-8">
+          <p class="text-xl text-gray-700 dark:text-gray-300 mb-8" i18n="@@home.hero.description">
             Plataforma de day trading avanzada con herramientas de análisis en tiempo real, alertas personalizadas y estrategias probadas.
           </p>          
           <div class="flex flex-col sm:flex-row gap-4">
-            <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-center transition duration-200">
+            <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-center transition duration-200" i18n="@@auth.login_link">
               Iniciar sesión
             </a>
-            <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-center hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition duration-200">
+            <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-center hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition duration-200" i18n="@@home.view_markets">
               Ver Mercados
             </a>
           </div>
@@ -34,14 +34,14 @@
   <!-- Noticias Financieras -->
   <section class="py-12 bg-white dark:bg-slate-900">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Noticias Financieras</h2>
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white" i18n="@@home.news.title">Noticias Financieras</h2>
       <div *ngIf="isLoadingNews" class="flex justify-center py-12">
         <mat-spinner diameter="50"></mat-spinner>
       </div>
       <div *ngIf="!isLoadingNews && newsError" class="text-center py-10">
         <mat-icon class="text-gray-400 dark:text-gray-600 text-5xl mb-4">sentiment_dissatisfied</mat-icon>
         <p class="text-gray-600 dark:text-gray-400 text-xl">{{ newsError }}</p>
-        <button (click)="loadFinancialNews()" class="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
+        <button (click)="loadFinancialNews()" class="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg" i18n="@@common.retry">
           Reintentar
         </button>
       </div>
@@ -67,12 +67,12 @@
             <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.Summary }}</p>
           </ng-container>
           <ng-template #noSummary>
-            <p class="text-gray-500 dark:text-gray-600 italic flex-grow">Sin resumen disponible.</p>
+            <p class="text-gray-500 dark:text-gray-600 italic flex-grow" i18n="@@home.news.no_summary">Sin resumen disponible.</p>
           </ng-template>
           <div class="flex flex-wrap gap-1 mt-4" *ngIf="item.Symbols.length">
             <span *ngFor="let symbol of item.Symbols" class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">{{ symbol }}</span>
           </div>
-          <a [href]="item.URL" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
+          <a [href]="item.URL" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline" i18n="@@common.read_more">
             Leer más →
           </a>
         </div>
@@ -88,7 +88,7 @@
           <div class="flex flex-wrap gap-1 mt-4" *ngIf="item.symbols?.length">
             <span *ngFor="let symbol of item.symbols" class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">{{ symbol }}</span>
           </div>
-          <a [href]="item.url" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline">
+          <a [href]="item.url" target="_blank" class="mt-4 text-emerald-600 dark:text-emerald-400 text-sm font-medium hover:underline" i18n="@@common.read_more">
             Leer más →
           </a>
         </div>
@@ -99,7 +99,7 @@
   <!-- Ventajas -->
   <section class="py-12 bg-gray-100 dark:bg-slate-800">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">¿Por qué elegir Visenture?</h2>
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white" i18n="@@home.benefits.title">¿Por qué elegir Visenture?</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
@@ -108,8 +108,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Análisis en Tiempo Real</h3>
-          <p class="text-gray-600 dark:text-gray-300">Accede a datos de mercado en tiempo real para tomar decisiones informadas.</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white" i18n="@@home.benefits.realtime_analysis.title">Análisis en Tiempo Real</h3>
+          <p class="text-gray-600 dark:text-gray-300" i18n="@@home.benefits.realtime_analysis.description">Accede a datos de mercado en tiempo real para tomar decisiones informadas.</p>
         </div>
         
         <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
@@ -118,8 +118,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Estrategias Probadas</h3>
-          <p class="text-gray-600 dark:text-gray-300">Aplica estrategias de trading desarrolladas por expertos y optimizadas para diferentes mercados.</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white" i18n="@@home.benefits.proven_strategies.title">Estrategias Probadas</h3>
+          <p class="text-gray-600 dark:text-gray-300" i18n="@@home.benefits.proven_strategies.description">Aplica estrategias de trading desarrolladas por expertos y optimizadas para diferentes mercados.</p>
         </div>
         
         <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
@@ -128,8 +128,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Alertas Personalizadas</h3>
-          <p class="text-gray-600 dark:text-gray-300">Configura alertas para nunca perder oportunidades de trading importantes.</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white" i18n="@@home.benefits.custom_alerts.title">Alertas Personalizadas</h3>
+          <p class="text-gray-600 dark:text-gray-300" i18n="@@home.benefits.custom_alerts.description">Configura alertas para nunca perder oportunidades de trading importantes.</p>
         </div>
         
         <div class="bg-white dark:bg-slate-700 rounded-lg shadow-md p-6 text-center">
@@ -138,8 +138,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white">Seguridad Avanzada</h3>
-          <p class="text-gray-600 dark:text-gray-300">Tu información y operaciones están protegidas con los más altos estándares de seguridad.</p>
+          <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-white" i18n="@@home.benefits.advanced_security.title">Seguridad Avanzada</h3>
+          <p class="text-gray-600 dark:text-gray-300" i18n="@@home.benefits.advanced_security.description">Tu información y operaciones están protegidas con los más altos estándares de seguridad.</p>
         </div>
       </div>
     </div>
@@ -148,13 +148,13 @@
   <!-- CTA -->
   <section class="py-16 bg-white dark:bg-slate-800">
     <div class="container mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold mb-4 text-slate-600 dark:text-white">¿Listo para empezar tu viaje de trading?</h2>
-      <p class="text-xl mb-8 text-emerald-950 dark:text-emerald-100">Únete a miles de traders que ya están aumentando sus ganancias con Visenture</p>
+      <h2 class="text-3xl font-bold mb-4 text-slate-600 dark:text-white" i18n="@@home.cta.title">¿Listo para empezar tu viaje de trading?</h2>
+      <p class="text-xl mb-8 text-emerald-950 dark:text-emerald-100" i18n="@@home.cta.description">Únete a miles de traders que ya están aumentando sus ganancias con Visenture</p>
       <div class="flex justify-center gap-4 flex-wrap">
-        <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg hover:bg-emerald-200 dark:hover:bg-slate-700  text-emerald-700 dark:text-white font-medium text-center transition duration-200">
+        <a [routerLink]="['/login']" class="py-3 px-6 rounded-lg hover:bg-emerald-200 dark:hover:bg-slate-700  text-emerald-700 dark:text-white font-medium text-center transition duration-200" i18n="@@auth.login">
           Iniciar sesión
         </a>
-        <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border-2 border-emerald-200 dark:border-slate-600 text-emerald-700 dark:text-white hover:bg-emerald-200 dark:hover:bg-slate-700 text-center transition duration-200">
+        <a [routerLink]="['/markets']" class="py-3 px-6 rounded-lg border-2 border-emerald-200 dark:border-slate-600 text-emerald-700 dark:text-white hover:bg-emerald-200 dark:hover:bg-slate-700 text-center transition duration-200" i18n="@@home.cta.explore_markets">
           Explorar mercados
         </a>
       </div>
