@@ -33,10 +33,11 @@ export interface User {
   birthdate?: Date;
   role?: 'admin' | 'commissioner' | 'client'; // Roles posibles
   status?: 'active' | 'inactive' | 'pending'; // Estados posibles
+  password?: string; // Contraseña para creación o actualización
   email_verified_at?: string;
-  created_at?: String;
-  updated_at?: String;
-  last_login?: String;
+  created_at?: string;
+  updated_at?: string;
+  last_login?: string;
 }
 
 /**

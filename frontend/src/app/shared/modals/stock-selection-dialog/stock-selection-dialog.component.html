@@ -1,0 +1,164 @@
+<div class="sell-stock-modal p-6 max-w-lg bg-white dark:bg-slate-800 rounded-xl max-h-[90vh] flex flex-col">
+  <!-- Encabezado fijo -->
+  <div class="flex justify-between items-center mb-6 flex-shrink-0">
+    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
+      <mat-icon class="mr-2 text-emerald-600 dark:text-emerald-500">
+        {{ data.action === 'buy' ? 'shopping_cart' : 'sell' }}
+      </mat-icon>
+      <ng-container [ngSwitch]="data.action">
+        <span *ngSwitchCase="'buy'" i18n="@@stock.selection.buy.title">Comprar acciones para {{ data.clientName }}</span>
+        <span *ngSwitchDefault i18n="@@stock.selection.sell.title">Vender acciones para {{ data.clientName }}</span>
+      </ng-container>
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  
+  <!-- Contenido scrollable -->
+  <div class="overflow-y-auto pr-1 flex-grow">
+    
+    <!-- Información del cliente -->
+    <div class="bg-gray-50 dark:bg-slate-700 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <mat-icon class="mr-3 text-blue-600 dark:text-blue-400">person</mat-icon>
+        <div>
+          <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@common.client.label">Cliente</div>
+          <div class="text-lg font-medium text-gray-900 dark:text-white">{{ data.clientName }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Campo de búsqueda de acciones personalizado -->
+    <form [formGroup]="searchForm" class="mb-6">
+      <div class="custom-search-field relative">
+        <label for="searchInput" class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 block" i18n="@@stock.selection.search.label">Buscar acción</label>
+        <div class="relative">
+          <input type="text"
+                 id="searchInput"
+                 formControlName="search"
+                 i18n-placeholder="@@stock.selection.search.placeholder"
+                 placeholder="Introduzca el símbolo o nombre de la acción"
+                 class="w-full border border-gray-600 dark:border-gray-600 rounded-lg px-4 py-3 pr-10 text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-500 transition-all"
+                 #searchInput>
+          <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <span *ngIf="!isLoadingStocks" class="text-gray-500 dark:text-gray-400 material-icons">search</span>
+            <div *ngIf="isLoadingStocks" class="flex items-center justify-center w-5 h-5">
+              <div class="spinner-border w-5 h-5 border-2 border-t-transparent border-emerald-500 rounded-full animate-spin"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Menú desplegable personalizado -->
+        <div *ngIf="showAutocomplete && searchForm.get('search')?.value?.length > 0" 
+             class="absolute z-10 mt-1 w-full bg-white dark:bg-slate-700 border border-gray-600 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto custom-autocomplete">
+          
+          <!-- Estado de carga -->
+          <div *ngIf="isLoadingStocks" class="flex items-center p-3 border-b border-gray-200 dark:border-gray-600">
+            <div class="spinner-border w-5 h-5 border-2 border-t-transparent border-emerald-500 rounded-full animate-spin mr-3"></div>
+            <span class="text-gray-600 dark:text-gray-300" i18n="@@stock.selection.searching">Buscando...</span>
+          </div>
+          
+          <!-- Listado de resultados -->
+          <ng-container *ngIf="!isLoadingStocks">
+            <div *ngFor="let stock of filteredStocks; let i = index" 
+                 class="p-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors"
+                 [class.bg-gray-50]="i === autocompleteActiveIndex"
+                 [class.dark:bg-gray-600]="i === autocompleteActiveIndex"
+                 (click)="onStockSelected(stock)">
+              <div class="flex flex-col">
+                <span class="font-medium text-gray-900 dark:text-white">{{ stock.symbol }}</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">{{ stock.name }}</span>
+              </div>
+            </div>
+          </ng-container>
+          
+          <!-- Mensaje sin resultados -->
+          <div *ngIf="!isLoadingStocks && filteredStocks.length === 0 && searchForm.get('search')?.value?.length > 0" 
+               class="p-3 text-center text-gray-500 dark:text-gray-400 italic">
+            <span i18n="@@stock.selection.no.results">No se encontraron resultados</span>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Instrucciones para compra -->
+    <div *ngIf="data.action === 'buy' && !selectedStock" class="text-center text-gray-500 py-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+      <mat-icon class="text-5xl mb-2 mx-auto block">shopping_cart</mat-icon>
+      <p i18n="@@stock.selection.buy.instruction">Busca y selecciona una acción para comprar</p>
+      <p class="text-sm" i18n="@@stock.selection.buy.help">Los resultados mostrarán las acciones disponibles</p>
+    </div>
+
+    <!-- Instrucciones para venta o carteras vacías -->
+    <div *ngIf="data.action === 'sell' && !isLoadingPortfolio && clientPortfolio.length === 0" class="text-center text-gray-500 py-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+      <mat-icon class="text-5xl mb-2 mx-auto block">inventory</mat-icon>
+      <p i18n="@@stock.selection.sell.no.stocks">El cliente no tiene acciones disponibles para vender</p>
+      <p class="text-sm" i18n="@@stock.selection.sell.empty.portfolio">Su cartera está vacía</p>
+    </div>
+
+    <!-- Cartera del cliente para vender -->
+    <div *ngIf="data.action === 'sell' && !isLoadingPortfolio && clientPortfolio.length > 0" class="portfolio-container">
+      <h3 class="text-lg mb-3 font-medium" i18n="@@stock.selection.sell.available.stocks">Acciones disponibles para vender</h3>
+      <div class="grid grid-cols-1 gap-3">
+        <div *ngFor="let item of clientPortfolio" 
+             (click)="onStockSelected(item)"
+             class="p-4 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+          <div class="flex justify-between items-center">
+            <div>
+              <div class="font-medium">{{ item.symbol }}</div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">{{ item.name || 'Desconocido' }}</div>
+            </div>
+            <div class="text-right">
+              <div class="font-medium text-emerald-600 dark:text-emerald-500">
+                {item.quantity, plural, =1 {1 acción} other {{{item.quantity}} acciones}}
+              </div>
+              <div class="text-sm">{{ formatCurrency(item.market_value) }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner de carga para la cartera -->
+    <div *ngIf="data.action === 'sell' && isLoadingPortfolio" class="flex justify-center py-8">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    
+    <!-- Error de carga de cartera -->
+    <div *ngIf="portfolioError" class="text-center text-red-600 dark:text-red-400 py-4">
+      <mat-icon class="text-2xl mb-2 mx-auto block">error_outline</mat-icon>
+      <p i18n="@@stock.selection.portfolio.error">Error al cargar la cartera del cliente</p>
+      <p class="text-sm">{{ portfolioError }}</p>
+    </div>
+    
+  </div>
+  <!-- Fin del contenido scrollable -->
+
+  <!-- Botones de acción -->
+  <div class="flex justify-end mt-4 flex-shrink-0">
+    <button 
+      type="button"
+      (click)="onCancel()"
+      mat-button 
+      class="mr-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600 rounded transition-colors duration-200"
+      i18n="@@common.actions.cancel">
+      Cancelar
+    </button>
+    <button 
+      type="button"
+      [disabled]="!selectedStock"
+      (click)="onSubmit()"
+      mat-raised-button 
+      [color]="data.action === 'buy' ? 'primary' : 'warn'"
+      class="px-4 py-2 rounded transition-colors duration-200"
+      [ngClass]="{
+        'bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white': data.action === 'buy',
+        'bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white': data.action === 'sell'
+      }">
+      <ng-container [ngSwitch]="data.action">
+        <span *ngSwitchCase="'buy'" i18n="@@stock.selection.continue.buy">Continuar con compra</span>
+        <span *ngSwitchDefault i18n="@@stock.selection.continue.sell">Continuar con venta</span>
+      </ng-container>
+    </button>
+  </div>
+</div>

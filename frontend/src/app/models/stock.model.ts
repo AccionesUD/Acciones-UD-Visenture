@@ -9,6 +9,7 @@ export interface Stock {
   days_operation: string;   // Días de operación (ej: 'Lunes a Viernes')
   status?: 'active' | 'inactive'; // Estado del mercado
   is_open?: boolean;        // Indica si el mercado está abierto actualmente
+  custom_opening_time?: string; // Hora de apertura personalizada para la aplicación (formato 'HH:MM')
 }
 
 // Modelo para la respuesta de inicialización de mercados

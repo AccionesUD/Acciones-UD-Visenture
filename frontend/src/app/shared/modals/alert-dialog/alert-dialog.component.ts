@@ -19,7 +19,8 @@ export interface AlertDialogData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule
-  ],  template: `
+  ],
+  template: `
     <div class="p-6 max-w-lg bg-emerald-200 dark:bg-slate-700 rounded-xl">
       <!-- Encabezado -->
       <div class="flex justify-between items-center mb-4">
@@ -32,7 +33,7 @@ export interface AlertDialogData {
             }">
           {{ data.title }}
         </h2>
-        <button mat-icon-button (click)="close()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        <button mat-icon-button (click)="close()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" matTooltip="Cerrar" i18n-matTooltip="@@alertDialogCloseButton">
           <mat-icon>close</mat-icon>
         </button>
       </div>

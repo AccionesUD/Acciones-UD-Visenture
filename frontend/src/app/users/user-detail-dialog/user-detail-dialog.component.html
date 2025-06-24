@@ -1,115 +1,171 @@
-<div class="min-w-[600px] max-w-3xl">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-semibold text-emerald-800 dark:text-emerald-100" mat-dialog-title>Detalles del Usuario</h2>
-    <button mat-icon-button mat-dialog-close>
-      <mat-icon class="text-gray-600 dark:text-gray-300">close</mat-icon>
+<div class="min-w-[800px] max-w-4xl p-6">
+  <!-- Cabecera del diálogo -->
+  <div class="flex justify-between items-center border-b border-gray-700 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent" i18n="@@user.detail.dialog.title">
+      Detalles del Usuario
+    </h2>
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            i18n-aria-label="@@common.actions.close.dialog" aria-label="Cerrar diálogo">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
     </button>
   </div>
   
-  <mat-dialog-content class="min-h-[300px]">
-    <!-- Tarjeta de información básica del usuario -->
-    <div class="rounded-lg shadow-md p-6 mb-6 info-card">
-      <div class="flex items-center mb-4">
-        <div class="p-3 rounded-full" 
-             [ngClass]="{
-               'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400': user.role === 'admin',
-               'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400': user.role === 'commissioner',
-               'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400': user.role === 'client'
-             }">
-          <mat-icon>{{user.role === 'admin' ? 'admin_panel_settings' : user.role === 'commissioner' ? 'business_center' : 'person'}}</mat-icon>
+  <mat-dialog-content class="min-h-[400px] max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <!-- Tarjeta de información principal del usuario -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700 shadow-md p-6 mb-6">
+      <div class="flex flex-col md:flex-row items-start md:items-center mb-6">
+        <!-- Avatar e información básica -->
+        <div class="flex items-center mb-4 md:mb-0">
+          <div class="p-3 rounded-full" 
+               [ngClass]="{
+                 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400': user.role === 'admin',
+                 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400': user.role === 'commissioner',
+                 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400': user.role === 'client'
+               }">
+            <mat-icon>{{getRoleIcon(user.role)}}</mat-icon>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">{{user.first_name}} {{user.last_name}}</h3>
+            <div class="flex items-center mt-1 text-sm">
+              <span class="text-gray-700 dark:text-gray-300">{{getRoleLabel(user.role)}}</span>
+              <span class="mx-2 text-gray-500 dark:text-gray-500">•</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-medium"
+                    [ngClass]="{
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': user.status === 'pending',
+                      'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': user.status === 'active',
+                      'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300': user.status === 'inactive'
+                    }">
+                {{ getStatusLabel(user.status) }}
+              </span>
+            </div>
+          </div>
         </div>
-        <div class="ml-4">
-          <h3 class="text-xl font-bold detail-value">{{user.first_name}} {{user.last_name}}</h3>
-          <p class="detail-label">
-            {{getRoleLabel(user.role)}}
-            <span class="inline-block mx-2">•</span>
-            <span class="px-2 py-0.5 rounded-full text-xs" 
-                  [ngClass]="{
-                    'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200': user.status === 'active',
-                    'bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-200': user.status === 'inactive',
-                    'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200': user.status === 'pending'
-                  }">
-              {{getStatusLabel(user.status)}}
-            </span>
+        
+        <!-- Datos de registro -->
+        <div class="ml-0 md:ml-auto text-right">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            <span i18n="@@user.detail.registration.date">Fecha de registro:</span>
+            <span class="font-medium text-gray-800 dark:text-gray-200">{{ user.created_at ? (user.created_at | date:'dd/MM/yyyy') : 'No disponible' }}</span>
+          </p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <span i18n="@@user.detail.last.access">Último acceso:</span> 
+            <span class="font-medium text-gray-800 dark:text-gray-200">{{ user.last_login ? (user.last_login | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}</span>
           </p>
         </div>
       </div>
       
       <mat-divider class="mb-4"></mat-divider>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Grid de información detallada en dos columnas como en la imagen -->
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Columna izquierda -->
         <div>
-          <p class="text-sm detail-label">Documento</p>
-          <p class="font-medium detail-value">{{user.identity_document || 'No especificado'}}</p>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.identity.document">Documento de Identidad</p>
+            <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{user.identity_document || 'No especificado'}}</p>
+          </div>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.email">Correo Electrónico</p>
+            <p class="mt-1 font-medium text-gray-800 dark:text-gray-200 break-all">{{user.email}}</p>
+          </div>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.birthdate">Fecha de Nacimiento</p>
+            <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
+          </div>
         </div>
+        
+        <!-- Columna derecha -->
         <div>
-          <p class="text-sm detail-label">Email</p>
-          <p class="font-medium detail-value">{{user.email}}</p>
-        </div>        <div>
-          <p class="text-sm detail-label">Teléfono</p>
-          <p class="font-medium detail-value">{{user.phone_number || 'No especificado'}}</p>
-        </div>
-        <div>
-          <p class="text-sm detail-label">Fecha de Nacimiento</p>
-          <p class="font-medium detail-value">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.phone">Teléfono</p>
+            <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{user.phone_number || 'No especificado'}}</p>
+          </div>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.verification.status">Estado de Verificación</p>
+            <div class="flex items-center mt-1">
+              <mat-icon class="text-sm mr-1.5"
+                        [ngClass]="{
+                          'text-green-500 dark:text-green-400': isEmailVerified(),
+                          'text-orange-500 dark:text-orange-400': !isEmailVerified()
+                        }">
+                {{ isEmailVerified() ? 'check_circle' : 'error_outline' }}
+              </mat-icon>
+              <span class="text-sm font-medium"
+                    [ngClass]="{
+                      'text-green-700 dark:text-green-300': isEmailVerified(),
+                      'text-orange-700 dark:text-orange-400': !isEmailVerified()
+                    }">
+                {{ getEmailVerificationText() }}
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.last.update">Última actualización</p>
+            <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{ user.updated_at ? (user.updated_at | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}</p>
+          </div>
         </div>
       </div>
     </div>
-      <!-- Pestañas con información adicional -->
-    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg shadow-md info-card">
-      <mat-tab label="Actividad">
-        <div class="p-6">
-          <h3 class="text-lg font-semibold mb-4 section-title">Historial de Actividad</h3>
-          
-          <!-- Mensaje para cuando no hay datos -->
-          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-            <mat-icon class="text-4xl mb-2">history</mat-icon>
-            <p>No hay datos de actividad disponibles para este usuario.</p>
+    
+    <!-- Pestañas simplificadas como en la imagen -->
+    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700">
+      <!-- Pestaña de actividad - visible para todos los usuarios -->
+      <mat-tab i18n-label="@@user.detail.tab.activity" label="Actividad">
+        <div class="p-4">
+          <!-- Mensaje cuando no hay datos de actividad -->
+          <div class="text-center py-6 text-gray-500 dark:text-gray-400">
+            <mat-icon class="text-3xl mb-2">history</mat-icon>
+            <p i18n="@@user.detail.activity.no.data">No hay datos de actividad disponibles para este usuario.</p>
           </div>
         </div>
       </mat-tab>
       
-      <!-- Solo mostrar para clientes -->
-      <mat-tab label="Portafolio" *ngIf="user.role === 'client'">
-        <div class="p-6">
-          <h3 class="text-lg font-semibold mb-4">Resumen del Portafolio</h3>
-          
-          <!-- Mensaje para cuando no hay datos -->
-          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-            <mat-icon class="text-4xl mb-2">account_balance</mat-icon>
-            <p>No hay datos de portafolio disponibles para este usuario.</p>
-          </div>
-        </div>
-      </mat-tab>
-      
-      <!-- Solo mostrar para comisionistas -->
-      <mat-tab label="Clientes" *ngIf="user.role === 'commissioner'">
-        <div class="p-6">
-          <h3 class="text-lg font-semibold mb-4">Clientes Asignados</h3>
-          
-          <!-- Mensaje para cuando no hay datos -->
-          <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-            <mat-icon class="text-4xl mb-2">groups</mat-icon>
-            <p>No hay clientes asignados a este comisionista.</p>
+      <!-- Pestaña de seguridad - visible para todos los usuarios -->
+      <mat-tab i18n-label="@@user.detail.tab.security" label="Seguridad">
+        <div class="p-4">
+          <div class="bg-white dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center mb-2">
+              <mat-icon class="text-gray-600 dark:text-gray-300 mr-2">verified_user</mat-icon>
+              <h4 class="font-semibold text-gray-800 dark:text-gray-200" i18n="@@user.detail.security.email.verification">Verificación de Email</h4>
+            </div>
+            <div class="flex items-center mt-1">
+              <mat-icon class="text-sm mr-1.5"
+                        [ngClass]="{
+                          'text-green-500 dark:text-green-400': isEmailVerified(),
+                          'text-orange-500 dark:text-orange-400': !isEmailVerified()
+                        }">
+                {{ isEmailVerified() ? 'check_circle' : 'error_outline' }}
+              </mat-icon>
+              <span class="text-sm font-medium"
+                    [ngClass]="{
+                      'text-green-700 dark:text-green-300': isEmailVerified(),
+                      'text-orange-700 dark:text-orange-400': !isEmailVerified()
+                    }">
+                {{ getEmailVerificationText() }}
+              </span>
+            </div>
           </div>
         </div>
       </mat-tab>
     </mat-tab-group>
   </mat-dialog-content>
   
-  <mat-dialog-actions align="end" class="mt-4">
-    <button mat-stroked-button mat-dialog-close class="mr-2">Cerrar</button>
+  <!-- Acciones del diálogo -->
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
+    <button mat-stroked-button (click)="closeDialog()" class="mr-2 px-5 py-1.5 rounded-lg text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-700 dark:border-gray-600"
+            i18n="@@common.actions.close">
+      Cerrar
+    </button>
     
-    <!-- Acciones administrativas (solo visibles para administradores) -->
-    <ng-container *ngIf="isAdmin">
-      <button 
-        mat-flat-button 
-        color="primary" 
-        [matDialogClose]="'edit'"
-        class="bg-emerald-500 hover:bg-emerald-600 text-white">
-        <mat-icon class="mr-1">edit</mat-icon>
-        Editar usuario
-      </button>
-    </ng-container>
+    <!-- Botón de editar - solo para administradores -->
+    <button 
+      *ngIf="isAdmin"
+      mat-flat-button 
+      (click)="editUser()" 
+      class="px-5 py-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center"
+      i18n="@@user.detail.actions.edit">
+      <mat-icon class="mr-1.5 h-5 w-5">edit</mat-icon>
+      Editar usuario
+    </button>
   </mat-dialog-actions>
 </div>

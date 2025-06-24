@@ -8,6 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { PortfolioSummary, Stock, PortfolioShare } from '../models/portfolio.model';
 import { SortOption, PerformanceFilterOption } from '../models/filters.model';
 import { PortfolioService } from '../services/portfolio.service';
@@ -28,7 +30,9 @@ import { BuyStockModalComponent } from '../shared/modals/buy-stock-modal/buy-sto
     MatProgressSpinnerModule,
     MatButtonModule,
     MatPaginatorModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTableModule,
+    MatSortModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
@@ -44,10 +48,15 @@ export class PortfolioComponent implements OnInit, OnDestroy {
   error: string | null = null;
   selectedFilter = 'ALL'; // Variable necesaria para el template
   selectedPerformanceFilter: PerformanceFilterOption | null = null;
-    // Datos de acciones
+  
+  // Datos de acciones
   stocks: Stock[] = [];
   filteredStocks: Stock[] = [];
   displayedStocks: Stock[] = []; // Acciones a mostrar después de la paginación
+  
+  // DataSource para MatTable
+  dataSource = new MatTableDataSource<Stock>([]);
+  displayedColumns: string[] = ['symbol', 'marketName', 'quantity', 'unitValue', 'totalValue', 'performance', 'actions'];
   
   // Configuración de paginación
   pageSize = 10;
@@ -168,7 +177,6 @@ export class PortfolioComponent implements OnInit, OnDestroy {
       }
     });
   }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -187,6 +195,9 @@ export class PortfolioComponent implements OnInit, OnDestroy {
     const startIndex = this.pageIndex * this.pageSize;
     this.totalStocks = this.filteredStocks.length;
     this.displayedStocks = this.filteredStocks.slice(startIndex, startIndex + this.pageSize);
+    
+    // Actualizar el dataSource para MatTable
+    this.dataSource.data = this.displayedStocks;
     
     // Verificar si la tabla necesita scroll horizontal después de que los datos se actualicen
     setTimeout(() => {
@@ -244,14 +255,21 @@ export class PortfolioComponent implements OnInit, OnDestroy {
     this.pageIndex = 0; // Volver a la primera página cuando se aplican filtros
     this.updateDisplayedStocks();
   }
-
-
   sortStocks(sortOption: SortOption): void {
-    if (sortOption.value === 'none') {
+    console.log('Sorting with option:', sortOption);
+    
+    if (!sortOption || sortOption.value === 'none') {
       // Si no hay ordenamiento, reaplicamos los filtros para restaurar el orden original
       this.applyFilters();
       return;
-    }    this.filteredStocks.sort((a, b) => {
+    }
+    
+    if (!sortOption.property) {
+      console.warn('Sort option does not specify a property to sort by:', sortOption);
+      return;
+    }
+    
+    this.filteredStocks.sort((a, b) => {
       const valueA = a[sortOption.property as keyof Stock];
       const valueB = b[sortOption.property as keyof Stock];
       
@@ -271,10 +289,13 @@ export class PortfolioComponent implements OnInit, OnDestroy {
       }
       
       // Para otros tipos de datos (cadenas, etc.)
+      const strA = String(valueA);
+      const strB = String(valueB);
+      
       if (sortOption.direction === 'asc') {
-        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        return strA.localeCompare(strB);
       } else {
-        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+        return strB.localeCompare(strA);
       }
     });
     

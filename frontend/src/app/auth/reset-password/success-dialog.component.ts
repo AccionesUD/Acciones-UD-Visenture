@@ -16,11 +16,11 @@ import { RouterLink } from '@angular/router';
           </svg>
         </div>
       </div>
-      <h2 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">¡Contraseña actualizada!</h2>
-      <p class="mb-6 text-gray-600 dark:text-gray-300">Tu contraseña ha sido restablecida exitosamente.</p>
+      <h2 class="text-xl font-bold mb-2 text-gray-900 dark:text-white" i18n="@@resetPassword.success.title">¡Contraseña actualizada!</h2>
+      <p class="mb-6 text-gray-600 dark:text-gray-300" i18n="@@resetPassword.success.message">Tu contraseña ha sido restablecida exitosamente.</p>
       <div class="mt-4">
         <a routerLink="/login" (click)="closeDialog()" class="w-full inline-block py-3 px-6 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-medium rounded-lg transition duration-200">
-          Iniciar sesión
+          <ng-container i18n="@@auth.login">Iniciar sesión</ng-container>
         </a>
       </div>
     </div>

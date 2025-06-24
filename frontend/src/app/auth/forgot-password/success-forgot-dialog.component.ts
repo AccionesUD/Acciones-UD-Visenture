@@ -16,15 +16,15 @@ import { RouterLink } from '@angular/router';
           </svg>
         </div>
       </div>
-      <h2 class="text-xl font-bold mb-2">¡Correo enviado!</h2>
-      <p class="mb-6">Revisa tu bandeja y sigue las instrucciones para restablecer tu contraseña.</p>      <div class="mt-4 flex flex-col space-y-3">
+      <h2 class="text-xl font-bold mb-2" i18n="@@forgotPassword.success.title">¡Correo enviado!</h2>
+      <p class="mb-6" i18n="@@forgotPassword.success.message">Revisa tu bandeja y sigue las instrucciones para restablecer tu contraseña.</p>      <div class="mt-4 flex flex-col space-y-3">
         <a routerLink="/test-reset-password" (click)="dialogRef.close()" 
            class="inline-block w-full py-3 px-6 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 transition">
-          Restablecer contraseña
+          <ng-container i18n="@@resetPassword.button">Restablecer contraseña</ng-container>
         </a>
         <a routerLink="/login" (click)="dialogRef.close()" 
            class="inline-block w-full py-2 px-6 border border-emerald-500 text-emerald-600 dark:text-emerald-400 dark:border-emerald-500 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-700 transition text-center">
-          Volver a iniciar sesión
+          <ng-container i18n="@@forgotPassword.returnToLogin">Volver a iniciar sesión</ng-container>
         </a>
       </div>
     </div>

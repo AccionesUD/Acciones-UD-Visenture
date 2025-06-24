@@ -1,8 +1,8 @@
 <div class="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="bg-emerald-700 dark:bg-emerald-800 text-white p-6">
         <div class="container mx-auto">
-            <h1 class="text-2xl font-bold">Gestión de perfil</h1>
-            <p class="text-emerald-100">Administra tus preferencias y configuración personal</p>
+            <h1 class="text-2xl font-bold" i18n="@@profile.header.title">Gestión de perfil</h1>
+            <p class="text-emerald-100" i18n="@@profile.header.subtitle">Administra tus preferencias y configuración personal</p>
         </div>
     </div>    
     <div class="container mx-auto p-4 lg:p-6 flex flex-col lg:flex-row gap-6">
@@ -16,7 +16,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'information'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">person</mat-icon>
-                    Información personal
+                    <span i18n="@@profile.menu.personal-information">Información personal</span>
                 </button>
                 
                 <button 
@@ -24,7 +24,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'preferences'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">tune</mat-icon>
-                    Preferencias
+                    <span i18n="@@profile.menu.preferences">Preferencias</span>
                 </button>
                 
                 <button 
@@ -32,7 +32,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'security'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">security</mat-icon>
-                    Seguridad
+                    <span i18n="@@profile.menu.security">Seguridad</span>
                 </button>
                 
                 <button 
@@ -40,7 +40,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'subscription'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">card_membership</mat-icon>
-                    Suscripción
+                    <span i18n="@@profile.menu.subscription">Suscripción</span>
                 </button>
                 
                 <button 
@@ -48,7 +48,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'middleman'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">support_agent</mat-icon>
-                    Comisionista
+                    <span i18n="@@profile.menu.middleman">Comisionista</span>
                 </button>
                 
                 <button 
@@ -56,7 +56,7 @@
                     [ngClass]="{'bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 font-medium': activeTab === 'historical'}"
                     class="w-full text-left px-3 py-2 rounded-md flex items-center text-gray-700 dark:text-gray-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer">
                     <mat-icon class="mr-3">history</mat-icon>
-                    Historial
+                    <span i18n="@@profile.menu.historical">Historial</span>
                 </button>
             </nav>
         </div>

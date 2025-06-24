@@ -4,6 +4,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+
 export interface ConfirmDialogData {
   title: string;
   message: string;
@@ -40,7 +41,7 @@ export interface ConfirmDialogData {
           cdkFocusInitial
           class="mr-2"
         >
-          {{ data.cancelText || 'Cancelar' }}
+          <ng-container>{{ data.cancelText || cancelDefaultText }}</ng-container>
         </button>
         
         <button 
@@ -48,7 +49,7 @@ export interface ConfirmDialogData {
           [mat-dialog-close]="true"
           [ngClass]="data.isDestructive ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-emerald-500 hover:bg-emerald-600 text-white'" 
         >
-          {{ data.confirmText || 'Aceptar' }}
+          <ng-container>{{ data.confirmText || confirmDefaultText }}</ng-container>
         </button>
       </mat-dialog-actions>
     </div>
@@ -66,8 +67,15 @@ export interface ConfirmDialogData {
   `]
 })
 export class ConfirmDialogComponent {
+  cancelDefaultText: string;
+  confirmDefaultText: string;
+  
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
-  ) {}
+  ) {
+    // Define los textos predeterminados con i18n
+    this.cancelDefaultText = $localize`:@@confirmDialog.cancelButton:Cancelar`;
+    this.confirmDefaultText = $localize`:@@confirmDialog.confirmButton:Aceptar`;
+  }
 }

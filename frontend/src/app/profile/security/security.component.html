@@ -1,18 +1,18 @@
 <div class="w-full">
   <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Seguridad de la cuenta</h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white" i18n="@@profile.security.title">Seguridad de la cuenta</h2>
     <button 
       mat-flat-button
       class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
       (click)="navigateToTab('information')"
     >
       <mat-icon class="mr-1">person</mat-icon>
-      Volver a información personal
+      <span i18n="@@profile.security.back-to-info">Volver a información personal</span>
     </button>
   </div>
   
   <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-    <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Cambiar contraseña</h3>
+    <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4" i18n="@@profile.security.change-password">Cambiar contraseña</h3>
     
     <!-- Mensaje de éxito -->
     <div *ngIf="passwordChanged" class="bg-emerald-50 dark:bg-emerald-900/30 border-l-4 border-emerald-500 p-4 mb-6">
@@ -23,7 +23,7 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-emerald-700 dark:text-emerald-200">La contraseña se ha actualizado correctamente.</p>
+          <p class="text-sm text-emerald-700 dark:text-emerald-200" i18n="@@profile.security.password-updated">La contraseña se ha actualizado correctamente.</p>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
     <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="space-y-4">
       <!-- Contraseña actual -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña actual</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.security.current-password">Contraseña actual</label>
         <div class="relative">
           <input 
             [type]="hideCurrentPassword ? 'password' : 'text'" 
@@ -57,14 +57,14 @@
             <mat-icon class="text-gray-400">{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
-        <div *ngIf="passwordForm.get('current_password')?.hasError('required') && (passwordForm.get('current_password')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
+        <div *ngIf="passwordForm.get('current_password')?.hasError('required') && (passwordForm.get('current_password')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1" i18n="@@profile.security.current-password-required">
           La contraseña actual es requerida
         </div>
       </div>
       
       <!-- Nueva contraseña -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nueva contraseña</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.security.new-password">Nueva contraseña</label>
         <div class="relative">
           <input 
             [type]="hideNewPassword ? 'password' : 'text'" 
@@ -83,7 +83,7 @@
       
       <!-- Confirmar contraseña -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar contraseña</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.security.confirm-password">Confirmar contraseña</label>
         <div class="relative">
           <input 
             [type]="hideConfirmPassword ? 'password' : 'text'" 
@@ -102,13 +102,13 @@
       
       <!-- Requisitos de contraseña -->
       <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
-        <p class="font-medium mb-2">La contraseña debe cumplir los siguientes requisitos:</p>
+        <p class="font-medium mb-2" i18n="@@profile.security.password-requirements">La contraseña debe cumplir los siguientes requisitos:</p>
         <ul class="list-disc pl-5 space-y-1">
-          <li>Al menos 8 caracteres</li>
-          <li>Al menos una letra mayúscula</li>
-          <li>Al menos una letra minúscula</li>
-          <li>Al menos un número</li>
-          <li>Al menos un caracter especial (&#64;$!%*?&)</li>
+          <li i18n="@@profile.security.req-length">Al menos 8 caracteres</li>
+          <li i18n="@@profile.security.req-uppercase">Al menos una letra mayúscula</li>
+          <li i18n="@@profile.security.req-lowercase">Al menos una letra minúscula</li>
+          <li i18n="@@profile.security.req-number">Al menos un número</li>
+          <li i18n="@@profile.security.req-special">Al menos un caracter especial (&#64;$!%*?&)</li>
         </ul>
       </div>
       
@@ -123,7 +123,8 @@
         >
           <div *ngIf="isLoading" class="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
           <mat-icon class="mr-1" *ngIf="!isLoading">lock</mat-icon>
-          {{ isLoading ? 'Procesando...' : 'Cambiar contraseña' }}
+          <span *ngIf="isLoading" i18n="@@profile.security.processing">Procesando...</span>
+          <span *ngIf="!isLoading" i18n="@@profile.security.change-password-button">Cambiar contraseña</span>
         </button>
       </div>
     </form>
@@ -131,16 +132,16 @@
   
   <!-- Otras configuraciones de seguridad pueden ir aquí -->
   <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-    <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">Verificación en dos pasos</h3>
-    <p class="text-gray-600 dark:text-gray-400 mb-4">La verificación en dos pasos añade una capa adicional de seguridad a tu cuenta. Requiere un segundo factor de autenticación además de tu contraseña.</p>
+    <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4" i18n="@@profile.security.two-factor">Verificación en dos pasos</h3>
+    <p class="text-gray-600 dark:text-gray-400 mb-4" i18n="@@profile.security.two-factor-description">La verificación en dos pasos añade una capa adicional de seguridad a tu cuenta. Requiere un segundo factor de autenticación además de tu contraseña.</p>
     
     <!-- Esta funcionalidad podría implementarse en el futuro -->
     <div class="flex items-center">
       <button mat-stroked-button disabled class="border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 px-4 py-2 rounded-md">
         <mat-icon class="mr-2">phonelink_lock</mat-icon>
-        Configurar verificación en dos pasos
+        <span i18n="@@profile.security.setup-two-factor">Configurar verificación en dos pasos</span>
       </button>
-      <span class="ml-3 text-xs bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 py-1 px-2 rounded-full">Próximamente</span>
+      <span class="ml-3 text-xs bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300 py-1 px-2 rounded-full" i18n="@@profile.security.coming-soon">Próximamente</span>
     </div>
   </div>
 </div>

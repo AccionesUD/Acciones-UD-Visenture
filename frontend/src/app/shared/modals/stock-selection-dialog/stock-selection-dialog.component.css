@@ -1,0 +1,193 @@
+.dialog-container {
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.search-loading {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portfolio-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Estilos para el campo de búsqueda */
+.search-field {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Estilos para el outline normal */
+.search-field ::ng-deep .mat-form-field-outline {
+  color: rgba(156, 163, 175, 0.5) !important;
+  border-radius: 8px !important;
+}
+
+/* Estilos para el outline cuando está enfocado */
+.search-field ::ng-deep .mat-form-field-outline-thick {
+  color: #10b981 !important;
+  border-width: 2px !important;
+}
+
+/* Estilos para la etiqueta normal */
+.search-field ::ng-deep .mat-form-field-label {
+  color: #6b7280 !important;
+  font-weight: 500;
+}
+
+/* Estilos para la etiqueta cuando está enfocada */
+.search-field ::ng-deep .mat-form-field-label.mat-focused {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+
+/* Estilos para el input */
+.search-field ::ng-deep .mat-input-element {
+  color: #374151 !important;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Estilos para el placeholder */
+.search-field ::ng-deep .mat-input-element::placeholder {
+  color: #9ca3af !important;
+  opacity: 1;
+  font-style: italic;
+}
+
+/* Estilos para el ícono de sufijo */
+.search-field ::ng-deep .mat-form-field-suffix .mat-icon {
+  color: #6b7280 !important;
+  font-size: 20px;
+}
+
+/* Estilos para modo oscuro */
+:host-context(.dark) .search-field ::ng-deep .mat-form-field-outline {
+  color: rgba(75, 85, 99, 0.5) !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-form-field-outline-thick {
+  color: #059669 !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-form-field-label {
+  color: #9ca3af !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-form-field-label.mat-focused {
+  color: #059669 !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-input-element {
+  color: #f3f4f6 !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-input-element::placeholder {
+  color: #6b7280 !important;
+}
+
+:host-context(.dark) .search-field ::ng-deep .mat-form-field-suffix .mat-icon {
+  color: #9ca3af !important;
+}
+
+/* Estilos para el autocompletado */
+:host ::ng-deep .mat-autocomplete-panel {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid #e5e7eb !important;
+  max-height: 240px !important;
+  margin-top: 4px !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-autocomplete-panel {
+  background: #374151 !important;
+  border-color: #4b5563 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Estilos para las opciones */
+:host ::ng-deep .mat-option {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+:host ::ng-deep .mat-option:last-child {
+  border-bottom: none !important;
+}
+
+:host ::ng-deep .mat-option:hover:not(.mat-option-disabled) {
+  background-color: #f9fafb !important;
+}
+
+:host ::ng-deep .mat-option.mat-selected:not(.mat-option-disabled) {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+
+:host ::ng-deep .mat-option.mat-active {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+}
+
+/* Estilos específicos para opciones de acciones */
+:host ::ng-deep .stock-option .flex {
+  width: 100%;
+}
+
+/* Estilos para modo oscuro */
+:host-context(.dark) ::ng-deep .mat-option {
+  color: #f3f4f6 !important;
+  border-bottom-color: #4b5563 !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-option:hover:not(.mat-option-disabled) {
+  background-color: #4b5563 !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-option.mat-selected:not(.mat-option-disabled) {
+  background-color: #064e3b !important;
+  color: #10b981 !important;
+}
+
+:host-context(.dark) ::ng-deep .mat-option.mat-active {
+  background-color: #064e3b !important;
+  color: #10b981 !important;
+}
+
+/* Estilos para la opción de carga */
+:host ::ng-deep .search-loading {
+  justify-content: flex-start !important;
+  padding: 16px !important;
+}
+
+:host ::ng-deep .search-loading .mat-spinner {
+  margin-right: 12px !important;
+}
+
+/* Estilos para mejorar la apariencia del wrapper del campo */
+.search-field ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.search-field ::ng-deep .mat-form-field-underline {
+  display: none !important;
+}
+
+.search-field ::ng-deep .mat-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Estilos para alinear iconos en opciones de autocompletado */
+:host ::ng-deep .search-loading .mat-spinner {
+  margin-right: 8px;
+}
