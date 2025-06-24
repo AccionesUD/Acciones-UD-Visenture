@@ -14,6 +14,7 @@ import { CommissionerGuard } from './auth/commissioner.guard';
 import { CommissionerPanelComponent } from './commissioner-panel/commissioner-panel.component';
 import { ClientReportComponent } from './commissioner-panel/client-report/client-report.component';
 import { FundsComponent } from './funds/funds.component';
+import { AuditPanelComponent } from './audit-panel/audit-panel.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -36,5 +37,7 @@ export const routes: Routes = [
   { path: 'commissioner-panel', component: CommissionerPanelComponent },
   { path: 'commissioner-panel/client/:id', component: ClientReportComponent },
   { path: 'funds', component: FundsComponent},
+  // Ruta del panel de auditoría
+  { path: 'audit-panel', component: AuditPanelComponent },
   { path: '**', redirectTo: 'home' }
 ];

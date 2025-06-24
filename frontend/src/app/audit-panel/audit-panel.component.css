@@ -1,0 +1,311 @@
+/* Importamos los estilos del panel del comisionista para mantener la consistencia */
+@import '../commissioner-panel/commissioner-panel.component.css';
+
+/* Estilos específicos para el Panel de Auditoría */
+
+/* Estilos para las tabs de auditoría */
+.audit-tabs {
+  --mdc-tab-text-label-color-default: #6B7280;
+  --mdc-tab-text-label-color-active: #047857;
+  --mdc-secondary-navigation-tab-container-height: 48px;
+}
+
+/* Estilos modo oscuro para las tabs */
+:host-context(.dark) .audit-tabs {
+  --mdc-tab-text-label-color-default: #9CA3AF;
+  --mdc-tab-text-label-color-active: #10B981;
+}
+
+/* Estilos para los iconos de acciones (heredados y extendidos) */
+.action-icon {
+  color: #047857; /* emerald-600 */
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.15);
+  color: #065f46; /* emerald-800 */
+}
+
+.dark .action-icon {
+  color: #10B981; /* emerald-500 */
+}
+
+.dark .action-icon:hover {
+  color: #6EE7B7; /* emerald-300 */
+}
+
+/* Estilos específicos para iconos de severidad */
+.action-icon.text-orange-500 {
+  color: #F97316 !important;
+}
+
+.action-icon.text-green-500 {
+  color: #10B981 !important;
+}
+
+.action-icon.text-blue-500 {
+  color: #3B82F6 !important;
+}
+
+/* Estilos para formularios de filtro */
+.audit-filter-form {
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+}
+
+.dark .audit-filter-form {
+  background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+}
+
+/* Estilos para las tarjetas de estadísticas */
+.audit-stats-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 100%);
+  border: 1px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.audit-stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .audit-stats-card {
+  background: linear-gradient(135deg, #1F2937 0%, #111827 100%);
+  border: 1px solid #374151;
+}
+
+.dark .audit-stats-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para las tablas de auditoría */
+.audit-table-container {
+  background-color: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.audit-table {
+  width: 100%;
+  background: transparent !important;
+}
+
+/* Estilos para filas de tabla con hover específico para auditoría */
+::ng-deep .audit-table .mat-mdc-row:hover {
+  background-color: rgba(124, 58, 237, 0.05) !important;
+}
+
+::ng-deep .dark .audit-table .mat-mdc-row:hover {
+  background-color: rgba(167, 139, 250, 0.05) !important;
+}
+
+/* Estilos para badges de riesgo */
+.risk-badge-low {
+  background-color: #DCFCE7;
+  color: #166534;
+}
+
+.dark .risk-badge-low {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #4ADE80;
+}
+
+.risk-badge-medium {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.dark .risk-badge-medium {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #FBBF24;
+}
+
+.risk-badge-high {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.dark .risk-badge-high {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #F87171;
+}
+
+/* Estilos para badges de severidad de alertas */
+.severity-badge-low {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.dark .severity-badge-low {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #60A5FA;
+}
+
+.severity-badge-medium {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.dark .severity-badge-medium {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #FBBF24;
+}
+
+.severity-badge-high {
+  background-color: #FED7AA;
+  color: #C2410C;
+}
+
+.dark .severity-badge-high {
+  background-color: rgba(249, 115, 22, 0.1);
+  color: #FB923C;
+}
+
+.severity-badge-critical {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.dark .severity-badge-critical {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #F87171;
+}
+
+/* Estilos para el DatePicker de Material */
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: white;
+}
+
+::ng-deep .dark .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: #374151;
+}
+
+::ng-deep .mat-mdc-form-field-outline {
+  color: #D1D5DB;
+}
+
+::ng-deep .dark .mat-mdc-form-field-outline {
+  color: #4B5563;
+}
+
+/* Estilos para gráficos en modo oscuro */
+::ng-deep .dark apx-chart {
+  color: #E5E7EB;
+}
+
+::ng-deep .dark .apexcharts-title-text {
+  fill: #E5E7EB !important;
+}
+
+::ng-deep .dark .apexcharts-legend-text {
+  color: #E5E7EB !important;
+}
+
+::ng-deep .dark .apexcharts-xaxis-label {
+  fill: #9CA3AF !important;
+}
+
+::ng-deep .dark .apexcharts-yaxis-label {
+  fill: #9CA3AF !important;
+}
+
+/* Estilos para checkboxes */
+::ng-deep .mat-mdc-checkbox .mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: white;
+  --mdc-checkbox-selected-focus-icon-color: #7C3AED;
+  --mdc-checkbox-selected-hover-icon-color: #7C3AED;
+  --mdc-checkbox-selected-icon-color: #7C3AED;
+  --mdc-checkbox-selected-pressed-icon-color: #7C3AED;
+}
+
+/* Estilos para el menú de exportación */
+::ng-deep .mat-mdc-menu-panel {
+  background-color: white;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+::ng-deep .dark .mat-mdc-menu-panel {
+  background-color: #1F2937;
+  border: 1px solid #374151;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Animaciones para elementos de auditoría */
+@keyframes auditPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.audit-loading-element {
+  animation: auditPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estilos responsivos específicos para auditoría */
+@media (max-width: 768px) {
+  .audit-table .mat-mdc-cell,
+  .audit-table .mat-mdc-header-cell {
+    padding: 8px 4px;
+    font-size: 0.875rem;
+  }
+  
+  .audit-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .audit-filter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .audit-action-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .audit-action-buttons button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Estilos para indicadores de estado */
+.audit-status-indicator {
+  position: relative;
+}
+
+.audit-status-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.audit-status-indicator.status-pending::before {
+  background-color: #F59E0B;
+}
+
+.audit-status-indicator.status-completed::before {
+  background-color: #10B981;
+}
+
+.audit-status-indicator.status-failed::before {
+  background-color: #EF4444;
+}
+
+.audit-status-indicator.status-investigating::before {
+  background-color: #3B82F6;
+}

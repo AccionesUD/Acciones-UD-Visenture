@@ -1,0 +1,631 @@
+<div class="min-h-screen bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-900 p-4 transition-colors duration-300">
+
+  <!-- Card Principal -->
+  <div class="flex justify-center pb-6">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
+      
+      <!-- Encabezado y Acciones -->
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-500 dark:border-gray-700">
+        <div class="text-left w-full sm:w-auto">
+          <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400" i18n="@@audit.panel.title">Panel de Auditoría y Cumplimiento</h1>
+          <p class="text-gray-600 dark:text-gray-400 text-center sm:text-left" i18n="@@audit.panel.subtitle">Supervisa transacciones y detecta anomalías para asegurar el cumplimiento normativo</p>
+        </div>
+        
+        <div class="flex space-x-3 mt-4 sm:mt-0">
+          <button 
+            (click)="loadAuditData(true)" 
+            [disabled]="isLoading" 
+            class="flex items-center px-4 py-2 bg-white border border-emerald-500 dark:bg-slate-800 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            <mat-icon class="mr-2">refresh</mat-icon>
+            <span i18n="@@common.actions.refresh">Refrescar</span>
+          </button>
+          
+          <button 
+            [matMenuTriggerFor]="exportMenu" 
+            class="flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 rounded-lg transition-colors duration-150">
+            <mat-icon class="mr-2">download</mat-icon>
+            <span i18n="@@audit.actions.export">Exportar</span>
+          </button>
+          
+          <mat-menu #exportMenu="matMenu">
+            <button mat-menu-item (click)="exportData('PDF')">
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span i18n="@@common.actions.export.pdf">Exportar PDF</span>
+            </button>
+            <button mat-menu-item (click)="exportData('EXCEL')">
+              <mat-icon>table_chart</mat-icon>
+              <span i18n="@@common.actions.export.excel">Exportar Excel</span>
+            </button>
+            <button mat-menu-item (click)="exportData('CSV')">
+              <mat-icon>description</mat-icon>
+              <span i18n="@@common.actions.export.csv">Exportar CSV</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="generateComplianceReport()">
+              <mat-icon>assignment</mat-icon>
+              <span i18n="@@audit.actions.compliance.report">Reporte de Cumplimiento</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <!-- Estado de carga principal -->
+      <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <mat-spinner diameter="50" color="primary"></mat-spinner>
+        <div class="ml-4">
+          <p class="text-lg font-medium text-gray-600 dark:text-gray-300" i18n="@@audit.loading.title">Cargando datos de auditoría...</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@common.loading.wait.message">Esto puede tardar unos segundos</p>
+        </div>
+      </div>
+
+      <!-- Estado de error principal -->
+      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-gray-500 dark:border-red-800 rounded-lg p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
+        <div class="flex items-center mb-4 md:mb-0">
+          <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
+          <div>
+            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@audit.error.contact.support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+          </div>
+        </div>
+        <button mat-stroked-button color="warn" (click)="loadAuditData(true)" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+          <span i18n="@@common.actions.retry">Reintentar</span>
+        </button>
+      </div>
+
+      <!-- Estadísticas principales -->
+      <div *ngIf="!isLoading && !error && auditStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <!-- Total de transacciones -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@audit.stats.total.transactions.title">Transacciones Totales</h3>
+              <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ auditStats.totalTransactions | number }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span class="font-medium text-red-600 dark:text-red-400">{{ auditStats.suspiciousTransactions | number }}</span> 
+                <span i18n="@@audit.stats.suspicious">sospechosas</span>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <mat-icon class="text-blue-500 dark:text-blue-400 text-2xl">account_balance</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total de alertas -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@audit.stats.total.alerts.title">Alertas Totales</h3>
+              <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ auditStats.totalAlerts | number }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span class="font-medium text-yellow-600 dark:text-yellow-400">{{ auditStats.openAlerts | number }}</span> 
+                <span i18n="@@audit.stats.open">abiertas</span>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <mat-icon class="text-yellow-500 dark:text-yellow-400 text-2xl">warning</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transacciones alto riesgo -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@audit.stats.high.risk.title">Alto Riesgo</h3>
+              <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ auditStats.highRiskTransactions | number }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span i18n="@@audit.stats.risk.score.avg">Puntaje promedio:</span> 
+                <span class="font-medium text-purple-600 dark:text-purple-400">{{ auditStats.averageRiskScore | number:'1.1-1' }}</span>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <mat-icon class="text-red-500 dark:text-red-400 text-2xl">security</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Volumen total -->
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 hover:shadow-lg transition-shadow">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@audit.stats.total.volume.title">Volumen Total</h3>
+              <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ auditStats.totalVolume | currency:'USD':'symbol':'1.0-0' }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span class="font-medium text-green-600 dark:text-green-400">{{ auditStats.uniqueUsers | number }}</span> 
+                <span i18n="@@audit.stats.unique.users">usuarios únicos</span>
+              </div>
+            </div>
+            <div class="flex-shrink-0">
+              <mat-icon class="text-green-500 dark:text-green-400 text-2xl">trending_up</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-white dark:bg-slate-800 rounded-lg border border-gray-600 dark:border-gray-700">
+        <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
+          <mat-icon class="mr-2 text-emerald-500 dark:text-emerald-400">filter_list</mat-icon>
+          <span i18n="@@audit.filters.title">Filtros Avanzados</span>
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Campo de búsqueda -->
+          <div class="relative">
+            <label for="search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.search.label">Búsqueda General</label>
+            <div class="relative">
+              <input 
+                id="search-filter"
+                formControlName="searchText" 
+                i18n-placeholder="@@audit.filters.search.placeholder"
+                placeholder="Usuario, ID, descripción..." 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-purple-500 dark:text-purple-400">search</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fecha desde -->
+          <div class="relative">
+            <label for="date-from-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.date.from.label">Fecha Desde</label>
+            <div class="relative">
+              <input 
+                id="date-from-filter"
+                type="date"
+                formControlName="dateFrom" 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-emerald-500 dark:text-emerald-400">event</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fecha hasta -->
+          <div class="relative">
+            <label for="date-to-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.date.to.label">Fecha Hasta</label>
+            <div class="relative">
+              <input 
+                id="date-to-filter"
+                type="date"
+                formControlName="dateTo" 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-emerald-500 dark:text-emerald-400">event</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tipo de transacción -->
+          <div class="relative">
+            <label for="transaction-type-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.transaction.type.label">Tipo de Transacción</label>
+            <div class="relative">
+              <select 
+                id="transaction-type-filter"
+                formControlName="transactionType"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+                <option *ngFor="let type of transactionTypes" [value]="type.value">{{ type.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-indigo-500 dark:text-indigo-400">swap_horiz</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estado de transacción -->
+          <div class="relative">
+            <label for="transaction-status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.transaction.status.label">Estado de Transacción</label>
+            <div class="relative">
+              <select 
+                id="transaction-status-filter"
+                formControlName="transactionStatus"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+                <option *ngFor="let status of transactionStatuses" [value]="status.value">{{ status.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-green-500 dark:text-green-400">check_circle</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nivel de riesgo -->
+          <div class="relative">
+            <label for="risk-level-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.risk.level.label">Nivel de Riesgo</label>
+            <div class="relative">
+              <select 
+                id="risk-level-filter"
+                formControlName="riskLevel"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+                <option *ngFor="let risk of riskLevels" [value]="risk.value">{{ risk.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-emerald-500 dark:text-emerald-400">security</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monto mínimo -->
+          <div class="relative">
+            <label for="min-amount-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.min.amount.label">Monto Mínimo</label>
+            <div class="relative">
+              <input 
+                id="min-amount-filter"
+                type="number"
+                formControlName="minAmount" 
+                i18n-placeholder="@@audit.filters.min.amount.placeholder"
+                placeholder="0.00" 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-emerald-500 dark:text-emerald-400">attach_money</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monto máximo -->
+          <div class="relative">
+            <label for="max-amount-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@audit.filters.max.amount.label">Monto Máximo</label>
+            <div class="relative">
+              <input 
+                id="max-amount-filter"
+                type="number"
+                formControlName="maxAmount" 
+                i18n-placeholder="@@audit.filters.max.amount.placeholder"
+                placeholder="999999.99" 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition-colors duration-200">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-emerald-500 dark:text-emerald-400">attach_money</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtros adicionales con checkboxes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div class="flex items-center">
+            <mat-checkbox formControlName="suspiciousOnly" class="mr-2"></mat-checkbox>
+            <label i18n="@@audit.filters.suspicious.only.label">Solo transacciones sospechosas</label>
+          </div>
+          <div class="flex items-center">
+            <mat-checkbox formControlName="reviewedOnly" class="mr-2"></mat-checkbox>
+            <label i18n="@@audit.filters.reviewed.only.label">Solo transacciones revisadas</label>
+          </div>
+        </div>
+
+        <!-- Botones de acción para los filtros -->
+        <div class="flex justify-end mt-4 space-x-2">
+          <button 
+            type="button" 
+            (click)="resetFilters()" 
+            class="px-4 py-2 border border-gray-500 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">clear</mat-icon>
+            <span i18n="@@common.actions.clear">Limpiar</span>
+          </button>
+          <button 
+            type="submit" 
+            class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">search</mat-icon>
+            <span i18n="@@common.actions.apply">Aplicar</span>
+          </button>
+          <div 
+            *ngIf="hasActiveFilters()"
+            class="py-2 px-3 bg-emerald-50 dark:bg-emerald-900/30 border border-gray-500 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-md flex items-center text-sm">
+            <mat-icon class="mr-1 text-sm">filter_list</mat-icon>
+            <span i18n="@@common.filters.active">Filtros activos</span>
+          </div>
+        </div>
+      </form>
+
+      <!-- Panel principal con tabs -->
+      <div *ngIf="!isLoading && !error">
+        <mat-tab-group animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start" class="commissioner-tabs" (selectedTabChange)="onTabChange($event)">
+          
+          <!-- Tab de Transacciones -->
+          <mat-tab i18n-label="@@audit.tabs.transactions.label" label="Transacciones">
+            <div class="py-6">
+              <!-- Tabla de transacciones -->
+              <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <mat-icon class="mr-2 text-blue-500">account_balance</mat-icon>
+                    <span i18n="@@audit.transactions.table.title">Transacciones de Auditoría</span>
+                    <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">({{ totalTransactions | number }} total)</span>
+                  </h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                  <table mat-table [dataSource]="transactionsDataSource" matSort class="w-full">
+                    
+                    <!-- Columna de selección -->
+                    <ng-container matColumnDef="select">
+                      <th mat-header-cell *matHeaderCellDef class="w-12">
+                        <mat-checkbox (change)="$event ? masterToggleTransactions() : null"
+                                      [checked]="transactionsSelection.hasValue() && isAllTransactionsSelected()"
+                                      [indeterminate]="transactionsSelection.hasValue() && !isAllTransactionsSelected()">
+                        </mat-checkbox>
+                      </th>
+                      <td mat-cell *matCellDef="let row" class="w-12">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                                      (change)="$event ? transactionsSelection.toggle(row) : null"
+                                      [checked]="transactionsSelection.isSelected(row)">
+                        </mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- Fecha de transacción -->
+                    <ng-container matColumnDef="date_transaction">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.transactions.table.date">Fecha</th>
+                      <td mat-cell *matCellDef="let row">{{ row.date_transaction | date:'medium' }}</td>
+                    </ng-container>
+
+                    <!-- Usuario -->
+                    <ng-container matColumnDef="user_name">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.transactions.table.user">Usuario</th>
+                      <td mat-cell *matCellDef="let row">
+                        <div>
+                          <div class="font-medium text-gray-900 dark:text-white">{{ row.user_name }}</div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">{{ row.user_email }}</div>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Tipo de transacción -->
+                    <ng-container matColumnDef="type_transaction">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.transactions.table.type">Tipo</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                          {{ row.type_transaction }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Valor de transacción -->
+                    <ng-container matColumnDef="value_transaction">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.transactions.table.amount">Monto</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="font-medium">{{ row.value_transaction | currency:'USD':'symbol':'1.2-2' }}</span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Puntaje de riesgo -->
+                    <ng-container matColumnDef="risk_score">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.transactions.table.risk">Riesgo</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getRiskLevelClass(row.risk_score)">
+                          {{ row.risk_score | number:'1.0-0' }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Estado -->
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.transactions.table.status">Estado</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(row.status)">
+                          {{ row.status }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Acciones -->
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.transactions.table.actions">Acciones</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button mat-icon-button (click)="viewTransactionDetails(row)" 
+                                matTooltip="Ver detalles" i18n-matTooltip="@@audit.transactions.actions.view.tooltip">
+                          <mat-icon class="action-icon">visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="flagTransactionAsSuspicious(row)" 
+                                matTooltip="Marcar como sospechosa" i18n-matTooltip="@@audit.transactions.actions.flag.tooltip"
+                                *ngIf="!row.is_suspicious">
+                          <mat-icon class="action-icon text-orange-500">flag</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="reviewTransaction(row)" 
+                                matTooltip="Marcar como revisada" i18n-matTooltip="@@audit.transactions.actions.review.tooltip"
+                                *ngIf="!row.reviewed">
+                          <mat-icon class="action-icon text-green-500">check_circle</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="transactionsDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: transactionsDisplayedColumns;"></tr>
+                  </table>
+                </div>
+                
+                <mat-paginator #transactionsPaginator 
+                               [pageSizeOptions]="pageSizeOptions" 
+                               [pageSize]="pageSize"
+                               [length]="totalTransactions"
+                               (page)="onTransactionsPageChange($event)"
+                               showFirstLastButtons>
+                </mat-paginator>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab de Alertas -->
+          <mat-tab i18n-label="@@audit.tabs.alerts.label" label="Alertas">
+            <div class="py-6">
+              <!-- Tabla de alertas -->
+              <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                    <mat-icon class="mr-2 text-yellow-500">warning</mat-icon>
+                    <span i18n="@@audit.alerts.table.title">Alertas de Cumplimiento</span>
+                    <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">({{ totalAlerts | number }} total)</span>
+                  </h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                  <table mat-table [dataSource]="alertsDataSource" matSort class="w-full">
+                    
+                    <!-- Columna de selección -->
+                    <ng-container matColumnDef="select">
+                      <th mat-header-cell *matHeaderCellDef class="w-12">
+                        <mat-checkbox (change)="$event ? masterToggleAlerts() : null"
+                                      [checked]="alertsSelection.hasValue() && isAllAlertsSelected()"
+                                      [indeterminate]="alertsSelection.hasValue() && !isAllAlertsSelected()">
+                        </mat-checkbox>
+                      </th>
+                      <td mat-cell *matCellDef="let row" class="w-12">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                                      (change)="$event ? alertsSelection.toggle(row) : null"
+                                      [checked]="alertsSelection.isSelected(row)">
+                        </mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- Fecha de creación -->
+                    <ng-container matColumnDef="created_at">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.alerts.table.created">Creada</th>
+                      <td mat-cell *matCellDef="let row">{{ row.created_at | date:'medium' }}</td>
+                    </ng-container>
+
+                    <!-- Tipo de alerta -->
+                    <ng-container matColumnDef="alert_type">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.alerts.table.type">Tipo</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                          {{ row.alert_type }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Severidad -->
+                    <ng-container matColumnDef="severity">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@audit.alerts.table.severity">Severidad</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getAlertSeverityClass(row.severity)">
+                          {{ row.severity }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Descripción -->
+                    <ng-container matColumnDef="description">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.alerts.table.description">Descripción</th>
+                      <td mat-cell *matCellDef="let row">
+                        <div class="max-w-xs truncate" [matTooltip]="row.description">{{ row.description }}</div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Estado -->
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.alerts.table.status">Estado</th>
+                      <td mat-cell *matCellDef="let row">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(row.status)">
+                          {{ row.status }}
+                        </span>
+                      </td>
+                    </ng-container>
+
+                    <!-- Acciones -->
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef i18n="@@audit.alerts.table.actions">Acciones</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button mat-icon-button (click)="viewAlertDetails(row)" 
+                                matTooltip="Ver detalles" i18n-matTooltip="@@audit.alerts.actions.view.tooltip">
+                          <mat-icon class="action-icon">visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="assignAlert(row)" 
+                                matTooltip="Asignar" i18n-matTooltip="@@audit.alerts.actions.assign.tooltip"
+                                *ngIf="row.status === 'OPEN'">
+                          <mat-icon class="action-icon text-blue-500">person_add</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="resolveAlert(row)" 
+                                matTooltip="Resolver" i18n-matTooltip="@@audit.alerts.actions.resolve.tooltip"
+                                *ngIf="row.status !== 'RESOLVED' && row.status !== 'FALSE_POSITIVE'">
+                          <mat-icon class="action-icon text-green-500">check_circle</mat-icon>
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="alertsDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: alertsDisplayedColumns;"></tr>
+                  </table>
+                </div>
+                
+                <mat-paginator #alertsPaginator 
+                               [pageSizeOptions]="pageSizeOptions" 
+                               [pageSize]="pageSize"
+                               [length]="totalAlerts"
+                               (page)="onAlertsPageChange($event)"
+                               showFirstLastButtons>
+                </mat-paginator>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab de Análisis -->
+          <mat-tab i18n-label="@@audit.tabs.analytics.label" label="Análisis">
+            <div class="py-6">
+              <!-- Gráficos de análisis -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Tendencias de transacciones -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@audit.analytics.transaction.trends.title">Tendencias de Transacciones</h3>
+                  <div *ngIf="transactionTrendsChartOptions" class="h-[300px] w-full chart-container" id="transaction-trends-chart-container">
+                    <apx-chart
+                      [series]="transactionTrendsChartOptions.series || []"
+                      [chart]="transactionTrendsChartOptions.chart || {}"
+                      [xaxis]="transactionTrendsChartOptions.xaxis || {}"
+                      [yaxis]="transactionTrendsChartOptions.yaxis || {}"
+                      [dataLabels]="transactionTrendsChartOptions.dataLabels || {}"
+                      [grid]="transactionTrendsChartOptions.grid || {}"
+                      [stroke]="transactionTrendsChartOptions.stroke || {}"
+                      [tooltip]="transactionTrendsChartOptions.tooltip || {}"
+                      [fill]="transactionTrendsChartOptions.fill || {}"
+                      [colors]="transactionTrendsChartOptions.colors || ['#3B82F6']"
+                      [theme]="transactionTrendsChartOptions.theme || {}"
+                    ></apx-chart>
+                  </div>
+                </div>
+
+                <!-- Distribución de riesgo -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card">
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@audit.analytics.risk.distribution.title">Distribución de Riesgo</h3>
+                  <div *ngIf="riskDistributionChartOptions" class="h-[300px] w-full chart-container" id="risk-distribution-chart-container">
+                    <apx-chart
+                      [series]="riskDistributionChartOptions.series || []"
+                      [chart]="riskDistributionChartOptions.chart || {}"
+                      [labels]="riskDistributionChartOptions.labels || []"
+                      [dataLabels]="riskDistributionChartOptions.dataLabels || {}"
+                      [legend]="riskDistributionChartOptions.legend || {}"
+                      [plotOptions]="riskDistributionChartOptions.plotOptions || {}"
+                      [theme]="riskDistributionChartOptions.theme || {}"
+                      [colors]="riskDistributionChartOptions.colors || ['#10B981', '#F59E0B', '#EF4444']"
+                    ></apx-chart>
+                  </div>
+                </div>
+
+                <!-- Tendencias de alertas -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500/50 dark:border-slate-700 chart-card lg:col-span-2">
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@audit.analytics.alerts.trends.title">Tendencias de Alertas</h3>
+                  <div *ngIf="alertsTrendsChartOptions" class="h-[300px] w-full chart-container" id="alerts-trends-chart-container">
+                    <apx-chart
+                      [series]="alertsTrendsChartOptions.series || []"
+                      [chart]="alertsTrendsChartOptions.chart || {}"
+                      [xaxis]="alertsTrendsChartOptions.xaxis || {}"
+                      [yaxis]="alertsTrendsChartOptions.yaxis || {}"
+                      [dataLabels]="alertsTrendsChartOptions.dataLabels || {}"
+                      [grid]="alertsTrendsChartOptions.grid || {}"
+                      [stroke]="alertsTrendsChartOptions.stroke || {}"
+                      [tooltip]="alertsTrendsChartOptions.tooltip || {}"
+                      [theme]="alertsTrendsChartOptions.theme || {}"
+                      [colors]="alertsTrendsChartOptions.colors || ['#EF4444']"
+                    ></apx-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+        </mat-tab-group>
+      </div>
+
+    </div>
+  </div>
+</div>
