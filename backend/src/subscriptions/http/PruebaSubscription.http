@@ -1,0 +1,12 @@
+GET /api/subscriptions/me/test-jwt HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3NTA0NTI1MzMsImV4cCI6MTc1MDQ1NjEzM30.ursu85shEMuP6hgZrB8Vp22H4IZdW4BadsjVqKTM_90
+Host: localhost:3000
+
+# Ejemplo de solicitud HTTP para probar la suscripción de prueba
+# Asegúrate de que el servidor esté corriendo en localhost:3000
+# Puedes usar herramientas como Postman o Insomnia para probar esta solicitud
+
+#Este endpoint tiene como objetivo probar la suscripción de prueba.
+# El endpoint debe estar protegido por un middleware de autenticación JWT.
+# El token JWT debe ser generado por el servidor y debe incluir los roles necesarios para acceder a la funcionalidad de prueba.

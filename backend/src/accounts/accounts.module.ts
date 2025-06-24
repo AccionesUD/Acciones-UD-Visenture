@@ -7,7 +7,6 @@ import { AccountsService } from './services/accounts.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { Role } from 'src/roles-permission/entities/role.entity';
 import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
-import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   controllers: [AccountsController],
@@ -16,7 +15,6 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     AuthModule,
     TypeOrmModule.forFeature([User, Account, Role]),
     forwardRef(() => AlpacaBrokerModule),
-    NotificationsModule, 
   ],
   exports: [AccountsService],
 })
