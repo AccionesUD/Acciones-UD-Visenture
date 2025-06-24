@@ -1,7 +1,7 @@
 // src/auth/interfaces/jwt-payload-user.interface.ts
 
 export interface JwtPayloadUser {
-  sub: number;
+  accountId: number;
   userId: string;
   email: string;
   roles: string[];
