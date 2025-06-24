@@ -58,7 +58,7 @@
       
       <!-- Apellido -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.last-name.label">Apellido</label>
         <div class="relative">
           <input 
             type="text" 
@@ -74,7 +74,7 @@
       
       <!-- Documento de identidad -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Documento de identidad</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.id-document.label">Documento de identidad</label>
         <div class="relative">
           <input 
             type="text" 
@@ -90,7 +90,7 @@
 
       <!-- Fecha de nacimiento -->
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.birth-date.label">Fecha de nacimiento</label>
         <div class="relative">
           <input 
             type="text" 
@@ -107,8 +107,8 @@
       <!-- Email -->
       <div class="space-y-2">
         <div class="flex justify-between items-center">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
-          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400">Campo editable</span>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.email.label">Correo electrónico</label>
+          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400" i18n="@@profile.information.editable-field">Campo editable</span>
         </div>
         <div class="relative">
           <input 
@@ -136,8 +136,8 @@
       <!-- Teléfono -->
       <div class="space-y-2">
         <div class="flex justify-between items-center">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
-          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400">Campo editable</span>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.phone.label">Teléfono</label>
+          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400" i18n="@@profile.information.editable-field">Campo editable</span>
         </div>
         <div class="relative">
           <input 
@@ -172,7 +172,7 @@
         (click)="toggleEdit()"
       >
         <mat-icon class="mr-1">close</mat-icon>
-        Cancelar
+        <span i18n="@@profile.information.cancel-button">Cancelar</span>
       </button>
       <button 
         type="submit" 
@@ -182,7 +182,8 @@
       >
         <div *ngIf="isSaving" class="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
         <mat-icon class="mr-1" *ngIf="!isSaving">save</mat-icon>
-        {{ isSaving ? 'Guardando...' : 'Guardar cambios' }}
+        <span *ngIf="isSaving" i18n="@@profile.information.saving">Guardando...</span>
+        <span *ngIf="!isSaving" i18n="@@profile.information.save-changes">Guardar cambios</span>
       </button>
     </div>
   </form>
@@ -191,8 +192,8 @@
   <div *ngIf="!isLoading" class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
     <div class="flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-medium text-gray-800 dark:text-white">Seguridad de la cuenta</h3>
-        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">Gestiona tu contraseña y configuración de seguridad</p>
+        <h3 class="text-lg font-medium text-gray-800 dark:text-white" i18n="@@profile.information.security-title">Seguridad de la cuenta</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1" i18n="@@profile.information.security-description">Gestiona tu contraseña y configuración de seguridad</p>
       </div>
       <button 
         mat-flat-button
@@ -200,7 +201,7 @@
         (click)="goToSecurity()"
       >
         <mat-icon class="mr-1">security</mat-icon>
-        Ir a Seguridad
+        <span i18n="@@profile.information.go-to-security">Ir a Seguridad</span>
       </button>
     </div>
   </div>

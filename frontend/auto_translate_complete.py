@@ -5,8 +5,62 @@ import json
 import urllib.request
 import urllib.parse
 import time
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, List
 import html
+
+# Añadimos constantes para palabras clave de ICU que no deben traducirse
+ICU_KEYWORDS = ['select', 'plural', 'VAR_SELECT', 'VAR_PLURAL', 'true', 'false', 'other', '=0', '=1', '=2']
+
+def extract_icu_parts(text: str) -> Tuple[List[str], List[str]]:
+    """
+    Extrae partes de expresiones ICU que no deben ser traducidas y devuelve un texto limpio
+    junto con los placeholders y las partes originales.
+    
+    Args:
+        text: El texto que puede contener expresiones ICU
+        
+    Returns:
+        Tuple con:
+        - Una lista de placeholders usados para reemplazar las partes ICU
+        - Una lista de las partes ICU originales
+    """
+    # Detectar si es una expresión ICU completa
+    icu_pattern = r'\{([^{}]+(?:\{[^{}]*\}[^{}]*)+)\}'
+    icu_keyword_pattern = r'\b(select|plural|VAR_SELECT|VAR_PLURAL|true|false|other|=\d+)\b'
+    
+    placeholders = []
+    original_parts = []
+    
+    # Reemplazar partes de ICU con placeholders
+    matches = re.finditer(icu_pattern, text)
+    for idx, match in enumerate(matches):
+        full_icu_expr = match.group(0)
+        icu_content = match.group(1)
+        
+        # Verificar si tiene palabras clave ICU
+        if re.search(icu_keyword_pattern, icu_content):
+            placeholder = f"__ICU_PLACEHOLDER_{idx}__"
+            placeholders.append(placeholder)
+            original_parts.append(full_icu_expr)
+    
+    return placeholders, original_parts
+
+def restore_icu_parts(text: str, placeholders: List[str], original_parts: List[str]) -> str:
+    """
+    Restaura las expresiones ICU originales en el texto traducido.
+    
+    Args:
+        text: El texto traducido con placeholders
+        placeholders: Lista de placeholders usados
+        original_parts: Lista de partes ICU originales
+        
+    Returns:
+        El texto con las expresiones ICU restauradas
+    """
+    result = text
+    for placeholder, original in zip(placeholders, original_parts):
+        result = result.replace(placeholder, original)
+    return result
 
 class AutomaticTranslator:
     """
@@ -22,12 +76,57 @@ class AutomaticTranslator:
     def translate_text(self, text: str, target_lang: str, source_lang: str = 'es') -> str:
         """
         Traduce un texto automáticamente usando múltiples APIs como fallback.
+        Preserva expresiones ICU y entidades HTML.
         """
         # Limpiar y validar texto
         clean_text = text.strip()
         if not clean_text or len(clean_text) < 2:
             return text
+        
+        # Detectar y extraer expresiones ICU para preservarlas
+        icu_placeholders, icu_originals = extract_icu_parts(clean_text)
+        
+        # Si hay expresiones ICU, reemplazarlas con placeholders antes de traducir
+        text_to_translate = clean_text
+        for placeholder, original in zip(icu_placeholders, icu_originals):
+            text_to_translate = text_to_translate.replace(original, placeholder)
             
+        # Si después de extraer ICU el texto está vacío, devolver el original
+        if not text_to_translate.strip():
+            return text
+            
+        # Manejar textos muy largos dividiéndolos en oraciones
+        max_len = 2000  # Reducido para mayor seguridad
+        if len(clean_text) > max_len:
+            # Primero intentar dividir por oraciones
+            parts = re.split(r'(?<=[\.\!\?])\s+', clean_text)
+            
+            # Si una oración sigue siendo demasiado larga o solo hay una oración larga, 
+            # dividir por comas, puntos y coma o cualquier otro delimitador adecuado
+            translated_parts = []
+            for part in parts:
+                if len(part) > max_len:
+                    subparts = re.split(r'(?<=[\,\;\:])\s+', part)
+                    for subpart in subparts:
+                        # Si aún así es muy largo, dividir en fragmentos más pequeños
+                        if len(subpart) > max_len:
+                            # Dividir en fragmentos de longitud segura
+                            for i in range(0, len(subpart), max_len//2):  # Usar la mitad del máximo para garantizar superposición
+                                chunk = subpart[i:i+max_len//2]
+                                if chunk:
+                                    translated_parts.append(self.translate_text(chunk, target_lang, source_lang))
+                        else:
+                            if subpart:
+                                translated_parts.append(self.translate_text(subpart, target_lang, source_lang))
+                else:
+                    if part:
+                        translated_parts.append(self.translate_text(part, target_lang, source_lang))
+                    
+            translated_full = ' '.join(translated_parts)
+            cache_key = f"{source_lang}_{target_lang}_{clean_text}"
+            self.translation_cache[cache_key] = translated_full
+            return translated_full
+
         # Verificar en caché
         cache_key = f"{source_lang}_{target_lang}_{clean_text}"
         if cache_key in self.translation_cache:
@@ -44,8 +143,11 @@ class AutomaticTranslator:
         
         # Método 1: Google Translate (gratuito)
         try:
-            translated = self._translate_with_google(clean_text, target_lang, source_lang)
-            if translated and translated != clean_text:
+            translated = self._translate_with_google(text_to_translate, target_lang, source_lang)
+            if translated and translated != text_to_translate:
+                # Restaurar expresiones ICU en el texto traducido
+                if icu_placeholders:
+                    translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
@@ -53,8 +155,11 @@ class AutomaticTranslator:
         
         # Método 2: MyMemory API (gratuito)
         try:
-            translated = self._translate_with_mymemory(clean_text, target_lang, source_lang)
-            if translated and translated != clean_text:
+            translated = self._translate_with_mymemory(text_to_translate, target_lang, source_lang)
+            if translated and translated != text_to_translate:
+                # Restaurar expresiones ICU en el texto traducido
+                if icu_placeholders:
+                    translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
@@ -62,16 +167,54 @@ class AutomaticTranslator:
         
         # Método 3: LibreTranslate (si está disponible)
         try:
-            translated = self._translate_with_libretranslate(clean_text, target_lang, source_lang)
-            if translated and translated != clean_text:
+            translated = self._translate_with_libretranslate(text_to_translate, target_lang, source_lang)
+            if translated and translated != text_to_translate:
+                # Restaurar expresiones ICU en el texto traducido
+                if icu_placeholders:
+                    translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
             print(f"LibreTranslate failed: {e}")
         
-        # Si todo falla, devolver texto original
-        print(f"Warning: Could not translate '{clean_text}' to {target_lang}")
-        return clean_text
+        # Sistema de reintentos con espera exponencial
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            retry_count += 1
+            delay = 2 ** retry_count  # Retraso exponencial: 2, 4, 8 segundos
+            
+            print(f"Translation attempt failed. Retrying in {delay} seconds (attempt {retry_count}/{max_retries})...")
+            time.sleep(delay)
+            
+            # Reintentar en orden diferente para maximizar posibilidades de éxito
+            services = [
+                (self._translate_with_google, "Google"),
+                (self._translate_with_mymemory, "MyMemory"),
+                (self._translate_with_libretranslate, "LibreTranslate")
+            ]
+            
+            # Alternar el orden de los servicios a probar en cada reintento
+            retry_services = services[retry_count % len(services):] + services[:retry_count % len(services)]
+            
+            for translate_func, service_name in retry_services:
+                try:
+                    print(f"Retrying with {service_name}...")
+                    translated = translate_func(text_to_translate, target_lang, source_lang)
+                    if translated and translated != text_to_translate:
+                        # Restaurar expresiones ICU en el texto traducido
+                        if icu_placeholders:
+                            translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
+                        self.translation_cache[cache_key] = translated
+                        print(f"Retry successful with {service_name}")
+                        return translated
+                except Exception as e:
+                    print(f"{service_name} retry failed: {e}")
+        
+        # Si todo falla después de los reintentos, devolver texto original
+        print(f"Warning: Could not translate '{text_to_translate[:50]}...' to {target_lang} after {max_retries} retry attempts")
+        return text  # Devolvemos el texto original completo con las expresiones ICU intactas
     
     def _translate_with_google(self, text: str, target_lang: str, source_lang: str) -> Optional[str]:
         """Traduce usando Google Translate API gratuita."""
@@ -194,6 +337,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
     """
     import os
     import shutil
+    import datetime
     
     translator = AutomaticTranslator()
     
@@ -206,10 +350,23 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
     name_without_ext = os.path.splitext(base_name)[0]
     output_file = os.path.join(output_dir, f"{name_without_ext}.{target_lang}.xlf")
     
+    # Crear nombre del archivo de registro
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = os.path.join(output_dir, f"translation_{target_lang}_{timestamp}.log")
+    
     print(f"🚀 Starting automatic translation to {target_lang}...")
     print(f"📁 Source file: {source_file_path}")
     print(f"📁 Output file: {output_file}")
+    print(f"📝 Log file: {log_file}")
     print("⏳ This may take several minutes depending on the number of strings...")
+    
+    # Iniciar registro de log
+    with open(log_file, 'w', encoding='utf-8') as log:
+        log.write(f"Translation log for {target_lang}\n")
+        log.write(f"Source file: {source_file_path}\n")
+        log.write(f"Output file: {output_file}\n")
+        log.write(f"Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        log.write("="*50 + "\n\n")
     
     # Crear copia del archivo original
     try:
@@ -252,10 +409,20 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                 print(f"Skipped complex/empty text: '{source_text_clean[:50]}...'")
                 return trans_unit
             
+            # Detectar expresiones ICU en el texto source
+            icu_pattern = r'\{([A-Z_]+),[^{}]+\}'
+            has_icu = re.search(icu_pattern, source_text_clean)
+            if has_icu:
+                print(f"Detected ICU expression in: '{source_text_clean[:50]}...'")
+                # Si es una expresión ICU, la manejaremos con nuestra función especial de traducción que preserva las keywords
+            
             # Verificar si ya tiene target
             has_target = f'<{ns_prefix}target>' in trans_unit
             
             if not has_target:
+                # Detectar entidades HTML en el texto original
+                has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
+                
                 # Traducir el texto
                 print(f"Translating ({total_translations}): '{source_text_clean[:60]}...'")
                 translated_text = translator.translate_text(source_text_clean, target_lang)
@@ -268,6 +435,21 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                         translated_text = ' ' + translated_text
                     if source_text.endswith(' ') and not translated_text.endswith(' '):
                         translated_text = translated_text + ' '
+                    
+                    # Restaurar entidades HTML que pudieron ser cambiadas durante la traducción
+                    if has_html_entities:
+                        # Buscar entidades HTML en el texto fuente
+                        html_entities = re.findall(r'&[a-zA-Z0-9#]+;', source_text_clean)
+                        
+                        # Para cada entidad HTML encontrada en el texto original,
+                        # verifica si debe ser restaurada en el texto traducido
+                        for entity in html_entities:
+                            entity_text = html.unescape(entity)  # Convertir a caracter normal
+                            entity_char = entity_text  # El carácter que representa la entidad
+                            
+                            # Si el carácter está en la traducción, asegurarse de que está como entidad HTML
+                            if entity_char in translated_text and entity not in translated_text:
+                                translated_text = translated_text.replace(entity_char, entity)
                     
                     # Añadir elemento target
                     target_element = f'\n        <{ns_prefix}target>{translated_text}</{ns_prefix}target>'
@@ -286,6 +468,9 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                     
                     # Solo actualizar si el target está vacío o es igual al source
                     if not current_target or current_target == source_text_clean:
+                        # Detectar entidades HTML en el texto original
+                        has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
+                        
                         print(f"Updating empty target ({total_translations}): '{source_text_clean[:60]}...'")
                         translated_text = translator.translate_text(source_text_clean, target_lang)
                         
@@ -298,6 +483,21 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                             if source_text.endswith(' ') and not translated_text.endswith(' '):
                                 translated_text = translated_text + ' '
                             
+                            # Restaurar entidades HTML que pudieron ser cambiadas durante la traducción
+                            if has_html_entities:
+                                # Buscar entidades HTML en el texto fuente
+                                html_entities = re.findall(r'&[a-zA-Z0-9#]+;', source_text_clean)
+                                
+                                # Para cada entidad HTML encontrada en el texto original,
+                                # verifica si debe ser restaurada en el texto traducido
+                                for entity in html_entities:
+                                    entity_text = html.unescape(entity)  # Convertir a caracter normal
+                                    entity_char = entity_text  # El carácter que representa la entidad
+                                    
+                                    # Si el carácter está en la traducción, asegurarse de que está como entidad HTML
+                                    if entity_char in translated_text and entity not in translated_text:
+                                        translated_text = translated_text.replace(entity_char, entity)
+                            
                             # Actualizar target
                             trans_unit = re.sub(target_pattern, f'<{ns_prefix}target>{translated_text}</{ns_prefix}target>', trans_unit)
                             print(f"✓ Updated: '{source_text_clean}' -> '{translated_text}'")
@@ -306,12 +506,62 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
         
         return trans_unit
     
+    # Lista para mantener seguimiento de traducciones faltantes
+    missing_translations = []
+    
+    # Extraer los IDs de las unidades de traducción que no pudieron ser traducidas
+    id_pattern = r'<(?:ns0:)?trans-unit\s+id=["\']([^"\']+)["\']'
+    
+    def find_missing_translations(match):
+        trans_unit = match.group(0)
+        
+        # Buscar el ID de la unidad de traducción
+        id_match = re.search(id_pattern, trans_unit)
+        unit_id = id_match.group(1) if id_match else "unknown"
+        
+        # Verificar si tiene source pero no target
+        has_source = "<source>" in trans_unit or "<ns0:source>" in trans_unit
+        has_target = "<target>" in trans_unit or "<ns0:target>" in trans_unit
+        
+        if has_source and not has_target:
+            # Extraer texto source
+            source_pattern = r'<(?:ns0:)?source>(.*?)</(?:ns0:)?source>'
+            source_match = re.search(source_pattern, trans_unit, re.DOTALL)
+            source_text = source_match.group(1) if source_match else ""
+            
+            # Añadir a la lista de traducciones faltantes
+            missing_translations.append((unit_id, source_text.strip()))
+        
+        return trans_unit
+    
+    # Buscar traducciones faltantes
+    re.sub(pattern, find_missing_translations, content, flags=re.DOTALL)
+    
     # Aplicar las traducciones
     content = re.sub(pattern, replace_trans_unit, content, flags=re.DOTALL)
     
     # Escribir el archivo actualizado
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(content)
+    
+    # Actualizar el archivo de registro con traducciones faltantes
+    with open(log_file, 'a', encoding='utf-8') as log:
+        log.write("\n=== Translation Summary ===\n")
+        log.write(f"Total strings found: {total_translations}\n")
+        log.write(f"Successfully translated: {successful_translations}\n")
+        log.write(f"Skipped (complex/empty): {skipped_translations}\n")
+        log.write(f"Failed translations: {total_translations - successful_translations - skipped_translations}\n")
+        
+        if total_translations > 0:
+            success_rate = (successful_translations / (total_translations - skipped_translations)) * 100 if (total_translations - skipped_translations) > 0 else 0
+            log.write(f"Success rate: {success_rate:.1f}%\n\n")
+        
+        if missing_translations:
+            log.write("\n=== Missing Translations ===\n")
+            for unit_id, source_text in missing_translations:
+                log.write(f"ID: {unit_id}\n")
+                log.write(f"Source: {source_text[:100]}{'...' if len(source_text) > 100 else ''}\n")
+                log.write("-" * 50 + "\n")
     
     print(f"\n=== Translation Summary ===")
     print(f"Total strings found: {total_translations}")
@@ -322,6 +572,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
         success_rate = (successful_translations / (total_translations - skipped_translations)) * 100 if (total_translations - skipped_translations) > 0 else 0
         print(f"Success rate: {success_rate:.1f}%")
     print(f"File saved: {output_file}")
+    print(f"Missing translations: {len(missing_translations)} (see log file for details)")
 
 def translate_all_languages(source_file_path: str, output_dir: str = None):
     """

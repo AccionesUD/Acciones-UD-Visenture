@@ -27,18 +27,18 @@ export class FiltersComponent implements OnInit {
   private readonly DEFAULT_PERFORMANCE = 'all';
 
   sortOptions: SortOption[] = [
-    { label: 'Sin ordenar', value: 'none', direction: 'asc', property: '' },
-    { label: 'Mayor valor', value: 'highest-value', direction: 'desc', property: 'totalValue' },
-    { label: 'Menor valor', value: 'lowest-value', direction: 'asc', property: 'totalValue' },
-    { label: 'Mayor ganancia', value: 'highest-gain', direction: 'desc', property: 'performance' },
-    { label: 'Mayor pérdida', value: 'highest-loss', direction: 'asc', property: 'performance' }
+    { label: $localize`:@@portfolio.filters.sort.none:Sin ordenar`, value: 'none', direction: 'asc', property: '' },
+    { label: $localize`:@@portfolio.filters.sort.highest-value:Mayor valor`, value: 'highest-value', direction: 'desc', property: 'totalValue' },
+    { label: $localize`:@@portfolio.filters.sort.lowest-value:Menor valor`, value: 'lowest-value', direction: 'asc', property: 'totalValue' },
+    { label: $localize`:@@portfolio.filters.sort.highest-gain:Mayor ganancia`, value: 'highest-gain', direction: 'desc', property: 'performance' },
+    { label: $localize`:@@portfolio.filters.sort.highest-loss:Mayor pérdida`, value: 'highest-loss', direction: 'asc', property: 'performance' }
   ];
   
   performanceFilters: PerformanceFilterOption[] = [
-    { label: 'Todos', value: 'all' },
-    { label: 'Alto rendimiento (>5%)', value: 'high', min: 5 },
-    { label: 'Rendimiento medio (0-5%)', value: 'medium', min: 0, max: 5 },
-    { label: 'En pérdida (<0%)', value: 'loss', max: 0 }
+    { label: $localize`:@@portfolio.filters.performance.all:Todos`, value: 'all' },
+    { label: $localize`:@@portfolio.filters.performance.high:Alto rendimiento (>5%)`, value: 'high', min: 5 },
+    { label: $localize`:@@portfolio.filters.performance.medium:Rendimiento medio (0-5%)`, value: 'medium', min: 0, max: 5 },
+    { label: $localize`:@@portfolio.filters.performance.loss:En pérdida (<0%)`, value: 'loss', max: 0 }
   ];
   constructor() { }
   ngOnInit(): void {

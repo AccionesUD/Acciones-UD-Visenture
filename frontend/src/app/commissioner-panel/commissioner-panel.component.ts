@@ -111,19 +111,19 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   
   // Markets disponibles para filtrado
   markets: {value: string, label: string}[] = [
-    { value: '', label: 'Todos los mercados' },
-    { value: 'US', label: 'Estados Unidos' },
-    { value: 'LATAM', label: 'Latinoamérica' },
-    { value: 'EU', label: 'Europa' },
-    { value: 'ASIA', label: 'Asia' }
+    { value: '', label: $localize`:@@commissioner.filters.market.all:Todos los mercados` },
+    { value: 'US', label: $localize`:@@commissioner.filters.market.us:Estados Unidos` },
+    { value: 'LATAM', label: $localize`:@@commissioner.filters.market.latam:Latinoamérica` },
+    { value: 'EU', label: $localize`:@@commissioner.filters.market.eu:Europa` },
+    { value: 'ASIA', label: $localize`:@@commissioner.filters.market.asia:Asia` }
   ];
   
   // Estados de cliente disponibles para filtrado
   statuses: {value: string, label: string}[] = [
-    { value: '', label: 'Todos los estados' },
-    { value: 'active', label: 'Activo' },
-    { value: 'inactive', label: 'Inactivo' },
-    { value: 'pending', label: 'Pendiente' }
+    { value: '', label: $localize`:@@commissioner.filters.status.all:Todos los estados` },
+    { value: 'active', label: $localize`:@@commissioner.filters.status.active:Activo` },
+    { value: 'inactive', label: $localize`:@@commissioner.filters.status.inactive:Inactivo` },
+    { value: 'pending', label: $localize`:@@commissioner.filters.status.pending:Pendiente` }
   ];
   
   private destroy$ = new Subject<void>();
@@ -199,13 +199,13 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
             this.processStatsData(response.data.statistics);
             this.updateCharts();
           } else {
-            this.error = 'No se pudieron cargar los datos. Intente nuevamente.';
+            this.error = $localize`:@@commissioner.error.load.failed:No se pudieron cargar los datos. Intente nuevamente.`;
           }
           this.isLoading = false;
         },
         error: (err) => {
           console.error('Error al cargar datos:', err);
-          this.error = 'Ocurrió un error al cargar los datos. Intente nuevamente.';
+          this.error = $localize`:@@commissioner.error.load.error:Ocurrió un error al cargar los datos. Intente nuevamente.`;
           this.isLoading = false;
         }
       });
@@ -830,15 +830,15 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
   
-  // Helper para obtener texto de estado en español
+  // Helper para obtener texto de estado internacionalizado
   getStatusText(status: string): string {
     switch (status) {
       case 'active':
-        return 'Activo';
+        return $localize`:@@status.active:Activo`;
       case 'inactive':
-        return 'Inactivo';
+        return $localize`:@@status.inactive:Inactivo`;
       case 'pending':
-        return 'Pendiente';
+        return $localize`:@@status.pending:Pendiente`;
       default:
         return status;
     }

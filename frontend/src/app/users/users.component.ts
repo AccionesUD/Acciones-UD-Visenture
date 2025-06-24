@@ -559,9 +559,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   public getRoleDisplay(role: string | undefined): string {
     if (!role) return 'N/A';
     switch (role) {
-      case 'admin': return 'Administrador';
-      case 'commissioner': return 'Comisionista';
-      case 'client': return 'Cliente';
+      case 'admin': return $localize`:@@role.admin:Administrador`;
+      case 'commissioner': return $localize`:@@role.commissioner:Comisionista`;
+      case 'client': return $localize`:@@role.client:Cliente`;
       default: return role.charAt(0).toUpperCase() + role.slice(1);
     }
   }
@@ -569,9 +569,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   public getStatusDisplay(status: string | undefined): string {
     if (!status) return 'N/A';
     switch (status) {
-      case 'active': return 'Activo';
-      case 'inactive': return 'Inactivo';
-      case 'pending': return 'Pendiente';
+      case 'active': return $localize`:@@status.active:Activo`;
+      case 'inactive': return $localize`:@@status.inactive:Inactivo`;
+      case 'pending': return $localize`:@@status.pending:Pendiente`;
       default: return status.charAt(0).toUpperCase() + status.slice(1);
     }
   }

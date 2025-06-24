@@ -50,7 +50,7 @@
         
         <!-- Precio actual -->
         <div class="ml-auto text-right">
-          <div class="text-sm text-gray-600 dark:text-gray-400">Precio actual</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.current.price">Precio actual</div>
           <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
         </div>
       </div>
@@ -305,7 +305,7 @@
         <div *ngIf="operationResult.status === 'completed'" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
           <div class="flex items-center mb-2">
             <mat-icon class="mr-2 text-blue-500">info</mat-icon>
-            <span class="text-blue-800 dark:text-blue-200 font-medium">Información importante</span>
+            <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="@@buyStockModal.important.information">Información importante</span>
           </div>
           <p class="text-sm text-blue-700 dark:text-blue-300">
             Las acciones compradas ({{ operationResult.filledQuantity || 0 }}) ya han sido acreditadas en su portafolio.

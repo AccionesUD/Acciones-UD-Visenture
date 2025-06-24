@@ -67,7 +67,7 @@
             <p class="text-gray-700 dark:text-gray-300 flex-grow">{{ item.Summary }}</p>
           </ng-container>
           <ng-template #noSummary>
-            <p class="text-gray-500 dark:text-gray-600 italic flex-grow" i18n="@@home.news.no_summary">Sin resumen disponible.</p>
+            <p class="text-gray-500 dark:text-gray-600 italic flex-grow">{{ getNoSummaryText() }}</p>
           </ng-template>
           <div class="flex flex-wrap gap-1 mt-4" *ngIf="item.Symbols.length">
             <span *ngFor="let symbol of item.Symbols" class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded-full">{{ symbol }}</span>

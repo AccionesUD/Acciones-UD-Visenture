@@ -1,17 +1,17 @@
 <div class="min-h-screen bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-900 p-4 transition-colors duration-300">
   <div class="flex justify-center pb-10">
     <div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
-      <h3 class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-600 to-teal-700 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-6">Mercados Disponibles</h3>
+      <h3 class="text-2xl font-bold text-center bg-gradient-to-r from-green-500 via-emerald-600 to-teal-700 dark:from-emerald-500 dark:via-emerald-600 dark:to-emerald-700 bg-clip-text text-transparent mb-6" i18n="@@markets.available_markets">Mercados Disponibles</h3>
 
       <!-- Panel informativo para gestión de horarios (visible para todos) -->
       <div class="mb-8 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800 p-4">
-        <h4 class="text-lg font-medium text-indigo-700 dark:text-indigo-300 mb-2">Panel de Gestión de Horarios</h4>
-        <p class="text-sm text-indigo-600 dark:text-indigo-400 mb-3">
+        <h4 class="text-lg font-medium text-indigo-700 dark:text-indigo-300 mb-2" i18n="@@markets.schedule_management">Panel de Gestión de Horarios</h4>
+        <p class="text-sm text-indigo-600 dark:text-indigo-400 mb-3" i18n="@@markets.schedule_description">
           Puedes personalizar el horario de apertura de cada mercado. Haz clic en el botón de edición junto a la hora de apertura de cada mercado para configurar un horario personalizado.
         </p>
         <div class="flex items-center text-xs text-indigo-500 dark:text-indigo-300">
           <mat-icon class="text-sm mr-1">info</mat-icon>
-          <span>Los horarios personalizados se muestran en color verde y se aplican solo a la visualización en la aplicación.</span>
+          <span i18n="@@markets.schedule_info">Los horarios personalizados se muestran en color verde y se aplican solo a la visualización en la aplicación.</span>
         </div>
       </div>
 
@@ -21,7 +21,7 @@
         
         <!-- Paso 1: Inicialización de Mercados -->
         <div class="mb-4 pb-4 border-b border-blue-200 dark:border-blue-700">
-          <h5 class="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2">Inicialización de Mercados</h5>
+          <h5 class="text-sm font-medium text-blue-600 dark:text-blue-400 mb-2" i18n="@@markets.initialization">Inicialización de Mercados</h5>
           <div class="flex flex-col sm:flex-row sm:items-center">
             <button 
               (click)="initializeMarkets()" 
@@ -30,7 +30,7 @@
               <mat-icon>refresh</mat-icon>
               <span class="ml-1">{{isInitializingMarkets ? 'Inicializando...' : 'Inicializar Mercados'}}</span>
             </button>
-            <p class="text-xs text-blue-500 dark:text-blue-400 mt-2 sm:mt-0 sm:ml-3">
+            <p class="text-xs text-blue-500 dark:text-blue-400 mt-2 sm:mt-0 sm:ml-3" i18n="@@markets.no_markets">
               No se encontraron mercados. Haz clic para inicializarlos desde Alpaca.
             </p>
           </div>
@@ -39,12 +39,12 @@
 
       <!-- Panel de creación de acciones (siempre visible) -->
       <div *ngIf="isInitialized && stocks.length > 0" class="mb-8 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800 p-4">
-        <h4 class="text-lg font-medium text-green-700 dark:text-green-300 mb-2">Crear Acción de Prueba</h4>
+        <h4 class="text-lg font-medium text-green-700 dark:text-green-300 mb-2" i18n="@@markets.create_test_stock">Crear Acción de Prueba</h4>
         <div class="flex flex-col sm:flex-row gap-2">
           <div class="flex-grow">
             <input 
               [(ngModel)]="newShareSymbol" 
-              placeholder="Símbolo (ej: AAPL, GOOGL, MSFT)" 
+              i18n-placeholder="@@markets.symbol_placeholder" placeholder="Símbolo (ej: AAPL, GOOGL, MSFT)" 
               class="w-full px-3 py-2 rounded-lg border border-green-300 dark:border-green-700 bg-white dark:bg-slate-700 text-gray-800 dark:text-gray-200">
           </div>
           <button 
@@ -52,10 +52,11 @@
             [disabled]="isCreatingShare || !newShareSymbol"
             class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow-sm flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
             <mat-icon>add</mat-icon>
-            <span class="ml-1">{{isCreatingShare ? 'Creando...' : 'Crear Acción'}}</span>
+            <span class="ml-1" *ngIf="isCreatingShare" i18n="@@markets.creating">Creando...</span>
+            <span class="ml-1" *ngIf="!isCreatingShare" i18n="@@markets.create_stock">Crear Acción</span>
           </button>
         </div>
-        <p class="text-xs text-green-500 dark:text-green-400 mt-1">
+        <p class="text-xs text-green-500 dark:text-green-400 mt-1" i18n="@@markets.create_help">
           Crea acciones individuales para pruebas. Ejemplo de símbolos: AAPL (Apple), GOOGL (Google), MSFT (Microsoft), AMZN (Amazon)
         </p>
         

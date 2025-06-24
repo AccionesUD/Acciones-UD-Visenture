@@ -435,14 +435,14 @@
     
     <!-- Contenido de las pestañas -->        <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 2}">
         <div class="mb-6" *ngIf="userPreferences">          
-          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2">Mercados y Sectores de Interés</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.markets.title">Mercados y Sectores de Interés</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.markets.description">
             Personaliza tus mercados y sectores favoritos para seguimiento
           </p>
           
           <!-- Mercados Favoritos -->
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-6 ">
-            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4">Mercados Favoritos</h4>
+            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4" i18n="@@preferences.markets.favorite_markets">Mercados Favoritos</h4>
             
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3 ">
               <div class="flex items-center">
@@ -452,7 +452,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('NYSE')"
                 />
-                <label for="market-nyse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-nyse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.nyse">
                   NYSE (New York)
                 </label>
               </div>
@@ -464,7 +464,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('NASDAQ')"
                 />
-                <label for="market-nasdaq" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-nasdaq" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.nasdaq">
                   NASDAQ
                 </label>
               </div>
@@ -476,7 +476,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('LSE')"
                 />
-                <label for="market-lse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-lse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.lse">
                   Bolsa de Londres
                 </label>
               </div>
@@ -488,7 +488,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('TSE')"
                 />
-                <label for="market-tsx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-tsx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.tsx">
                   Bolsa de Toronto
                 </label>
               </div>
@@ -500,7 +500,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('ASX')"
                 />
-                <label for="market-asx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-asx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.asx">
                   Bolsa de Sídney
                 </label>
               </div>
@@ -512,7 +512,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_markets.includes('BMV')"
                 />
-                <label for="market-bmv" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="market-bmv" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.bmv">
                   Bolsa Mexicana
                 </label>
               </div>
@@ -521,7 +521,7 @@
           
           <!-- Sectores Favoritos -->
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4">Sectores Favoritos</h4>
+            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4" i18n="@@preferences.markets.favorite_sectors">Sectores Favoritos</h4>
             
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div class="flex items-center">
@@ -531,7 +531,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Technology')"
                 />
-                <label for="sector-tech" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-tech" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.tech">
                   Tecnología
                 </label>
               </div>
@@ -543,7 +543,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Health')"
                 />
-                <label for="sector-health" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-health" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.health">
                   Salud
                 </label>
               </div>
@@ -555,7 +555,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Finance')"
                 />
-                <label for="sector-finance" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-finance" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.finance">
                   Finanzas
                 </label>
               </div>
@@ -567,7 +567,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Energy')"
                 />
-                <label for="sector-energy" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-energy" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.energy">
                   Energía
                 </label>
               </div>
@@ -579,7 +579,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Consumer')"
                 />
-                <label for="sector-consumer" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-consumer" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.consumer">
                   Consumo
                 </label>
               </div>
@@ -591,7 +591,7 @@
                   class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   [checked]="userPreferences.favorite_sectors.includes('Materials')"
                 />
-                <label for="sector-materials" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label for="sector-materials" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.materials">
                   Materiales
                 </label>
               </div>
@@ -607,21 +607,21 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
               </svg>
-              Guardar preferencias
+              <span i18n="@@preferences.save">Guardar preferencias</span>
             </button>
           </div>
         </div>
       </div>        <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 3}">
         <div class="mb-6" *ngIf="userPreferences">          
-          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2">Configuración de operaciones</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.operations.title">Configuración de operaciones</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.operations.description">
             Personaliza tus preferencias para las operaciones de compra y venta
           </p>
           
           <form [formGroup]="tradeSettingsForm" class="space-y-4">
             <!-- Seguridad y límites de operaciones -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-5">
-              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4">Seguridad y límites</h4>
+              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4" i18n="@@preferences.operations.security_title">Seguridad y límites</h4>
               
               <!-- Límite de operaciones diarias -->
               <div class="mb-5">
@@ -630,7 +630,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Límite de operaciones diarias
+                    <span i18n="@@preferences.operations.daily_limit">Límite de operaciones diarias</span>
                   </div>
                 </label>
                 <input 
@@ -642,10 +642,10 @@
                   class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
                 />
                 <div *ngIf="tradeSettingsForm.get('max_operations_per_day')?.invalid && (tradeSettingsForm.get('max_operations_per_day')?.dirty || tradeSettingsForm.get('max_operations_per_day')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
-                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['min']">El límite debe ser al menos 1</span>
-                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['max']">El límite no puede ser mayor a 100</span>
+                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['min']" i18n="@@preferences.operations.limit_min_error">El límite debe ser al menos 1</span>
+                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['max']" i18n="@@preferences.operations.limit_max_error">El límite no puede ser mayor a 100</span>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@preferences.operations.daily_limit_help">
                   Establece un límite para tus operaciones diarias como medida de seguridad
                 </p>
               </div>
@@ -659,11 +659,11 @@
                     formControlName="confirm_large_orders"
                     class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label for="confirm_large_orders" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label for="confirm_large_orders" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.operations.confirm_large_orders">
                     Confirmación adicional para órdenes grandes
                   </label>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6">
+                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6" i18n="@@preferences.operations.confirm_large_orders_help">
                   Solicita una confirmación adicional para órdenes que representen un gasto significativo
                 </p>
               </div>
@@ -671,7 +671,7 @@
             
             <!-- Configuración de órdenes -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4">Configuración de órdenes</h4>
+              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4" i18n="@@preferences.operations.order_config">Configuración de órdenes</h4>
               
               <!-- Tipo de orden predeterminado -->
               <div class="mb-5">
@@ -680,19 +680,19 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    Tipo de orden predeterminado
+                    <span i18n="@@preferences.operations.default_order_type">Tipo de orden predeterminado</span>
                   </div>
                 </label>
                 <select 
                   id="default_order_type" 
                   formControlName="default_order_type" 
                   class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition">
-                  <option value="market">Orden a mercado</option>
-                  <option value="limit">Orden limitada</option>
-                  <option value="stop">Orden stop</option>
-                  <option value="stop_limit">Orden stop limitada</option>
+                  <option value="market" i18n="@@preferences.operations.market_order">Orden a mercado</option>
+                  <option value="limit" i18n="@@preferences.operations.limit_order">Orden limitada</option>
+                  <option value="stop" i18n="@@preferences.operations.stop_order">Orden stop</option>
+                  <option value="stop_limit" i18n="@@preferences.operations.stop_limit_order">Orden stop limitada</option>
                 </select>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@preferences.operations.default_order_help">
                   Este tipo de orden se usará por defecto al crear nuevas órdenes
                 </p>
               </div>
@@ -706,18 +706,18 @@
                     formControlName="enable_stop_loss"
                     class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
                   />
-                  <label for="enable_stop_loss" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label for="enable_stop_loss" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.operations.auto_stop_loss">
                     Activar Stop Loss automático
                   </label>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6">
+                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6" i18n="@@preferences.operations.auto_stop_loss_help">
                   Establece un Stop Loss automático para todas las operaciones como protección
                 </p>
               </div>
               
               <!-- Porcentaje de Stop Loss -->
               <div class="mb-2" *ngIf="tradeSettingsForm.get('enable_stop_loss')?.value">
-                <label for="stop_loss_percentage" class="block text-sm font-medium text-emerald-700 dark:text-emerald-400 mb-1">Porcentaje de Stop Loss (%)</label>
+                <label for="stop_loss_percentage" class="block text-sm font-medium text-emerald-700 dark:text-emerald-400 mb-1" i18n="@@preferences.operations.stop_loss_percentage">Porcentaje de Stop Loss (%)</label>
                 <input 
                   type="number" 
                   id="stop_loss_percentage" 
@@ -727,8 +727,8 @@
                   class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
                 />
                 <div *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.invalid && (tradeSettingsForm.get('stop_loss_percentage')?.dirty || tradeSettingsForm.get('stop_loss_percentage')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
-                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['min']">El porcentaje debe ser al menos 1%</span>
-                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['max']">El porcentaje no puede ser mayor al 50%</span>
+                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['min']" i18n="@@preferences.operations.stop_loss_min_error">El porcentaje debe ser al menos 1%</span>
+                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['max']" i18n="@@preferences.operations.stop_loss_max_error">El porcentaje no puede ser mayor al 50%</span>
                 </div>
               </div>
             </div>
@@ -743,7 +743,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
-                Guardar preferencias
+                <span i18n="@@preferences.save">Guardar preferencias</span>
               </button>
             </div>
           </form>
@@ -752,8 +752,8 @@
         <!-- Panel 5: Otras configuraciones -->
         <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 4}">
         <div class="mb-6" *ngIf="notificationSettings">          
-          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2">Configuración general de notificaciones</h3>
-          <p class="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.others.title">Configuración general de notificaciones</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.others.description">
             Personaliza qué tipo de notificaciones quieres recibir
           </p>
           
@@ -761,8 +761,8 @@
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400">Apertura y cierre de mercados</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.market_open_close">Apertura y cierre de mercados</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.market_open_close_desc">
                     Recibe notificaciones sobre la apertura y cierre de los mercados
                   </p>
                 </div>                <mat-slide-toggle 
@@ -777,8 +777,8 @@
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400">Resumen diario</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.daily_summary">Resumen diario</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.daily_summary_desc">
                     Recibe un resumen diario de tus operaciones
                   </p>
                 </div>                <mat-slide-toggle 
@@ -793,8 +793,8 @@
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400">Órdenes ejecutadas</h4>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.executed_orders">Órdenes ejecutadas</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.executed_orders_desc">
                     Recibe notificaciones cuando se ejecuten tus órdenes
                   </p>
                 </div>                <mat-slide-toggle 

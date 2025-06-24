@@ -100,7 +100,7 @@
   <form [formGroup]="sellForm" (ngSubmit)="submitSellOrder()" *ngIf="!operationResult">
     <!-- Cantidad de acciones -->
     <div class="mb-4">
-      <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cantidad a vender</label>
+      <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="sellStockModal|Quantity to sell label">Cantidad a vender</label>
       <div class="flex items-center">        <input 
           type="number" 
           id="quantity" 
@@ -114,20 +114,20 @@
         >
       </div>
       <div class="flex justify-between mt-2">
-        <span class="text-xs text-gray-500 dark:text-gray-400">Min: 1</span>
-        <span class="text-xs text-gray-500 dark:text-gray-400">Max: {{ maxQuantity }}</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400" i18n="sellStockModal|Min value">Min: 1</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400" i18n="sellStockModal|Max value">Max: {{ maxQuantity }}</span>
       </div>
       <!-- Mensajes de validación -->
       <div *ngIf="sellForm.get('quantity')?.invalid && (sellForm.get('quantity')?.dirty || sellForm.get('quantity')?.touched)" class="text-red-600 dark:text-red-400 text-sm mt-1">
-        <span *ngIf="sellForm.get('quantity')?.hasError('required')">La cantidad es requerida</span>
-        <span *ngIf="sellForm.get('quantity')?.hasError('min')">La cantidad debe ser al menos 1</span>
-        <span *ngIf="sellForm.get('quantity')?.hasError('max')">La cantidad no puede ser mayor a {{ maxQuantity }}</span>
+        <span *ngIf="sellForm.get('quantity')?.hasError('required')" i18n="sellStockModal|Quantity required error">La cantidad es requerida</span>
+        <span *ngIf="sellForm.get('quantity')?.hasError('min')" i18n="sellStockModal|Min quantity error">La cantidad debe ser al menos 1</span>
+        <span *ngIf="sellForm.get('quantity')?.hasError('max')" i18n="sellStockModal|Max quantity error">La cantidad no puede ser mayor a {{ maxQuantity }}</span>
       </div>
     </div>
 
     <!-- Tipo de orden -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de orden</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="sellStockModal|Order type label">Tipo de orden</label>
       <div class="grid grid-cols-2 gap-3">
         <div *ngFor="let type of sellOrderTypes" class="relative">
           <input 
@@ -149,7 +149,7 @@
 
     <!-- Precio límite (solo visible para órdenes específicas) -->
     <div *ngIf="sellForm.get('orderType')?.value !== 'market'" class="mb-4">
-      <label for="limitPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio límite</label>      <input 
+      <label for="limitPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="sellStockModal|Limit price label">Precio límite</label>      <input 
         type="number" 
         id="limitPrice"
         formControlName="limitPrice"
@@ -159,19 +159,19 @@
                     'border-gray-300 dark:border-gray-600': !sellForm.get('limitPrice')?.invalid || !sellForm.get('limitPrice')?.touched}"
       >
       <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-        <span *ngIf="sellForm.get('orderType')?.value === 'limit'">Precio sugerido: más alto que el mercado</span>
-        <span *ngIf="sellForm.get('orderType')?.value === 'stop-loss'">Precio sugerido: más bajo que el mercado</span>
-        <span *ngIf="sellForm.get('orderType')?.value === 'take-profit'">Precio sugerido: significativamente más alto</span>
+        <span *ngIf="sellForm.get('orderType')?.value === 'limit'" i18n="sellStockModal|Limit price suggestion">Precio sugerido: más alto que el mercado</span>
+        <span *ngIf="sellForm.get('orderType')?.value === 'stop-loss'" i18n="sellStockModal|Stop loss suggestion">Precio sugerido: más bajo que el mercado</span>
+        <span *ngIf="sellForm.get('orderType')?.value === 'take-profit'" i18n="sellStockModal|Take profit suggestion">Precio sugerido: significativamente más alto</span>
       </div>      <!-- Mensajes de validación -->
       <div *ngIf="sellForm.get('limitPrice')?.invalid && (sellForm.get('limitPrice')?.dirty || sellForm.get('limitPrice')?.touched)" class="text-red-600 dark:text-red-400 text-sm mt-1">
-        <span *ngIf="sellForm.get('limitPrice')?.hasError('required')">El precio límite es requerido</span>
-        <span *ngIf="sellForm.get('limitPrice')?.hasError('min')">El precio límite debe ser mayor a 0</span>
+        <span *ngIf="sellForm.get('limitPrice')?.hasError('required')" i18n="sellStockModal|Limit price required error">El precio límite es requerido</span>
+        <span *ngIf="sellForm.get('limitPrice')?.hasError('min')" i18n="sellStockModal|Min price error">El precio límite debe ser mayor a 0</span>
       </div>
     </div>
 
     <!-- Tiempo de vigencia de la orden -->
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vigencia</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="sellStockModal|Validity label">Vigencia</label>
       <select
         formControlName="timeInForce"
         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-800 dark:text-white bg-white dark:bg-slate-700 focus:ring-emerald-500 focus:border-emerald-500">
@@ -189,34 +189,34 @@
         formControlName="extendedHours"
         class="h-4 w-4 text-emerald-600 rounded border-gray-300 dark:border-gray-600 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700"
       >
-      <label for="extendedHours" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+      <label for="extendedHours" class="ml-2 block text-sm text-gray-700 dark:text-gray-300" i18n="sellStockModal|Extended hours option">
         Permitir ejecución fuera de horario regular
       </label>
     </div>
 
     <!-- Resumen de la operación -->
     <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 mb-5">
-      <div class="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-2">Resumen de la operación</div>
+      <div class="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-2" i18n="sellStockModal|Operation summary title">Resumen de la operación</div>
       
       <div class="grid grid-cols-2 gap-1 text-sm">
-        <div class="text-gray-600 dark:text-gray-400">Precio por acción:</div>
+        <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Share price label">Precio por acción:</div>
         <div class="text-right font-medium text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
         
-        <div class="text-gray-600 dark:text-gray-400">Cantidad:</div>
-        <div class="text-right font-medium text-gray-900 dark:text-white">{{ sellForm.get('quantity')?.value || 0 }} acciones</div>
+        <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Quantity label">Cantidad:</div>
+        <div class="text-right font-medium text-gray-900 dark:text-white" i18n="sellStockModal|Shares quantity">{sellForm.get('quantity')?.value || 0, plural, =1 {1 acción} other {{{sellForm.get('quantity')?.value || 0}} acciones}}</div>
         
-        <div class="text-gray-600 dark:text-gray-400">Valor total:</div>
+        <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Total value label">Valor total:</div>
         <div class="text-right font-medium text-gray-900 dark:text-white">{{ totalValue | currency:'COP':'symbol':'1.0-0' }}</div>
         
-        <div class="text-gray-600 dark:text-gray-400">Comisión estimada:</div>
+        <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Estimated fee label">Comisión estimada:</div>
         <div class="text-right font-medium text-gray-900 dark:text-white">{{ estimatedFee | currency:'COP':'symbol':'1.0-0' }}</div>
         
         <div class="border-t border-emerald-200 dark:border-emerald-700 col-span-2 my-1"></div>
         
-        <div class="text-gray-800 dark:text-gray-200 font-medium">Monto neto estimado:</div>
+        <div class="text-gray-800 dark:text-gray-200 font-medium" i18n="sellStockModal|Estimated net amount label">Monto neto estimado:</div>
         <div class="text-right font-bold text-emerald-600 dark:text-emerald-400">{{ estimatedNet | currency:'COP':'symbol':'1.0-0' }}</div>
       </div>
-        <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
+        <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2" i18n="sellStockModal|Estimated value disclaimer">
         * Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.
       </div>
     </div>
@@ -227,7 +227,8 @@
       type="button"
       (click)="cancel()"
       mat-button 
-      class="mr-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600 rounded transition-colors duration-200">
+      class="mr-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600 rounded transition-colors duration-200"
+      i18n="@@common.actions.cancel">
       Cancelar
     </button>
     <button 
@@ -239,7 +240,8 @@
       color="warn"
       class="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded transition-colors duration-200">
       <mat-spinner *ngIf="isLoading" [diameter]="20" class="inline-block mr-2 loading-spinner"></mat-spinner>
-      {{ isLoading ? 'Procesando...' : 'Vender acciones' }}
+      <ng-container *ngIf="isLoading" i18n="sellStockModal|Processing button text">Procesando...</ng-container>
+      <ng-container *ngIf="!isLoading" i18n="sellStockModal|Sell shares button text">Vender acciones</ng-container>
     </button>
   </div><!-- Resultado de la operación -->
   <div *ngIf="operationResult" class="mt-4">
@@ -249,7 +251,7 @@
           <mat-icon *ngIf="operationResult.status === 'completed'" class="mr-2 text-green-500 dark:text-green-400">check_circle</mat-icon>
           <mat-icon *ngIf="operationResult.status === 'pending'" class="mr-2 text-yellow-500 dark:text-yellow-400">hourglass_empty</mat-icon>
           <mat-icon *ngIf="operationResult.status === 'canceled'" class="mr-2 text-red-500 dark:text-red-400">cancel</mat-icon>
-          Detalles de la orden
+          <span i18n="sellStockModal|Order details title">Detalles de la orden</span>
         </div>
       </h3>
       
@@ -267,51 +269,53 @@
               {{ operationResult.status === 'completed' ? 'check_circle' : 
                  operationResult.status === 'pending' ? 'hourglass_empty' : 'cancel' }}
             </mat-icon>
-            <span>{{ 
-              operationResult.status === 'completed' ? 'Orden Completada' : 
-              operationResult.status === 'pending' ? 'Orden Pendiente' : 'Orden Cancelada' 
-            }}</span>
+            <span>
+              <ng-container *ngIf="operationResult.status === 'completed'" i18n="sellStockModal|Order completed status">Orden Completada</ng-container>
+              <ng-container *ngIf="operationResult.status === 'pending'" i18n="sellStockModal|Order pending status">Orden Pendiente</ng-container>
+              <ng-container *ngIf="operationResult.status === 'canceled'" i18n="sellStockModal|Order canceled status">Orden Cancelada</ng-container>
+            </span>
           </div>
         </span>
       </div>
       
       <dl class="grid grid-cols-2 gap-2">
-        <dt class="text-sm text-gray-600 dark:text-gray-400">ID de orden:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Order ID label">ID de orden:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">{{ operationResult.orderId }}</dd>
         
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Tipo de orden:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Order type result label">Tipo de orden:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ sellForm.get('orderType')?.value === 'market' ? 'Mercado' :
-             sellForm.get('orderType')?.value === 'limit' ? 'Límite' :
-             sellForm.get('orderType')?.value === 'stop-loss' ? 'Stop Loss' : 'Take Profit' }}
+          <ng-container *ngIf="sellForm.get('orderType')?.value === 'market'" i18n="sellStockModal|Market order type">Mercado</ng-container>
+          <ng-container *ngIf="sellForm.get('orderType')?.value === 'limit'" i18n="sellStockModal|Limit order type">Límite</ng-container>
+          <ng-container *ngIf="sellForm.get('orderType')?.value === 'stop-loss'" i18n="sellStockModal|Stop loss order type">Stop Loss</ng-container>
+          <ng-container *ngIf="sellForm.get('orderType')?.value === 'take-profit'" i18n="sellStockModal|Take profit order type">Take Profit</ng-container>
         </dd>
         
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Precio de venta:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Sale price label">Precio de venta:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
           {{ operationResult.soldAt | currency:'COP':'symbol':'1.0-0' }}
         </dd>
         
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Cantidad:</dt>
-        <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Quantity result label">Cantidad:</dt>
+        <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="sellStockModal|Shares filled quantity">
           {{ operationResult.filledQuantity || 0 }} de {{ sellForm.get('quantity')?.value || 0 }}
         </dd>
 
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Total:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Total result label">Total:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
           {{ operationResult.totalAmount | currency:'COP':'symbol':'1.0-0' }}
         </dd>
         
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Comisión:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Fee result label">Comisión:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
           {{ operationResult.fee | currency:'COP':'symbol':'1.0-0' }}
         </dd>
         
-        <dt class="text-sm text-gray-600 dark:text-gray-400">Enviada:</dt>
+        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Submitted at label">Enviada:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
           {{ operationResult.submittedAt | date:'dd/MM/yyyy HH:mm' }}
         </dd>
         
-        <dt *ngIf="operationResult.filledAt" class="text-sm text-gray-600 dark:text-gray-400">Ejecutada:</dt>
+        <dt *ngIf="operationResult.filledAt" class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Filled at label">Ejecutada:</dt>
         <dd *ngIf="operationResult.filledAt" class="text-sm font-medium text-gray-900 dark:text-white text-right">
           {{ operationResult.filledAt | date:'dd/MM/yyyy HH:mm' }}        </dd>
       </dl>
@@ -320,9 +324,9 @@
       <div *ngIf="operationResult.status === 'completed'" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
         <div class="flex items-center mb-2">
           <mat-icon class="mr-2 text-blue-500">info</mat-icon>
-          <span class="text-blue-800 dark:text-blue-200 font-medium">Información importante</span>
+          <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="sellStockModal|Important information title">Información importante</span>
         </div>
-        <p class="text-sm text-blue-700 dark:text-blue-300">
+        <p class="text-sm text-blue-700 dark:text-blue-300" i18n="sellStockModal|Completed order info">
           Los fondos obtenidos de esta venta ({{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:'COP':'symbol':'1.0-0' }}) 
           ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones.
         </p>
@@ -331,9 +335,9 @@
       <div *ngIf="operationResult.status === 'pending'" class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-md">
         <div class="flex items-center mb-2">
           <mat-icon class="mr-2 text-yellow-500">watch_later</mat-icon>
-          <span class="text-yellow-800 dark:text-yellow-200 font-medium">Orden pendiente de ejecución</span>
+          <span class="text-yellow-800 dark:text-yellow-200 font-medium" i18n="sellStockModal|Pending order title">Orden pendiente de ejecución</span>
         </div>
-        <p class="text-sm text-yellow-700 dark:text-yellow-300">
+        <p class="text-sm text-yellow-700 dark:text-yellow-300" i18n="sellStockModal|Pending order info">
           Su orden de venta se ejecutará cuando el precio alcance las condiciones definidas. 
           Recibirá una notificación cuando la orden sea ejecutada o cancelada.
         </p>      </div>
@@ -346,7 +350,8 @@
       (click)="confirm()"
       mat-raised-button 
       color="primary"
-      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-colors duration-200">
+      class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-colors duration-200"
+      i18n="@@common.actions.accept">
       Aceptar
     </button>
   </div>

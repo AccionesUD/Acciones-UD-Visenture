@@ -4,7 +4,8 @@
     <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent" i18n="@@user.detail.dialog.title">
       Detalles del Usuario
     </h2>
-    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            i18n-aria-label="@@common.actions.close.dialog" aria-label="Cerrar diálogo">
       <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
     </button>
   </div>
@@ -60,15 +61,15 @@
         <!-- Columna izquierda -->
         <div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Documento de Identidad</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.identity.document">Documento de Identidad</p>
             <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{user.identity_document || 'No especificado'}}</p>
           </div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Correo Electrónico</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.email">Correo Electrónico</p>
             <p class="mt-1 font-medium text-gray-800 dark:text-gray-200 break-all">{{user.email}}</p>
           </div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha de Nacimiento</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.birthdate">Fecha de Nacimiento</p>
             <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{ user.birthdate ? (user.birthdate | date:'dd/MM/yyyy') : 'No especificado' }}</p>
           </div>
         </div>
@@ -76,11 +77,11 @@
         <!-- Columna derecha -->
         <div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Teléfono</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.phone">Teléfono</p>
             <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{user.phone_number || 'No especificado'}}</p>
           </div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado de Verificación</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.verification.status">Estado de Verificación</p>
             <div class="flex items-center mt-1">
               <mat-icon class="text-sm mr-1.5"
                         [ngClass]="{
@@ -99,7 +100,7 @@
             </div>
           </div>
           <div class="mb-3">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Última actualización</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400" i18n="@@user.detail.last.update">Última actualización</p>
             <p class="mt-1 font-medium text-gray-800 dark:text-gray-200">{{ user.updated_at ? (user.updated_at | date:'dd/MM/yyyy HH:mm') : 'No disponible' }}</p>
           </div>
         </div>
@@ -109,23 +110,23 @@
     <!-- Pestañas simplificadas como en la imagen -->
     <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700">
       <!-- Pestaña de actividad - visible para todos los usuarios -->
-      <mat-tab label="Actividad">
+      <mat-tab i18n-label="@@user.detail.tab.activity" label="Actividad">
         <div class="p-4">
           <!-- Mensaje cuando no hay datos de actividad -->
           <div class="text-center py-6 text-gray-500 dark:text-gray-400">
             <mat-icon class="text-3xl mb-2">history</mat-icon>
-            <p>No hay datos de actividad disponibles para este usuario.</p>
+            <p i18n="@@user.detail.activity.no.data">No hay datos de actividad disponibles para este usuario.</p>
           </div>
         </div>
       </mat-tab>
       
       <!-- Pestaña de seguridad - visible para todos los usuarios -->
-      <mat-tab label="Seguridad">
+      <mat-tab i18n-label="@@user.detail.tab.security" label="Seguridad">
         <div class="p-4">
           <div class="bg-white dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
             <div class="flex items-center mb-2">
               <mat-icon class="text-gray-600 dark:text-gray-300 mr-2">verified_user</mat-icon>
-              <h4 class="font-semibold text-gray-800 dark:text-gray-200">Verificación de Email</h4>
+              <h4 class="font-semibold text-gray-800 dark:text-gray-200" i18n="@@user.detail.security.email.verification">Verificación de Email</h4>
             </div>
             <div class="flex items-center mt-1">
               <mat-icon class="text-sm mr-1.5"
@@ -151,7 +152,8 @@
   
   <!-- Acciones del diálogo -->
   <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
-    <button mat-stroked-button (click)="closeDialog()" class="mr-2 px-5 py-1.5 rounded-lg text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-700 dark:border-gray-600">
+    <button mat-stroked-button (click)="closeDialog()" class="mr-2 px-5 py-1.5 rounded-lg text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-700 dark:border-gray-600"
+            i18n="@@common.actions.close">
       Cerrar
     </button>
     
@@ -160,7 +162,8 @@
       *ngIf="isAdmin"
       mat-flat-button 
       (click)="editUser()" 
-      class="px-5 py-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center">
+      class="px-5 py-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center"
+      i18n="@@user.detail.actions.edit">
       <mat-icon class="mr-1.5 h-5 w-5">edit</mat-icon>
       Editar usuario
     </button>

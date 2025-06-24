@@ -119,8 +119,8 @@
           <mat-icon class="card-header-icon">account_balance</mat-icon>
         </div>
         <div>
-          <h2 class="text-xl font-bold">Agregar Fondos</h2>
-          <p class="text-sm opacity-80">Añade saldo a tu cuenta para comenzar a invertir</p>
+          <h2 class="text-xl font-bold" i18n="addFunds|Add funds title">Agregar Fondos</h2>
+          <p class="text-sm opacity-80" i18n="addFunds|Add funds description">Añade saldo a tu cuenta para comenzar a invertir</p>
         </div>
       </div>
 
@@ -128,12 +128,13 @@
         <form [formGroup]="fundsForm" (ngSubmit)="onSubmit()" class="space-y-6">
           <!-- Campo de monto -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Monto a Depositar</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="addFunds|Amount label">Monto a Depositar</label>
             <div class="relative">
               <input 
                 type="text" 
                 formControlName="amount" 
                 placeholder="0.00"
+                i18n-placeholder="addFunds|Amount placeholder"
                 class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 pl-6 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
               >
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -143,20 +144,20 @@
                 <mat-icon class="text-gray-400">payments</mat-icon>
               </div>
             </div>
-            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'required')">
+            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'required')" i18n="addFunds|Amount required error">
               El monto es requerido
             </div>
-            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'min')">
+            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'min')" i18n="addFunds|Amount minimum error">
               El monto mínimo es $10.00
             </div>
-            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'pattern')">
+            <div class="text-xs text-red-600 dark:text-red-400 mt-1" *ngIf="hasError('amount', 'pattern')" i18n="addFunds|Amount format error">
               Formato inválido. Use solo números y hasta dos decimales
             </div>
           </div>
           
           <!-- Campo de método de pago -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Método de Pago</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="addFunds|Payment method label">Método de Pago</label>
             <div class="relative">
               <select
                 formControlName="payment_method"
@@ -174,12 +175,13 @@
           
           <!-- Campo de descripción -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción (Opcional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="addFunds|Description label">Descripción (Opcional)</label>
             <div class="relative">
               <textarea 
                 formControlName="description" 
                 rows="3"
                 placeholder="Añade una nota o referencia para este depósito"
+                i18n-placeholder="addFunds|Description placeholder"
                 class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
               ></textarea>
               <div class="absolute top-2 right-0 flex items-start pr-3 pointer-events-none">
@@ -193,7 +195,7 @@
             <div class="text-sm text-gray-500 dark:text-gray-400">
               <span class="flex items-center">
                 <mat-icon class="mr-1 text-base">shield</mat-icon>
-                Transacción segura
+                <span i18n="addFunds|Secure transaction">Transacción segura</span>
               </span>
             </div>
             <button 
@@ -226,9 +228,10 @@
               
               <!-- Texto del botón -->
               <span>
-                {{ submitting ? 'Procesando...' : 
-                   successAnimation ? '¡Fondos Agregados!' :
-                   errorAnimation ? 'Error' : 'Agregar Fondos' }}
+                <ng-container *ngIf="submitting" i18n="addFunds|Processing button text">Procesando...</ng-container>
+                <ng-container *ngIf="successAnimation" i18n="addFunds|Success button text">¡Fondos Agregados!</ng-container>
+                <ng-container *ngIf="errorAnimation" i18n="addFunds|Error button text">Error</ng-container>
+                <ng-container *ngIf="!submitting && !successAnimation && !errorAnimation" i18n="addFunds|Add funds button text">Agregar Fondos</ng-container>
               </span>
               
               <!-- Icono cuando no está en proceso -->

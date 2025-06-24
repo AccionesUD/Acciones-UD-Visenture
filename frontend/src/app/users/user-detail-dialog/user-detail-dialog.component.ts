@@ -63,10 +63,10 @@ export class UserDetailDialogComponent implements OnInit {
 
   getRoleLabel(role: string | undefined): string {
     switch (role) {
-      case 'admin': return 'Administrador';
-      case 'commissioner': return 'Comisionista';
-      case 'client': return 'Cliente';
-      default: return 'Desconocido';
+      case 'admin': return $localize`:@@role.admin:Administrador`;
+      case 'commissioner': return $localize`:@@role.commissioner:Comisionista`;
+      case 'client': return $localize`:@@role.client:Cliente`;
+      default: return $localize`:@@role.unknown:Desconocido`;
     }
   }
 
