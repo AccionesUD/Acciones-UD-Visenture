@@ -1,3 +1,4 @@
+//backend\src\advisor\advisor.controller.ts
 import { Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { AdvisorService } from "./advisor.service";
