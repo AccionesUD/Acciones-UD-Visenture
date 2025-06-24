@@ -61,7 +61,7 @@ import { PaymentsModule } from './payments/payments.module';
     TransactionsModule,
     RolesPermissionModule,
     NotificationsModule,
-    AdvisorModule
+    AdvisorModule,
     PremiumModule,
     SubscriptionsModule,
     PaymentsModule,
