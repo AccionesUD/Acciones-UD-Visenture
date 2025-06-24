@@ -60,7 +60,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     TransactionsModule,
     RolesPermissionModule,
     NotificationsModule,
-    AdvisorModule,
+    AdvisorModule
     PremiumModule,
     SubscriptionsModule,
   ],
