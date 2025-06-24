@@ -23,7 +23,6 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
-import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -64,8 +63,6 @@ import { PaymentsModule } from './payments/payments.module';
     AdvisorModule,
     PremiumModule,
     SubscriptionsModule,
-    PaymentsModule,
-
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
