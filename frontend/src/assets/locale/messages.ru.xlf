@@ -1815,7 +1815,7 @@
       </trans-unit>
       <trans-unit id="104091633055369294" datatype="html">
         <source>{VAR_SELECT, select, true {Usar Datos Reales} other {Usar Datos Simulados}}</source>
-        <target>{Var_select, select, thrue {используйте реальные данные} ohher {Использовать смоделированные данные}}</target>
+        <target>{VAR_SELECT, select, true {Использовать реальные данные} other {Использовать симулированные данные}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -1895,7 +1895,7 @@
       </trans-unit>
       <trans-unit id="dashboard.market_status" datatype="html">
         <source>{VAR_SELECT, select, true {Abierto} other {Cerrado}}</source>
-        <target>{Var_select, select, true {open} Другое {закрыто}}</target>
+        <target>{VAR_SELECT, select, true {Открыто} other {Закрыто}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">158,159</context>
@@ -1919,7 +1919,7 @@
       </trans-unit>
       <trans-unit id="dashboard.transaction_type" datatype="html">
         <source>{VAR_SELECT, select, buy {Compra} sell {Venta} other {Desconocido}}</source>
-        <target>{Var_select, выберите, купить {покупать} sell {sale} othher {неизвестно}}</target>
+        <target>{VAR_SELECT, select, buy {Покупка} sell {Продажа} other {Неизвестно}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">200,202</context>
@@ -1977,7 +1977,7 @@
       </trans-unit>
       <trans-unit id="8958027187253226915" datatype="html">
         <source>{VAR_SELECT, select, completed {Completado} pending {Pendiente} failed {Fallido} other {Desconocido}}</source>
-        <target>{Var_select, select, uppet {offt wreading {wading} не удастся {не удалось} ore {неизвестно}}}}}</target>
+        <target>{VAR_SELECT, select, completed {Завершено} pending {В ожидании} failed {Сбой} other {Неизвестно}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">65</context>

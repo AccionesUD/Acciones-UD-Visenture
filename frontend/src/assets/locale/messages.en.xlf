@@ -1810,7 +1810,7 @@
       </trans-unit>
       <trans-unit id="104091633055369294" datatype="html">
         <source>{VAR_SELECT, select, true {Usar Datos Reales} other {Usar Datos Simulados}}</source>
-        <target>{Var_select, select, thrue {use real data} oHher {use simulated data}}</target>
+        <target>{VAR_SELECT, select, true {Use Real Data} other {Use Simulated Data}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -1890,7 +1890,7 @@
       </trans-unit>
       <trans-unit id="dashboard.market_status" datatype="html">
         <source>{VAR_SELECT, select, true {Abierto} other {Cerrado}}</source>
-        <target>{Var_select, select, True {open} other {closed}}</target>
+        <target>{VAR_SELECT, select, true {Open} other {Closed}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">158,159</context>
@@ -1914,7 +1914,7 @@
       </trans-unit>
       <trans-unit id="dashboard.transaction_type" datatype="html">
         <source>{VAR_SELECT, select, buy {Compra} sell {Venta} other {Desconocido}}</source>
-        <target>{Var_select, select, BUY {purchase} Sell {sale} othher {unknown}}</target>
+        <target>{VAR_SELECT, select, buy {Buy} sell {Sell} other {Unknown}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">200,202</context>
@@ -1972,7 +1972,7 @@
       </trans-unit>
       <trans-unit id="8958027187253226915" datatype="html">
         <source>{VAR_SELECT, select, completed {Completado} pending {Pendiente} failed {Fallido} other {Desconocido}}</source>
-        <target>{Var_select, select, completed {completed} pending {pending} failed {failed} other {unknown}}}}}</target>
+        <target>{VAR_SELECT, select, completed {Completed} pending {Pending} failed {Failed} other {Unknown}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">65</context>
