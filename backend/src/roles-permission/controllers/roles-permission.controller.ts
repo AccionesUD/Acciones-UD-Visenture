@@ -16,6 +16,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
 import { Role } from '../entities/role.entity';
+import { Permission } from '../entities/permission.entity';
+import { CreatePermissionDto } from '../dtos/create-permission.dto';
+import { UpdatePermissionDto } from '../dtos/update-permission.dto';
 
 @Controller('roles')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,6 +27,52 @@ export class RolesPermissionController {
   constructor(
     private readonly rolesPermissionService: RolesPermissionService,
   ) {}
+
+  // ----------- CRUD Permisos (rutas más específicas primero) -----------
+
+  // Crear permiso
+  @Post('permissions')
+  async createPermission(
+    @Body() dto: CreatePermissionDto,
+  ): Promise<Permission> {
+    return await this.rolesPermissionService.createPermission(dto);
+  }
+
+  // Listar todos los permisos
+  @Get('permissions')
+  async getAllPermissions(): Promise<Permission[]> {
+    return await this.rolesPermissionService.findAllPermissions();
+  }
+
+  // Obtener detalle de un permiso
+  @Get('permissions/:id')
+  async getPermission(@Param('id') id: string): Promise<Permission> {
+    const permission = await this.rolesPermissionService.findPermissionById(
+      Number(id),
+    );
+    if (!permission) throw new NotFoundException('Permiso no encontrado');
+    return permission;
+  }
+
+  // Actualizar permiso
+  @Patch('permissions/:id')
+  async updatePermission(
+    @Param('id') id: string,
+    @Body() dto: UpdatePermissionDto,
+  ): Promise<Permission> {
+    return await this.rolesPermissionService.updatePermission(Number(id), dto);
+  }
+
+  // Eliminar permiso
+  @Delete('permissions/:id')
+  async deletePermission(
+    @Param('id') id: string,
+  ): Promise<{ message: string }> {
+    await this.rolesPermissionService.deletePermission(Number(id));
+    return { message: 'Permiso eliminado correctamente' };
+  }
+
+  // ----------- CRUD Roles (rutas generales después) -----------
 
   // Crear un rol
   @Post()
@@ -59,5 +108,48 @@ export class RolesPermissionController {
   async deleteRole(@Param('id') id: string): Promise<{ message: string }> {
     await this.rolesPermissionService.deleteRole(Number(id));
     return { message: 'Rol eliminado correctamente' };
+  }
+
+  // ---------- Asociación rol-permiso ----------
+
+  /**
+   * Asignar uno o varios permisos a un rol
+   * PATCH /roles/:id/permissions
+   * Body: { permissions: number[] }
+   */
+  @Patch(':id/permissions')
+  async assignPermissionsToRole(
+    @Param('id') id: string,
+    @Body() body: { permissionIds: number[] },
+  ): Promise<Role> {
+    return await this.rolesPermissionService.assignPermissionsToRole(
+      Number(id),
+      body.permissionIds,
+    );
+  }
+
+  /**
+   * Listar permisos de un rol
+   * GET /roles/:id/permissions
+   */
+  @Get(':id/permissions')
+  async getPermissionsOfRole(@Param('id') id: string): Promise<Permission[]> {
+    return await this.rolesPermissionService.getPermissionsOfRole(Number(id));
+  }
+
+  /**
+   * Quitar un permiso de un rol
+   * DELETE /roles/:id/permissions/:permissionId
+   */
+  @Delete(':id/permissions/:permissionId')
+  async removePermissionFromRole(
+    @Param('id') id: string,
+    @Param('permissionId') permissionId: string,
+  ): Promise<{ message: string }> {
+    await this.rolesPermissionService.removePermissionFromRole(
+      Number(id),
+      Number(permissionId),
+    );
+    return { message: 'Permiso eliminado del rol correctamente' };
   }
 }

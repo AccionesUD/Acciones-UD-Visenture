@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../entities/role.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Permission } from '../entities/permission.entity';
 import { CreateRoleDto } from '../dtos/create-role.dto';
 import { UpdateRoleDto } from '../dtos/update-role.dto';
+import { CreatePermissionDto } from '../dtos/create-permission.dto';
+import { UpdatePermissionDto } from '../dtos/update-permission.dto';
 
 @Injectable()
 export class RolesPermissionService {
@@ -78,5 +80,93 @@ export class RolesPermissionService {
     const role = await this.findRoleById(id);
     if (!role) throw new NotFoundException('Rol no encontrado');
     await this.roleRepository.remove(role);
+  }
+
+  //CRUD Permissions:
+
+  // 1. Crear permiso
+  async createPermission(dto: CreatePermissionDto): Promise<Permission> {
+    const permiso = this.permRepo.create(dto);
+    return await this.permRepo.save(permiso);
+  }
+
+  // 2. Listar todos los permisos
+  async findAllPermissions(): Promise<Permission[]> {
+    return await this.permRepo.find();
+  }
+
+  // 3. Obtener detalle de un permiso
+  async findPermissionById(id: number): Promise<Permission | null> {
+    return await this.permRepo.findOne({ where: { id } });
+  }
+
+  // 4. Actualizar permiso
+  async updatePermission(
+    id: number,
+    dto: UpdatePermissionDto,
+  ): Promise<Permission> {
+    const permiso = await this.permRepo.findOne({ where: { id } });
+    if (!permiso) throw new NotFoundException('Permiso no encontrado');
+    Object.assign(permiso, dto);
+    return await this.permRepo.save(permiso);
+  }
+
+  // 5. Eliminar permiso
+  async deletePermission(id: number): Promise<void> {
+    const permiso = await this.permRepo.findOne({ where: { id } });
+    if (!permiso) throw new NotFoundException('Permiso no encontrado');
+    await this.permRepo.remove(permiso);
+  }
+
+  //Asociaciones Roles con Permissions
+
+  /**
+   * Asigna una lista de permisos a un rol (reemplaza los anteriores)
+   */
+  async assignPermissionsToRole(
+    roleId: number,
+    permissionIds: number[],
+  ): Promise<Role> {
+    const role = await this.roleRepository.findOne({
+      where: { id: roleId },
+      relations: ['permissions'],
+    });
+    if (!role) throw new NotFoundException('Rol no encontrado');
+
+    // Obtiene los permisos válidos por sus IDs
+    const permissions = await this.permRepo.find({
+      where: { id: In(permissionIds) },
+    });
+
+    role.permissions = permissions;
+    return await this.roleRepository.save(role);
+  }
+
+  /**
+   * Lista los permisos asociados a un rol
+   */
+  async getPermissionsOfRole(roleId: number): Promise<Permission[]> {
+    const role = await this.roleRepository.findOne({
+      where: { id: roleId },
+      relations: ['permissions'],
+    });
+    if (!role) throw new NotFoundException('Rol no encontrado');
+    return role.permissions;
+  }
+
+  /**
+   * Elimina un permiso específico de un rol
+   */
+  async removePermissionFromRole(
+    roleId: number,
+    permissionId: number,
+  ): Promise<void> {
+    const role = await this.roleRepository.findOne({
+      where: { id: roleId },
+      relations: ['permissions'],
+    });
+    if (!role) throw new NotFoundException('Rol no encontrado');
+    role.permissions = role.permissions.filter((p) => p.id !== permissionId);
+    await this.roleRepository.save(role);
   }
 }
