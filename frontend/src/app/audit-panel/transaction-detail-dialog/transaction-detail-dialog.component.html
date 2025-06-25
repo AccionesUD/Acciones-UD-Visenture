@@ -1,0 +1,75 @@
+<div class="min-w-[800px] max-w-4xl p-6">
+  <!-- Cabecera del diÃ¡logo -->
+  <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 dark:from-emerald-400 dark:via-teal-500 dark:to-cyan-500 bg-clip-text text-transparent" i18n="@@transaction.detail.dialog.title">
+      Detalles de la TransacciÃ³n
+    </h2>
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            i18n-aria-label="@@common.actions.close.dialog" aria-label="Cerrar diÃ¡logo">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="min-h-[400px] max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <!-- Tarjeta de informaciÃ³n principal de la transacciÃ³n -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md p-6 mb-6">
+      <div class="flex flex-col md:flex-row items-start md:items-center mb-6">
+        <div class="p-3 rounded-full mr-4" [ngClass]="getTransactionTypeClass(transaction.type_transaction)">
+          <mat-icon class="text-2xl">receipt_long</mat-icon>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200">Transacción #{{ transaction.id }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Realizada por: {{ transaction.user_name }}</p>
+        </div>
+        <div class="ml-0 md:ml-auto text-right mt-4 md:mt-0">
+          <span class="px-3 py-1 text-sm font-medium rounded-full" [ngClass]="getTransactionTypeClass(transaction.type_transaction)">
+            {{ transaction.type_transaction | titlecase }}
+          </span>
+        </div>
+      </div>
+
+      <mat-divider class="mb-4"></mat-divider>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha y Hora</p>
+          <p class="text-base text-gray-800 dark:text-gray-200">{{ formatDate(transaction.date_transaction) }}</p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Monto</p>
+          <p class="text-base text-gray-800 dark:text-gray-200 font-mono">{{ transaction.value_transaction | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Puntuación de Riesgo</p>
+          <p *ngIf="transaction.risk_score !== undefined" class="text-base font-bold" 
+             [class.text-red-500]="transaction.risk_score > 75" 
+             [class.text-yellow-500]="transaction.risk_score > 50 && transaction.risk_score <= 75">
+            {{ transaction.risk_score }} / 100
+          </p>
+          <p *ngIf="transaction.risk_score === undefined" class="text-base text-gray-500 dark:text-gray-400">No disponible</p>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</p>
+          <p class="text-base font-semibold" [ngClass]="getStatusClass(transaction.status)">{{ transaction.status | titlecase }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas para información adicional -->
+    <mat-tab-group animationDuration="0ms" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <mat-tab i18n-label="@@transaction.detail.tab.details" label="Datos Crudos">
+        <div class="p-4">
+          <pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-md text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ transaction | json }}</pre>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+
+  <!-- Acciones del diÃ¡logo -->
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <button mat-stroked-button (click)="closeDialog()" class="px-5 py-1.5 rounded-lg text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-300 dark:border-gray-600"
+            i18n="@@common.actions.close">
+      Cerrar
+    </button>
+  </mat-dialog-actions>
+</div>

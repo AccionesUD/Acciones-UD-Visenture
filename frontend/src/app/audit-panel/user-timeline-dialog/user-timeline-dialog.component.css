@@ -1,0 +1,111 @@
+/* Estilos para el diálogo de línea de tiempo de usuario */
+
+/* Contenedor principal de la línea de tiempo */
+.timeline-container {
+  position: relative;
+  padding: 1rem;
+}
+
+/* Estilos para la línea de tiempo */
+.timeline {
+  position: relative;
+  padding: 1rem 0;
+}
+
+/* Línea vertical */
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  height: 100%;
+  width: 2px;
+  background-color: #e5e7eb;
+}
+
+:host-context(.dark-theme) .timeline::before {
+  background-color: #374151;
+}
+
+/* Elementos individuales de la línea de tiempo */
+.timeline-item {
+  position: relative;
+  margin: 2rem 0;
+  padding-left: 3rem;
+}
+
+.timeline-badge {
+  position: absolute;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.timeline-badge mat-icon {
+  font-size: 20px;
+}
+
+.timeline-content {
+  padding: 1rem;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:host-context(.dark-theme) .timeline-content {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+/* Ajustes para el primer y último elemento */
+.timeline-item.first .timeline-badge {
+  border: 2px solid #059669;
+}
+
+.timeline-item.last .timeline-badge {
+  border: 2px solid #dc2626;
+}
+
+/* Estilos responsivos */
+@media (min-width: 768px) {
+  .timeline::before {
+    left: 50%;
+    margin-left: -1px;
+  }
+  
+  .timeline-item {
+    padding-left: 0;
+    margin: 4rem 0;
+  }
+  
+  .timeline-item:nth-child(even) {
+    padding-left: calc(50% + 2rem);
+  }
+  
+  .timeline-item:nth-child(odd) {
+    padding-right: calc(50% + 2rem);
+    padding-left: 0;
+  }
+  
+  .timeline-badge {
+    left: 50%;
+    margin-left: -20px;
+  }
+  
+  .timeline-item:nth-child(odd) .timeline-badge {
+    left: 50%;
+    margin-left: -20px;
+  }
+}
+
+/* Ajustes para modo oscuro */
+:host-context(.dark-theme) .mat-mdc-dialog-container {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}

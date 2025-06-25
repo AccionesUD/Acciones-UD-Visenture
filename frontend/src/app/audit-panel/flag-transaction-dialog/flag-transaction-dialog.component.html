@@ -1,0 +1,53 @@
+<div class="p-6 min-w-[500px]">
+  <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white" i18n="@@flag.transaction.dialog.title">
+      Marcar Transacción como Sospechosa
+    </h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Cerrar" i18n-aria-label="@@common.actions.close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="flagForm" (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@flag.transaction.dialog.info">
+        Estás a punto de marcar la transacción #{{ transaction.id }} como sospechosa. Por favor, proporciona una razón detallada para esta acción:
+      </p>
+      
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label i18n="@@flag.transaction.dialog.reason.label">Razón para marcar como sospechosa</mat-label>
+        <textarea 
+          matInput 
+          formControlName="reason"
+          rows="4"
+          i18n-placeholder="@@flag.transaction.dialog.reason.placeholder"
+          placeholder="Describe por qué consideras que esta transacción es sospechosa..."></textarea>
+        <mat-error *ngIf="flagForm.get('reason')?.hasError('required')" i18n="@@flag.transaction.dialog.reason.required">
+          La razón es obligatoria
+        </mat-error>
+        <mat-error *ngIf="flagForm.get('reason')?.hasError('minlength')" i18n="@@flag.transaction.dialog.reason.minlength">
+          La razón debe tener al menos 10 caracteres
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex justify-end mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <button 
+        type="button" 
+        mat-stroked-button 
+        (click)="onCancel()" 
+        class="mr-3"
+        i18n="@@common.actions.cancel">
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        mat-flat-button 
+        color="warn" 
+        [disabled]="flagForm.invalid"
+        i18n="@@flag.transaction.dialog.confirm">
+        Marcar como Sospechosa
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<div class="p-6 min-w-[500px]">
+  <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white" i18n="@@assign.alert.dialog.title">
+      Asignar Alerta
+    </h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Cerrar" i18n-aria-label="@@common.actions.close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="assignForm" (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@assign.alert.dialog.info">
+        Estás a punto de asignar la alerta #{{ alert.id }} a un usuario. Selecciona el responsable que atenderá esta alerta:
+      </p>
+      
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label i18n="@@assign.alert.dialog.user.label">Asignar a Usuario</mat-label>
+        <mat-select formControlName="userId">
+          <mat-option *ngFor="let user of users" [value]="user.id">
+            {{ user.name }} ({{ user.role }}) - {{ user.email }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="assignForm.get('userId')?.hasError('required')" i18n="@@assign.alert.dialog.user.required">
+          Debes seleccionar un usuario
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex justify-end mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <button 
+        type="button" 
+        mat-stroked-button 
+        (click)="onCancel()" 
+        class="mr-3"
+        i18n="@@common.actions.cancel">
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        mat-flat-button 
+        color="primary" 
+        [disabled]="assignForm.invalid"
+        i18n="@@assign.alert.dialog.confirm">
+        Asignar Alerta
+      </button>
+    </div>
+  </form>
+</div>

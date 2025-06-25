@@ -36,28 +36,18 @@ import {
   RiskPattern,
   SuspiciousActivityReport,
   ComplianceReport,
-  ExportRequest
+  ExportRequest,
+  ChartOptions
 } from '../models/audit.model';
 
-// Tipo para las gráficas (reutilizado de otros componentes)
-export type ChartOptions = {
-  series: any[];
-  chart: any;
-  xaxis: any;
-  yaxis: any;
-  colors: any[];
-  labels: any[];
-  title: any;
-  subtitle: any;
-  theme: any;
-  plotOptions: any;
-  tooltip: any;
-  dataLabels: any;
-  legend: any;
-  stroke: any;
-  fill: any;
-  grid: any;
-};
+import { TransactionDetailDialogComponent } from './transaction-detail-dialog/transaction-detail-dialog.component';
+import { AlertDetailDialogComponent } from './alert-detail-dialog/alert-detail-dialog.component';
+import { FlagTransactionDialogComponent } from './flag-transaction-dialog/flag-transaction-dialog.component';
+import { ReviewTransactionDialogComponent } from './review-transaction-dialog/review-transaction-dialog.component';
+import { AssignAlertDialogComponent } from './assign-alert-dialog/assign-alert-dialog.component';
+import { ResolveAlertDialogComponent } from './resolve-alert-dialog/resolve-alert-dialog.component';
+import { ComplianceReportDialogComponent } from './compliance-report-dialog/compliance-report-dialog.component';
+import { UserTimelineDialogComponent } from './user-timeline-dialog/user-timeline-dialog.component';
 
 @Component({
   selector: 'app-audit-panel',
@@ -485,128 +475,274 @@ export class AuditPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Métodos de acciones
   viewTransactionDetails(transaction: AuditTransaction): void {
-    // TODO: Implementar diálogo de detalles de transacción
-    console.log('View transaction details:', transaction);
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = '800px';
+    dialogConfig.data = { transaction };
+
+    this.dialog.open(TransactionDetailDialogComponent, dialogConfig);
+  }
+
+  viewAlertDetails(alert: AuditAlert): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = '800px';
+    dialogConfig.data = { alert };
+
+    this.dialog.open(AlertDetailDialogComponent, dialogConfig);
   }
 
   flagTransactionAsSuspicious(transaction: AuditTransaction): void {
-    // TODO: Implementar marcado como sospechoso
-    this.auditService.flagTransactionAsSuspicious(transaction.id, 'Marcado manualmente por el auditor').pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (updatedTransaction) => {
-        this.showSuccessSnackBar('Transacción marcada como sospechosa');
-        this.loadAuditData();
-      },
-      error: (error) => {
-        this.showErrorSnackBar('Error al marcar la transacción');
+    const dialogRef = this.dialog.open(FlagTransactionDialogComponent, {
+      width: '500px',
+      data: { transaction }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.reason) {
+        this.isLoading = true;
+        
+        this.auditService.flagTransactionAsSuspicious(transaction.id, result.reason)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedTransaction) => {
+              // Actualizar la transacción en el dataSource
+              const index = this.transactionsDataSource.data.findIndex(t => t.id === updatedTransaction.id);
+              if (index !== -1) {
+                this.transactionsDataSource.data[index] = { ...this.transactionsDataSource.data[index], ...updatedTransaction };
+                this.transactionsDataSource._updateChangeSubscription();
+              }
+              
+              this.showSuccessSnackBar('Transacción marcada como sospechosa');
+              // Actualizar estadísticas si es necesario
+              this.loadAuditStats();
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.showErrorSnackBar('Error al marcar la transacción como sospechosa');
+              this.isLoading = false;
+            }
+          });
       }
     });
   }
 
   reviewTransaction(transaction: AuditTransaction): void {
-    // TODO: Implementar revisión de transacción
-    this.auditService.markTransactionAsReviewed(transaction.id, 'Revisada por auditor').pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (updatedTransaction) => {
-        this.showSuccessSnackBar('Transacción marcada como revisada');
-        this.loadAuditData();
-      },
-      error: (error) => {
-        this.showErrorSnackBar('Error al revisar la transacción');
+    const dialogRef = this.dialog.open(ReviewTransactionDialogComponent, {
+      width: '500px',
+      data: { transaction }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.isLoading = true;
+        
+        this.auditService.markTransactionAsReviewed(transaction.id, result.notes)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedTransaction) => {
+              // Actualizar la transacción en el dataSource
+              const index = this.transactionsDataSource.data.findIndex(t => t.id === updatedTransaction.id);
+              if (index !== -1) {
+                this.transactionsDataSource.data[index] = { ...this.transactionsDataSource.data[index], ...updatedTransaction };
+                this.transactionsDataSource._updateChangeSubscription();
+              }
+              
+              this.showSuccessSnackBar('Transacción marcada como revisada');
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.showErrorSnackBar('Error al marcar la transacción como revisada');
+              this.isLoading = false;
+            }
+          });
       }
     });
-  }
-
-  viewAlertDetails(alert: AuditAlert): void {
-    // TODO: Implementar diálogo de detalles de alerta
-    console.log('View alert details:', alert);
   }
 
   assignAlert(alert: AuditAlert): void {
-    // TODO: Implementar asignación de alerta
-    console.log('Assign alert:', alert);
+    const dialogRef = this.dialog.open(AssignAlertDialogComponent, {
+      width: '500px',
+      data: { alert }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.userId) {
+        this.isLoading = true;
+        
+        this.auditService.assignAlert(alert.id, result.userId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedAlert) => {
+              // Actualizar la alerta en el dataSource
+              const index = this.alertsDataSource.data.findIndex(a => a.id === updatedAlert.id);
+              if (index !== -1) {
+                this.alertsDataSource.data[index] = { ...this.alertsDataSource.data[index], ...updatedAlert };
+                this.alertsDataSource._updateChangeSubscription();
+              }
+              
+              this.showSuccessSnackBar('Alerta asignada correctamente');
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.showErrorSnackBar('Error al asignar la alerta');
+              this.isLoading = false;
+            }
+          });
+      }
+    });
   }
 
   resolveAlert(alert: AuditAlert): void {
-    // TODO: Implementar resolución de alerta
-    this.auditService.resolveAlert(alert.id, 'Resuelto por auditor').pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (updatedAlert) => {
-        this.showSuccessSnackBar('Alerta resuelta');
-        this.loadAuditData();
-      },
-      error: (error) => {
-        this.showErrorSnackBar('Error al resolver la alerta');
+    const dialogRef = this.dialog.open(ResolveAlertDialogComponent, {
+      width: '500px',
+      data: { alert }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.resolution) {
+        this.isLoading = true;
+        
+        this.auditService.resolveAlert(alert.id, result.resolution)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedAlert) => {
+              // Actualizar la alerta en el dataSource
+              const index = this.alertsDataSource.data.findIndex(a => a.id === updatedAlert.id);
+              if (index !== -1) {
+                this.alertsDataSource.data[index] = { ...this.alertsDataSource.data[index], ...updatedAlert };
+                this.alertsDataSource._updateChangeSubscription();
+              }
+              
+              this.showSuccessSnackBar('Alerta resuelta correctamente');
+              // Actualizar estadísticas si es necesario
+              this.loadAuditStats();
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.showErrorSnackBar('Error al resolver la alerta');
+              this.isLoading = false;
+            }
+          });
       }
     });
   }
 
-  // Métodos de exportación
-  exportData(format: 'pdf' | 'excel' | 'PDF' | 'EXCEL' | 'CSV'): void {
-    // Normalizar el formato
-    let normalizedFormat: 'PDF' | 'EXCEL' | 'CSV';
-    switch (format.toLowerCase()) {
-      case 'pdf':
-        normalizedFormat = 'PDF';
-        break;
-      case 'excel':
-        normalizedFormat = 'EXCEL';
-        break;
-      case 'csv':
-        normalizedFormat = 'CSV';
-        break;
-      default:
-        normalizedFormat = format as 'PDF' | 'EXCEL' | 'CSV';
-    }
-
-    console.log(`Exportando datos en formato ${normalizedFormat}...`);
-    this.showSuccessSnackBar(`Exportando reporte ${normalizedFormat}...`);
-    
-    // TODO: Implementar exportación real cuando el servicio esté disponible
-    /*
+  // Métodos para exportación y reportes
+  exportData(format: 'PDF' | 'EXCEL' | 'CSV'): void {
+    const filters = this.buildFiltersFromForm();
     const exportRequest: ExportRequest = {
-      format: normalizedFormat,
-      filters: this.buildFiltersFromForm(),
+      format,
+      filters,
       includeCharts: true,
       includeTimeline: true,
-      reportType: 'AUDIT_REPORT'
+      reportType: 'AUDIT_DATA'
     };
 
-    this.auditService.exportAuditData(exportRequest).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response) => {
-        // Abrir enlace de descarga
-        window.open(response.download_url, '_blank');
-        this.showSuccessSnackBar(`Reporte ${normalizedFormat} generado exitosamente`);
-      },
-      error: (error) => {
-        this.showErrorSnackBar(`Error al generar el reporte ${normalizedFormat}`);
-      }
-    });
-    */
+    this.isLoading = true;
+    this.auditService.exportAuditData(exportRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          // Crear un enlace para la descarga
+          const a = document.createElement('a');
+          a.href = response.download_url;
+          a.download = response.file_name;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          
+          this.showSuccessSnackBar(`Datos exportados en formato ${format}`);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.showErrorSnackBar(`Error al exportar datos en formato ${format}`);
+          this.isLoading = false;
+        }
+      });
   }
 
   generateComplianceReport(): void {
-    // TODO: Implementar generación de reporte de cumplimiento
-    console.log('Generate compliance report');
+    this.dialog.open(ComplianceReportDialogComponent, {
+      width: '800px',  // Actualizamos el ancho para coincidir con el nuevo diseño
+      panelClass: 'compliance-report-dialog',
+      data: {}
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.isLoading = true;
+        
+        // Incluimos los nuevos campos del formulario
+        this.auditService.generateComplianceReport(
+          result.templateId,
+          result.periodStart,
+          result.periodEnd,
+          result.format || 'PDF',
+          result.includeCharts || false,
+          result.includeTimeline || false
+        ).pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (report) => {
+              this.showSuccessSnackBar(`Informe de cumplimiento generado con ID: ${report.id}`);
+              
+              // Si hay una URL de descarga disponible, abrirla automáticamente
+              if (report.file_path) {
+                const a = document.createElement('a');
+                a.href = report.file_path;
+                a.download = `compliance_report_${report.id}.${result.format.toLowerCase()}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+              }
+              
+              this.isLoading = false;
+            },
+            error: (error) => {
+              this.showErrorSnackBar('Error al generar informe de cumplimiento');
+              this.isLoading = false;
+            }
+          });
+      }
+    });
+  }
+  
+  viewUserTimeline(userId: number): void {
+    this.isLoading = true;
+    
+    this.auditService.getUserTimeline(userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (timeline) => {
+          this.dialog.open(UserTimelineDialogComponent, {
+            width: '800px',
+            data: { timeline }
+          });
+          this.isLoading = false;
+        },
+        error: (error) => {
+          this.showErrorSnackBar('Error al cargar la línea de tiempo del usuario');
+          this.isLoading = false;
+        }
+      });
   }
 
-  // Métodos de utilidad
-  private showSuccessSnackBar(message: string): void {
+  // Métodos auxiliares para la UI
+  showSuccessSnackBar(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 3000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
     });
   }
 
-  private showErrorSnackBar(message: string): void {
+  showErrorSnackBar(message: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 5000,
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
     });
   }
 

@@ -1,0 +1,52 @@
+/* Importamos los estilos base de los diÃ¡logos de usuario para consistencia */
+@import '../../users/user-detail-dialog/user-detail-dialog.component.css';
+
+/*
+  Sobrescribimos o aÃ±adimos estilos especÃ­ficos para el diÃ¡logo de detalles de alerta.
+  Usamos la clase 'alert-detail-dialog' que aÃ±adimos en el componente TS para asegurar que los estilos no afecten a otros diÃ¡logos.
+*/
+
+/* Colores de fondo para la cabecera del diÃ¡logo */
+::ng-deep .alert-detail-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #f8fafc; /* slate-50 */
+}
+
+::ng-deep html.dark .alert-detail-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #1e293b; /* slate-800 */
+}
+
+/* Ajustes para el color del indicador de la pestaÃ±a activa */
+::ng-deep .alert-detail-dialog .mdc-tab-indicator__content--underline {
+  border-color: #6366f1 !important; /* indigo-500 */
+}
+
+::ng-deep .dark .alert-detail-dialog .mdc-tab-indicator__content--underline {
+  border-color: #818cf8 !important; /* indigo-400 */
+}
+
+/* Color del texto de la pestaÃ±a activa */
+::ng-deep .alert-detail-dialog .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #6366f1 !important; /* indigo-500 */
+}
+
+::ng-deep .dark .alert-detail-dialog .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #818cf8 !important; /* indigo-400 */
+}
+
+/* Estilos para el botÃ³n de acciÃ³n principal */
+::ng-deep .alert-detail-dialog button[color="primary"] {
+  background-color: #4f46e5; /* indigo-600 */
+  color: white;
+}
+
+::ng-deep .alert-detail-dialog button[color="primary"]:hover {
+  background-color: #4338ca; /* indigo-700 */
+}
+
+::ng-deep .dark .alert-detail-dialog button[color="primary"] {
+  background-color: #6366f1; /* indigo-500 */
+}
+
+::ng-deep .dark .alert-detail-dialog button[color="primary"]:hover {
+  background-color: #818cf8; /* indigo-400 */
+}

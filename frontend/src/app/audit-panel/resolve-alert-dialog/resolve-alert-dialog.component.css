@@ -1,0 +1,15 @@
+/* Estilos para el diálogo de resolución de alerta */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Estilos para los botones */
+.mat-mdc-dialog-actions {
+  padding: 16px 0 0;
+}
+
+/* Ajustes para modo oscuro */
+:host-context(.dark-theme) .mat-mdc-dialog-container {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}

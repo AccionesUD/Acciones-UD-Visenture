@@ -1,0 +1,133 @@
+/* Estilos para el diálogo de detalle de cumplimiento */
+:host {
+  display: block;
+}
+
+/* Estilos para la tarjeta principal */
+.min-w-\[800px\] {
+  min-width: 800px;
+}
+
+/* Mejoras responsivas para diferentes tamaños de pantalla */
+@media (max-width: 840px) {
+  .min-w-\[800px\] {
+    min-width: 90vw;
+  }
+}
+
+@media (max-width: 640px) {
+  .min-w-\[800px\] {
+    min-width: 95vw;
+    padding: 1rem !important;
+  }
+  
+  ::ng-deep .compliance-report-dialog .grid.grid-cols-2 {
+    grid-template-columns: 1fr !important; /* Cambia a una sola columna */
+  }
+  
+  ::ng-deep .compliance-report-dialog .flex.flex-col.md\:flex-row {
+    flex-direction: column !important; /* Apila elementos verticalmente */
+  }
+}
+
+/* Estilo para eliminar scrollbar pero mantener funcionalidad */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dark .hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+::ng-deep .mat-icon {
+  color: #4b5563; /* gray-600 */  
+}
+
+/* Estilos para Material Form Fields */
+::ng-deep .compliance-report-dialog .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Estilos para los botones */
+::ng-deep .compliance-report-dialog .mat-mdc-dialog-actions {
+  padding: 16px 0 0;
+}
+
+/* Estilo para el calendario */
+::ng-deep .compliance-report-dialog .mat-calendar-body-selected {
+  background-color: #10b981 !important;
+  color: white !important;
+}
+
+::ng-deep .compliance-report-dialog .mat-datepicker-toggle {
+  color: #10b981;
+}
+
+/* Botón de cerrar (stroked) */
+::ng-deep .compliance-report-dialog .mdc-button--outlined .mdc-button__label {
+  color: #374151; /* gray-700 */
+}
+
+::ng-deep .compliance-report-dialog .mdc-button--outlined {
+  border-color: #d1d5db; /* gray-300 */
+}
+
+::ng-deep .dark .compliance-report-dialog .mdc-button--outlined .mdc-button__label {
+  color: #d1d5db; /* gray-300 */
+}
+
+::ng-deep .dark .compliance-report-dialog .mdc-button--outlined {
+  border-color: #4b5563; /* gray-600 */
+}
+
+/*
+ * Estilos del Contenedor del Diálogo
+ */
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .compliance-report-dialog .mdc-dialog__surface {
+  background-color: #f9fafb !important; /* gray-50 */
+  border-radius: 0.75rem !important; /* rounded-xl */
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+}
+
+::ng-deep .dark .compliance-report-dialog .mdc-dialog__surface {
+  background-color: #1f2937 !important; /* gray-800 */
+}
+
+/* Estilo para checkboxes */
+::ng-deep .compliance-report-dialog .mdc-checkbox__background {
+  border-color: #6b7280 !important; /* gray-500 */
+}
+
+::ng-deep .dark .compliance-report-dialog .mdc-checkbox__background {
+  border-color: #9ca3af !important; /* gray-400 */
+}
+
+::ng-deep .compliance-report-dialog .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+  background-color: #10b981 !important; /* emerald-500 */
+  border-color: #10b981 !important; /* emerald-500 */
+}
+
+/* Mejoras en la accesibilidad visual */
+::ng-deep .dark .text-gray-300,
+::ng-deep .dark .text-gray-400 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .dark .text-gray-200 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}

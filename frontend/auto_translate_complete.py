@@ -7,9 +7,66 @@ import urllib.parse
 import time
 from typing import Dict, Optional, Tuple, List
 import html
+import builtins
+_orig_print = builtins.print
+print = lambda *args, **kwargs: None
 
 # Añadimos constantes para palabras clave de ICU que no deben traducirse
 ICU_KEYWORDS = ['select', 'plural', 'VAR_SELECT', 'VAR_PLURAL', 'true', 'false', 'other', '=0', '=1', '=2']
+
+def extract_special_tags(text: str) -> Tuple[str, List[str], List[str]]:
+    """
+    Extrae etiquetas XML especiales (como <x id="..."/>) que no deben ser traducidas
+    y devuelve un texto limpio junto con los placeholders y las partes originales.
+    
+    Args:
+        text: El texto que puede contener etiquetas XML especiales
+        
+    Returns:
+        Tuple con:
+        - El texto con placeholders en lugar de etiquetas especiales
+        - Una lista de placeholders usados para reemplazar las etiquetas
+        - Una lista de las etiquetas originales
+    """
+    # Patrón mejorado para detectar etiquetas XML especiales como <x id="START_TAG_SPAN" ctype="x-span" equiv-text="..."/>
+    xml_tag_pattern = r'<x\s+id="[^"]+"\s+[^>]+?/>'
+    
+    placeholders = []
+    original_parts = []
+    
+    # Copiar el texto original para ir reemplazando las etiquetas
+    text_with_placeholders = text
+    
+    # Reemplazar etiquetas XML especiales con placeholders
+    matches = re.finditer(xml_tag_pattern, text)
+    for idx, match in enumerate(matches):
+        xml_tag = match.group(0)
+        placeholder = f"__XML_TAG_PLACEHOLDER_{idx}__"
+        placeholders.append(placeholder)
+        original_parts.append(xml_tag)
+        text_with_placeholders = text_with_placeholders.replace(xml_tag, placeholder, 1)
+    
+    # También detectar etiquetas HTML regulares como <span>, <div>, etc.
+    html_tag_pattern = r'</?[a-zA-Z][^>]*>'
+    
+    matches = re.finditer(html_tag_pattern, text_with_placeholders)
+    for idx, match in enumerate(matches):
+        html_tag = match.group(0)
+        placeholder = f"__HTML_TAG_PLACEHOLDER_{len(placeholders) + idx}__"
+        placeholders.append(placeholder)
+        original_parts.append(html_tag)
+        text_with_placeholders = text_with_placeholders.replace(html_tag, placeholder, 1)
+
+    # Lista especial de nombres que NO queremos traducir
+    no_translate_names = ['Visenture']
+    for name in no_translate_names:
+        if name in text_with_placeholders:
+            placeholder = f"__NO_TRANSLATE_{len(placeholders)}__"
+            placeholders.append(placeholder)
+            original_parts.append(name)
+            text_with_placeholders = text_with_placeholders.replace(name, placeholder, 1)
+
+    return text_with_placeholders, placeholders, original_parts
 
 def extract_icu_parts(text: str) -> Tuple[List[str], List[str]]:
     """
@@ -45,6 +102,52 @@ def extract_icu_parts(text: str) -> Tuple[List[str], List[str]]:
     
     return placeholders, original_parts
 
+def restore_special_parts(text: str, placeholders: List[str], original_parts: List[str]) -> str:
+    """
+    Restaura las etiquetas especiales y nombres no traducibles en el texto traducido.
+    
+    Args:
+        text: El texto traducido con placeholders
+        placeholders: Lista de placeholders usados
+        original_parts: Lista de partes originales
+        
+    Returns:
+        El texto con las partes especiales restauradas
+    """
+    result = text
+    
+    # Primera pasada: reemplazar placeholders exactos
+    for i, (placeholder, original) in enumerate(zip(placeholders, original_parts)):
+        if placeholder in result:
+            result = result.replace(placeholder, original)
+    
+    # Segunda pasada: insensible a mayúsculas/minúsculas para los que faltan
+    for placeholder, original in zip(placeholders, original_parts):
+        lowercase_placeholder = placeholder.lower()
+        if lowercase_placeholder in result.lower():
+            # Buscar la posición exacta en el resultado
+            pos = result.lower().find(lowercase_placeholder)
+            if pos >= 0:
+                # Reemplazar manteniendo el caso
+                end_pos = pos + len(lowercase_placeholder)
+                result = result[:pos] + original + result[end_pos:]
+    
+    # Restauración especial para Visenture (si se tradujo incorrectamente)
+    if 'Visenture' not in result and 'visenture' in result.lower():
+        pos = result.lower().find('visenture')
+        if pos >= 0:
+            end_pos = pos + len('visenture')
+            result = result[:pos] + 'Visenture' + result[end_pos:]
+
+    # Preservar mayúscula en la primera letra no espaciada
+    idx = 0
+    while idx < len(result) and result[idx].isspace():
+        idx += 1
+    if idx < len(result) and result[idx].islower():
+        result = result[:idx] + result[idx].upper() + result[idx+1:]
+
+    return result
+
 def restore_icu_parts(text: str, placeholders: List[str], original_parts: List[str]) -> str:
     """
     Restaura las expresiones ICU originales en el texto traducido.
@@ -76,22 +179,34 @@ class AutomaticTranslator:
     def translate_text(self, text: str, target_lang: str, source_lang: str = 'es') -> str:
         """
         Traduce un texto automáticamente usando múltiples APIs como fallback.
-        Preserva expresiones ICU y entidades HTML.
+        Preserva expresiones ICU, etiquetas XML especiales y entidades HTML.
         """
         # Limpiar y validar texto
         clean_text = text.strip()
         if not clean_text or len(clean_text) < 2:
             return text
         
+        # Debug para textos con etiquetas XML
+        if '<x id=' in clean_text:
+            print(f"\nDEBUG: Texto original con etiquetas XML: '{clean_text}'")
+            
+        # Detectar y extraer etiquetas XML especiales y HTML para preservarlas
+        text_with_xml_placeholders, xml_placeholders, xml_originals = extract_special_tags(clean_text)
+        
+        # Debug para ver qué placeholders se han creado
+        if xml_placeholders:
+            print(f"DEBUG: Se extrajeron {len(xml_placeholders)} etiquetas XML")
+            print(f"DEBUG: Texto con placeholders: '{text_with_xml_placeholders}'")
+        
         # Detectar y extraer expresiones ICU para preservarlas
-        icu_placeholders, icu_originals = extract_icu_parts(clean_text)
+        icu_placeholders, icu_originals = extract_icu_parts(text_with_xml_placeholders)
         
         # Si hay expresiones ICU, reemplazarlas con placeholders antes de traducir
-        text_to_translate = clean_text
+        text_to_translate = text_with_xml_placeholders
         for placeholder, original in zip(icu_placeholders, icu_originals):
             text_to_translate = text_to_translate.replace(original, placeholder)
             
-        # Si después de extraer ICU el texto está vacío, devolver el original
+        # Si después de extraer etiquetas y expresiones ICU el texto está vacío, devolver el original
         if not text_to_translate.strip():
             return text
             
@@ -123,6 +238,15 @@ class AutomaticTranslator:
                         translated_parts.append(self.translate_text(part, target_lang, source_lang))
                     
             translated_full = ' '.join(translated_parts)
+            
+            # Restaurar expresiones ICU y etiquetas XML/HTML
+            translated_full = restore_icu_parts(translated_full, icu_placeholders, icu_originals)
+            translated_full = restore_special_parts(translated_full, xml_placeholders, xml_originals)
+            
+            # Debug para ver cómo se están manejando las etiquetas especiales
+            if xml_placeholders:
+                print(f"DEBUG: Restored {len(xml_placeholders)} special XML tags")
+                
             cache_key = f"{source_lang}_{target_lang}_{clean_text}"
             self.translation_cache[cache_key] = translated_full
             return translated_full
@@ -130,11 +254,12 @@ class AutomaticTranslator:
         # Verificar en caché
         cache_key = f"{source_lang}_{target_lang}_{clean_text}"
         if cache_key in self.translation_cache:
-            return self.translation_cache[cache_key]
+            cached_result = self.translation_cache[cache_key]
+            print(f"DEBUG: Usando resultado en caché: '{cached_result}'")
+            return cached_result
         
         # Control de rate limiting
         if self.request_count >= self.max_requests_per_minute:
-            print("Rate limit reached, waiting...")
             time.sleep(60)
             self.request_count = 0
         
@@ -147,7 +272,15 @@ class AutomaticTranslator:
             if translated and translated != text_to_translate:
                 # Restaurar expresiones ICU en el texto traducido
                 if icu_placeholders:
+                    print(f"DEBUG: Restaurando expresiones ICU")
                     translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
+                    
+                # Restaurar etiquetas XML
+                if xml_placeholders:
+                    print(f"DEBUG: Restaurando etiquetas XML. Texto antes: '{translated}'")
+                    translated = restore_special_parts(translated, xml_placeholders, xml_originals)
+                    print(f"DEBUG: Texto después: '{translated}'")
+                    
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
@@ -159,7 +292,15 @@ class AutomaticTranslator:
             if translated and translated != text_to_translate:
                 # Restaurar expresiones ICU en el texto traducido
                 if icu_placeholders:
+                    print(f"DEBUG: Restaurando expresiones ICU (MyMemory)")
                     translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
+                    
+                # Restaurar etiquetas XML
+                if xml_placeholders:
+                    print(f"DEBUG: Restaurando etiquetas XML (MyMemory). Texto antes: '{translated}'")
+                    translated = restore_special_parts(translated, xml_placeholders, xml_originals)
+                    print(f"DEBUG: Texto después (MyMemory): '{translated}'")
+                    
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
@@ -171,7 +312,15 @@ class AutomaticTranslator:
             if translated and translated != text_to_translate:
                 # Restaurar expresiones ICU en el texto traducido
                 if icu_placeholders:
+                    print(f"DEBUG: Restaurando expresiones ICU (LibreTranslate)")
                     translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
+                    
+                # Restaurar etiquetas XML
+                if xml_placeholders:
+                    print(f"DEBUG: Restaurando etiquetas XML (LibreTranslate). Texto antes: '{translated}'")
+                    translated = restore_special_parts(translated, xml_placeholders, xml_originals)
+                    print(f"DEBUG: Texto después (LibreTranslate): '{translated}'")
+                    
                 self.translation_cache[cache_key] = translated
                 return translated
         except Exception as e:
@@ -205,7 +354,15 @@ class AutomaticTranslator:
                     if translated and translated != text_to_translate:
                         # Restaurar expresiones ICU en el texto traducido
                         if icu_placeholders:
+                            print(f"DEBUG: Restaurando expresiones ICU (reintento)")
                             translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
+                            
+                        # Restaurar etiquetas XML
+                        if xml_placeholders:
+                            print(f"DEBUG: Restaurando etiquetas XML (reintento). Texto antes: '{translated}'")
+                            translated = restore_special_parts(translated, xml_placeholders, xml_originals)
+                            print(f"DEBUG: Texto después (reintento): '{translated}'")
+                            
                         self.translation_cache[cache_key] = translated
                         print(f"Retry successful with {service_name}")
                         return translated
@@ -214,7 +371,7 @@ class AutomaticTranslator:
         
         # Si todo falla después de los reintentos, devolver texto original
         print(f"Warning: Could not translate '{text_to_translate[:50]}...' to {target_lang} after {max_retries} retry attempts")
-        return text  # Devolvemos el texto original completo con las expresiones ICU intactas
+        return text  # Devolvemos el texto original completo
     
     def _translate_with_google(self, text: str, target_lang: str, source_lang: str) -> Optional[str]:
         """Traduce usando Google Translate API gratuita."""
@@ -360,6 +517,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
     print(f"📝 Log file: {log_file}")
     print("⏳ This may take several minutes depending on the number of strings...")
     
+    # Eliminar o neutralizar prints internos en translate_xlf_file_automatic
     # Iniciar registro de log
     with open(log_file, 'w', encoding='utf-8') as log:
         log.write(f"Translation log for {target_lang}\n")
@@ -403,11 +561,23 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
             # Determinar el namespace a usar
             ns_prefix = "ns0:" if "ns0:" in trans_unit else ""
             
-            # Solo traducir textos que no contengan elementos XML complejos y no estén vacíos
-            if '<x id=' in source_text or '</' in source_text or not source_text_clean:
+            # Solo saltar textos vacíos, ahora manejamos correctamente las etiquetas XML
+            if not source_text_clean:
                 skipped_translations += 1
-                print(f"Skipped complex/empty text: '{source_text_clean[:50]}...'")
                 return trans_unit
+                
+            # Detectar si el texto tiene etiquetas XML especiales, ahora las procesamos correctamente
+            has_special_tags = '<x id=' in source_text or '</' in source_text
+            if has_special_tags:                
+                # Mostrar información sobre las etiquetas presentes
+                if '<x id=' in source_text:
+                    # Contar cuántas etiquetas XML especiales hay
+                    xml_tag_count = len(re.findall(r'<x\s+id="[^"]+"\s+[^>]+?/>', source_text))
+                    print(f"   → Contiene {xml_tag_count} etiquetas XML especiales <x id.../>")
+                if '</' in source_text:
+                    # Contar etiquetas HTML normales
+                    html_tag_count = len(re.findall(r'</?[a-zA-Z][^>]*>', source_text))
+                    print(f"   → Contiene {html_tag_count} etiquetas HTML normales")
             
             # Detectar expresiones ICU en el texto source
             icu_pattern = r'\{([A-Z_]+),[^{}]+\}'
@@ -423,8 +593,15 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                 # Detectar entidades HTML en el texto original
                 has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
                 
+                # Verificar si tiene etiquetas XML especiales
+                has_special_tags = '<x id=' in source_text_clean or '</' in source_text_clean
+                
                 # Traducir el texto
-                print(f"Translating ({total_translations}): '{source_text_clean[:60]}...'")
+                if has_special_tags:
+                    print(f"Translating text with XML tags ({total_translations}): '{source_text_clean[:60]}...'")
+                else:
+                    print(f"Translating ({total_translations}): '{source_text_clean[:60]}...'")
+                    
                 translated_text = translator.translate_text(source_text_clean, target_lang)
                 
                 if translated_text and translated_text != source_text_clean:
@@ -563,16 +740,17 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                 log.write(f"Source: {source_text[:100]}{'...' if len(source_text) > 100 else ''}\n")
                 log.write("-" * 50 + "\n")
     
-    print(f"\n=== Translation Summary ===")
-    print(f"Total strings found: {total_translations}")
-    print(f"Successfully translated: {successful_translations}")
-    print(f"Skipped (complex/empty): {skipped_translations}")
-    print(f"Failed translations: {total_translations - successful_translations - skipped_translations}")
+    # Al final de translate_xlf_file_automatic, reemplazar summary prints con final_print
+    final_print("\n=== Translation Summary ===")
+    final_print(f"Total strings found: {total_translations}")
+    final_print(f"Successfully translated: {successful_translations}")
+    final_print(f"Skipped (complex/empty): {skipped_translations}")
+    final_print(f"Failed translations: {total_translations - successful_translations - skipped_translations}")
     if total_translations > 0:
         success_rate = (successful_translations / (total_translations - skipped_translations)) * 100 if (total_translations - skipped_translations) > 0 else 0
-        print(f"Success rate: {success_rate:.1f}%")
-    print(f"File saved: {output_file}")
-    print(f"Missing translations: {len(missing_translations)} (see log file for details)")
+        final_print(f"Success rate: {success_rate:.1f}%")
+    final_print(f"File saved: {output_file}")
+    final_print(f"Missing translations: {len(missing_translations)} (see log file for details)")
 
 def translate_all_languages(source_file_path: str, output_dir: str = None):
     """
@@ -662,3 +840,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"\n❌ Error durante las traducciones: {e}")
             sys.exit(1)
+
+# Restaurar print original para mensajes finales
+def final_print(*args, **kwargs):
+    _orig_print(*args, **kwargs)

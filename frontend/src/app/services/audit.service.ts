@@ -174,16 +174,65 @@ export class AuditService {
     return this.http.get<{ reports: ComplianceReport[], total: number }>(`${this.apiUrl}/compliance-reports`, { params });
   }
 
-  generateComplianceReport(templateId: number, periodStart: Date, periodEnd: Date): Observable<ComplianceReport> {
-    return this.http.post<ComplianceReport>(`${this.apiUrl}/compliance-reports`, {
-      template_id: templateId,
-      period_start: periodStart,
-      period_end: periodEnd
+  generateComplianceReport(
+    templateId: number, 
+    periodStart: Date, 
+    periodEnd: Date, 
+    format: string = 'PDF',
+    includeCharts: boolean = true,
+    includeTimeline: boolean = false
+  ): Observable<ComplianceReport> {
+    // En un entorno real esto haría una llamada HTTP
+    // return this.http.post<ComplianceReport>(`${this.apiUrl}/compliance-reports`, {
+    //   templateId,
+    //   periodStart,
+    //   periodEnd,
+    //   format,
+    //   includeCharts,
+    //   includeTimeline
+    // });
+    
+    // Para desarrollo, simular una respuesta
+    return new Observable(observer => {
+      this.loadingSubject.next(true);
+      
+      setTimeout(() => {
+        const report: ComplianceReport = {
+          id: Math.floor(Math.random() * 10000),
+          report_type: 'COMPLIANCE',
+          generated_at: new Date(),
+          generated_by: 1,
+          period_start: periodStart,
+          period_end: periodEnd,
+          status: 'COMPLETED',
+          template_id: templateId,
+          file_path: format === 'PDF' 
+            ? 'assets/mocks/sample_report.pdf' 
+            : (format === 'EXCEL' ? 'assets/mocks/sample_report.xlsx' : 'assets/mocks/sample_report.csv')
+        };
+        
+        this.loadingSubject.next(false);
+        observer.next(report);
+        observer.complete();
+      }, 2000);
     });
   }
-
+  
   getComplianceTemplates(): Observable<ComplianceTemplate[]> {
-    return this.http.get<ComplianceTemplate[]>(`${this.apiUrl}/compliance-templates`);
+    // En un entorno real esto haría una llamada HTTP
+    // return this.http.get<ComplianceTemplate[]>(`${this.apiUrl}/compliance-templates`);
+    
+    // Para desarrollo, simular una respuesta
+    return new Observable(observer => {
+      const templates: ComplianceTemplate[] = [
+        { id: 1, name: 'Reporte Mensual Estándar', description: 'Reporte de cumplimiento normativo mensual', template_type: 'MONTHLY', regulations: ['GDPR', 'PCI-DSS'], fields: [], created_at: new Date(), updated_at: new Date() },
+        { id: 2, name: 'Auditoría de Alto Riesgo', description: 'Reporte específico para transacciones de alto riesgo', template_type: 'HIGH_RISK', regulations: ['AML'], fields: [], created_at: new Date(), updated_at: new Date() },
+        { id: 3, name: 'Reporte Trimestral', description: 'Análisis trimestral de cumplimiento normativo', template_type: 'QUARTERLY', regulations: ['SOX', 'GDPR'], fields: [], created_at: new Date(), updated_at: new Date() }
+      ];
+      
+      observer.next(templates);
+      observer.complete();
+    });
   }
 
   // Exportación de datos

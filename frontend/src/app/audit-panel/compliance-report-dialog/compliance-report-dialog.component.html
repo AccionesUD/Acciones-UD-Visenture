@@ -1,0 +1,161 @@
+<div class="min-w-[800px] max-w-4xl p-6">
+  <!-- Cabecera del diálogo -->
+  <div class="flex justify-between items-center border-b border-gray-700 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent" i18n="@@compliance.report.dialog.title">
+      Generador de Informes de Cumplimiento
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            i18n-aria-label="@@common.actions.close.dialog" aria-label="Cerrar diálogo">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
+    </button>
+  </div>
+  
+  <mat-dialog-content class="min-h-[400px] max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <!-- Tarjeta principal para el formulario -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700 shadow-md p-6 mb-6">
+      <form [formGroup]="reportForm" (ngSubmit)="onSubmit()">
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3" i18n="@@compliance.report.dialog.template.section">
+            Plantilla del Informe
+          </h3>
+          
+          <!-- Selector de plantilla -->
+          <mat-form-field appearance="outline" class="w-full mb-2">
+            <mat-label i18n="@@compliance.report.dialog.template.label">Seleccionar Plantilla</mat-label>
+            <mat-select formControlName="templateId" required>
+              <mat-option *ngFor="let template of templates" [value]="template.id">
+                {{ template.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="reportForm.get('templateId')?.hasError('required')" i18n="@@compliance.report.dialog.template.required">
+              Debes seleccionar una plantilla
+            </mat-error>
+          </mat-form-field>
+          
+          <!-- Información de la plantilla seleccionada -->
+          <ng-container *ngIf="getSelectedTemplate()">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded p-4 mt-3">
+              <p class="font-medium text-gray-800 dark:text-gray-100 mb-2">{{ getSelectedTemplate()?.name }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">{{ getSelectedTemplate()?.description }}</p>
+              
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span *ngFor="let reg of getSelectedTemplate()?.regulations" 
+                      class="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-full text-xs font-medium">
+                  {{ getRegulationName(reg) }}
+                </span>
+              </div>
+              
+              <div class="flex items-center mt-3 text-xs text-gray-500 dark:text-gray-400">
+                <mat-icon class="text-sm mr-1">update</mat-icon>
+                <span i18n="@@compliance.report.dialog.template.updated">Actualizada: {{ formatDate(getSelectedTemplate()?.updated_at) }}</span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        
+        <mat-divider class="mb-6"></mat-divider>
+        
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3" i18n="@@compliance.report.dialog.period.section">
+          Período del Informe
+        </h3>
+        
+        <!-- Período del informe -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label i18n="@@compliance.report.dialog.start.date">Fecha de inicio</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="periodStart" required>
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-error *ngIf="reportForm.get('periodStart')?.hasError('required')" i18n="@@compliance.report.dialog.start.date.required">
+              La fecha de inicio es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label i18n="@@compliance.report.dialog.end.date">Fecha de fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="periodEnd" required>
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-error *ngIf="reportForm.get('periodEnd')?.hasError('required')" i18n="@@compliance.report.dialog.end.date.required">
+              La fecha de fin es obligatoria
+            </mat-error>
+          </mat-form-field>
+        </div>
+        
+        <mat-divider class="mb-6"></mat-divider>
+        
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3" i18n="@@compliance.report.dialog.options.section">
+          Opciones del Informe
+        </h3>
+        
+        <!-- Opciones adicionales del informe -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label i18n="@@compliance.report.dialog.format">Formato de salida</mat-label>
+            <mat-select formControlName="format">
+              <mat-option value="PDF">PDF</mat-option>
+              <mat-option value="EXCEL">Excel</mat-option>
+              <mat-option value="CSV">CSV</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <div class="flex flex-col gap-2 p-2">
+            <div class="flex items-center">
+              <mat-checkbox formControlName="includeCharts" color="primary" class="text-gray-800 dark:text-gray-200">
+                <span i18n="@@compliance.report.dialog.include.charts">Incluir gráficos</span>
+              </mat-checkbox>
+              <mat-icon class="ml-1 text-gray-400 cursor-help" 
+                      matTooltip="Incluye visualizaciones gráficas de los datos analizados" i18n-matTooltip="@@compliance.report.tooltip.charts">
+                help_outline
+              </mat-icon>
+            </div>
+            
+            <div class="flex items-center">
+              <mat-checkbox formControlName="includeTimeline" color="primary" class="text-gray-800 dark:text-gray-200">
+                <span i18n="@@compliance.report.dialog.include.timeline">Incluir cronología</span>
+              </mat-checkbox>
+              <mat-icon class="ml-1 text-gray-400 cursor-help" 
+                      matTooltip="Incluye la cronología de eventos auditados en el período" i18n-matTooltip="@@compliance.report.tooltip.timeline">
+                help_outline
+              </mat-icon>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <!-- Alerta informativa -->
+    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 mb-4">
+      <div class="flex items-start">
+        <mat-icon class="text-blue-500 mr-2">info</mat-icon>
+        <p class="text-sm text-blue-700 dark:text-blue-300" i18n="@@compliance.report.dialog.info">
+          El informe de cumplimiento generará un documento completo con todas las transacciones, alertas y métricas del período seleccionado.
+          Este proceso puede tardar unos minutos dependiendo del volumen de datos.
+        </p>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <!-- Acciones del diálogo -->
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
+    <button 
+      type="button" 
+      mat-stroked-button 
+      (click)="onCancel()" 
+      class="mr-2 px-5 py-1.5 rounded-lg text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-700 dark:border-gray-600"
+      i18n="@@common.actions.cancel">
+      Cancelar
+    </button>
+    
+    <button 
+      type="button"
+      (click)="onSubmit()"
+      mat-flat-button 
+      class="px-5 py-1.5 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center"
+      [disabled]="reportForm.invalid || loading"
+      i18n="@@compliance.report.dialog.generate">
+      <mat-icon class="mr-1.5 h-5 w-5">description</mat-icon>
+      <span>Generar Informe</span>
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,61 @@
+<div class="p-6 min-w-[500px]">
+  <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white" i18n="@@resolve.alert.dialog.title">
+      Resolver Alerta
+    </h2>
+    <button mat-icon-button (click)="onCancel()" aria-label="Cerrar" i18n-aria-label="@@common.actions.close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="resolveForm" (ngSubmit)="onSubmit()">
+    <div class="mb-4">
+      <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@resolve.alert.dialog.info">
+        Estás a punto de resolver la alerta #{{ alert.id }}. Por favor, proporciona información sobre la resolución:
+      </p>
+      
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label i18n="@@resolve.alert.dialog.resolution.label">Notas de resolución</mat-label>
+        <textarea 
+          matInput 
+          formControlName="resolution"
+          rows="4"
+          i18n-placeholder="@@resolve.alert.dialog.resolution.placeholder"
+          placeholder="Detalla cómo se ha resuelto esta alerta o las acciones tomadas..."></textarea>
+        <mat-error *ngIf="resolveForm.get('resolution')?.hasError('required')" i18n="@@resolve.alert.dialog.resolution.required">
+          Las notas de resolución son obligatorias
+        </mat-error>
+        <mat-error *ngIf="resolveForm.get('resolution')?.hasError('minlength')" i18n="@@resolve.alert.dialog.resolution.minlength">
+          Las notas deben tener al menos 10 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <div class="mt-4">
+        <mat-checkbox formControlName="falsePositive" color="warn">
+          <span class="text-gray-700 dark:text-gray-300" i18n="@@resolve.alert.dialog.false.positive">
+            Marcar como falso positivo
+          </span>
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <div class="flex justify-end mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <button 
+        type="button" 
+        mat-stroked-button 
+        (click)="onCancel()" 
+        class="mr-3"
+        i18n="@@common.actions.cancel">
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        mat-flat-button 
+        color="primary" 
+        [disabled]="resolveForm.invalid"
+        i18n="@@resolve.alert.dialog.confirm">
+        Resolver Alerta
+      </button>
+    </div>
+  </form>
+</div>
