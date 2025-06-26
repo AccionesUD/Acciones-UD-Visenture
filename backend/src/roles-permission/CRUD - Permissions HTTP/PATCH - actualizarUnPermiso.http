@@ -1,0 +1,19 @@
+PATCH /api/roles/permissions/2 HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA4ODAzMTEsImV4cCI6MTc1MDg4MzkxMX0.hlOlHxZvDnnlkEH6gBnOagaZ7bNjhX2Q1NxStH_S8SU
+Host: localhost:3000
+Content-Length: 59
+
+PATCH /api/roles/permissions/{id} HTTP/1.1
+
+{
+  "description": "Nueva descripción para el permiso 2"
+}
+// Response 200
+HTTP/1.1 200 OK
+
+{
+	"id": 2,
+	"description": "Nueva descripción para el permiso 2"
+}
