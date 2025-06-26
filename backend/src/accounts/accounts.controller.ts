@@ -28,18 +28,18 @@ export class AccountsController {
 
     @Post('/funding')
     async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
-        return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.userId)
+        return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.sub)
     }
 
     @Get('/balance')
     async getBalanceAccount(@Req() req){
-        return this.accountsService.getBalanceAccount(req.user.userId)
+        return this.accountsService.getBalanceAccount(req.user.sub)
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Get('/orders')
     async getOrdersAccount(@Req() req){
-        return this.accountsService.getOrdersAccount(req.user.userId)
+        return this.accountsService.getOrdersAccount(req.user.sub)
     }
 
     // Endpoint de prueba solo para administradores

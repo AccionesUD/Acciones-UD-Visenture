@@ -29,7 +29,7 @@ export class AccountsService {
     private hashingProvider: HashingProvider,
     @Inject(forwardRef(() => AlpacaBrokerService))
     private alpacaBrokerService: AlpacaBrokerService,
-    private readonly notificationSettingsService: NotificationSettingsService,,
+    private readonly notificationSettingsService: NotificationSettingsService,
     private transactionService: TransactionsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService
