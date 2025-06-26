@@ -4,27 +4,17 @@ import { IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Validate
 import { Type } from "class-transformer"
 import { statusTransaction } from "../enums/status-transaction.enum"
 
-export class CreateTransactionDto{
-    @IsNotEmpty()
-    @Type(() => Account)
-    account: Account
-
-    @IsNotEmpty()
-    value_transaction: number
-
-    @IsEnum(typeTransaction)
-    @IsNotEmpty()
-    type_transaction: typeTransaction
-
+export class UpdateTransactionDto{
+    
     @IsEnum(statusTransaction)
     @IsOptional()
-    status: statusTransaction
+    status?
 
     @IsString()
     @IsOptional()
     operation_id?: string
 
-    constructor(partial?: Partial<CreateTransactionDto>) {
+    constructor(partial?: Partial<UpdateTransactionDto>) {
         Object.assign(this, partial);
     }
 }

@@ -7,7 +7,7 @@ import { CreateAccountDto } from "src/accounts/dtos/create-account.dto";
 @Entity()
 export class Transaction {
     @PrimaryGeneratedColumn()
-    id_transaction: number
+    id: string
 
     @Column({ type: "varchar", length: 30 })
     type_transaction: typeTransaction

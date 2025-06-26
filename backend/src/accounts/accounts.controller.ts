@@ -1,22 +1,48 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   NotFoundException,
   Param,
   Patch,
+  Post,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { MakeFundignAccountDto } from './dtos/make-funding-account.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
 import { RolesGuard } from 'src/roles-permission/roles.guard';
 import { AccountsService } from './services/accounts.service';
 
+
+
+@UseGuards(JwtAuthGuard)
 @Controller('accounts')
 export class AccountsController {
-  constructor(private readonly accountsService: AccountsService) {}
-  // Endpoint de prueba solo para administradores
+    constructor(
+        private readonly accountsService: AccountsService
+    ) { }
+
+    @Post('/funding')
+    async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
+        return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.userId)
+    }
+
+    @Get('/balance')
+    async getBalanceAccount(@Req() req){
+        return this.accountsService.getBalanceAccount(req.user.userId)
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get('/orders')
+    async getOrdersAccount(@Req() req){
+        return this.accountsService.getOrdersAccount(req.user.userId)
+    }
+
+    // Endpoint de prueba solo para administradores
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'comisionista')
   @Get('admin-only')

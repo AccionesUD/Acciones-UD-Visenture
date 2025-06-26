@@ -18,12 +18,13 @@ import { TransactionsModule } from 'src/transactions/transactions.module';
     forwardRef(() => AccountsModule),
     forwardRef(() => TransactionsModule),
     ConfigModule,
+    TransactionsModule,
     HttpModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         baseURL: configService.get('ALPACA_BROKER_BASE_URL'),
-        timeout: configService.get(''),
+        timeout: configService.get('TIMEOUT'),
         headers: {
           Authorization: `Basic ${configService.get('ALPACA_BROKER_CREDENTIAL_BASE64')}`,
         },
