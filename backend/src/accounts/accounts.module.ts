@@ -6,11 +6,13 @@ import { Account } from './entities/account.entity';
 import { AccountsService } from './services/accounts.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
+import { TransactionsModule } from 'src/transactions/transactions.module';
+import { OrdersModule } from 'src/orders/orders.module';
 
 @Module({
   controllers: [AccountsController],
   providers: [AccountsService],
-  imports: [AuthModule, forwardRef(() => AlpacaBrokerModule),  
+  imports: [forwardRef(() => OrdersModule), TransactionsModule, AuthModule, forwardRef(() => AlpacaBrokerModule),  
     TypeOrmModule.forFeature([User, Account])],
   exports: [AccountsService],
 })

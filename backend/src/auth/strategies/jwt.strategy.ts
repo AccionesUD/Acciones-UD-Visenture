@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // Convierte los roles a un array de strings (nombres)
     const roles = user?.roles?.map((r) => r.name) || [];
     return {
-      userId: user?.identity_document,
+      userId: user?.account.id,
       email: user?.account?.email,
       roles, // <-- solo los nombres
     };

@@ -7,7 +7,6 @@ import { ValidateDataAccountProvider } from './services/validate_data_account.pr
 import { FundCapitalAccount } from './services/fund_capital_account.provide';
 import { TransactionsModule } from 'src/transactions/transactions.module';
 
-
 @Module({
   exports: [AlpacaBrokerService, ValidateDataAccountProvider],
   providers: [
@@ -18,12 +17,13 @@ import { TransactionsModule } from 'src/transactions/transactions.module';
   imports: [
     forwardRef(() => AccountsModule),
     ConfigModule,
+    TransactionsModule,
     HttpModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         baseURL: configService.get('ALPACA_BROKER_BASE_URL'),
-        timeout: configService.get(''),
+        timeout: configService.get('TIMEOUT'),
         headers: {
           Authorization: `Basic ${configService.get('ALPACA_BROKER_CREDENTIAL_BASE64')}`,
         },

@@ -3,6 +3,7 @@ import { Account } from '../entities/account.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAccountDto } from '../dtos/create-account.dto';
 import {
+  BadRequestException,
   forwardRef,
   HttpException,
   HttpStatus,
@@ -13,6 +14,8 @@ import {
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 import { MakeFundignAccountDto } from '../dtos/make-funding-account.dto';
 import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
+import { TransactionsService } from 'src/transactions/services/transaction.service';
+import { OrdersService } from 'src/orders/providers/orders.service';
 
 export class AccountsService {
   constructor(
@@ -20,7 +23,10 @@ export class AccountsService {
     private accountRepository: Repository<Account>,
     private hashingProvider: HashingProvider,
     @Inject(forwardRef(() => AlpacaBrokerService))
-    private alpacaBrokerService: AlpacaBrokerService
+    private alpacaBrokerService: AlpacaBrokerService,
+    private transactionService: TransactionsService,
+    @Inject(forwardRef(() => OrdersService))
+    private ordersService: OrdersService
   ) { }
 
   async createAccount(createAccountDto: CreateAccountDto) {
@@ -41,8 +47,25 @@ export class AccountsService {
 
   }
 
-  async fundingAccount(makeFundignAccountDto: MakeFundignAccountDto) { 
+  async fundingAccount(makeFundignAccountDto: MakeFundignAccountDto, idAccount: number) { 
+    makeFundignAccountDto = {
+      ...makeFundignAccountDto,
+      idAccount: idAccount
+    }
     return this.alpacaBrokerService.makeFundignAccount(makeFundignAccountDto)
+  }
+
+  async getBalanceAccount(accountId: number){
+    return this.transactionService.calculateCurrentBalance(accountId)
+  }
+
+  async getOrdersAccount(accountId: number){
+    const account = await this.accountRepository.findOneBy({id: accountId})
+    if (!account){
+      throw new BadRequestException('El usuario no existe')
+    }
+    return this.ordersService.listOrderAccount(account)
+    
   }
 
 

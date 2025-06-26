@@ -19,6 +19,9 @@ import { SharesModule } from './shares/shares.module';
 import { TransactionsModule } from './transactions/transactions.module'
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
+import { AlpacaMarketService } from './alpaca_market/services/alpaca_market.service';
+import { AlpacaMarketModule } from './alpaca_market/alpaca_market.module';
+import { EventsAlpacaModule } from './events-alpaca/events-alpaca.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,6 +57,8 @@ import { RolesPermissionModule } from './roles-permission/roles-permission.modul
     StocksModule,
     TransactionsModule,
     RolesPermissionModule,
+    AlpacaMarketModule,
+    EventsAlpacaModule
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],

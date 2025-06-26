@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, BadRequestException, forwardRef, Inject } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
@@ -7,8 +7,13 @@ import { OrderDto } from '../dto/order.dto';
 import { FactoryOrder } from './factory-order.provider';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { plainToInstance } from 'class-transformer';
-import { LimitOrderDto, MarketOrdeDto, StopOrderDto } from '../dto/orderClean.dto';
 import { typeOrder } from '../enums/type-order.enum';
+import { SharesService } from 'src/shares/services/shares.service';
+import { Account } from 'src/accounts/entities/account.entity';
+import { Repository } from 'typeorm';
+import { Order } from '../entities/orders.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Commission } from '../entities/comissions.entity';
 
 
 @Injectable()
@@ -17,88 +22,33 @@ export class OrdersService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly factoryOrder: FactoryOrder,
-    private readonly accountsService: AccountsService
-  ) {}
+    @Inject(forwardRef(() => AccountsService))
+    private readonly accountsService: AccountsService,
+    private readonly sharesService: SharesService,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>
+  ) { }
 
 
-  async createOrder(orderDto: OrderDto, account_id: number){
-    orderDto.account = account_id
-    let orderCleanDto 
-    switch (orderDto.type) {
-      case (typeOrder.LIMIT):
-        orderCleanDto = plainToInstance(LimitOrderDto, orderDto, {excludeExtraneousValues: true})
-        break
-      case (typeOrder.MARKET):
-        orderCleanDto = plainToInstance(MarketOrdeDto, orderDto, {excludeExtraneousValues: true})
-        break
-      case (typeOrder.STOP):
-        orderCleanDto = plainToInstance(StopOrderDto, orderDto, {excludeExtraneousValues: true})
-        break
+  async createOrder(orderDto: OrderDto, account_id: number) {
+    const share =await this.sharesService.findOneBySymbol(orderDto.symbol)
+    const account = await this.accountsService.checkExistenceAccount(undefined, account_id)
+    if (!account){
+      throw new BadRequestException('Cuenta no encontrada')
     }
-   return this.factoryOrder.create(orderCleanDto)
-    
+    orderDto = {
+      ...orderDto,
+       account: account,
+       share: share
+    }
+    orderDto.account = account
+    return this.factoryOrder.create(orderDto)
   }
-
-  async placeSellOrder(
-    alpacaAccountId: string,
-    dto: SellOrderDto,
-  ): Promise<any> {
-    const url = `https://broker-api.sandbox.alpaca.markets/v1/trading/accounts/${alpacaAccountId}/orders`;
-    const headers = {
-      'APCA-API-KEY-ID': this.configService.get<string>(
-        'ALPACA_BROKER_API_KEY',
-      ),
-      'APCA-API-SECRET-KEY': this.configService.get<string>(
-        'ALPACA_BROKER_SECRE_KEY',
-      ),
-    };
-
-    const orderBody: Record<string, unknown> = {
-      symbol: dto.symbol,
-      qty: dto.quantity,
-      side: 'sell',
-      type: dto.type,
-      time_in_force: dto.time_in_force,
-    };
-
-    if (dto.limit_price !== undefined) orderBody.limit_price = dto.limit_price;
-    if (dto.stop_price !== undefined) orderBody.stop_price = dto.stop_price;
-
-    try {
-      const response$ = this.httpService.post<any, Record<string, unknown>>(
-        url,
-        orderBody,
-        { headers },
-      );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data } = await firstValueFrom(response$);
-      return data;
-    } catch (err: unknown) {
-      // Tipado seguro para errores de Axios
-      let errorData: unknown = 'Error placing sell order';
-      let statusCode: number = HttpStatus.BAD_REQUEST;
-
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'response' in err &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        typeof (err as any).response === 'object'
-      ) {
-        const response = (
-          err as { response: { data?: unknown; status?: number } }
-        ).response;
-        if ('data' in response) errorData = response.data ?? errorData;
-        if ('status' in response) statusCode = response.status ?? statusCode;
-      }
-
-      throw new HttpException(
-        typeof errorData === 'string' ||
-        (typeof errorData === 'object' && errorData !== null)
-          ? errorData
-          : String(errorData),
-        statusCode,
-      );
-    }
+  async listOrderAccount(account: Account){
+    const orders = await this.orderRepository.find({
+      where: {account: {id: account.id}},
+      relations: ['commissions']
+    })
+    return orders
   }
 }
