@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 import { Share, CreateShareDto } from '../models/share.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharesService {
-  private apiUrl = `${environment.apiUrl}/shares`;
+  private apiUrl = `${environmentExample.apiUrl}/shares`;
 
   constructor(private http: HttpClient) { }
   /**

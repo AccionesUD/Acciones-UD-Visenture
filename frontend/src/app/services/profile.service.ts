@@ -4,13 +4,13 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
   
   // BehaviorSubject para mantener el perfil del usuario actual
   private userProfileSubject = new BehaviorSubject<User | null>(null);

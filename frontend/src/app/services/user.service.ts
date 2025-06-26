@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, delay, map } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } from '../models/user.model';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } fr
 })
 
 export class UsersService {
-  private apiUrl = environment.apiUrl || 'http://localhost:3000/api';
+  private apiUrl = environmentExample.apiUrl || 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -161,6 +161,11 @@ export class UsersService {
     // return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/admin/users/${userId}/role`, { role });
 
     return this.updateUser(userId, { role });
+  }
+  getUserRole(userId: number): Observable<User['role'] | undefined> {
+    return this.getUserById(userId).pipe(
+      map(response => response.data?.role)
+    );
   }
 
   /**

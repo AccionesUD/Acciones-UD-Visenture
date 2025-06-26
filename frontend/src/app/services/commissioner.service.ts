@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 import { 
   CommissionerClient, 
   ClientKpi, 
@@ -16,7 +16,7 @@ import {
   providedIn: 'root'
 })
 export class CommissionerService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
 
   constructor(private http: HttpClient) { }
 
