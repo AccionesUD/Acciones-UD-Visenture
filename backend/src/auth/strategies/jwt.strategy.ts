@@ -3,13 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { UsersService } from 'src/users/services/users.service'; // Ajusta la ruta según tu proyecto
+import { AccountsService } from 'src/accounts/services/accounts.service';
+import { JwtPayloadUser } from '../interfaces/jwt-payload-user.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly accountsService: AccountsService,
   ) {
     const jwtSecret = configService.get<string>('JWT_SECRET');
     if (!jwtSecret) {
@@ -22,15 +23,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
-    // Busca el usuario con la relación 'roles'
-    const user = await this.usersService.findById(payload.sub);
-    // Convierte los roles a un array de strings (nombres)
-    const roles = user?.roles?.map((r) => r.name) || [];
-    return {
-      userId: user?.account.id,
-      email: user?.account?.email,
-      roles, // <-- solo los nombres
-    };
+  // src/auth/strategies/jwt.strategy.ts
+
+  validate(payload: JwtPayloadUser): JwtPayloadUser {
+    console.log('Payload recibido en validate:', payload);
+    return { ...payload };
   }
 }

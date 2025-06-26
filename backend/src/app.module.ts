@@ -16,12 +16,18 @@ import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
 import { OrdersModule } from './orders/orders.module';
 import { SharesModule } from './shares/shares.module';
-import { TransactionsModule } from './transactions/transactions.module'
+import { TransactionsModule } from './transactions/transactions.module';
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
 import { AlpacaMarketService } from './alpaca_market/services/alpaca_market.service';
 import { AlpacaMarketModule } from './alpaca_market/alpaca_market.module';
 import { EventsAlpacaModule } from './events-alpaca/events-alpaca.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AdvisorModule } from './advisor/advisor.module';
+import { PremiumModule } from './premium/premium.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PaymentsModule } from './payments/payments.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -59,6 +65,11 @@ import { EventsAlpacaModule } from './events-alpaca/events-alpaca.module';
     RolesPermissionModule,
     AlpacaMarketModule,
     EventsAlpacaModule
+    NotificationsModule,
+    AdvisorModule,
+    PremiumModule,
+    SubscriptionsModule,
+    PaymentsModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],

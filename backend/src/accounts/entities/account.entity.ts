@@ -1,14 +1,21 @@
 // account.entity.ts
 import { User } from 'src/users/users.entity';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Role } from 'src/roles-permission/entities/role.entity';
+import { NotificationSettings } from 'src/notifications/entities/notifications-settings.entity';
 
 @Entity()
 export class Account {
@@ -43,4 +50,18 @@ export class Account {
     referencedColumnName: 'identity_document',
   })
   user: User;
+
+  @ManyToMany(() => Role, (role) => role.accounts, { cascade: true })
+  @JoinTable()
+  roles: Role[];
+
+  @OneToOne(() => NotificationSettings, settings => settings.account, { 
+    cascade: true,
+    eager: true // Cargar siempre con la cuenta
+  })
+  notificationSettings: NotificationSettings;
+
+  // Relación uno-a-muchos con Subscription
+  @OneToMany(() => Subscription, (subscription) => subscription.account)
+  subscriptions: Subscription[];
 }

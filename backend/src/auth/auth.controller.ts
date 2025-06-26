@@ -8,20 +8,22 @@ import {
   Patch,
   UseGuards,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CompleteLoginDto } from './dto/complete-login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ValidateTokenDto } from './dto/validate-token.dto'; // Asegúrate de que este DTO esté definido
+import { ValidateTokenDto } from './dto/validate-token.dto';
 import { UsersService } from '../users/services/users.service';
 import { MailService } from 'src/mail/mail.service';
 import { ApiOperation } from '@nestjs/swagger';
-import { ResetPasswordDto } from './dto/reset-password.dto'; // Añadir esta línea
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AccountsService } from 'src/accounts/services/accounts.service';
 import { ResendToken2fmadDto } from './dto/resend-token2mfa';
 import { ChangePasswordDto } from 'src/users/dtos/change-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtPayloadUser } from './interfaces/jwt-payload-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -75,10 +77,14 @@ export class AuthController {
   @Patch('perfil/password')
   @UseGuards(JwtAuthGuard)
   async changePassword(
-    @Req() req: import('express').Request & { user?: { userId: string } },
+    @Req() req: Request & { user: JwtPayloadUser },
     @Body() body: ChangePasswordDto,
   ): Promise<{ message: string }> {
-    const user = req.user as { userId: string };
-    return await this.authService.changePassword(user.userId, body);
+    console.log('req.user recibido:', req.user);
+    const { userId } = req.user;
+    if (!userId) {
+      throw new BadRequestException('No se pudo obtener el userId del token');
+    }
+    return await this.authService.changePassword(userId, body);
   }
 }

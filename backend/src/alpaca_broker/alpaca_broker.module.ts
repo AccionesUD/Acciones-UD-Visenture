@@ -16,6 +16,7 @@ import { TransactionsModule } from 'src/transactions/transactions.module';
   ],
   imports: [
     forwardRef(() => AccountsModule),
+    forwardRef(() => TransactionsModule),
     ConfigModule,
     TransactionsModule,
     HttpModule.registerAsync({

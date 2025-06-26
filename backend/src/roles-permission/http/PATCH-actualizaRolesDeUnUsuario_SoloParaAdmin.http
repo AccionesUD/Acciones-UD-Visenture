@@ -1,0 +1,18 @@
+#Endpoint para actualizar el rol de un usuario (solo para admins) se debe pasar el ID account en la URL
+// Este endpoint permite a un administrador actualizar los roles de un usuario específico.
+PUT http://localhost:3000/api/accounts/3/roles
+Authorization: Bearer <token_de_usuario_admin>
+Content-Type: application/json
+Body:
+{
+  "roleIds": [2, 3]
+}
+
+Response:
+{
+	"message": "Rol actualizado",
+	"roles": [
+		"comisionista",
+		"admin"
+	]
+}
