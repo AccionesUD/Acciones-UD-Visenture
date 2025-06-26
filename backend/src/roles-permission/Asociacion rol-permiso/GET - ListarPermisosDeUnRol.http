@@ -1,0 +1,48 @@
+GET /api/roles/2/permissions HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA4ODM5ODgsImV4cCI6MTc1MDg4NzU4OH0.4OHfK1yaZwl_ZzyUkP2DfOdPFAv0OLKBl5r_XqH2SEw
+Host: localhost:3000
+
+GET /api/roles/{:id}/permissions HTTP/1.1
+
+// Response:
+HTTP/1.1 200 OK
+
+[
+	{
+		"id": 4,
+		"name": "view_own_orders"
+	},
+	{
+		"id": 5,
+		"name": "enqueue_off_hours_order"
+	},
+	{
+		"id": 7,
+		"name": "view_assigned_portfolio"
+	},
+	{
+		"id": 8,
+		"name": "manage_profile"
+	},
+	{
+		"id": 9,
+		"name": "manage_notification_preferences"
+	},
+	{
+		"id": 13,
+		"name": "manage_users"
+	},
+	{
+		"id": 17,
+		"name": "view_reports"
+	},
+	{
+		"id": 22,
+		"name": "view_market_data"
+	},
+	{
+		"id": 24,
+		"name": "create_order"
+	}
+]
