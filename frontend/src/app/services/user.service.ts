@@ -34,7 +34,14 @@ export class UsersService {
     const response = this.generateMockUsers(filters ? { ...filters } : {});
     return of(response).pipe(delay(500)); // Añadimos un delay para simular latencia
   }
-  
+  /**
+   * Obtiene el usuario actual
+   */
+  getCurrentUser(): Observable<User>{
+    // Mock para desarrollo: devuelve el primer usuario como usuario actual
+    const currentUser = this.mockUsers[0];
+    return of(currentUser).pipe(delay(300));
+  }
   /**
    * Obtiene un usuario por su ID
    */
@@ -162,9 +169,13 @@ export class UsersService {
 
     return this.updateUser(userId, { role });
   }
-  getUserRole(userId: number): Observable<User['role'] | undefined> {
-    return this.getUserById(userId).pipe(
-      map(response => response.data?.role)
+  getUserRole(): Observable<User['role'] | undefined> {
+    //usuario produccion
+    //return this.http.get<User>(`/api/user/me`).pipe(map(user => user.role));
+
+    //usuario mock
+    return this.getCurrentUser().pipe(
+      map(user => user.role)
     );
   }
 

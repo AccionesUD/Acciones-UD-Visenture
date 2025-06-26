@@ -96,9 +96,10 @@
     </div><!-- Contenido de las pestañas -->
     <div class="tab-content">      
       <!-- Panel 1: Alertas de Precio -->
-      <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 0}">
+      <div class="tab-panel" *ngIf="userRole === 'premium'" [ngClass]="{'active': activeTabIndex === 0}">
         <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.alerts.config_title">Configuración de alertas</h3>
         <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.alerts.description">
+
           Las alertas te notificarán cuando una acción alcance el precio que hayas establecido.
         </p>
 
