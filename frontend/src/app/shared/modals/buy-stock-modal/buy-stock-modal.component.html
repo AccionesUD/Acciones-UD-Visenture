@@ -1,8 +1,8 @@
 <div class="buy-stock-modal p-6 max-w-lg bg-white dark:bg-slate-800 rounded-xl max-h-[90vh] flex flex-col">
   <!-- Encabezado fijo -->
   <div class="flex justify-between items-center mb-6 flex-shrink-0">
-    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Comprar acciones</h2>
-    <button mat-icon-button (click)="cancel()" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
+    <h2 i18n="buyStockModal|Modal title" class="text-xl font-bold text-gray-900 dark:text-gray-100">Comprar acciones</h2>
+    <button mat-icon-button (click)="cancel()" i18n-aria-label="buyStockModal|Close modal button" aria-label="Cerrar modal" class="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -50,20 +50,29 @@
         
         <!-- Precio actual -->
         <div class="ml-auto text-right">
-          <div class="text-sm text-gray-600 dark:text-gray-400">Precio actual</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.current.price">Precio actual</div>
           <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
         </div>
       </div>
       
       <div class="mt-4 bg-white dark:bg-slate-800 p-2 rounded border border-gray-200 dark:border-slate-600">
         <div class="flex justify-between text-sm">
-          <span class="text-gray-700 dark:text-gray-300">Máximo que puede comprar:</span>
-          <span class="font-bold text-gray-900 dark:text-white">{{ maxQuantity }} acciones</span>
+          <span i18n="buyStockModal|Maximum purchasable label" class="text-gray-700 dark:text-gray-300">Máximo que puede comprar:</span>
+          <ng-container i18n="buyStockModal|Maximum shares count">{maxQuantity, plural, =1 {1 acción} other {{{maxQuantity}} acciones}}</ng-container>
         </div>
         <div class="flex justify-between text-sm mt-1">
-          <span class="text-gray-700 dark:text-gray-300">Saldo disponible estimado:</span>
+          <span i18n="buyStockModal|Available balance label" class="text-gray-700 dark:text-gray-300">Saldo disponible estimado:</span>
           <span class="font-bold text-blue-600 dark:text-blue-400">{{ (maxQuantity * data.price!) | currency:'COP':'symbol':'1.0-0' }}</span>
         </div>
+      </div>
+    </div>
+
+    <!-- Indicador de orden para cliente (si aplica) -->
+    <div *ngIf="data.clientId" class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-6 flex items-center">
+      <mat-icon class="text-amber-600 dark:text-amber-400 mr-2">supervisor_account</mat-icon>
+      <div>
+        <p i18n="buyStockModal|Client order title" class="text-sm font-medium text-amber-800 dark:text-amber-300">Orden para cliente</p>
+        <p i18n="buyStockModal|Client order description" class="text-xs text-amber-700 dark:text-amber-400">Esta orden será realizada en nombre de un cliente.</p>
       </div>
     </div>
 
@@ -91,7 +100,7 @@
     <form [formGroup]="buyForm" (ngSubmit)="submitBuyOrder()" *ngIf="!operationResult">
       <!-- Cantidad de acciones -->
       <div class="mb-4">
-        <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cantidad a comprar</label>
+        <label i18n="buyStockModal|Quantity label" for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cantidad a comprar</label>
         <div class="flex items-center">
           <input 
             type="number" 
@@ -106,20 +115,22 @@
           >
         </div>
         <div class="flex justify-between mt-2">
-          <span class="text-xs text-gray-500 dark:text-gray-400">Min: 1</span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">Max: {{ maxQuantity }}</span>
+          <span i18n="buyStockModal|Minimum quantity" class="text-xs text-gray-500 dark:text-gray-400">Min: 1</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">
+            <ng-container i18n="buyStockModal|Maximum quantity label">Max: {{maxQuantity}}</ng-container>
+          </span>
         </div>
         <!-- Mensajes de validación -->
         <div *ngIf="buyForm.get('quantity')?.invalid && (buyForm.get('quantity')?.dirty || buyForm.get('quantity')?.touched)" class="text-red-600 dark:text-red-400 text-sm mt-1">
-          <span *ngIf="buyForm.get('quantity')?.hasError('required')">La cantidad es requerida</span>
-          <span *ngIf="buyForm.get('quantity')?.hasError('min')">La cantidad debe ser al menos 1</span>
-          <span *ngIf="buyForm.get('quantity')?.hasError('max')">No tiene suficiente saldo para esta cantidad</span>
+          <span *ngIf="buyForm.get('quantity')?.hasError('required')" i18n="buyStockModal|Quantity required error">La cantidad es requerida</span>
+          <span *ngIf="buyForm.get('quantity')?.hasError('min')" i18n="buyStockModal|Quantity min error">La cantidad debe ser al menos 1</span>
+          <span *ngIf="buyForm.get('quantity')?.hasError('max')" i18n="buyStockModal|Quantity max error">No tiene suficiente saldo para esta cantidad</span>
         </div>
       </div>
 
       <!-- Tipo de orden -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de orden</label>
+        <label i18n="buyStockModal|Order type label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de orden</label>
         <div class="grid grid-cols-2 gap-3">
           <div *ngFor="let type of buyOrderTypes" class="relative">
             <input 
@@ -141,7 +152,7 @@
 
       <!-- Precio límite (solo visible para órdenes específicas) -->
       <div *ngIf="buyForm.get('orderType')?.value !== 'market'" class="mb-4">
-        <label for="limitPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio límite</label>
+        <label i18n="buyStockModal|Limit price label" for="limitPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio límite</label>
         <input 
           type="number" 
           id="limitPrice"
@@ -152,19 +163,19 @@
                      'border-gray-300 dark:border-gray-600': !buyForm.get('limitPrice')?.invalid || !buyForm.get('limitPrice')?.touched}"
         >
         <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-          <span *ngIf="buyForm.get('orderType')?.value === 'limit'">Precio sugerido: más bajo que el mercado</span>
-          <span *ngIf="buyForm.get('orderType')?.value === 'stop-loss'">Precio sugerido: más alto que el mercado</span>
+          <span *ngIf="buyForm.get('orderType')?.value === 'limit'" i18n="buyStockModal|Limit price suggestion">Precio sugerido: más bajo que el mercado</span>
+          <span *ngIf="buyForm.get('orderType')?.value === 'stop-loss'" i18n="buyStockModal|Stop loss price suggestion">Precio sugerido: más alto que el mercado</span>
         </div>
         <!-- Mensajes de validación -->
         <div *ngIf="buyForm.get('limitPrice')?.invalid && (buyForm.get('limitPrice')?.dirty || buyForm.get('limitPrice')?.touched)" class="text-red-600 dark:text-red-400 text-sm mt-1">
-          <span *ngIf="buyForm.get('limitPrice')?.hasError('required')">El precio límite es requerido</span>
-          <span *ngIf="buyForm.get('limitPrice')?.hasError('min')">El precio límite debe ser mayor a 0</span>
+          <span *ngIf="buyForm.get('limitPrice')?.hasError('required')" i18n="buyStockModal|Limit price required error">El precio límite es requerido</span>
+          <span *ngIf="buyForm.get('limitPrice')?.hasError('min')" i18n="buyStockModal|Limit price min error">El precio límite debe ser mayor a 0</span>
         </div>
       </div>
 
       <!-- Tiempo de vigencia de la orden -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vigencia</label>
+        <label i18n="buyStockModal|Time in force label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vigencia</label>
         <select
           formControlName="timeInForce"
           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-800 dark:text-white bg-white dark:bg-slate-700 focus:ring-blue-500 focus:border-blue-500">
@@ -182,7 +193,7 @@
           formControlName="extendedHours"
           class="h-4 w-4 text-blue-600 rounded border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700"
         >
-        <label for="extendedHours" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+        <label i18n="buyStockModal|Extended hours label" for="extendedHours" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
           Permitir ejecución fuera de horario regular
         </label>
       </div>
@@ -294,7 +305,7 @@
         <div *ngIf="operationResult.status === 'completed'" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
           <div class="flex items-center mb-2">
             <mat-icon class="mr-2 text-blue-500">info</mat-icon>
-            <span class="text-blue-800 dark:text-blue-200 font-medium">Información importante</span>
+            <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="@@buyStockModal.important.information">Información importante</span>
           </div>
           <p class="text-sm text-blue-700 dark:text-blue-300">
             Las acciones compradas ({{ operationResult.filledQuantity || 0 }}) ya han sido acreditadas en su portafolio.

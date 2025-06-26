@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -17,7 +18,9 @@ import { Stock, StockInitResponse } from '../../models/stock.model';
 import { StocksService } from '../../services/stocks.service';
 import { AlpacaDataService } from '../../services/alpaca-data.service';
 import { SharesService } from '../../services/shares.service';
+import { AuthStateService } from '../../services/auth-state.service';
 import { CreateShareDto } from '../../models/share.model';
+import { EditOpeningTimeDialogComponent } from '../edit-opening-time-dialog/edit-opening-time-dialog.component';
 
 interface ShareCreationResult {
   success: boolean;
@@ -36,7 +39,8 @@ interface ShareCreationResult {
     MatIconModule,
     MatBadgeModule,
     MatTooltipModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDialogModule
   ],
   templateUrl: './markets.component.html',
   styleUrls: ['./markets.component.css']
@@ -62,8 +66,10 @@ export class MarketsComponent implements OnInit, OnDestroy {
     private stocksService: StocksService,
     private sharesService: SharesService,
     private alpacaService: AlpacaDataService,
+    private authStateService: AuthStateService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog // Inyectar el servicio de diálogo
   ) { }
 
   ngOnInit(): void {
@@ -74,6 +80,31 @@ export class MarketsComponent implements OnInit, OnDestroy {
     interval(60000)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.updateStockStatus());
+      
+    // Cargar horarios personalizados desde localStorage si existen
+    this.loadCustomOpeningTimesFromStorage();
+  }
+  
+  /**
+   * Carga los horarios personalizados desde localStorage al iniciar el componente
+   */
+  private loadCustomOpeningTimesFromStorage(): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const customTimesKey = 'custom_opening_times';
+        const storedTimes = JSON.parse(localStorage.getItem(customTimesKey) || '{}');
+        
+        // Aplicar los horarios personalizados a los stocks cargados
+        Object.entries(storedTimes).forEach(([mic, time]) => {
+          const index = this.stocks.findIndex(s => s.mic === mic);
+          if (index !== -1) {
+            this.stocks[index].custom_opening_time = time as string;
+          }
+        });
+      } catch (error) {
+        console.error('Error al cargar horarios personalizados:', error);
+      }
+    }
   }
   
   ngOnDestroy(): void {
@@ -97,6 +128,9 @@ export class MarketsComponent implements OnInit, OnDestroy {
         
         // Actualizar estado de mercados desde Alpaca inmediatamente
         this.updateStockStatus();
+        
+        // Cargar horarios personalizados
+        this.loadCustomOpeningTimesFromStorage();
         
         // Verificar si están inicializados
         if (this.stocksService.areMarketsInitialized()) {
@@ -303,5 +337,73 @@ export class MarketsComponent implements OnInit, OnDestroy {
     const closeTimeInMinutes = closeHour * 60 + closeMinute;
     
     return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
+  }
+  
+  /**
+   * Verifica si el usuario actual es administrador
+   */
+  isAdmin(): boolean {
+    return this.authStateService.isAdmin();
+  }
+  
+  /**
+   * Abre el diálogo para editar la hora de apertura personalizada
+   */
+  openEditOpeningTimeDialog(stock: Stock, event: Event): void {
+    event.stopPropagation(); // Evitar navegación al detalle del mercado
+    
+    // Obtenemos el horario personalizado actual (si existe)
+    const customOpeningTime = this.stocksService.getCustomOpeningTime(stock.mic);
+    
+    const dialogRef = this.dialog.open(EditOpeningTimeDialogComponent, {
+      width: '450px',
+      data: { market: stock, customOpeningTime }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      // Si el resultado es null, el usuario canceló la operación
+      if (result) {
+        this.updateCustomOpeningTime(stock, result);
+      }
+    });
+  }
+  
+  /**
+   * Actualiza el horario personalizado en el servicio
+   */
+  updateCustomOpeningTime(stock: Stock, customTime: string): void {
+    this.stocksService.updateCustomOpeningTime(stock.mic, customTime).subscribe({
+      next: (updatedStock) => {
+        console.log('Horario de apertura actualizado:', updatedStock);
+        
+        // Actualizamos el stock en la lista local
+        const index = this.stocks.findIndex(s => s.mic === stock.mic);
+        if (index !== -1) {
+          this.stocks[index] = updatedStock;
+        }
+        
+        // Notificación de éxito
+        this.snackBar.open(`Horario de apertura de ${stock.name_market} actualizado a ${customTime}`, 'Cerrar', {
+          duration: 3000
+        });
+      },
+      error: (err) => {
+        console.error('Error al actualizar horario de apertura:', err);
+        
+        // Notificación de error
+        this.snackBar.open('Error al actualizar el horario de apertura', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+  
+  /**
+   * Muestra el horario de apertura adecuado (personalizado si existe, oficial si no)
+   */
+  getDisplayOpeningTime(stock: Stock): string {
+    const customTime = stock.custom_opening_time;
+    return customTime || stock.opening_time;
   }
 }

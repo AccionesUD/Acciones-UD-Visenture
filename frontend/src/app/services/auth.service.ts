@@ -361,4 +361,13 @@ export class AuthService {
       this.tokenExpirationTimer = null;
     }
   }
+  
+  /**
+   * Verifica si el usuario actual tiene el rol de comisionista
+   * @returns true si el usuario es comisionista, false en caso contrario
+   */
+  public isCommissioner(): boolean {
+    const user = this.currentUserSubject.value;
+    return !!user && user.role === 'commissioner';
+  }
 }

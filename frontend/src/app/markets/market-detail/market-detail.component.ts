@@ -23,6 +23,8 @@ import { takeUntil, map } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
 import { BuyStockModalComponent } from '../../shared/modals/buy-stock-modal/buy-stock-modal.component';
 import { SnapshotModalComponent, SnapshotData } from '../../shared/modals/snapshot-modal/snapshot-modal.component';
+import { OrderTypeSelectionDialogComponent } from '../../shared/modals/order-type-selection-dialog/order-type-selection-dialog.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-market-detail',
@@ -75,7 +77,8 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
     private alpacaService: AlpacaDataService,
     private portfolioService: PortfolioService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) { }
     ngOnInit(): void {
     // Ya no comprobamos la inicialización, sino que confiamos en que el servicio lo manejará
@@ -284,6 +287,10 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
       this.snackBar.open('Símbolo de acción inválido.', 'Cerrar', { duration: 3000 });
       return;
     }
+
+    // Verificar si el usuario es un comisionista
+    const isCommissioner = this.authService.isCommissioner();
+
     this.alpacaService.getSymbolSnapshot(symbol).subscribe({
       next: snapshot => {
         const price = snapshot.latestTrade?.price ?? 0;
@@ -298,24 +305,64 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
           current_price: price
         };
         
-        const dialogRef = this.dialog.open(BuyStockModalComponent, {
-          width: '500px',
-          maxHeight: '90vh',
-          data: {
-            stock: stockForModal,
-            price: price,
-            maxQuantity: 1000
-          },
-          panelClass: 'custom-dialog-container',
-          autoFocus: false
-        });
-        
-        dialogRef.afterClosed().subscribe(result => {
-          if (result?.success) {
-            this.snackBar.open('Compra completada exitosamente.', 'Aceptar', { duration: 3000 });
-            // Opcional: recargar acciones o actualizar estado
-          }
-        });
+        // Si es comisionista, primero mostrar el diálogo de selección de tipo de orden
+        if (isCommissioner) {
+          const orderTypeDialogRef = this.dialog.open(OrderTypeSelectionDialogComponent, {
+            width: '500px',
+            data: {
+              shareSymbol: symbol,
+              orderType: 'buy'
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+          
+          orderTypeDialogRef.afterClosed().subscribe(orderTypeResult => {
+            if (!orderTypeResult) return; // El usuario canceló
+            
+            // Abrimos el modal de compra, pasando el clientId si es para un cliente
+            const dialogRef = this.dialog.open(BuyStockModalComponent, {
+              width: '500px',
+              maxHeight: '90vh',
+              data: {
+                stock: stockForModal,
+                price: price,
+                maxQuantity: 1000,
+                clientId: orderTypeResult.orderFor === 'client' ? orderTypeResult.clientId : undefined
+              },
+              panelClass: 'custom-dialog-container',
+              autoFocus: false
+            });
+            
+            dialogRef.afterClosed().subscribe(result => {
+              if (result?.success) {
+                const forClientText = orderTypeResult.orderFor === 'client' ? ' para el cliente' : '';
+                this.snackBar.open(`Compra completada exitosamente${forClientText}.`, 'Aceptar', { duration: 3000 });
+                // Opcional: recargar acciones o actualizar estado
+              }
+            });
+          });
+        } else {
+          // Usuario normal, abrir directamente el modal de compra
+          const dialogRef = this.dialog.open(BuyStockModalComponent, {
+            width: '500px',
+            maxHeight: '90vh',
+            data: {
+              stock: stockForModal,
+              price: price,
+              maxQuantity: 1000
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+          
+          dialogRef.afterClosed().subscribe(result => {
+            if (result?.success) {
+              this.snackBar.open('Compra completada exitosamente.', 'Aceptar', { duration: 3000 });
+              // Opcional: recargar acciones o actualizar estado
+            }
+          });
+        }
       },
       error: err => {
         console.error('Error al obtener snapshot para compra:', err);
@@ -395,6 +442,9 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
       return;
     }
     
+    // Verificar si el usuario es un comisionista
+    const isCommissioner = this.authService.isCommissioner();
+    
     this.alpacaService.getSymbolSnapshot(symbol).subscribe({
       next: snapshot => {
         const price = snapshot.latestTrade?.price ?? 0;
@@ -410,35 +460,86 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
           unitValue: price
         };
         
-        const dialogRef = this.dialog.open(SellStockModalComponent, {
-          width: '500px',
-          maxHeight: '90vh',
-          data: { 
-            stock: stockForModal, 
-            price: price 
-          },
-          panelClass: 'custom-dialog-container',
-          autoFocus: false
-        });
-        
-        dialogRef.afterClosed().subscribe(result => {
-          if (result && result.success) {
-            this.snackBar.open('Orden de venta procesada exitosamente.', 'Aceptar', { duration: 3000 });
+        // Si es comisionista, primero mostrar el diálogo de selección de tipo de orden
+        if (isCommissioner) {
+          const orderTypeDialogRef = this.dialog.open(OrderTypeSelectionDialogComponent, {
+            width: '500px',
+            data: {
+              shareSymbol: symbol,
+              orderType: 'sell'
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+          
+          orderTypeDialogRef.afterClosed().subscribe(orderTypeResult => {
+            if (!orderTypeResult) return; // El usuario canceló
             
-            // Opcional: mostrar un diálogo de confirmación más detallado
-            if (result.status === 'completed') {
-              this.dialog.open(AlertDialogComponent, {
-                width: '400px',
-                data: { 
-                  title: 'Venta completada',
-                  message: `Has vendido ${result.quantity} acciones de ${symbol} por un total de ${result.totalAmount.toFixed(2)} USD.`,
-                  icon: 'check_circle',
-                  confirmText: 'Aceptar'
+            // Abrimos el modal de venta, pasando el clientId si es para un cliente
+            const dialogRef = this.dialog.open(SellStockModalComponent, {
+              width: '500px',
+              maxHeight: '90vh',
+              data: { 
+                stock: stockForModal, 
+                price: price,
+                clientId: orderTypeResult.orderFor === 'client' ? orderTypeResult.clientId : undefined
+              },
+              panelClass: 'custom-dialog-container',
+              autoFocus: false
+            });
+            
+            dialogRef.afterClosed().subscribe(result => {
+              if (result && result.success) {
+                const forClientText = orderTypeResult.orderFor === 'client' ? ' para el cliente' : '';
+                this.snackBar.open(`Orden de venta procesada exitosamente${forClientText}.`, 'Aceptar', { duration: 3000 });
+                
+                // Opcional: mostrar un diálogo de confirmación más detallado
+                if (result.status === 'completed') {
+                  this.dialog.open(AlertDialogComponent, {
+                    width: '400px',
+                    data: { 
+                      title: 'Venta completada',
+                      message: `${orderTypeResult.orderFor === 'client' ? 'El cliente ha' : 'Has'} vendido ${result.quantity} acciones de ${symbol} por un total de ${result.totalAmount.toFixed(2)} USD.`,
+                      icon: 'check_circle',
+                      confirmText: 'Aceptar'
+                    }
+                  });
                 }
-              });
+              }
+            });
+          });
+        } else {
+          // Usuario normal, abrir directamente el modal de venta
+          const dialogRef = this.dialog.open(SellStockModalComponent, {
+            width: '500px',
+            maxHeight: '90vh',
+            data: { 
+              stock: stockForModal, 
+              price: price 
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+          
+          dialogRef.afterClosed().subscribe(result => {
+            if (result && result.success) {
+              this.snackBar.open('Orden de venta procesada exitosamente.', 'Aceptar', { duration: 3000 });
+              
+              // Opcional: mostrar un diálogo de confirmación más detallado
+              if (result.status === 'completed') {
+                this.dialog.open(AlertDialogComponent, {
+                  width: '400px',
+                  data: { 
+                    title: 'Venta completada',
+                    message: `Has vendido ${result.quantity} acciones de ${symbol} por un total de ${result.totalAmount.toFixed(2)} USD.`,
+                    icon: 'check_circle',
+                    confirmText: 'Aceptar'
+                  }
+                });
+              }
             }
-          }
-        });
+          });
+        }
       },
       error: err => {
         console.error('[MarketDetail] Error al obtener snapshot para venta:', err);
