@@ -1,0 +1,169 @@
+/* Estilos para el diálogo de detalle de usuario */
+:host {
+  display: block;
+}
+
+/* Estilos para la tarjeta principal */
+.min-w-\[800px\] {
+  min-width: 800px;
+}
+
+/* Mejoras responsivas para diferentes tamaños de pantalla */
+@media (max-width: 840px) {
+  .min-w-\[800px\] {
+    min-width: 90vw;
+  }
+}
+
+@media (max-width: 640px) {
+  .min-w-\[800px\] {
+    min-width: 95vw;
+    padding: 1rem !important;
+  }
+  
+  ::ng-deep .user-detail-dialog .grid.grid-cols-2 {
+    grid-template-columns: 1fr !important; /* Cambia a una sola columna */
+  }
+  
+  ::ng-deep .user-detail-dialog .flex.flex-col.md\:flex-row {
+    flex-direction: column !important; /* Apila elementos verticalmente */
+  }
+  
+  ::ng-deep .user-detail-dialog .ml-0.md\:ml-auto.text-right {
+    text-align: left !important;
+    margin-top: 1rem !important;
+  }
+}
+
+/* Estilo para eliminar scrollbar pero mantener funcionalidad */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dark .hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+::ng-deep .mat-icon {
+  color: #4b5563; /* gray-600 */  
+}
+
+/*
+ * Estilos para Material Tabs
+ * Se utilizan selectores más específicos basados en las clases MDC (Material Design Components)
+ * y se acotan con la clase '.user-detail-dialog' para evitar afectar otros diálogos.
+ */
+
+/* Borde inferior del encabezado de las pestañas */
+::ng-deep .user-detail-dialog .mat-mdc-tab-header {
+  border-bottom-color: #d1d5db; /* gray-300 */
+}
+
+::ng-deep .dark .user-detail-dialog .mat-mdc-tab-header {
+  border-bottom-color: #374151; /* gray-700 */
+}
+
+/* Color de texto para pestañas inactivas */
+::ng-deep .user-detail-dialog .mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
+  color: #6b7280; /* gray-500 */
+  font-weight: 500;
+}
+
+::ng-deep .dark .user-detail-dialog .mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label {
+  color: #9ca3af; /* gray-400 */
+}
+
+/* Color de texto para la pestaña activa - ¡IMPORTANTE! */
+/* Se usa !important para asegurar que sobreescriba los estilos del tema de Angular Material */
+::ng-deep .user-detail-dialog .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #059669 !important; /* emerald-600 */
+  font-weight: 600;
+}
+
+::ng-deep .dark .user-detail-dialog .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #10b981 !important; /* emerald-500 */
+}
+
+/* Indicador de la pestaña activa */
+::ng-deep .user-detail-dialog .mdc-tab-indicator__content--underline {
+  border-color: #059669 !important; /* emerald-600 */
+}
+
+::ng-deep .dark .user-detail-dialog .mdc-tab-indicator__content--underline {
+  border-color: #10b981 !important; /* emerald-500 */
+}
+
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important;
+}
+
+/*
+ * Estilos para Botones
+ * Se sobreescriben las clases de MDC directamente para mayor control.
+ */
+
+/* Botón de cerrar (stroked) */
+::ng-deep .user-detail-dialog .mdc-button--outlined .mdc-button__label {
+  color: #374151; /* gray-700 */
+}
+
+::ng-deep .user-detail-dialog .mdc-button--outlined {
+  border-color: #d1d5db; /* gray-300 */
+}
+
+::ng-deep .dark .user-detail-dialog .mdc-button--outlined .mdc-button__label {
+  color: #d1d5db; /* gray-300 */
+}
+
+::ng-deep .dark .user-detail-dialog .mdc-button--outlined {
+  border-color: #4b5563; /* gray-600 */
+}
+
+/*
+ * Estilos del Contenedor del Diálogo
+ */
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .user-detail-dialog .mdc-dialog__surface {
+  background-color: #f9fafb !important; /* gray-50 */
+  border-radius: 0.75rem !important; /* rounded-xl */
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+}
+
+::ng-deep .dark .user-detail-dialog .mdc-dialog__surface {
+  background-color: #1f2937 !important; /* gray-800 */
+}
+
+/* Mejoras responsivas */
+@media (max-width: 640px) {
+  ::ng-deep .mat-mdc-tab-header {
+    overflow-x: auto;
+  }
+  
+  ::ng-deep .mat-mdc-tab {
+    min-width: 100px;
+  }
+}
+
+/* Mejoras en la accesibilidad visual */
+::ng-deep .dark .text-gray-300,
+::ng-deep .dark .text-gray-400 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .dark .text-gray-200 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}

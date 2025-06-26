@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,17 +7,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
-import { PortfolioSummary, Stock } from '../models/portfolio.model';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { PortfolioSummary, Stock, PortfolioShare } from '../models/portfolio.model';
 import { SortOption, PerformanceFilterOption } from '../models/filters.model';
 import { PortfolioService } from '../services/portfolio.service';
 import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
-
+import { SellStockModalComponent } from '../shared/modals/sell-stock-modal/sell-stock-modal.component';
+import { AlertDialogComponent } from '../shared/modals/alert-dialog/alert-dialog.component';
+import { BuyStockModalComponent } from '../shared/modals/buy-stock-modal/buy-stock-modal.component';
 @Component({  
   selector: 'app-portfolio',
   templateUrl: './portfolio.component.html',
   styleUrls: ['./portfolio.component.css'],
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule, 
     RouterModule, 
     FormsModule, 
@@ -25,13 +29,17 @@ import { CustomPaginatorIntl } from '../shared/custom-paginator-intl';
     MatIconModule,
     MatProgressSpinnerModule,
     MatButtonModule,
-    MatPaginatorModule
-  ],  
+    MatPaginatorModule,
+    MatDialogModule,
+    MatTableModule,
+    MatSortModule
+  ],
   providers: [
     { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }
   ]
 })
-export class PortfolioComponent implements OnInit {
+export class PortfolioComponent implements OnInit, OnDestroy {
+
   @ViewChild('filtersComponent') filtersComponent?: FiltersComponent;
   @ViewChild('stocksTable') stocksTable?: ElementRef;
   
@@ -40,10 +48,15 @@ export class PortfolioComponent implements OnInit {
   error: string | null = null;
   selectedFilter = 'ALL'; // Variable necesaria para el template
   selectedPerformanceFilter: PerformanceFilterOption | null = null;
-    // Datos de acciones
+  
+  // Datos de acciones
   stocks: Stock[] = [];
   filteredStocks: Stock[] = [];
   displayedStocks: Stock[] = []; // Acciones a mostrar después de la paginación
+  
+  // DataSource para MatTable
+  dataSource = new MatTableDataSource<Stock>([]);
+  displayedColumns: string[] = ['symbol', 'marketName', 'quantity', 'unitValue', 'totalValue', 'performance', 'actions'];
   
   // Configuración de paginación
   pageSize = 10;
@@ -63,15 +76,17 @@ export class PortfolioComponent implements OnInit {
   portfolioSummary: PortfolioSummary = {
     totalInvested: 0,
     totalEarnings: 0,
-    totalStocks: 0,
+    totalShares: 0,
     totalValue: 0,
     performance: 0
   };
-  constructor(private portfolioService: PortfolioService) {}  
+  constructor(
+    private portfolioService: PortfolioService,
+    private dialog: MatDialog
+  ) {}  
   
   // Variable para mantener el estado del tema
   isDarkMode = false;
-
   ngOnInit(): void {
     // Utilizamos isPlatformBrowser en vez de document directamente
     // Esto nos ayudará con la renderización del lado del servidor
@@ -89,27 +104,79 @@ export class PortfolioComponent implements OnInit {
       });
       
       observer.observe(document.body, { attributes: true });
+      
+      // Añadir detector de cambio de tamaño para actualizar el indicador de desplazamiento      window.addEventListener('resize', this.resizeHandler);
     }
     
     // Simulamos una carga de datos
     this.isLoading = true;
     
     // Cargar datos mediante el servicio
+    this.loadPortfolioData();
+  }
+
+  /**
+   * Carga los datos del portafolio desde el servicio
+   */
+  private loadPortfolioData(): void {
+    this.isLoading = true;
+    this.error = null;
     this.portfolioService.getPortfolioStocks().subscribe({
-      next: (stocks) => {
-        this.stocks = stocks;
-        this.applyFilters(); // Aplica los filtros actuales
-        this.updateDisplayedStocks(); // Actualiza las acciones que se muestran según la paginación
+      next: (shares: PortfolioShare[]) => {
+        this.stocks = shares.map(share => ({
+          id: share.id.toString(), 
+          company: share.companyName,
+          symbol: share.ticker,
+          marketName: share.stockName,
+          marketId: share.stockMic,
+          quantity: share.quantity,
+          unitValue: share.unitValue,
+          totalValue: share.totalValue,
+          performance: share.performance,
+          color: share.color
+        }));
+        this.applyFilters();
+        this.updateDisplayedStocks();
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error al cargar acciones', err);
-        this.error = 'No se pudieron cargar las acciones. Intente nuevamente más tarde.';
+      error: (error: any) => {
+        console.error('Error al cargar acciones', error);
+        // Fallback con datos simulados
+        console.warn('Usando datos de fallback del portafolio');
+        const fallbackShares: PortfolioShare[] = [
+          {
+            id: '0',
+            companyName: 'Mock Company',
+            ticker: 'MOCK',
+            stockName: 'NASDAQ',
+            stockMic: 'XNAS',
+            quantity: 10,
+            unitValue: 100,
+            totalValue: 1000,
+            performance: 5,
+            color: 'emerald'
+          }
+        ];
+        // Mapear fallbackShares a stocks
+        this.stocks = fallbackShares.map(share => ({
+          id: share.id.toString(),
+          company: share.companyName,
+          symbol: share.ticker,
+          marketName: share.stockName,
+          marketId: share.stockMic,
+          quantity: share.quantity,
+          unitValue: share.unitValue,
+          totalValue: share.totalValue,
+          performance: share.performance,
+          color: share.color
+        }));
+        // Aplicar filtros y paginación
+        this.applyFilters();
+        this.updateDisplayedStocks();
         this.isLoading = false;
       }
     });
   }
-
   onPageChange(event: PageEvent): void {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -124,12 +191,29 @@ export class PortfolioComponent implements OnInit {
         });
       }
     }, 100); // Pequeño retraso para asegurar que la tabla se ha actualizado
-  }
-
-  updateDisplayedStocks(): void {
+  }  updateDisplayedStocks(): void {
     const startIndex = this.pageIndex * this.pageSize;
     this.totalStocks = this.filteredStocks.length;
     this.displayedStocks = this.filteredStocks.slice(startIndex, startIndex + this.pageSize);
+    
+    // Actualizar el dataSource para MatTable
+    this.dataSource.data = this.displayedStocks;
+    
+    // Verificar si la tabla necesita scroll horizontal después de que los datos se actualicen
+    setTimeout(() => {
+      this.checkTableOverflow();
+      
+      // Tras actualizar datos, asegurar que el paginador esté correctamente posicionado
+      if (this.stocksTable && this.stocksTable.nativeElement) {
+        const paginatorContainer = this.stocksTable.nativeElement.querySelector('mat-paginator');
+        const contentContainer = this.stocksTable.nativeElement.querySelector('.min-w-full');
+        
+        if (paginatorContainer && contentContainer) {
+          // Asegurarnos de que el paginador tiene al menos el mismo ancho que el contenido
+          paginatorContainer.style.minWidth = contentContainer.scrollWidth + 'px';
+        }
+      }
+    }, 100);
   }
 
   filterStocks(market: string): void {
@@ -171,14 +255,21 @@ export class PortfolioComponent implements OnInit {
     this.pageIndex = 0; // Volver a la primera página cuando se aplican filtros
     this.updateDisplayedStocks();
   }
-
-
   sortStocks(sortOption: SortOption): void {
-    if (sortOption.value === 'none') {
+    console.log('Sorting with option:', sortOption);
+    
+    if (!sortOption || sortOption.value === 'none') {
       // Si no hay ordenamiento, reaplicamos los filtros para restaurar el orden original
       this.applyFilters();
       return;
-    }    this.filteredStocks.sort((a, b) => {
+    }
+    
+    if (!sortOption.property) {
+      console.warn('Sort option does not specify a property to sort by:', sortOption);
+      return;
+    }
+    
+    this.filteredStocks.sort((a, b) => {
       const valueA = a[sortOption.property as keyof Stock];
       const valueB = b[sortOption.property as keyof Stock];
       
@@ -198,10 +289,13 @@ export class PortfolioComponent implements OnInit {
       }
       
       // Para otros tipos de datos (cadenas, etc.)
+      const strA = String(valueA);
+      const strB = String(valueB);
+      
       if (sortOption.direction === 'asc') {
-        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+        return strA.localeCompare(strB);
       } else {
-        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+        return strB.localeCompare(strA);
       }
     });
     
@@ -212,11 +306,10 @@ export class PortfolioComponent implements OnInit {
     private calculatePortfolioSummary(): void {
     const totalInvested = this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
     const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
-    
     this.portfolioSummary = {
-      totalInvested: totalInvested,
-      totalEarnings: totalEarnings,
-      totalStocks: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
+      totalInvested,
+      totalEarnings,
+      totalShares: this.filteredStocks.reduce((sum, stock) => sum + stock.quantity, 0),
       totalValue: totalInvested + totalEarnings,
       performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
     };
@@ -234,4 +327,164 @@ export class PortfolioComponent implements OnInit {
       this.filtersComponent.resetAllFilters();
     }
   }
+  /**
+   * Abre el modal de compra para una acción específica
+   * @param stock Acción a comprar
+   */ 
+abrirModalCompra(stock: Stock): void {
+  const dialogRef = this.dialog.open(BuyStockModalComponent, {
+    width: '500px',
+    maxHeight: '90vh',
+    data: { 
+      stock, 
+      price: stock.unitValue,
+      maxQuantity: 1000 // Puedes ajustar esto según tu lógica de negocio
+    },
+    panelClass: 'custom-dialog-container',
+    autoFocus: false
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result && result.success) {
+      // Si la compra se completó, mostrar mensaje de éxito
+      if (result.status === 'completed') {
+        this.dialog.open(AlertDialogComponent, {
+          width: '400px',
+          data: { 
+            title: 'Compra completada',
+            message: `Has comprado ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
+                    Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+            buttonText: 'Aceptar'
+          }
+        });
+      } else if (result.status === 'pending') {
+        this.dialog.open(AlertDialogComponent, {
+          width: '400px',
+          data: { 
+            title: 'Orden registrada',
+            message: `Tu orden de compra para ${result.filledQuantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
+            buttonText: 'Aceptar'
+          }
+        });
+      }
+      
+      // Recargar datos del portafolio después de una compra exitosa
+      this.loadPortfolioData();
+      this.filtersComponent?.resetAllFilters();
+    }
+  });
+}
+
+  /**
+   * Abre el modal de venta para una acción específica
+   * @param stock Acción a vender
+   */  abrirModalVenta(stock: Stock): void {
+    const dialogRef = this.dialog.open(SellStockModalComponent, {
+      width: '500px',
+      maxHeight: '90vh',
+      data: { 
+        stock, 
+        price: stock.unitValue 
+      },
+      panelClass: 'custom-dialog-container',
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.success) {
+        // Si la orden se completó, mostrar mensaje de éxito
+        if (result.status === 'completed') {
+          // Mostrar un mensaje de confirmación
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Venta completada',
+              message: `Se han vendido ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
+                      Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        } else if (result.status === 'pending') {
+          // Mostrar mensaje para órdenes pendientes
+          this.dialog.open(AlertDialogComponent, {
+            width: '400px',
+            data: { 
+              title: 'Orden registrada',
+              message: `Su orden de venta para ${result.filledQuantity || stock.quantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
+              buttonText: 'Aceptar'
+            }
+          });
+        }
+        
+        // Recargar datos del portafolio después de una venta exitosa
+        this.loadPortfolioData();
+        this.filtersComponent?.resetAllFilters();
+      }
+    });
+  }
+  /**
+   * Verifica si una tabla necesita desplazamiento horizontal
+   * y actualiza la visibilidad del indicador de desplazamiento.
+   * También asegura que el encabezado y el paginador tengan el mismo ancho que la tabla.
+   */
+  checkTableOverflow(): void {
+    if (this.stocksTable && this.stocksTable.nativeElement) {
+      const tableContainer = this.stocksTable.nativeElement.querySelector('.overflow-x-auto');
+      if (tableContainer) {
+        // Verificamos si el contenido es más ancho que el contenedor
+        const contentWidth = tableContainer.querySelector('.min-w-full')?.scrollWidth || tableContainer.scrollWidth;
+        const containerWidth = tableContainer.clientWidth;
+        const hasOverflow = contentWidth > containerWidth;
+        const scrollIndicator = tableContainer.querySelector('.scroll-indicator');
+        
+        if (scrollIndicator) {
+          // Solo mostrar el indicador si hay overflow
+          if (hasOverflow) {
+            scrollIndicator.classList.remove('hidden');
+          } else {
+            scrollIndicator.classList.add('hidden');
+          }
+        }
+        
+        // Remover cualquier listener previo para evitar duplicados
+        const oldListener = tableContainer.onscroll;
+        if (oldListener) {
+          tableContainer.removeEventListener('scroll', oldListener);
+        }
+        
+        // Ocultar indicador cuando el usuario ha hecho scroll completo
+        const scrollHandler = () => {
+          if (scrollIndicator && tableContainer.scrollLeft + tableContainer.clientWidth >= tableContainer.scrollWidth - 10) {
+            scrollIndicator.style.opacity = '0';
+          } else {
+            scrollIndicator.style.opacity = '0.7';
+          }
+        };
+        
+        tableContainer.addEventListener('scroll', scrollHandler);
+        tableContainer.onscroll = scrollHandler; // Guardar la referencia para poder eliminarla después
+      }
+    }
+  }
+  ngOnDestroy(): void {
+    // Limpiar los event listeners al destruir el componente
+    if (typeof window !== 'undefined') {
+      // Remover el evento resize usando una referencia real a la función
+      window.removeEventListener('resize', this.resizeHandler);
+      
+      // También limpiar el evento de scroll si existe
+      if (this.stocksTable && this.stocksTable.nativeElement) {
+        const tableContainer = this.stocksTable.nativeElement.querySelector('.overflow-x-auto');
+        if (tableContainer && tableContainer.onscroll) {
+          tableContainer.removeEventListener('scroll', tableContainer.onscroll);
+          tableContainer.onscroll = null;
+        }
+      }
+    }
+  }
+  
+  // Referencia para el event listener de resize
+  private resizeHandler = () => {
+    this.checkTableOverflow();
+  };
 }

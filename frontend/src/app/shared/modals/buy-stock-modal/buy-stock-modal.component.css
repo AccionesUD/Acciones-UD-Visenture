@@ -1,0 +1,33 @@
+.buy-stock-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.loading-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Efecto de hover para los botones */
+button[mat-raised-button]:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* Estilos para el tema oscuro */
+.dark .buy-stock-modal {
+  background-color: #1e293b;
+}
+
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.dark .bg-blue-50 {
+  background-color: rgba(30, 58, 138, 0.3);
+}

@@ -1,0 +1,208 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white" 
+        i18n="@@profile.information.title">Información Personal</h2>
+    <button 
+        mat-flat-button
+        [ngClass]="!isEditing ? 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white' : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100'" 
+        (click)="toggleEdit()"
+        *ngIf="!isLoading"
+        class="rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+      >
+        <mat-icon class="mr-1">{{ !isEditing ? 'edit' : 'close' }}</mat-icon>
+        <span *ngIf="!isEditing" i18n="@@profile.information.edit-button">Editar</span>
+        <span *ngIf="isEditing" i18n="@@profile.information.cancel-button">Cancelar</span>
+      </button>
+  </div>
+  
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+    <span class="ml-3 text-gray-600 dark:text-gray-400" 
+          i18n="@@profile.information.loading">Cargando información...</span>
+  </div>
+  
+  <!-- Error de guardado -->
+  <div *ngIf="saveError" class="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-red-700 dark:text-red-200">{{ saveError }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Formulario de perfil -->
+  <form [formGroup]="profileForm" (ngSubmit)="saveChanges()" *ngIf="!isLoading" class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Nombre -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+               i18n="@@profile.information.first-name.label">Nombre</label>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="first_name" 
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">person</mat-icon>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Apellido -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.last-name.label">Apellido</label>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="last_name" 
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">person</mat-icon>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Documento de identidad -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.id-document.label">Documento de identidad</label>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="identity_document" 
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">badge</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fecha de nacimiento -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.birth-date.label">Fecha de nacimiento</label>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="birthdate" 
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">cake</mat-icon>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Email -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.email.label">Correo electrónico</label>
+          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400" i18n="@@profile.information.editable-field">Campo editable</span>
+        </div>
+        <div class="relative">
+          <input 
+            id="email-input"
+            type="email" 
+            formControlName="email"
+            [attr.aria-label]="isEditing ? 'Campo de correo electrónico editable' : 'Campo de correo electrónico no editable'"
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{
+              'bg-gray-100 dark:bg-gray-800': !isEditing, 
+              'bg-white dark:bg-slate-700': isEditing, 
+              'border-red-500 dark:border-red-400': profileForm.get('email')?.invalid && (profileForm.get('email')?.touched || formSubmitted),
+              'border-emerald-500 dark:border-emerald-400': isEditing && profileForm.get('email')?.valid
+            }"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3" [ngClass]="{'pointer-events-none': !isEditing}">
+            <mat-icon [ngClass]="{'text-emerald-500 dark:text-emerald-400': isEditing, 'text-gray-400': !isEditing}">email</mat-icon>
+          </div>
+        </div>
+        <div *ngIf="profileForm.get('email')?.invalid && (profileForm.get('email')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
+          {{ getEmailErrorMessage() }}
+        </div>
+      </div>
+      
+      <!-- Teléfono -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.phone.label">Teléfono</label>
+          <span *ngIf="isEditing" class="text-xs text-emerald-600 dark:text-emerald-400" i18n="@@profile.information.editable-field">Campo editable</span>
+        </div>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="phone_number"
+            [attr.aria-label]="isEditing ? 'Campo de teléfono editable' : 'Campo de teléfono no editable'"
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{
+              'bg-gray-100 dark:bg-gray-800': !isEditing, 
+              'bg-white dark:bg-slate-700': isEditing, 
+              'border-red-500 dark:border-red-400': profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.touched || formSubmitted),
+              'border-emerald-500 dark:border-emerald-400': isEditing && profileForm.get('phone_number')?.valid
+            }"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3" [ngClass]="{'pointer-events-none': !isEditing}">
+            <mat-icon [ngClass]="{'text-emerald-500 dark:text-emerald-400': isEditing, 'text-gray-400': !isEditing}">phone</mat-icon>
+          </div>
+        </div>
+        <div *ngIf="profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
+          {{ getPhoneErrorMessage() }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Botones de acción -->
+    <div class="flex justify-end mt-6" *ngIf="isEditing">
+      <button 
+        type="button" 
+        mat-stroked-button 
+        class="mr-4 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md shadow-sm"
+        [disabled]="isSaving"
+        (click)="toggleEdit()"
+      >
+        <mat-icon class="mr-1">close</mat-icon>
+        <span i18n="@@profile.information.cancel-button">Cancelar</span>
+      </button>
+      <button 
+        type="submit" 
+        mat-flat-button 
+        [disabled]="isSaving || profileForm.invalid"
+        class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white px-4 py-2 rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-gray-400 disabled:dark:bg-gray-600 disabled:text-gray-100 disabled:cursor-not-allowed"
+      >
+        <div *ngIf="isSaving" class="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+        <mat-icon class="mr-1" *ngIf="!isSaving">save</mat-icon>
+        <span *ngIf="isSaving" i18n="@@profile.information.saving">Guardando...</span>
+        <span *ngIf="!isSaving" i18n="@@profile.information.save-changes">Guardar cambios</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Mensaje para acceder a cambiar contraseña -->
+  <div *ngIf="!isLoading" class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-lg font-medium text-gray-800 dark:text-white" i18n="@@profile.information.security-title">Seguridad de la cuenta</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1" i18n="@@profile.information.security-description">Gestiona tu contraseña y configuración de seguridad</p>
+      </div>
+      <button 
+        mat-flat-button
+        class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+        (click)="goToSecurity()"
+      >
+        <mat-icon class="mr-1">security</mat-icon>
+        <span i18n="@@profile.information.go-to-security">Ir a Seguridad</span>
+      </button>
+    </div>
+  </div>
+</div>

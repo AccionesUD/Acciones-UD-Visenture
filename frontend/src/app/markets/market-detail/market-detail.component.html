@@ -2,27 +2,42 @@
   <!-- Estado de carga -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-16">
     <mat-spinner diameter="50"></mat-spinner>
-    <p class="ml-4 text-lg text-gray-600 dark:text-gray-300">Cargando detalles del mercado...</p>
+    <p class="ml-4 text-lg text-gray-600 dark:text-gray-300" i18n="@@market.detail.loading">Cargando detalles del mercado...</p>
+  </div>
+
+  <!-- Mensaje de inicialización requerida -->
+  <div *ngIf="!isLoading && !isInitialized" class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-xl p-6 max-w-2xl mx-auto">
+    <div class="flex items-center mb-4">
+      <mat-icon class="text-amber-500 dark:text-amber-400 mr-2 text-3xl">warning</mat-icon>
+      <h2 class="text-xl font-bold text-amber-700 dark:text-amber-300" i18n="@@market.detail.initialization.required.title">Inicialización Requerida</h2>
+    </div>
+    <p class="mb-6 text-amber-700 dark:text-amber-300" i18n="@@market.detail.initialization.required.message">Los mercados no han sido inicializados. Debes inicializarlos primero desde la pantalla de listado de mercados.</p>
+    <button mat-button [routerLink]="['/markets']" class="bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/50 px-4 py-2 rounded-lg flex items-center">
+      <mat-icon class="mr-2">arrow_back</mat-icon> 
+      <span i18n="@@market.detail.back.to.markets">Volver a Mercados</span>
+    </button>
   </div>
 
   <!-- Manejo de errores -->
   <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl p-6 max-w-2xl mx-auto">
     <div class="flex items-center mb-4">
       <mat-icon class="text-red-500 dark:text-red-400 mr-2 text-3xl">error_outline</mat-icon>
-      <h2 class="text-xl font-bold text-red-700 dark:text-red-300">Error</h2>
+      <h2 class="text-xl font-bold text-red-700 dark:text-red-300" i18n="@@common.error.title">Error</h2>
     </div>
     <p class="mb-6 text-red-700 dark:text-red-300">{{ error }}</p>
-    <button mat-button (click)="goBackToMarkets()" class="bg-white dark:bg-slate-800 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 px-4 py-2 rounded-lg flex items-center">
-      <mat-icon class="mr-2">arrow_back</mat-icon> Volver a Mercados
+    <button mat-button [routerLink]="['/markets']" class="bg-white dark:bg-slate-800 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/50 px-4 py-2 rounded-lg flex items-center">
+      <mat-icon class="mr-2">arrow_back</mat-icon> 
+      <span i18n="@@market.detail.back.to.markets">Volver a Mercados</span>
     </button>
   </div>
 
   <!-- Contenido principal -->
-  <div *ngIf="!isLoading && !error && market">
+  <div *ngIf="!isLoading && !error && isInitialized && stock">
     <!-- Navegación superior -->
     <div class="mb-6">
-      <button (click)="goBackToMarkets()" class="cursor-pointer flex items-center text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-        <mat-icon class="mr-2">arrow_back</mat-icon> Volver a Mercados
+      <button (click)="goBack()" class="cursor-pointer flex items-center text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+        <mat-icon class="mr-2">arrow_back</mat-icon> 
+        <span i18n="@@market.detail.back.to.markets">Volver a Mercados</span>
       </button>
     </div>
     
@@ -36,212 +51,188 @@
           </svg>
         </div>
         <div class="container mx-auto h-full flex items-center px-6 relative z-10">
-          <div>
-            <h1 class="text-3xl md:text-4xl font-bold text-white">{{ market.name }}</h1>
-            <p class="text-emerald-100 text-lg">{{ market.country }}</p>
+          <div class="flex items-center">
+            <div *ngIf="stock.logo" class="h-16 w-16 bg-white rounded-full p-2 mr-4 shadow-lg flex-shrink-0">
+              <img [src]="stock.logo" [alt]="stock.name_market" class="w-full h-full object-contain">
+            </div>
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold text-white">{{ stock.name_market }}</h1>
+              <p class="text-emerald-100 text-lg">{{ stock.country_region }}</p>
+            </div>
+            <div class="ml-auto">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm" 
+                [ngClass]="{
+                  'bg-green-100 text-green-800': stock.is_open,
+                  'bg-red-100 text-red-800': !stock.is_open
+                }">
+                <span class="w-2 h-2 rounded-full mr-1"
+                  [ngClass]="{'bg-green-500': stock.is_open, 'bg-red-500': !stock.is_open}"></span>
+                {{ getStatusLabel(stock.is_open) }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Información del mercado -->
-      <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">          <!-- Detalles básicos -->
-          <div class="bg-gray-50 dark:bg-slate-700 rounded-lg p-4">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Información Básica</h2>
-            
-            <!-- Precio destacado si está disponible -->              <div *ngIf="market.price !== undefined" class="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-              <div class="text-sm text-gray-500 dark:text-gray-400">Precio actual:</div>
-              <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ formatPrice(market.price) }}</div>
-            </div>
-            
+      <!-- Información principal del mercado -->
+      <div class="px-6 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4" i18n="@@market.detail.market.info.title">Información del mercado</h2>
             <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-300">Símbolo:</span>
-                <span class="font-medium text-gray-800 dark:text-white">{{ market.symbol }}</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.mic.code">Código MIC</span>
+                <span class="font-mono text-emerald-600 dark:text-emerald-400">{{ stock.mic }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-300">País:</span>
-                <span class="font-medium text-gray-800 dark:text-white">{{ market.country || 'No disponible' }}</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.operation.hours">Horario de operación</span>
+                <span>{{ stock.opening_time }} - {{ stock.closing_time }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-300">Moneda:</span>
-                <span class="font-medium text-gray-800 dark:text-white">{{ market.currency }}</span>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.operation.days">Días de operación</span>
+                <span>{{ stock.days_operation }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-300">Estado:</span>
-                <span [ngClass]="{
-                  'text-green-600 dark:text-green-400 font-medium': market.status === 'open',
-                  'text-red-600 dark:text-red-400 font-medium': market.status === 'closed'
-                }">
-                  {{ market.status === 'open' ? 'Abierto' : 'Cerrado' }}
-                </span>
-              </div>
-            </div>
-          </div>
-            <!-- Información adicional del mercado -->
-          <div class="bg-gray-50 dark:bg-slate-700 rounded-lg p-4">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Información del Mercado</h2>
-            <div class="space-y-3">
-              <!-- Mostramos mensaje informativo sobre horario estandarizado -->
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-300">Horario típico:</span>
-                <span class="font-medium text-gray-800 dark:text-white">9:30 AM - 4:00 PM (EST)</span>
-              </div>
-              <div class="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">
-                Nota: Los horarios pueden variar según el mercado y días festivos.
+              <div class="flex justify-between items-center">
+                <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.country.region">País/Región</span>
+                <span>{{ stock.country_region }}</span>
               </div>
             </div>
           </div>
           
-          <!-- Descripción -->
-          <div class="bg-gray-50 dark:bg-slate-700 rounded-lg p-4">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Descripción</h2>
-            <p *ngIf="market.description" class="text-gray-600 dark:text-gray-300">{{ market.description }}</p>
-            <p *ngIf="!market.description" class="text-gray-600 dark:text-gray-300 italic">No hay descripción disponible para este mercado.</p>
+          <div *ngIf="marketClock">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4" i18n="@@market.detail.current.status.title">Estado actual</h2>
+            <div class="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg">
+              <div class="flex items-center mb-3">
+                <div class="w-3 h-3 rounded-full mr-2" 
+                     [ngClass]="{'bg-green-500': marketClock.is_open, 'bg-red-500': !marketClock.is_open}"></div>
+                <span class="font-medium" 
+                      [ngClass]="{'text-green-600 dark:text-green-400': marketClock.is_open, 'text-red-600 dark:text-red-400': !marketClock.is_open}">
+                  <ng-container [ngSwitch]="marketClock.is_open">
+                    <span *ngSwitchCase="true" i18n="@@market.detail.status.open">Mercado abierto</span>
+                    <span *ngSwitchDefault i18n="@@market.detail.status.closed">Mercado cerrado</span>
+                  </ng-container>
+                </span>
+              </div>
+              
+              <div *ngIf="marketClock.is_open" class="mb-2">
+                <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@market.detail.closes.at">Cierra:</div>
+                <div class="font-medium">{{ marketClock.next_close | date:'EEEE, d MMMM, HH:mm' }}</div>
+              </div>
+              
+              <div *ngIf="!marketClock.is_open" class="mb-2">
+                <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@market.detail.next.opening">Próxima apertura:</div>
+                <div class="font-medium">{{ marketClock.next_open | date:'EEEE, d MMMM, HH:mm' }}</div>
+              </div>
+              
+              <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <span i18n="@@market.detail.last.updated">Última actualización:</span> {{ marketClock.timestamp | date:'HH:mm:ss' }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-        <!-- Acciones simuladas -->
-        <div
-          class="border-2 border-emerald-200 dark:border-slate-700 bg-white dark:bg-slate-800
-                rounded-xl shadow-lg overflow-hidden mb-8">
-
-          <!-- Encabezado -->
-          <div class="border-b border-gray-200 dark:border-slate-700 p-6">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-white">Acciones Destacadas</h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">
-              Listado simulado de acciones disponibles en {{ market.name }}
-            </p>
-          </div>          <!-- Filtros -->
-          <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <!-- Filtro por nombre -->
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <mat-icon class="text-gray-400">search</mat-icon>
-                </div>
-                <input
-                  [(ngModel)]="filtros.nombre"
-                  type="text"
-                  placeholder="Buscar por nombre o símbolo"
-                  class="pl-10 p-2 w-full border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent"
-                />
+    
+    <!-- Lista de acciones disponibles -->
+    <div class="mt-8">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6" i18n="@@market.detail.available.shares">Acciones disponibles en {{ stock.name_market }}</h2>
+      
+      <!-- Estado de carga para acciones -->
+      <div *ngIf="isLoadingShares" class="flex justify-center items-center py-8">
+        <mat-spinner diameter="40" color="accent"></mat-spinner>
+        <p class="ml-4 text-gray-600 dark:text-gray-400" i18n="@@market.detail.loading.shares">Cargando acciones...</p>
+      </div>
+      
+      <!-- Error al cargar acciones -->
+      <div *ngIf="sharesError" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+          <mat-icon class="text-red-500 dark:text-red-400 mr-2">warning</mat-icon>
+          <p class="text-red-700 dark:text-red-300">{{ sharesError }}</p>
+        </div>
+      </div>
+      
+      <!-- Sin acciones disponibles -->
+      <div *ngIf="!isLoadingShares && !sharesError && shares.length === 0" class="bg-gray-50 dark:bg-slate-700 rounded-lg p-8 text-center">
+        <mat-icon class="text-gray-400 dark:text-gray-500 text-5xl mb-3">sentiment_dissatisfied</mat-icon>
+        <h3 class="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@market.detail.no.shares.title">No hay acciones disponibles</h3>
+        <p class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.no.shares.message">No se encontraron acciones para este mercado.</p>
+      </div>
+      
+      <!-- Lista de acciones -->
+      <div *ngIf="!isLoadingShares && !sharesError && shares.length > 0">
+        <!-- Acciones destacadas -->
+        <div class="mb-8" *ngIf="featuredShares.length > 0">
+          <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4" i18n="@@market.detail.featured.shares">Acciones destacadas</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div *ngFor="let share of featuredShares" class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4">
+              <div class="flex justify-between items-start mb-3">
+                <h4 class="font-bold">{{ share.symbol }}</h4>
+                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">{{ share.class }}</span>
               </div>
-
-              <!-- Filtro por sector -->
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <mat-icon class="text-gray-400">business</mat-icon>
-                </div>
-                <select              [(ngModel)]="filtros.sector"
-              class="pl-10 p-2 w-full border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent">
-              <option value="">Todos los sectores</option>
-              <option *ngFor="let s of sectoresDisponibles" [value]="s">{{ s }}</option>
-            </select>
+              <p class="text-gray-700 dark:text-gray-300 font-medium mb-2">{{ share.name_share }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-4" i18n="@@market.detail.sector.label">Sector: {{ share.sector }}</p>
+              <div *ngIf="shareQuotes[share.symbol]" class="flex items-center mb-4">
+                <span class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                  {{ shareQuotes[share.symbol]!.price | currency:'USD' }}
+                </span>
+                <span [ngClass]="{'text-green-600': shareQuotes[share.symbol]!.changePercent >= 0, 'text-red-600': shareQuotes[share.symbol]!.changePercent < 0}" class="ml-2 text-sm">
+                  {{ shareQuotes[share.symbol]!.changePercent | number:'1.2-2' }}%
+                </span>
               </div>
-
-              <!-- Ordenar por -->
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <mat-icon class="text-gray-400">sort</mat-icon>
-                </div>
-                <select
-                  [(ngModel)]="filtros.orden"
-                  class="pl-10 p-2 w-full border border-gray-300 rounded-lg dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-transparent">
-                  <option value="">Ordenar por</option>
-                  <option value="nombre_asc">Nombre: A-Z</option>
-                  <option value="nombre_desc">Nombre: Z-A</option>
-                  <option value="precio_asc">Precio: Menor a mayor</option>
-                  <option value="precio_desc">Precio: Mayor a menor</option>
-                  <option value="cambio_asc">Variación: Menor a mayor</option>
-                  <option value="cambio_desc">Variación: Mayor a menor</option>
-                </select>
-              </div>
-            </div>
-            
-            <!-- Botón para limpiar filtros -->
-            <div class="flex justify-end mb-2" *ngIf="hayFiltrosAplicados()">
-              <button 
-                (click)="limpiarFiltros()" 
-                class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-500 text-gray-700 dark:text-gray-200 py-1 px-3 rounded-md text-sm flex items-center">
-                <mat-icon class="text-sm mr-1">filter_list_off</mat-icon>
-                Limpiar filtros
-              </button>
-            </div>
-          </div><!-- Lista -->
-          <div class="p-6">
-            <div class="bg-gray-100 dark:bg-slate-700 rounded-lg overflow-hidden">
-              <div class="grid grid-cols-12 gap-4 bg-gray-200 dark:bg-slate-600 p-4 font-medium text-gray-800 dark:text-gray-200">
-                <div class="col-span-2">Símbolo</div>
-                <div class="col-span-4">Nombre</div> 
-                <div class="col-span-2 text-right">Precio</div>
-                <div class="col-span-2 text-right">Cambio</div>
-                <div class="col-span-2 text-right">Acciones</div>
-              </div>              <!-- Estado de carga -->
-              <div *ngIf="isLoadingActions" class="p-8 text-center">
-                <mat-spinner diameter="40" class="mx-auto mb-4"></mat-spinner>
-                <p class="text-gray-500 dark:text-gray-400">Cargando acciones...</p>
-              </div>
-
-              <!-- Mensaje cuando no hay resultados -->
-              <div *ngIf="!isLoadingActions && accionesFiltradas.length === 0" class="p-8 text-center">
-                <mat-icon class="text-gray-400 text-5xl mb-4">search_off</mat-icon>
-                <p class="text-gray-500 dark:text-gray-400">No se encontraron acciones con los filtros aplicados.</p>
-                <button 
-                  (click)="limpiarFiltros()" 
-                  class="mt-4 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 underline">
-                  Limpiar filtros
+              <div class="flex justify-between">
+                <button mat-stroked-button color="primary" (click)="navigateToShareDetail(share)" class="text-xs" i18n="@@market.detail.view.details">
+                  Ver detalles
+                </button>
+                <button mat-flat-button color="accent" (click)="buyShare(share)" [disabled]="!stock.is_open" class="text-xs" i18n="@@market.detail.buy.button">
+                  Comprar
                 </button>
               </div>
-
-              <!-- Filas -->
-              <div 
-                *ngFor="let action of accionesFiltradas; trackBy: trackBySymbol"
-                [@listAnimation]
-                class="grid grid-cols-12 gap-4 p-4 border-b border-gray-200 dark:border-slate-600 last:border-0 items-center hover:bg-gray-50 dark:hover:bg-slate-600/50 transition-colors">
-                <div class="col-span-2 font-medium text-gray-800 dark:text-white">
-                  {{ action.symbol }}
-                </div>
-
-                <div class="col-span-4 text-gray-700 dark:text-gray-300">
-                  {{ action.name }}
-                </div>                <div class="col-span-2 text-right text-gray-800 dark:text-white font-medium">
-                  {{ formatPrice(action.price) }}
-                </div>
-
-                <div
-                  class="col-span-2 text-right font-medium"
-                  [ngClass]="{
-                    'text-green-600 dark:text-green-400': action.change.startsWith('+'),
-                    'text-red-600 dark:text-red-400': action.change.startsWith('-')
-                  }">
-                  {{ action.change }}
-                </div>
-
-                <div class="col-span-2 flex justify-end space-x-2">
-                  <button
-                    (click)="abrirOperacion('buy', action)"
-                    class="px-3 py-1 bg-emerald-600 text-white text-sm rounded
-                          hover:bg-emerald-700 transition">
-                    Comprar
-                  </button>
-                  <button
-                    (click)="abrirOperacion('sell', action)"
-                    class="px-3 py-1 bg-red-600 text-white text-sm rounded
-                          hover:bg-red-700 transition">
-                    Vender
-                  </button>
-                </div>
-              </div>
             </div>
-
-            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
-              Esta es una visualización preliminar. La funcionalidad completa de
-              visualización y operación de acciones por mercado será implementada próximamente.
-            </p>
           </div>
         </div>
+        
+        <!-- Tabla completa de acciones -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+            <thead class="bg-gray-100 dark:bg-slate-700">
+              <tr>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.symbol">Símbolo</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.name">Nombre</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.class">Clase</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.sector">Sector</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.status">Estado</th>
+                <th class="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>              <tr *ngFor="let share of shares" class="border-t border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                <td class="py-3 px-4 font-medium">{{ share.symbol }}</td>
+                <td class="py-3 px-4">{{ share.name_share }}</td>
+                <td class="py-3 px-4">{{ share.class }}</td>
+                <td class="py-3 px-4">{{ share.sector }}</td>
+                <td class="py-3 px-4">
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
+                        [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': share.status, 
+                        'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': !share.status}">
+                    <ng-container *ngIf="share.status" i18n="@@market.detail.status.active">Activa</ng-container>
+                    <ng-container *ngIf="!share.status" i18n="@@market.detail.status.inactive">Inactiva</ng-container>
+                  </span>
+                </td>                <td class="py-2 px-4 text-right">
+                  <button mat-icon-button color="primary" (click)="navigateToShareDetail(share)" i18n-matTooltip="@@market.detail.tooltip.view.details" matTooltip="Ver detalles">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button mat-icon-button color="accent" (click)="buyShare(share)" [disabled]="!stock.is_open || !share.tradable" i18n-matTooltip="@@market.detail.tooltip.buy.share" matTooltip="Comprar acción">
+                    <mat-icon>shopping_cart</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="sellShare(share)" [disabled]="!stock.is_open || !share.tradable" i18n-matTooltip="@@market.detail.tooltip.sell.share" matTooltip="Vender acción">
+                    <mat-icon>sell</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>

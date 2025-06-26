@@ -1,207 +1,210 @@
 <div class="min-h-screen bg-gradient-to-r from-gray-50 to-emerald-200 dark:from-slate-900 dark:to-slate-950">
   <!-- Main Content -->
   <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6 text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
-    
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Balance</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">$10,245.00</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            2.5%
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">desde ayer</span>
-        </div>
-      </div>
-      
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Operaciones hoy</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">15</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            8
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">exitosas</span>
-        </div>
-      </div>
-      
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
-        <h3 class="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-2">Rentabilidad</h3>
-        <p class="text-2xl font-bold text-gray-800 dark:text-white">+$842.50</p>
-        <div class="flex items-center mt-2">
-          <span class="text-emerald-600 dark:text-emerald-300 text-sm flex items-center font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-            </svg>
-            7.8%
-          </span>
-          <span class="text-gray-500 dark:text-gray-400 text-sm ml-2">este mes</span>
-        </div>
-      </div>
+    <div class="flex justify-between items-center mb-6">
+      <h1 i18n="dashboard|Page title" class="text-2xl font-bold text-emerald-800 dark:text-emerald-400">Panel de Trading</h1>
+      <button 
+        (click)="toggleDataMode()"
+        class="px-4 py-2 rounded-lg text-sm font-medium"
+        [class.bg-emerald-600]="!useMockData"
+        [class.bg-yellow-500]="useMockData"
+        [class.text-white]="true"
+      >
+        <ng-container i18n="dashboard|Data mode toggle">{useMockData, select, 'true' {Usar Datos Reales} other {Usar Datos Simulados}}</ng-container>
+      </button>
     </div>
     
-    <!-- Chart and Watchlist Section -->
+    <!-- Controls -->
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md mb-6 border border-emerald-100 dark:border-slate-700">
+      <h3 i18n="dashboard|Select stock label" class="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Seleccionar acción:</h3>
+      <div class="flex flex-wrap gap-2">
+        <button 
+          *ngFor="let share of watchlistShares"
+          (click)="changeSymbol(share.symbol)"
+          class="px-3 py-1 text-xs rounded-full border"
+          [class.bg-emerald-100]="currentSymbol === share.symbol"
+          [class.border-emerald-300]="currentSymbol === share.symbol"
+          [class.bg-gray-50]="currentSymbol !== share.symbol"
+          [class.dark:bg-slate-700]="currentSymbol !== share.symbol"
+          [class.dark:border-slate-600]="currentSymbol !== share.symbol"
+          [class.dark:bg-emerald-900]="currentSymbol === share.symbol"
+          [class.dark:border-emerald-700]="currentSymbol === share.symbol"
+          [class.dark:text-white]="true"
+        >
+          {{ share.symbol }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart Controls -->
+    <div class="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-md mb-6 border border-emerald-100 dark:border-slate-700 flex flex-wrap items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <div>
+          <label i18n="dashboard|Period label" class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Periodo:</label>          <select 
+            [(ngModel)]="selectedPeriod"
+            (ngModelChange)="changeTimeSettings($event)"
+            class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
+          >
+            <option *ngFor="let period of availablePeriods" [ngValue]="period.value">
+              {{ period.label }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label i18n="dashboard|Interval label" class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1 block">Intervalo:</label>          <select 
+            [(ngModel)]="selectedTimeframe"
+            (ngModelChange)="changeTimeSettings($event)"
+            class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
+          >
+            <option *ngFor="let frame of availableTimeframes" [ngValue]="frame.value">
+              {{ frame.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+        <div>
+        <button 
+          (click)="refreshData()" 
+          class="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white rounded-md text-sm flex items-center"
+        >
+          <mat-icon class="text-sm mr-1">refresh</mat-icon>
+          <span i18n="@@dashboard.refresh">Actualizar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <!-- Main Chart Area -->
       <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
-        <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Gráfico principal</h2>
-        <div class="h-80 bg-emerald-50 dark:bg-slate-700 rounded flex items-center justify-center">
-          <p class="text-emerald-700 dark:text-emerald-300">El gráfico se cargará cuando haya datos disponibles</p>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-semibold text-emerald-800 dark:text-emerald-400">
+            {{ currentSymbol }} - <span i18n="@@dashboard.price_evolution">Evolución de Precios</span>
+          </h2>
+          <span class="text-xs px-2 py-1 rounded-full" 
+            [class.bg-green-100]="!useMockData" 
+            [class.text-green-800]="!useMockData"
+            [class.bg-yellow-100]="useMockData" 
+            [class.text-yellow-800]="useMockData"
+            [class.dark:bg-green-900]="!useMockData"
+            [class.dark:text-green-400]="!useMockData"
+            [class.dark:bg-yellow-900]="useMockData"
+            [class.dark:text-yellow-400]="useMockData">
+            <ng-container i18n="@@dashboard.data_mode">{useMockData, select, 'true' {Datos Simulados} other {Datos en Vivo}}</ng-container>
+          </span>
+        </div>
+        
+        <div class="h-80 relative">
+          <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-slate-800 dark:bg-opacity-75 z-10">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>          <apx-chart
+            #chart
+            [series]="chartOptions.series || []"
+            [chart]="chartOptions.chart || { type: 'line' }"
+            [xaxis]="chartOptions.xaxis || {}"
+            [yaxis]="chartOptions.yaxis || {}"
+            [theme]="chartOptions.theme || {}"
+            [tooltip]="chartOptions.tooltip || {}"
+            [title]="chartOptions.title || {}"
+          ></apx-chart>
         </div>
       </div>
       
       <!-- Watchlist -->
       <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
-        <h2 class="font-semibold mb-4 text-emerald-800 dark:text-emerald-400">Lista de seguimiento</h2>
-        <div class="divide-y divide-emerald-100 dark:divide-slate-700">
-          <div class="py-3 flex justify-between items-center">
+        <h2 class="font-semibold text-emerald-800 dark:text-emerald-400 mb-4" i18n="@@dashboard.watchlist">Lista de Observación</h2>
+        
+        <div *ngIf="isLoadingWatchlist" class="flex justify-center py-8">
+          <mat-spinner diameter="30"></mat-spinner>
+        </div>
+        
+        <div *ngIf="!isLoadingWatchlist" class="space-y-3">
+          <div *ngFor="let share of watchlistShares" 
+               class="flex items-center justify-between p-3 border-b border-gray-100 dark:border-slate-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700/50"
+               (click)="changeSymbol(share.symbol)">
             <div>
-              <p class="font-medium text-gray-900 dark:text-white">AAPL</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Apple Inc.</p>
+              <div class="font-medium">{{ share.symbol }}</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400">{{ share.name }}</div>
             </div>
             <div class="text-right">
-              <p class="font-medium text-gray-900 dark:text-white">$180.95</p>
-              <p class="text-sm text-emerald-500 dark:text-emerald-400">+2.45%</p>
-            </div>
-          </div>
-          
-          <div class="py-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium text-gray-900 dark:text-white">MSFT</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Microsoft Corp.</p>
-            </div>
-            <div class="text-right">
-              <p class="font-medium text-gray-900 dark:text-white">$340.27</p>
-              <p class="text-sm text-emerald-500 dark:text-emerald-400">+1.02%</p>
-            </div>
-          </div>
-          
-          <div class="py-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium text-gray-900 dark:text-white">TSLA</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Tesla Inc.</p>
-            </div>
-            <div class="text-right">
-              <p class="font-medium text-gray-900 dark:text-white">$198.73</p>
-              <p class="text-sm text-red-500 dark:text-red-400">-0.83%</p>
-            </div>
-          </div>
-          
-          <div class="py-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium text-gray-900 dark:text-white">AMZN</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Amazon.com</p>
-            </div>
-            <div class="text-right">
-              <p class="font-medium text-gray-900 dark:text-white">$145.68</p>
-              <p class="text-sm text-green-500 dark:text-green-400">+0.75%</p>
+              <div class="font-semibold">${{ share.price.toFixed(2) }}</div>
+              <div [class]="share.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
+                   class="text-xs flex items-center justify-end">
+                <span *ngIf="share.isPositive" class="mr-1">+</span>{{ share.change }}%
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
     
-    <!-- Recent Activities/Transactions -->
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700">
-      <h2 class="font-semibold mb-4 text-gray-900 dark:text-white">Transacciones recientes</h2>
-      <div class="overflow-x-auto">
+    <!-- Mercados disponibles -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700 mb-8">
+      <h2 class="font-semibold text-emerald-800 dark:text-emerald-400 mb-4" i18n="@@dashboard.available_markets">Mercados Disponibles</h2>
+      
+      <div *ngIf="availableStocks.length === 0" class="flex justify-center py-4">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+      
+      <div *ngIf="availableStocks.length > 0" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div *ngFor="let stock of availableStocks.slice(0, 8)" 
+             class="border border-gray-200 dark:border-slate-700 rounded-lg p-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 cursor-pointer"
+             [routerLink]="['/markets', stock.mic]">
+          <div class="font-medium">{{ stock.name_market }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ stock.country_region }}</div>
+          <div class="mt-1.5 flex items-center">
+            <span class="inline-block w-2 h-2 rounded-full mr-1" 
+                  [ngClass]="{'bg-green-500': stock.is_open, 'bg-red-500': !stock.is_open}"></span>
+            <span class="text-xs" [ngClass]="{'text-green-600': stock.is_open, 'text-red-600': !stock.is_open}">
+              <ng-container i18n="@@dashboard.market_status">{stock.is_open, select, 'true' {Abierto} other {Cerrado}}</ng-container>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="availableStocks.length > 8" class="mt-4 text-center">
+        <a routerLink="/markets" class="text-sm text-emerald-600 dark:text-emerald-400 hover:underline" i18n="@@dashboard.view_all_markets">
+          Ver todos los mercados
+        </a>
+      </div>
+    </div>
+
+    
+    <!-- Transacciones recientes -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700 mb-8">
+      <h2 class="font-semibold text-emerald-800 dark:text-emerald-400 mb-4" i18n="@@dashboard.recent_transactions">Transacciones Recientes</h2>
+      
+      <div *ngIf="isLoadingTransactions" class="flex justify-center py-8">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+      
+      <div *ngIf="!isLoadingTransactions" class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-          <thead class="bg-gray-50 dark:bg-slate-700">
+          <thead class="bg-gray-50 dark:bg-slate-700/50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Símbolo
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Tipo
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Cantidad
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Precio
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Total
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Fecha
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acción</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">AAPL</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                  Compra
+            <tr *ngFor="let tx of transactions" class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ tx.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': tx.type === 'buy',
+                                 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': tx.type === 'sell'}"
+                     class="px-2 py-0.5 rounded-full text-xs font-medium">
+                  <ng-container i18n="@@dashboard.transaction_type">{tx.type, select, buy {Compra} sell {Venta} other {Desconocido}}</ng-container>
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                10
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $180.95
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $1,809.50
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                17/05/2025 10:23 AM
-              </td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">MSFT</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                  Compra
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                5
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $340.27
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $1,701.35
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                17/05/2025 9:45 AM
-              </td>
-            </tr>
-            <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">TSLA</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
-                  Venta
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                8
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $200.50
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                $1,604.00
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                16/05/2025 3:22 PM
-              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ tx.symbol }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ tx.shares }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ tx.price.toFixed(2) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ tx.total.toFixed(2) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ tx.date | date:'dd/MM/yyyy' }}</td>
             </tr>
           </tbody>
         </table>

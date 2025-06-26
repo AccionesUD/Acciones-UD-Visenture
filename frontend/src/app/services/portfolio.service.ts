@@ -1,175 +1,142 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { PortfolioSummary, Stock} from "../models/portfolio.model";
+import { catchError, map } from 'rxjs/operators';
+import { Portfolio, PortfolioShare, PortfolioSummary, PortfolioPosition } from '../models/portfolio.model';
+import { SellOrder, SellResponse } from '../models/sell.model';
+import { environmentExample } from '../../environments/environmentexample';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environmentExample.apiUrl}/portfolio`;
 
-  // Datos de ejemplo para desarrollo
-  private mockStocks: Stock[] = [
-    {
-      id: '1',
-      company: 'Apple',
-      symbol: 'AAPL',
-      quantity: 10,
-      unitValue: 185,
-      marketName: 'NASDAQ',
-      marketId: 'nasdaq',
-      totalValue: 10 * 185,
-      performance: 4.5,
-      color: 'red'
-    },
-    {
-      id: '2',
-      company: 'Microsoft',
-      symbol: 'MSFT',
-      quantity: 15,
-      unitValue: 330,
-      marketName: 'NASDAQ',
-      marketId: 'nasdaq',
-      totalValue: 15 * 330,
-      performance: 3.2,
-      color: 'green'
-    },
-    {
-      id: '3',
-      company: 'Bank of America',
-      symbol: 'BAC',
-      quantity: 20,
-      unitValue: 35,
-      marketName: 'NYSE',
-      marketId: 'nyse',
-      totalValue: 20 * 35,
-      performance: 1.8,
-      color: 'purple'
-    },
-    {
-      id: '4',
-      company: 'Ecopetrol',
-      symbol: 'ECOPETROL',
-      quantity: 150,
-      unitValue: 2450,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 150 * 2450,
-      performance: 5.2,
-      color: 'emerald'
-    },
-    {
-      id: '5',
-      company: 'Bancolombia',
-      symbol: 'BCOLOMBIA',
-      quantity: 80,
-      unitValue: 32100,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 80 * 32100,
-      performance: 8.7,
-      color: 'blue'
-    },
-    {
-      id: '6',
-      company: 'Avianca',
-      symbol: 'AVIANCA',
-      quantity: 200,
-      unitValue: 1890,
-      marketName: 'BVC',
-      marketId: 'bvc',
-      totalValue: 200 * 1890,
-      performance: -2.3,
-      color: 'yellow'
-    }
-  ];
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  getPortfolioStocks(): Observable<Stock[]> {
-    // En producción, descomentar esta línea y comentar el retorno del mock
-    // return this.http.get<Stock[]>(`${this.apiUrl}/portfolio/stocks`)
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>('getPortfolioStocks', []))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.mockStocks);
+  /**
+   * Obtiene el portafolio completo del usuario
+   */
+  getPortfolio(): Observable<Portfolio> {
+    return this.http.get<Portfolio>(`${this.apiUrl}`);
   }
 
+  /**
+   * Obtiene las posiciones de acciones en el portafolio
+   */
+  getPortfolioPositions(): Observable<PortfolioPosition[]> {
+    return this.http.get<PortfolioPosition[]>(`${this.apiUrl}/positions`);
+  }
+
+  /**
+   * Obtiene el resumen del portafolio (inversiones, ganancias, etc.)
+   */
   getPortfolioSummary(): Observable<PortfolioSummary> {
-    // En producción:
-    // return this.http.get<PortfolioSummary>(`${this.apiUrl}/portfolio/summary`)
-    //   .pipe(
-    //     catchError(this.handleError<PortfolioSummary>('getPortfolioSummary', this.calculateMockSummary()))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.calculateMockSummary());
+    return this.http.get<PortfolioSummary>(`${this.apiUrl}/summary`);
   }
 
-  getStocksByMarket(marketId: string): Observable<Stock[]> {
-    // En producción:
-    // return this.http.get<Stock[]>(`${this.apiUrl}/portfolio/stocks/markets/${marketId}`)
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>(`getStocksByMarket id=${marketId}`, []))
-    //   );
-    
-    // Mock para desarrollo
-    if (marketId === 'ALL') {
-      return of(this.mockStocks);
-    } else {
-      return of(this.mockStocks.filter(stock => stock.marketId === marketId.toLowerCase()));
-    }
+  /**
+   * Obtiene la lista de acciones en el portafolio
+   * Usamos endpoint de shares y en caso de error retornamos mocks
+   */
+  getPortfolioStocks(): Observable<PortfolioShare[]> {
+    return this.http.get<any[]>(`${environmentExample.apiUrl}/shares`).pipe(
+      map(shares => shares.map(s => ({
+        id: s.symbol,
+        companyName: s.name_share,
+        ticker: s.symbol,
+        stockName: s.stock?.name_market || '',
+        stockMic: s.stock?.mic || '',
+        quantity: 0,
+        unitValue: 0,
+        totalValue: 0,
+        performance: 0,
+        color: '#cccccc'
+      }))) ,
+      catchError(error => {
+        console.error('Error getPortfolioStocks, usando mocks:', error);
+        return of(this.getFallbackPortfolioShares());
+      })
+    );
   }
 
-  getStocksByPerformance(min?: number, max?: number): Observable<Stock[]> {
-    // En producción:
-    // Construir URL con parámetros opcionales
-    // let url = `${this.apiUrl}/portfolio/stocks/performance`;
-    // let params = new HttpParams();
-    // if (min !== undefined) params = params.append('min', min.toString());
-    // if (max !== undefined) params = params.append('max', max.toString());
-    // return this.http.get<Stock[]>(url, { params })
-    //   .pipe(
-    //     catchError(this.handleError<Stock[]>('getStocksByPerformance', []))
-    //   );
-    
-    // Mock para desarrollo
-    return of(this.mockStocks.filter(stock => {
-      if (min !== undefined && max !== undefined) {
-        return stock.performance >= min && stock.performance <= max;
-      } else if (min !== undefined) {
-        return stock.performance >= min;
-      } else if (max !== undefined) {
-        return stock.performance <= max;
-      }
-      return true;
-    }));
+  /** Genera datos mock para el portafolio si no hay datos reales */
+  private getFallbackPortfolioShares(): PortfolioShare[] {
+    return [
+      { id: 'AAPL1', companyName: 'Apple Inc.', ticker: 'AAPL', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 5, unitValue: 150, totalValue: 750, performance: 2, color: '#00FF00' },
+      { id: 'MSFT1', companyName: 'Microsoft Corp.', ticker: 'MSFT', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 3, unitValue: 250, totalValue: 750, performance: 3, color: '#0000FF' }
+    ];
   }
 
-  private calculateMockSummary(): PortfolioSummary {
-    const totalInvested = this.mockStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
-    const totalEarnings = this.mockStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
-    
-    return {
-      totalInvested: totalInvested,
-      totalEarnings: totalEarnings,
-      totalStocks: this.mockStocks.reduce((sum, stock) => sum + stock.quantity, 0),
-      totalValue: totalInvested + totalEarnings,
-      performance: totalInvested > 0 ? (totalEarnings / totalInvested) * 100 : 0
-    };
+  getPortfolioHistory(days: number = 30): Observable<any[]> {
+    const params = new HttpParams().set('days', days.toString());
+    return this.http.get<any[]>(`${this.apiUrl}/history`, { params });
   }
 
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed: ${error.message}`);
+  sellShare(order: SellOrder): Observable<SellResponse> {
+    return this.http.post<SellResponse>(`${this.apiUrl}/sell`, order);
+  }
+
+  updatePortfolioAfterSell(stockId: string, quantity: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/shares/${stockId}`, { quantity });
+  }
+
+  updateUserBalance(amount: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/balance`, { amount });
+  }
+
+  /**
+   * Obtiene el portafolio de un cliente específico (para comisionistas)
+   * @param clientId ID del cliente
+   * @returns Observable con las acciones del cliente
+   */
+  getClientPortfolio(clientId: number): Observable<any[]> {
+    // En producción: return this.http.get<any[]>(`${this.apiUrl}/clients/${clientId}/shares`);
+    
+    // Para desarrollo, simular datos
+    if (clientId > 0) {
+      // Generar un portfolio aleatorio para cada cliente basado en su ID
+      const portfolioSize = (clientId % 5) + 1; // Entre 1 y 5 acciones
+      const mockPortfolio: any[] = [];
       
-      // Devuelve un resultado predeterminado para mantener la app funcionando
-      return of(result as T);
-    };
+      const tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'V', 'JPM'];
+      const names = [
+        'Apple Inc.', 
+        'Microsoft Corporation', 
+        'Alphabet Inc.', 
+        'Amazon.com Inc.', 
+        'Meta Platforms Inc.', 
+        'Tesla Inc.', 
+        'Netflix Inc.', 
+        'NVIDIA Corporation', 
+        'Visa Inc.', 
+        'JPMorgan Chase & Co.'
+      ];
+      
+      // Seleccionar acciones basadas en el ID del cliente
+      const startIndex = clientId % tickers.length;
+      for (let i = 0; i < portfolioSize; i++) {
+        const index = (startIndex + i) % tickers.length;
+        const quantity = 5 + (clientId % 20); // Entre 5 y 24 acciones
+        const price = 100 + (index * 10) + (clientId % 50); // Precio base + variación
+        
+        mockPortfolio.push({
+          symbol: tickers[index],
+          name: names[index],
+          quantity: quantity,
+          purchase_price: price * 0.9, // Precio de compra ligeramente menor
+          current_price: price,
+          market_value: price * quantity,
+          total_return: price * quantity * 0.1, // 10% de ganancia
+          return_percentage: 10, // 10% de ganancia
+          last_updated: new Date().toISOString()
+        });
+      }
+      
+      return of(mockPortfolio);
+    }
+    
+    // Si no hay ID de cliente válido
+    return of([]);
   }
 }

@@ -1,0 +1,813 @@
+<div class="preferences-container">
+  <h2 class="text-xl font-semibold text-emerald-700 dark:text-emerald-400 mb-4" i18n="@@preferences.title">Preferencias de usuario</h2>
+    <!-- Sistema de pestañas nativo -->  
+    <div class="tabs-container">
+    <!-- Navegación de pestañas con controles de desplazamiento -->
+    <div class="tabs-nav-container" #tabsContainer>
+      <!-- Botón izquierdo de desplazamiento -->
+      <button 
+        class="tabs-scroll-button tabs-scroll-left"
+        type="button"
+        (click)="scrollTabs('left')"
+        *ngIf="showLeftScrollButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Navegación de pestañas -->
+      <nav class="tabs-nav border-b border-gray-200 dark:border-gray-700" #tabsNav>
+        <button 
+          (click)="activeTabIndex = 0" 
+          class="tab-button"
+          [ngClass]="{'active': activeTabIndex === 0}"
+          type="button">
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span i18n="@@preferences.tab.price_alerts">Alertas de Precio</span>
+          </div>
+        </button>
+      
+      <button 
+        (click)="activeTabIndex = 1" 
+        class="tab-button"
+        [ngClass]="{'active': activeTabIndex === 1}"
+        type="button">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span i18n="@@preferences.tab.notifications">Notificaciones</span>
+        </div>
+      </button>
+      
+      <button 
+        (click)="activeTabIndex = 2" 
+        class="tab-button"
+        [ngClass]="{'active': activeTabIndex === 2}"
+        type="button">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18V3H3zm4.5 14.25A.75.75 0 017 18a.75.75 0 01-.75-.75V9.75a.75.75 0 01.75-.75.75.75 0 01.75.75v7.5zm3.75 0a.75.75 0 01-.75.75.75.75 0 01-.75-.75v-4.5a.75.75 0 01.75-.75.75.75 0 01.75.75v4.5zm3.75 0a.75.75 0 01-.75.75.75.75 0 01-.75-.75v-6a.75.75 0 01.75-.75.75.75 0 01.75.75v6z" />
+          </svg>
+          <span i18n="@@preferences.tab.markets">Mercados</span>
+        </div>
+      </button>
+      
+      <button 
+        (click)="activeTabIndex = 3" 
+        class="tab-button"
+        [ngClass]="{'active': activeTabIndex === 3}"
+        type="button">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span i18n="@@preferences.tab.operations">Operaciones</span>
+        </div>
+      </button>
+        <button 
+        (click)="activeTabIndex = 4" 
+        class="tab-button"
+        [ngClass]="{'active': activeTabIndex === 4}"
+        type="button">
+        <div class="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span i18n="@@preferences.tab.others">Otros</span>
+        </div>
+      </button>
+      </nav>
+      
+      <!-- Botón derecho de desplazamiento -->
+      <button 
+        class="tabs-scroll-button tabs-scroll-right"
+        type="button"
+        (click)="scrollTabs('right')"
+        *ngIf="showRightScrollButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div><!-- Contenido de las pestañas -->
+    <div class="tab-content">      
+      <!-- Panel 1: Alertas de Precio -->
+      <div class="tab-panel" *ngIf="userRole === 'premium'" [ngClass]="{'active': activeTabIndex === 0}">
+        <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.alerts.config_title">Configuración de alertas</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.alerts.description">
+
+          Las alertas te notificarán cuando una acción alcance el precio que hayas establecido.
+        </p>
+
+        <!-- Sección de Activación de Notificaciones -->
+        <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg" *ngIf="notificationSettings">
+          <div class="flex items-center justify-between">
+            <div>
+              <h4 class="font-medium text-gray-800 dark:text-white" i18n="@@preferences.alerts.enable_notifications">Activar notificaciones de precio</h4>
+              <p class="text-sm text-gray-600 dark:text-gray-300" i18n="@@preferences.alerts.enable_description">
+                Recibe alertas cuando tus acciones alcancen los precios objetivo
+              </p>
+            </div>            <mat-slide-toggle 
+              [(ngModel)]="notificationSettings.notify_price_alerts" 
+              (change)="updateNotificationSettings()"
+              color="primary"
+              class="mat-emerald-toggle mt-2">
+            </mat-slide-toggle>
+          </div>
+        </div>
+        
+        <!-- Formulario de creación/edición de alerta -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 border border-emerald-200 dark:border-emerald-900">
+          <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4" i18n="@@preferences.alerts.form_title">
+            {{ editingAlertId === null ? 'Nueva alerta de precio' : 'Editar alerta de precio' }}
+          </h4>
+            
+            <form [formGroup]="alertForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">              <!-- Ticker con autocompletado -->
+              <div class="mb-4">
+                <label for="ticker" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="@@common.ticker">Ticker</label>
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    id="ticker" 
+                    formControlName="ticker" 
+                    placeholder="Ej: AAPL" 
+                    i18n-placeholder="@@preferences.alerts.ticker_placeholder" 
+                    list="ticker-options"
+                    class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                    [ngClass]="{'border-red-500 dark:border-red-400': alertForm.get('ticker')?.invalid && (alertForm.get('ticker')?.dirty || alertForm.get('ticker')?.touched)}"
+                    autocapitalize="characters"
+                  />
+                  <datalist id="ticker-options">
+                    <option *ngFor="let stock of filteredTickers | async" [value]="stock.ticker">{{stock.name}}</option>
+                  </datalist>
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div *ngIf="alertForm.get('ticker')?.invalid && (alertForm.get('ticker')?.dirty || alertForm.get('ticker')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <span *ngIf="alertForm.get('ticker')?.errors?.['required']" i18n="@@validation.required_ticker">El ticker es obligatorio</span>
+                </div>
+              </div>
+              
+              <!-- Nombre de la acción -->
+              <div class="mb-4">
+                <label for="stock_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="@@preferences.alerts.stock_name">Nombre de la acción (opcional)</label>
+                <input 
+                  type="text" 
+                  id="stock_name" 
+                  formControlName="stock_name" 
+                  placeholder="Ej: Apple Inc." 
+                  i18n-placeholder="@@preferences.alerts.stock_name_placeholder" 
+                  class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                />
+              </div>
+              
+              <!-- Precio objetivo -->
+              <div class="mb-4">
+                <label for="target_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="@@preferences.alerts.target_price">Precio objetivo</label>
+                <div class="relative">
+                  <input 
+                    type="number" 
+                    id="target_price" 
+                    formControlName="target_price" 
+                    placeholder="0.00" 
+                    i18n-placeholder="@@common.price_placeholder" 
+                    min="0.01" 
+                    step="0.01" 
+                    class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                    [ngClass]="{'border-red-500 dark:border-red-400': alertForm.get('target_price')?.invalid && (alertForm.get('target_price')?.dirty || alertForm.get('target_price')?.touched)}"
+                  />
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <span class="text-gray-500 dark:text-gray-400">$</span>
+                  </div>
+                </div>
+                <div *ngIf="alertForm.get('target_price')?.invalid && (alertForm.get('target_price')?.dirty || alertForm.get('target_price')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <span *ngIf="alertForm.get('target_price')?.errors?.['required']" i18n="@@validation.required_target_price">El precio objetivo es obligatorio</span>
+                  <span *ngIf="alertForm.get('target_price')?.errors?.['min']" i18n="@@validation.price_min">El precio debe ser mayor que 0</span>
+                </div>
+              </div>
+              
+              <!-- Condición -->
+              <div class="mb-4">
+                <label for="condition" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" i18n="@@preferences.alerts.condition">Condición</label>
+                <select 
+                  id="condition" 
+                  formControlName="condition" 
+                  class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                  [ngClass]="{'border-red-500 dark:border-red-400': alertForm.get('condition')?.invalid && (alertForm.get('condition')?.dirty || alertForm.get('condition')?.touched)}"
+                >
+                  <option value="above" i18n="@@preferences.alerts.condition_above">Por encima del precio objetivo</option>
+                  <option value="below" i18n="@@preferences.alerts.condition_below">Por debajo del precio objetivo</option>
+                </select>
+                <div *ngIf="alertForm.get('condition')?.invalid && (alertForm.get('condition')?.dirty || alertForm.get('condition')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <span *ngIf="alertForm.get('condition')?.errors?.['required']" i18n="@@validation.required_condition">La condición es obligatoria</span>
+                </div>
+              </div>
+              
+              <!-- Checkbox de alerta activa -->
+              <div class="md:col-span-2 flex items-center mb-4">
+                <input 
+                  type="checkbox" 
+                  id="active" 
+                  formControlName="active"
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label for="active" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.alerts.active">
+                  Alerta activa
+                </label>
+              </div>
+              
+              <!-- Botones de acción -->
+              <div class="md:col-span-2 flex justify-end items-center space-x-2 mt-2">
+                <button 
+                  *ngIf="editingAlertId !== null" 
+                  type="button"
+                  (click)="cancelEdit()"
+                  [disabled]="loading.saving"
+                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 transition flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span i18n="@@common.cancel">Cancelar</span>
+                </button>
+                
+                <button 
+                  *ngIf="editingAlertId === null" 
+                  type="button"
+                  [disabled]="alertForm.invalid || loading.saving"
+                  (click)="createAlert()"
+                  class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span i18n="@@preferences.alerts.create_alert">Crear alerta</span>
+                </button>
+                
+                <button 
+                  *ngIf="editingAlertId !== null" 
+                  type="button"
+                  [disabled]="alertForm.invalid || loading.saving"
+                  (click)="updateAlert()"
+                  class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span i18n="@@preferences.alerts.update_alert">Actualizar alerta</span>
+                </button>
+              </div>
+            </form>        </div>
+        
+        <!-- Lista de alertas -->
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-3" i18n="@@preferences.alerts.my_alerts">Mis alertas configuradas</h3>
+          
+          <!-- Estado de carga -->
+          <div *ngIf="loading.alerts" class="flex justify-center p-4">
+            <div class="loading-spinner"></div>
+          </div>
+          
+          <!-- Sin alertas -->
+          <div *ngIf="!loading.alerts && priceAlerts.length === 0" class="p-6 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <p class="font-medium" i18n="@@preferences.alerts.no_alerts">No tienes alertas de precio configuradas</p>
+            <p class="text-sm mt-2" i18n="@@preferences.alerts.create_instruction">Crea una nueva alerta usando el formulario de arriba</p>
+          </div>
+          
+          <!-- Lista de alertas -->
+          <div *ngIf="!loading.alerts && priceAlerts.length > 0" class="space-y-3"><div *ngFor="let alert of priceAlerts" class="relative bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                <div *ngIf="!alert.active" class="absolute top-0 right-0 m-2">
+                  <span class="px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs" i18n="@@common.inactive">
+                    Inactiva
+                  </span>
+                </div>
+                
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <div class="mb-2 md:mb-0">
+                    <div class="flex items-center">
+                      <span class="font-medium text-lg text-emerald-700 dark:text-emerald-400">{{ alert.ticker }}</span>
+                      <span *ngIf="alert.stock_name" class="ml-2 text-gray-600 dark:text-gray-400">
+                        {{ alert.stock_name }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center mt-1">
+                      <span 
+                        [ngClass]="{
+                          'text-green-600 dark:text-green-400': alert.condition === 'above',
+                          'text-red-600 dark:text-red-400': alert.condition === 'below'
+                        }">
+                        {{ alert.target_price | currency:'USD':'symbol':'1.2-2' }}
+                      </span>
+                      <span class="ml-2 text-gray-600 dark:text-gray-400">
+                        {{ alert.condition === 'above' ? 'o superior' : 'o inferior' }}
+                      </span>
+                    </div>
+                    
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Creada el {{ alert.created_at | date:'dd/MM/yyyy' }}
+                    </div>
+                  </div>
+                  
+                  <div class="flex space-x-2">
+                    <button 
+                      class="edit-button p-2 rounded-full text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+                      title="Editar alerta"
+                      (click)="editAlert(alert)">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    
+                    <button 
+                      class="delete-button p-2 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-800 dark:hover:text-red-300 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400"
+                      title="Eliminar alerta"
+                      (click)="deleteAlert(alert.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>      
+        <!-- Panel 2: Notificaciones -->
+      <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 1}">
+        <div class="mb-6">          
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.notifications.config_title">Configuración de métodos de notificación</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.notifications.description">
+            Selecciona cómo quieres recibir tus notificaciones y alertas
+          </p><!-- Formulario de métodos de notificación (nativo) -->
+          <form [formGroup]="notificationMethodForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Email -->
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-emerald-800 dark:text-white" i18n="@@common.email">Email</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.notifications.email_description">
+                      Recibe notificaciones por correo electrónico
+                    </p>
+                  </div>                  <mat-slide-toggle 
+                    formControlName="email"
+                    color="primary"
+                    class="mat-emerald-toggle mt-2">
+                  </mat-slide-toggle>
+                </div>
+              </div>
+              
+              <!-- Notificaciones push -->
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-emerald-800 dark:text-white" i18n="@@preferences.notifications.push_title">Notificaciones push</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.notifications.push_description">
+                      Recibe notificaciones en tu navegador o dispositivo
+                    </p>
+                  </div>                  <mat-slide-toggle 
+                    formControlName="push"
+                    color="primary"
+                    class="mat-emerald-toggle mt-2">
+                  </mat-slide-toggle>
+                </div>
+              </div>
+              
+              <!-- SMS -->
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-emerald-800 dark:text-white" i18n="@@common.sms">SMS</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.notifications.sms_description">
+                      Recibe notificaciones por mensaje de texto
+                    </p>
+                  </div>                  <mat-slide-toggle 
+                    formControlName="sms"
+                    color="primary"
+                    class="mat-emerald-toggle mt-2">
+                  </mat-slide-toggle>
+                </div>
+              </div>
+              
+              <!-- WhatsApp -->
+              <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium text-emerald-800 dark:text-white" i18n="@@common.whatsapp">WhatsApp</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.notifications.whatsapp_description">
+                      Recibe notificaciones por WhatsApp
+                    </p>
+                  </div>                  <mat-slide-toggle 
+                    formControlName="whatsapp"
+                    color="primary"
+                    class="mat-emerald-toggle mt-2">
+                  </mat-slide-toggle>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-end mt-6">
+              <button 
+                type="button"
+                [disabled]="notificationMethodForm.invalid || loading.saving"
+                (click)="saveNotificationMethods()"
+                class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Guardar preferencias
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>      
+    
+    <!-- Contenido de las pestañas -->        <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 2}">
+        <div class="mb-6" *ngIf="userPreferences">          
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.markets.title">Mercados y Sectores de Interés</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.markets.description">
+            Personaliza tus mercados y sectores favoritos para seguimiento
+          </p>
+          
+          <!-- Mercados Favoritos -->
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-6 ">
+            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4" i18n="@@preferences.markets.favorite_markets">Mercados Favoritos</h4>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 ">
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-nyse" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('NYSE')"
+                />
+                <label for="market-nyse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.nyse">
+                  NYSE (New York)
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-nasdaq" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('NASDAQ')"
+                />
+                <label for="market-nasdaq" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.nasdaq">
+                  NASDAQ
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-lse" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('LSE')"
+                />
+                <label for="market-lse" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.lse">
+                  Bolsa de Londres
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-tsx" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('TSE')"
+                />
+                <label for="market-tsx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.tsx">
+                  Bolsa de Toronto
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-asx" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('ASX')"
+                />
+                <label for="market-asx" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.asx">
+                  Bolsa de Sídney
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="market-bmv" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_markets.includes('BMV')"
+                />
+                <label for="market-bmv" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.bmv">
+                  Bolsa Mexicana
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sectores Favoritos -->
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-lg mb-4" i18n="@@preferences.markets.favorite_sectors">Sectores Favoritos</h4>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-tech" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Technology')"
+                />
+                <label for="sector-tech" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.tech">
+                  Tecnología
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-health" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Health')"
+                />
+                <label for="sector-health" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.health">
+                  Salud
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-finance" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Finance')"
+                />
+                <label for="sector-finance" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.finance">
+                  Finanzas
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-energy" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Energy')"
+                />
+                <label for="sector-energy" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.energy">
+                  Energía
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-consumer" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Consumer')"
+                />
+                <label for="sector-consumer" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.consumer">
+                  Consumo
+                </label>
+              </div>
+              
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="sector-materials" 
+                  class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  [checked]="userPreferences.favorite_sectors.includes('Materials')"
+                />
+                <label for="sector-materials" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.markets.sector.materials">
+                  Materiales
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-end mt-6">
+            <button 
+              type="button"
+              (click)="saveMarketSettings()"
+              class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+              </svg>
+              <span i18n="@@preferences.save">Guardar preferencias</span>
+            </button>
+          </div>
+        </div>
+      </div>        <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 3}">
+        <div class="mb-6" *ngIf="userPreferences">          
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.operations.title">Configuración de operaciones</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.operations.description">
+            Personaliza tus preferencias para las operaciones de compra y venta
+          </p>
+          
+          <form [formGroup]="tradeSettingsForm" class="space-y-4">
+            <!-- Seguridad y límites de operaciones -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 mb-5">
+              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4" i18n="@@preferences.operations.security_title">Seguridad y límites</h4>
+              
+              <!-- Límite de operaciones diarias -->
+              <div class="mb-5">
+                <label for="max_operations_per_day" class="block text-sm font-medium text-emerald-700 dark:text-emerald-400 mb-2">
+                  <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span i18n="@@preferences.operations.daily_limit">Límite de operaciones diarias</span>
+                  </div>
+                </label>
+                <input 
+                  type="number" 
+                  id="max_operations_per_day" 
+                  formControlName="max_operations_per_day" 
+                  min="1" 
+                  max="100" 
+                  class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                />
+                <div *ngIf="tradeSettingsForm.get('max_operations_per_day')?.invalid && (tradeSettingsForm.get('max_operations_per_day')?.dirty || tradeSettingsForm.get('max_operations_per_day')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['min']" i18n="@@preferences.operations.limit_min_error">El límite debe ser al menos 1</span>
+                  <span *ngIf="tradeSettingsForm.get('max_operations_per_day')?.errors?.['max']" i18n="@@preferences.operations.limit_max_error">El límite no puede ser mayor a 100</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@preferences.operations.daily_limit_help">
+                  Establece un límite para tus operaciones diarias como medida de seguridad
+                </p>
+              </div>
+              
+              <!-- Confirmar órdenes grandes -->
+              <div class="mb-4">
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    id="confirm_large_orders" 
+                    formControlName="confirm_large_orders"
+                    class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label for="confirm_large_orders" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.operations.confirm_large_orders">
+                    Confirmación adicional para órdenes grandes
+                  </label>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6" i18n="@@preferences.operations.confirm_large_orders_help">
+                  Solicita una confirmación adicional para órdenes que representen un gasto significativo
+                </p>
+              </div>
+            </div>
+            
+            <!-- Configuración de órdenes -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+              <h4 class="text-emerald-700 dark:text-emerald-400 font-medium text-md mb-4" i18n="@@preferences.operations.order_config">Configuración de órdenes</h4>
+              
+              <!-- Tipo de orden predeterminado -->
+              <div class="mb-5">
+                <label for="default_order_type" class="block text-sm font-medium text-emerald-700 dark:text-emerald-400 mb-2">
+                  <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <span i18n="@@preferences.operations.default_order_type">Tipo de orden predeterminado</span>
+                  </div>
+                </label>
+                <select 
+                  id="default_order_type" 
+                  formControlName="default_order_type" 
+                  class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition">
+                  <option value="market" i18n="@@preferences.operations.market_order">Orden a mercado</option>
+                  <option value="limit" i18n="@@preferences.operations.limit_order">Orden limitada</option>
+                  <option value="stop" i18n="@@preferences.operations.stop_order">Orden stop</option>
+                  <option value="stop_limit" i18n="@@preferences.operations.stop_limit_order">Orden stop limitada</option>
+                </select>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@preferences.operations.default_order_help">
+                  Este tipo de orden se usará por defecto al crear nuevas órdenes
+                </p>
+              </div>
+              
+              <!-- Stop Loss automático -->
+              <div class="mb-4">
+                <div class="flex items-center mb-2">
+                  <input 
+                    type="checkbox" 
+                    id="enable_stop_loss" 
+                    formControlName="enable_stop_loss"
+                    class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-400 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label for="enable_stop_loss" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@preferences.operations.auto_stop_loss">
+                    Activar Stop Loss automático
+                  </label>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 ml-6" i18n="@@preferences.operations.auto_stop_loss_help">
+                  Establece un Stop Loss automático para todas las operaciones como protección
+                </p>
+              </div>
+              
+              <!-- Porcentaje de Stop Loss -->
+              <div class="mb-2" *ngIf="tradeSettingsForm.get('enable_stop_loss')?.value">
+                <label for="stop_loss_percentage" class="block text-sm font-medium text-emerald-700 dark:text-emerald-400 mb-1" i18n="@@preferences.operations.stop_loss_percentage">Porcentaje de Stop Loss (%)</label>
+                <input 
+                  type="number" 
+                  id="stop_loss_percentage" 
+                  formControlName="stop_loss_percentage" 
+                  min="1" 
+                  max="50" 
+                  class="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 transition"
+                />
+                <div *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.invalid && (tradeSettingsForm.get('stop_loss_percentage')?.dirty || tradeSettingsForm.get('stop_loss_percentage')?.touched)" class="mt-1 text-xs text-red-600 dark:text-red-400">
+                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['min']" i18n="@@preferences.operations.stop_loss_min_error">El porcentaje debe ser al menos 1%</span>
+                  <span *ngIf="tradeSettingsForm.get('stop_loss_percentage')?.errors?.['max']" i18n="@@preferences.operations.stop_loss_max_error">El porcentaje no puede ser mayor al 50%</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-end mt-6">
+              <button 
+                type="button"
+                [disabled]="tradeSettingsForm.invalid || loading.saving"
+                (click)="saveTradeSettings()"
+                class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                <span i18n="@@preferences.save">Guardar preferencias</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+        <!-- Panel 5: Otras configuraciones -->
+        <div class="tab-panel" [ngClass]="{'active': activeTabIndex === 4}">
+        <div class="mb-6" *ngIf="notificationSettings">          
+          <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.others.title">Configuración general de notificaciones</h3>
+          <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.others.description">
+            Personaliza qué tipo de notificaciones quieres recibir
+          </p>
+          
+          <div class="space-y-4">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.market_open_close">Apertura y cierre de mercados</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.market_open_close_desc">
+                    Recibe notificaciones sobre la apertura y cierre de los mercados
+                  </p>
+                </div>                <mat-slide-toggle 
+                  [(ngModel)]="notificationSettings.notify_admin_close_markets" 
+                  (change)="updateNotificationSettings()"
+                  color="primary"
+                  class="mat-emerald-toggle mt-2">
+                </mat-slide-toggle>
+              </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.daily_summary">Resumen diario</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.daily_summary_desc">
+                    Recibe un resumen diario de tus operaciones
+                  </p>
+                </div>                <mat-slide-toggle 
+                  [(ngModel)]="notificationSettings.notify_daily_summary" 
+                  (change)="updateNotificationSettings()"
+                  color="primary"
+                  class="mat-emerald-toggle mt-2">
+                </mat-slide-toggle>
+              </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-medium text-emerald-700 dark:text-emerald-400" i18n="@@preferences.others.executed_orders">Órdenes ejecutadas</h4>
+                  <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@preferences.others.executed_orders_desc">
+                    Recibe notificaciones cuando se ejecuten tus órdenes
+                  </p>
+                </div>                <mat-slide-toggle 
+                  [(ngModel)]="notificationSettings.notify_orders_executed" 
+                  (change)="updateNotificationSettings()"
+                  color="primary"
+                  class="mat-emerald-toggle mt-2">
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

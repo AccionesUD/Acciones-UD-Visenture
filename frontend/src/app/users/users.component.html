@@ -1,0 +1,297 @@
+<div class="min-h-screen bg-gradient-to-r from-green-400 via-emerald-500 to-teal-600 dark:from-emerald-800 dark:via-teal-800 dark:to-emerald-900 p-4 transition-colors duration-300">
+
+  <!-- Card Principal -->
+  <div class="flex justify-center pb-6">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300 border border-gray-500 dark:border-gray-700">
+      
+      <!-- Encabezado y Acciones -->
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-500 dark:border-gray-700">
+        <h1 class="text-2xl font-bold text-center bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent mb-4 sm:mb-0" i18n="@@users.management.title">Gestión de Usuarios</h1>
+        <div class="flex space-x-3">
+          <button 
+            (click)="loadUsers(true)" 
+            [disabled]="isLoading" 
+            class="flex items-center px-4 py-2 bg-white border border-emerald-500 dark:bg-slate-800 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span i18n="@@common.actions.refresh">Refrescar</span>
+          </button>
+          <button 
+            (click)="openCreateUserDialog()" 
+            class="flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 rounded-lg transition-colors duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            <span i18n="@@users.actions.create.user">Crear Usuario</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado de carga principal -->
+      <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+        <mat-spinner diameter="50" color="primary"></mat-spinner>
+        <div class="ml-4">
+          <p class="text-lg font-medium text-gray-600 dark:text-gray-300" i18n="@@users.loading.title">Cargando usuarios...</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400" i18n="@@common.loading.wait.message">Esto puede tardar unos segundos</p>
+        </div>
+      </div>
+
+      <!-- Estado de error principal -->
+      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/30 border border-gray-500 dark:border-red-800 rounded-lg p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
+        <div class="flex items-center mb-4 md:mb-0">
+          <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
+          <div>
+            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@commissioner.error.contact.support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+          </div>
+        </div>
+        <button mat-stroked-button color="warn" (click)="loadUsers(true)" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+          <span i18n="@@common.actions.retry">Reintentar</span>
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <form *ngIf="!isLoading && !error" [formGroup]="filterForm" (ngSubmit)="onFilterSubmit()" class="mb-6 p-4 bg-emerald-100 dark:bg-slate-800 rounded-lg border border-gray-500 dark:border-gray-700">
+        <h3 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3 flex items-center">
+          <mat-icon class="mr-2 text-indigo-500 dark:text-indigo-400">filter_list</mat-icon>
+          <span i18n="@@common.filters.title">Filtros</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Campo de búsqueda -->
+          <div class="relative">
+            <label for="search-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.search.label">Buscar usuario</label>
+            <div class="relative">
+              <input 
+                id="search-filter"
+                formControlName="search" 
+                i18n-placeholder="@@users.filters.search.placeholder"
+                placeholder="Nombre, email..." 
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-200"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-blue-500 dark:text-blue-400">search</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtro por rol -->
+          <div class="relative">
+            <label for="role-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.role.label">Filtrar por rol</label>
+            <div class="relative">
+              <select 
+                id="role-filter"
+                formControlName="role"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
+                <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-indigo-500 dark:text-indigo-400">admin_panel_settings</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtro por estado -->
+          <div class="relative">
+            <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.status.label">Filtrar por estado</label>
+            <div class="relative">
+              <select 
+                id="status-filter"
+                formControlName="status"
+                class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
+                <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-purple-500 dark:text-purple-400">verified_user</mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de acción para los filtros -->
+        <div class="flex justify-end mt-4 space-x-2">
+          <button 
+            type="button" 
+            (click)="clearFilters()" 
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">clear</mat-icon>
+            <span i18n="@@common.actions.clear">Limpiar</span>
+          </button>
+          <button 
+            type="submit" 
+            class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            [disabled]="isLoading">
+            <mat-icon class="mr-1">search</mat-icon>
+            <span i18n="@@common.actions.apply">Aplicar</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Tabla de Usuarios -->
+      <div *ngIf="!isLoading && !error" class="commissioner-table-container overflow-x-auto shadow border border-gray-500 dark:border-gray-700 rounded-lg">
+        <div class="overflow-x-auto">
+          <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
+                class="min-w-full commissioner-table">
+
+            <!-- Columna de Selección -->
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                              [checked]="selection.hasValue() && isAllSelected()"
+                              [indeterminate]="selection.hasValue() && !isAllSelected()"
+                              [aria-label]="checkboxLabel()">
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="$event ? selection.toggle(row) : null"
+                              [checked]="selection.isSelected(row)"
+                              [aria-label]="checkboxLabel(row)">
+                </mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- Columna Nombre -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.name.label">Nombre</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">{{ getFullName(user) }}</td>
+            </ng-container>
+
+            <!-- Columna Email -->
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.email.label">Email</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">{{ user.email }}</td>
+            </ng-container>
+
+            <!-- Columna Rol -->
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.role.label">Rol</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
+                <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getRoleClass(user.role)">
+                  {{ getRoleDisplay(user.role) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Columna Estado -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.status.label">Estado</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
+                <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(user.status)">
+                  <svg class="inline-block mr-1.5 h-2 w-2" [ngClass]="getStatusIndicatorClass(user.status)" fill="currentColor" viewBox="0 0 8 8">
+                    <circle cx="4" cy="4" r="3" />
+                  </svg>
+                  {{ getStatusDisplay(user.status) }}
+                </span>
+              </td>
+            </ng-container>
+            
+            <!-- Columna Acciones -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.actions.label">Acciones</th>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
+                <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.view.details.tooltip" matTooltip="Ver Detalles" class="action-icon">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.edit.user.tooltip" matTooltip="Editar Usuario" class="action-icon">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.delete.user.tooltip" matTooltip="Eliminar Usuario" class="action-icon-delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="mat-header-row"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)" class="hover:bg-emerald-50/50 dark:hover:bg-slate-700/50 transition-colors"></tr>
+            
+            <!-- Fila para cuando no hay datos -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="px-6 py-8 text-center text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700" [attr.colspan]="displayedColumns.length">
+                <div class="flex flex-col items-center">
+                  <mat-icon class="text-gray-400 dark:text-gray-500 mb-2 text-5xl">search_off</mat-icon>
+                  <p>
+                    <ng-container *ngIf="!isLoading && dataSource.data.length === 0 && (filterForm.dirty || (totalUsers === 0 && !filterForm.dirty))">
+                      <span i18n="@@users.no.results.filters">No se encontraron usuarios que coincidan con los filtros.</span>
+                    </ng-container>
+                    <ng-container *ngIf="!isLoading && totalUsers === 0 && !filterForm.dirty && !error">
+                      <span i18n="@@users.no.users.registered">No hay usuarios registrados en el sistema.</span>
+                    </ng-container>
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+        
+        <!-- Paginador -->
+        <mat-paginator [length]="totalUsers"
+                      [pageSize]="pageSize"
+                      [pageSizeOptions]="pageSizeOptions"
+                      [pageIndex]="currentPage"
+                      (page)="handlePageEvent($event)"
+                      i18n-aria-label="@@users.paginator.aria.label"
+                      aria-label="Seleccionar página de usuarios"
+                      class="sticky-paginator bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-gray-700">
+        </mat-paginator>
+      </div>
+
+      <!-- Sección de Gráficos -->
+      <div *ngIf="!isLoading && !error && totalUsers > 0" class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.role.distribution.title">Distribución por Rol</h3>
+          <div id="userRoleChart" style="min-height: 350px;">
+            <apx-chart
+              [series]="roleDistributionChartOptions.series!"
+              [chart]="roleDistributionChartOptions.chart!"
+              [labels]="roleDistributionChartOptions.labels!"
+              [responsive]="roleDistributionChartOptions.responsive!"
+              [legend]="roleDistributionChartOptions.legend!"
+              [colors]="roleDistributionChartOptions.colors!"
+              [tooltip]="roleDistributionChartOptions.tooltip!"
+              [dataLabels]="roleDistributionChartOptions.dataLabels!"
+              [plotOptions]="roleDistributionChartOptions.plotOptions!"
+            ></apx-chart>
+          </div>
+        </div>
+
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.status.distribution.title">Distribución por Estado</h3>
+          <div id="userStatusChart" style="min-height: 350px;">
+            <apx-chart
+              [series]="statusDistributionChartOptions.series!"
+              [chart]="statusDistributionChartOptions.chart!"
+              [labels]="statusDistributionChartOptions.labels!"
+              [responsive]="statusDistributionChartOptions.responsive!"
+              [legend]="statusDistributionChartOptions.legend!"
+              [colors]="statusDistributionChartOptions.colors!"
+              [tooltip]="statusDistributionChartOptions.tooltip!"
+              [dataLabels]="statusDistributionChartOptions.dataLabels!"
+              [plotOptions]="statusDistributionChartOptions.plotOptions!"
+            ></apx-chart>
+          </div>
+        </div>
+
+        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
+          <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.registration.trend.title">Tendencia de Registros</h3>
+          <div id="userRegistrationChart" style="min-height: 365px;">
+            <apx-chart
+              [series]="registrationTrendChartOptions.series!"
+              [chart]="registrationTrendChartOptions.chart!"
+              [xaxis]="registrationTrendChartOptions.xaxis!"
+              [yaxis]="registrationTrendChartOptions.yaxis!"
+              [stroke]="registrationTrendChartOptions.stroke!"
+              [tooltip]="registrationTrendChartOptions.tooltip!"
+              [dataLabels]="registrationTrendChartOptions.dataLabels!"
+              [legend]="registrationTrendChartOptions.legend!"
+              [colors]="registrationTrendChartOptions.colors!"
+              [grid]="registrationTrendChartOptions.grid!"
+              [markers]="registrationTrendChartOptions.markers!"
+            ></apx-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
