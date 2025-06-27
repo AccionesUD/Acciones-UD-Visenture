@@ -64,7 +64,7 @@ import { PaymentsModule } from './payments/payments.module';
     TransactionsModule,
     RolesPermissionModule,
     AlpacaMarketModule,
-    EventsAlpacaModule
+    EventsAlpacaModule,
     NotificationsModule,
     AdvisorModule,
     PremiumModule,
