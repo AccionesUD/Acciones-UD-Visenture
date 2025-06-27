@@ -139,4 +139,21 @@ export class PortfolioService {
     // Si no hay ID de cliente válido
     return of([]);
   }
+
+  /**
+   * Obtiene las órdenes del usuario
+   */
+  getOrders(): Observable<any> {
+    const url = `${environment.apiUrl}/accounts/orders`;
+    return this.http.get<any>(url).pipe(
+      map(res => {
+        console.log('[PortfolioService] Respuesta de getOrders:', res);
+        return res;
+      }),
+      catchError(error => {
+        console.error('[PortfolioService] Error al obtener órdenes:', error);
+        return of([]);
+      })
+    );
+  }
 }

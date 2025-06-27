@@ -95,8 +95,8 @@ export class AddFundsComponent implements OnInit {
     this.fundsService.addFunds(amount).subscribe({
       next: (response) => {
         this.submitting = false;
-        // Consideramos éxito solo si la respuesta es 200 y response.success === true
-        if (response && response.success) {
+        console.log('[AddFundsComponent] Respuesta recibida en addFunds:', response);
+        if (response && response.success === true) {
           this.successAnimation = true;
           this.errorAnimation = false;
           this.snackBar.open(response.message || 'Fondos añadidos exitosamente', 'Cerrar', { 
@@ -111,8 +111,9 @@ export class AddFundsComponent implements OnInit {
         } else {
           this.successAnimation = false;
           this.errorAnimation = true;
+          console.error('[AddFundsComponent] Error o respuesta inesperada:', response);
           let errorMsg = response?.message || 'Error al añadir fondos';
-          if (response?.code === 'DAILY_LIMIT_EXCEEDED' || errorMsg.toLowerCase().includes('una transacción diaria')) {
+          if (typeof errorMsg === 'string' && errorMsg.toLowerCase().includes('una transacción diaria')) {
             errorMsg = 'Solo puedes realizar una transacción de fondeo por día.';
           }
           this.snackBar.open(errorMsg, 'Cerrar', { 
@@ -128,6 +129,7 @@ export class AddFundsComponent implements OnInit {
         this.submitting = false;
         this.successAnimation = false;
         this.errorAnimation = true;
+        console.error('[AddFundsComponent] Error en addFunds:', error);
         let errorMsg = 'Error en la transacción';
         if (error?.error?.code === 'DAILY_LIMIT_EXCEEDED' || (error?.error?.message && error.error.message.toLowerCase().includes('una transacción diaria'))) {
           errorMsg = 'Solo puedes realizar una transacción de fondeo por día.';
