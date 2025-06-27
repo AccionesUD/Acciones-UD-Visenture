@@ -16,6 +16,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
 import { RolesGuard } from 'src/roles-permission/roles.guard';
 import { AccountsService } from './services/accounts.service';
+import { UpdateUserByAdminDto } from './dtos/update-user-by-admin.dto';
+import { UpdateUserByAdminResponse } from './dtos/update-user-by-admin-response.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('accounts')
@@ -86,5 +88,14 @@ export class AccountsController {
       Number(id),
       body.roleIds,
     );
+  }
+
+  @Patch('admin/update-user')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async updateUserByAdmin(
+    @Body() dto: UpdateUserByAdminDto,
+  ): Promise<UpdateUserByAdminResponse> {
+    return this.accountsService.updateUserByAdmin(dto);
   }
 }
