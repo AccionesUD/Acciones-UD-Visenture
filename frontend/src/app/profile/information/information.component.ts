@@ -146,8 +146,9 @@ export class InformationComponent implements OnInit {
     // Validamos el formulario
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
-      // Mostrar un mensaje de error específico
-      this.snackBar.open('Por favor, complete correctamente todos los campos requeridos', 'Cerrar', {
+      this.saveError = 'Por favor, complete correctamente todos los campos requeridos';
+      this.saveSuccess = null;
+      this.snackBar.open(this.saveError, 'Cerrar', {
         duration: 4000,
         panelClass: ['error-snackbar']
       });
@@ -157,17 +158,19 @@ export class InformationComponent implements OnInit {
     // Verificar si hubo cambios reales en los valores editables
     if (this.profileData &&
         this.profileData.email === this.profileForm.get('email')?.value &&
-        this.profileData.phone_number === this.profileForm.get('phone_number')?.value) {
-      
-      // No hay cambios, solo cerramos el modo edición
-      this.snackBar.open('No se detectaron cambios en el perfil', 'Cerrar', {
-        duration: 3000
+        this.profileData.phone_number === this.profileForm.get('phone_number')?.value &&
+        this.profileData.address === this.profileForm.get('address')?.value) {
+      this.saveError = null;
+      this.saveSuccess = 'No se detectaron cambios en el perfil';
+      this.snackBar.open(this.saveSuccess, 'Cerrar', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
       });
-      
       this.isEditing = false;
       this.formSubmitted = false;
       this.profileForm.get('email')?.disable();
       this.profileForm.get('phone_number')?.disable();
+      this.profileForm.get('address')?.disable();
       return;
     }
     
@@ -177,44 +180,42 @@ export class InformationComponent implements OnInit {
     // Preparamos solo los datos que necesitamos actualizar
     const updatedData: UpdateProfileDto = {
       email: this.profileForm.get('email')?.value,
-      phone_number: this.profileForm.get('phone_number')?.value, // El servicio lo adapta a 'phone'
+      phone_number: this.profileForm.get('phone_number')?.value,
       address: this.profileForm.get('address')?.value
     };
 
-    // Guardamos los cambios mediante el servicio
+    console.log('Intentando guardar cambios de perfil:', updatedData);
     this.profileService.updateProfile(updatedData).subscribe({
       next: (response) => {
         this.isSaving = false;
-        if (response.success) {
-          this.saveSuccess = 'Perfil actualizado correctamente';
+        console.log('Respuesta del backend al actualizar perfil:', response);
+        // Refuerzo: solo éxito si success === true y status 200
+        if (response && response.success === true) {
+          this.saveSuccess = response.message || 'Perfil actualizado correctamente';
           this.saveError = null;
-          this.snackBar.open('Perfil actualizado correctamente', 'Cerrar', {
+          this.snackBar.open(this.saveSuccess, 'Cerrar', {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          
-          // Actualizamos el estado del componente
           this.isEditing = false;
           this.formSubmitted = false;
-          
-          // Deshabilitar los campos editables
           this.profileForm.get('email')?.disable();
           this.profileForm.get('phone_number')?.disable();
           this.profileForm.get('address')?.disable();
-          
-          // Actualizar datos locales con la respuesta del servidor
           if (response.data) {
             this.profileData = response.data;
+            console.log('Datos de perfil actualizados localmente:', this.profileData);
           } else if (this.profileData) {
-            // Si no hay datos en la respuesta, actualizamos manualmente
             this.profileData = {
               ...this.profileData,
               ...updatedData
             };
+            console.log('Datos de perfil actualizados manualmente:', this.profileData);
           }
         } else {
-          this.saveError = response.message || 'Error al actualizar perfil';
+          this.saveError = response && response.message ? response.message : 'Error al actualizar perfil';
           this.saveSuccess = null;
+          console.error('Error en respuesta de backend:', response);
           this.snackBar.open(this.saveError, 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -223,10 +224,14 @@ export class InformationComponent implements OnInit {
       },
       error: (err) => {
         this.isSaving = false;
-        this.saveError = 'Error al comunicarse con el servidor';
+        this.saveError = (err && err.status === 0)
+          ? 'No se pudo conectar con el servidor'
+          : (err && err.error && err.error.message)
+            ? err.error.message
+            : 'Error al comunicarse con el servidor';
         this.saveSuccess = null;
-        console.error('Error al actualizar perfil:', err);
-        this.snackBar.open(this.saveError, 'Cerrar', {
+        console.error('Error al comunicarse con el backend:', err);
+        this.snackBar.open(this.saveError || 'Error desconocido', 'Cerrar', {
           duration: 5000,
           panelClass: ['error-snackbar']
         });

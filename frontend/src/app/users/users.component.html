@@ -83,7 +83,7 @@
                 id="role-filter"
                 formControlName="role"
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
-                <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+                <option *ngFor="let role of roles" [value]="role.value" i18n>{{ role.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-indigo-500 dark:text-indigo-400">admin_panel_settings</mat-icon>
@@ -174,7 +174,7 @@
                     <span class="ml-1 text-xs text-gray-400 dark:text-gray-500 align-middle">…</span>
                   </ng-container>
                 </span>
-                <span *ngIf="!user.roles || user.roles.length === 0" class="text-gray-400 italic">Sin rol</span>
+                <span *ngIf="!user.roles || user.roles.length === 0" class="text-gray-400 italic" i18n="@@users.no.role">Sin rol</span>
               </td>
             </ng-container>
 
@@ -256,7 +256,7 @@
               [plotOptions]="roleDistributionChartOptions.plotOptions!"
             ></apx-chart>
             <div *ngIf="!roleDistributionChartOptions || !roleDistributionChartOptions.series" class="text-center text-gray-500 dark:text-gray-400 py-8">
-              <span>No hay datos para mostrar la gráfica de roles.</span>
+              <span i18n="@@users.charts.role.no.data">No hay datos para mostrar la gráfica de roles.</span>
             </div>
           </div>
         </div>
@@ -297,7 +297,7 @@
               [markers]="registrationTrendChartOptions.markers!"
             ></apx-chart>
             <div *ngIf="!registrationTrendChartOptions || !registrationTrendChartOptions.series" class="text-center text-gray-500 dark:text-gray-400 py-8">
-              <span>No hay datos para mostrar la tendencia de registros.</span>
+              <span i18n="@@users.charts.registration.no.data">No hay datos para mostrar la tendencia de registros.</span>
             </div>
           </div>
         </div>

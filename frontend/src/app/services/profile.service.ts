@@ -132,25 +132,39 @@ export class ProfileService {
   
   /**
    * Actualiza los datos del perfil del usuario
+   * MOCK: retorna siempre un objeto con success, message y data
    */
   updateProfile(profileData: UpdateProfileDto): Observable<ProfileUpdateResponse> {
-    // Adaptar el DTO para enviar los nombres correctos al backend
-    const payload: any = {
-      email: profileData.email,
-      phone: profileData.phone_number, // El backend espera 'phone'
-      address: profileData.address
+    // En producción:
+    // const payload: any = {
+    //   email: profileData.email,
+    //   phone: profileData.phone_number, // El backend espera 'phone'
+    //   address: profileData.address
+    // };
+    // return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, payload).pipe(...)
+
+    // MOCK para desarrollo:
+    const mockUser: User = {
+      id: 1,
+      first_name: 'Mock',
+      last_name: 'User',
+      email: profileData.email || 'mock@user.com',
+      phone_number: profileData.phone_number || '555-0101',
+      address: profileData.address || 'Calle Falsa 123',
+      roles: ['admin'],
+      status: 'active',
+      email_verified_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      last_login: new Date().toISOString(),
+      identity_document: '123456789',
+      birthdate: new Date()
     };
-    return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, payload).pipe(
-      tap((response: any) => {
-        if (response.success && response.data) {
-          this.userProfileSubject.next(response.data as User);
-        }
-      }),
-      catchError(this.handleError<ProfileUpdateResponse>('updateProfile', {
-        success: false,
-        message: 'Error al actualizar el perfil'
-      }))
-    );
+    return of({
+      success: true,
+      message: 'Perfil actualizado correctamente',
+      data: mockUser
+    });
   }
   
   /**

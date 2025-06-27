@@ -5,7 +5,7 @@
         i18n="@@user-edit.dialog.title">
       Editar Usuario
     </h2>
-    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors" i18n-title="@@user-edit.close-dialog.tooltip" title="Cerrar diálogo">
       <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
     </button>
   </div>
@@ -143,8 +143,11 @@
                          [value]="role.name"
                          [checked]="editForm.value.roles?.includes(role.name)"
                          (change)="onRoleCheckboxChange($event, role.name)"
-                         class="form-checkbox h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
-                  <span>{{ role.displayName || role.name }}</span>
+                         class="form-checkbox h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                         i18n-title="@@user-edit.roles.checkbox.tooltip"
+                         [title]="'Seleccionar rol ' + (role.displayName || role.name)"
+                  >
+                  <span i18n="@@user-edit.roles.checkbox.label">{{ role.displayName || role.name }}</span>
                 </label>
               </ng-container>
             </div>

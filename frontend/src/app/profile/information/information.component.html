@@ -8,6 +8,8 @@
         (click)="toggleEdit()"
         *ngIf="!isLoading"
         class="rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+        i18n-title="@@profile.information.edit-cancel.tooltip"
+        [title]="!isEditing ? 'Editar información' : 'Cancelar edición'"
       >
         <mat-icon class="mr-1">{{ !isEditing ? 'edit' : 'close' }}</mat-icon>
         <span *ngIf="!isEditing" i18n="@@profile.information.edit-button">Editar</span>
@@ -63,6 +65,8 @@
             formControlName="first_name" 
             class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
             [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+            placeholder="Nombre"
+            i18n-placeholder="@@profile.information.first-name.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <mat-icon class="text-gray-400">person</mat-icon>
@@ -79,6 +83,8 @@
             formControlName="last_name" 
             class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
             [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+            placeholder="Apellido"
+            i18n-placeholder="@@profile.information.last-name.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <mat-icon class="text-gray-400">person</mat-icon>
@@ -95,6 +101,8 @@
             formControlName="identity_document" 
             class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
             [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+            placeholder="Documento de identidad"
+            i18n-placeholder="@@profile.information.id-document.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <mat-icon class="text-gray-400">badge</mat-icon>
@@ -111,6 +119,8 @@
             formControlName="birthdate" 
             class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
             [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+            placeholder="Fecha de nacimiento"
+            i18n-placeholder="@@profile.information.birth-date.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <mat-icon class="text-gray-400">cake</mat-icon>
@@ -137,6 +147,8 @@
               'border-red-500 dark:border-red-400': profileForm.get('email')?.invalid && (profileForm.get('email')?.touched || formSubmitted),
               'border-emerald-500 dark:border-emerald-400': isEditing && profileForm.get('email')?.valid
             }"
+            placeholder="Correo electrónico"
+            i18n-placeholder="@@profile.information.email.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3" [ngClass]="{'pointer-events-none': !isEditing}">
             <mat-icon [ngClass]="{'text-emerald-500 dark:text-emerald-400': isEditing, 'text-gray-400': !isEditing}">email</mat-icon>
@@ -165,6 +177,8 @@
               'border-red-500 dark:border-red-400': profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.touched || formSubmitted),
               'border-emerald-500 dark:border-emerald-400': isEditing && profileForm.get('phone_number')?.valid
             }"
+            placeholder="Teléfono"
+            i18n-placeholder="@@profile.information.phone.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3" [ngClass]="{'pointer-events-none': !isEditing}">
             <mat-icon [ngClass]="{'text-emerald-500 dark:text-emerald-400': isEditing, 'text-gray-400': !isEditing}">phone</mat-icon>
@@ -192,6 +206,8 @@
               'border-red-500 dark:border-red-400': profileForm.get('address')?.invalid && (profileForm.get('address')?.touched || formSubmitted),
               'border-emerald-500 dark:border-emerald-400': isEditing && profileForm.get('address')?.valid
             }"
+            placeholder="Dirección"
+            i18n-placeholder="@@profile.information.address.placeholder"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
             <mat-icon class="text-gray-400">home</mat-icon>
@@ -237,9 +253,11 @@
         mat-flat-button
         class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
         (click)="goToSecurity()"
+        i18n-title="@@profile.information.security.button.tooltip"
+        title="Ir a seguridad"
       >
         <mat-icon class="mr-1">security</mat-icon>
-        <span i18n="@@profile.information.go-to-security">Ir a Seguridad</span>
+        <span i18n="@@profile.information.security.button">Cambiar contraseña</span>
       </button>
     </div>
   </div>
