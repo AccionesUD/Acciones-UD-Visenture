@@ -16,6 +16,14 @@ import { AccountsService } from './services/accounts.service';
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async getAllUsersWithRoles() {
+    return await this.accountsService.findAllWithRoles();
+  }
+
   // Endpoint de prueba solo para administradores
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'comisionista')

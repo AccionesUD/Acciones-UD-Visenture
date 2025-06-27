@@ -27,7 +27,7 @@ export class AccountsService {
     @Inject(forwardRef(() => AlpacaBrokerService))
     private alpacaBrokerService: AlpacaBrokerService,
     private readonly notificationSettingsService: NotificationSettingsService,
-  ) { }
+  ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
     const hashedPassword = await this.hashingProvider.hashPassword(
@@ -57,7 +57,8 @@ export class AccountsService {
       const savedAccount = await this.accountRepository.save(account);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       await this.notificationSettingsService.createDefaultSettings(
-        savedAccount);
+        savedAccount,
+      );
     } catch (error) {
       throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
     }
@@ -177,5 +178,31 @@ export class AccountsService {
     if (!account) throw new NotFoundException('Cuenta no encontrada');
     account.email = newEmail;
     return this.accountRepository.save(account);
+  }
+
+  //obtener todo de un usuario:
+
+  async findAllWithRoles(): Promise<
+    {
+      userId: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      roles: string[];
+    }[]
+  > {
+    // Trae todas las cuentas con su user y sus roles
+    const accounts = await this.accountRepository.find({
+      relations: ['user', 'roles'],
+    });
+
+    // Mapear al formato deseado
+    return accounts.map((acc) => ({
+      userId: acc.user.identity_document,
+      firstName: acc.user.first_name,
+      lastName: acc.user.last_name,
+      email: acc.email,
+      roles: acc.roles.map((r) => r.name),
+    }));
   }
 }

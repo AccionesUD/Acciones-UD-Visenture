@@ -197,6 +197,8 @@ export class UsersService {
     };
   }
 
+  //retornar todo para admin
+
   // async changePassword(identity_document: string, data: ChangePasswordDto) {
   //   // Busca el usuario y la cuenta relacionada
   //   const user = await this.userRepository.findOne({
