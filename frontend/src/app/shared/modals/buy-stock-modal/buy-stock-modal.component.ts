@@ -196,23 +196,8 @@ export class BuyStockModalComponent implements OnInit {
     if (formValues.orderType !== 'market') {
       buyOrder.limit_price = formValues.limitPrice;
     }
-    this.buysService.checkFundsAvailability(this.estimatedNet).subscribe({
-      next: (hasFunds) => {
-        this.successMessage = null;
-        if (!hasFunds) {
-          this.isLoading = false;
-          this.error = 'Fondos insuficientes para completar esta compra.';
-          return;
-        }
-        this.processBuyOrder(buyOrder);
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.successMessage = null;
-        this.error = 'Error al verificar fondos disponibles. Intente nuevamente.';
-        console.error('Error al verificar fondos:', err);
-      }
-    });
+    // Llamar al método que realmente procesa la orden
+    this.processBuyOrder(buyOrder);
   }
 
   private processBuyOrder(buyOrder: BuyOrder): void {
@@ -221,26 +206,30 @@ export class BuyStockModalComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         this.successMessage = null;
-        if (response && response.id) {
-          this.operationResult = {
-            success: true,
-            status: response.status || 'pending',
-            orderId: response.id,
-            filledQuantity: response.qty,
-            boughtAt: response.limit_price || this.data.price,
-            totalAmount: response.qty * (response.limit_price || this.data.price || 0),
-            fee: response.fee || 0,
-            submittedAt: response.created_at ? new Date(response.created_at) : new Date(),
-            filledAt: response.filled_at ? new Date(response.filled_at) : undefined
-          };
-          // Reproducir sonido de éxito
+        // Solo reproducir sonido si el status es 200 o 201
+        if (response.status === 200 || response.status === 201) {
           try {
             const audio = new Audio('/assets/sounds/success.mp3');
             audio.volume = 0.2;
             audio.play().catch(() => {});
           } catch (e) {}
+        }
+        const body = response.body;
+        if (body && body.id) {
+          this.operationResult = {
+            success: true,
+            status: body.status || 'pending',
+            orderId: body.id,
+            filledQuantity: body.qty,
+            boughtAt: body.limit_price || this.data.price,
+            totalAmount: body.qty * (body.limit_price || this.data.price || 0),
+            fee: body.fee || 0,
+            submittedAt: body.created_at ? new Date(body.created_at) : new Date(),
+            filledAt: body.filled_at ? new Date(body.filled_at) : undefined
+          };
+          this.successMessage = '¡Orden de compra enviada correctamente!';
         } else {
-          this.error = response.message || 'Error al procesar la orden de compra';
+          this.error = body?.message || 'Error al procesar la orden de compra';
         }
       },
       error: (err) => {

@@ -105,6 +105,7 @@
           </div>
 
           <!-- Teléfono -->
+          <!--
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.phone-number.label">
               Número de Teléfono <span class="text-red-500">*</span>
@@ -128,6 +129,7 @@
               {{ getFieldErrorMessage('phone_number') }}
             </p>
           </div>
+          -->
 
           <!-- Rol -->
           <div class="space-y-2">
@@ -143,6 +145,33 @@
               {{ getFieldErrorMessage('role') }}
             </p>
           </div>
+
+          <!-- Dirección -->
+          <!--
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.address.label">
+              Dirección <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="address" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('address')"
+                [class.focus:border-red-500]="hasFieldError('address')"
+                [class.focus:ring-red-500]="hasFieldError('address')"
+                placeholder="Ingresa la dirección"
+                i18n-placeholder="@@user-edit.address.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('address')">home</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('address')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('address') }}
+            </p>
+          </div>
+          -->
         </div>
 
         <!-- Información adicional -->

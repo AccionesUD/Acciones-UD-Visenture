@@ -240,7 +240,7 @@
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.role.distribution.title">Distribución por Rol</h3>
           <div id="userRoleChart" style="min-height: 350px;">
-            <apx-chart
+            <apx-chart *ngIf="roleDistributionChartOptions && roleDistributionChartOptions.series"
               [series]="roleDistributionChartOptions.series!"
               [chart]="roleDistributionChartOptions.chart!"
               [labels]="roleDistributionChartOptions.labels!"
@@ -251,9 +251,13 @@
               [dataLabels]="roleDistributionChartOptions.dataLabels!"
               [plotOptions]="roleDistributionChartOptions.plotOptions!"
             ></apx-chart>
+            <div *ngIf="!roleDistributionChartOptions || !roleDistributionChartOptions.series" class="text-center text-gray-500 dark:text-gray-400 py-8">
+              <span>No hay datos para mostrar la gráfica de roles.</span>
+            </div>
           </div>
         </div>
 
+        <!-- Gráfica de Distribución por Estado comentada por falta de endpoint backend
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.status.distribution.title">Distribución por Estado</h3>
           <div id="userStatusChart" style="min-height: 350px;">
@@ -270,11 +274,12 @@
             ></apx-chart>
           </div>
         </div>
+        -->
 
         <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.registration.trend.title">Tendencia de Registros</h3>
           <div id="userRegistrationChart" style="min-height: 365px;">
-            <apx-chart
+            <apx-chart *ngIf="registrationTrendChartOptions && registrationTrendChartOptions.series"
               [series]="registrationTrendChartOptions.series!"
               [chart]="registrationTrendChartOptions.chart!"
               [xaxis]="registrationTrendChartOptions.xaxis!"
@@ -287,6 +292,9 @@
               [grid]="registrationTrendChartOptions.grid!"
               [markers]="registrationTrendChartOptions.markers!"
             ></apx-chart>
+            <div *ngIf="!registrationTrendChartOptions || !registrationTrendChartOptions.series" class="text-center text-gray-500 dark:text-gray-400 py-8">
+              <span>No hay datos para mostrar la tendencia de registros.</span>
+            </div>
           </div>
         </div>
       </div>

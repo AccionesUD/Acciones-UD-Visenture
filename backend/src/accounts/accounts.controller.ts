@@ -17,32 +17,41 @@ import { Roles } from 'src/roles-permission/roles.decorator';
 import { RolesGuard } from 'src/roles-permission/roles.guard';
 import { AccountsService } from './services/accounts.service';
 
-
-
 @UseGuards(JwtAuthGuard)
 @Controller('accounts')
 export class AccountsController {
-    constructor(
-        private readonly accountsService: AccountsService
-    ) { }
+  constructor(private readonly accountsService: AccountsService) {}
 
-    @Post('/funding')
-    async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
-        return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.sub)
-    }
+  @Post('/funding')
+  async createTransaction(
+    @Body() makeFundignAccountDto: MakeFundignAccountDto,
+    @Req() req,
+  ) {
+    return this.accountsService.fundingAccount(
+      makeFundignAccountDto,
+      req.user.sub,
+    );
+  }
 
-    @Get('/balance')
-    async getBalanceAccount(@Req() req){
-        return this.accountsService.getBalanceAccount(req.user.sub)
-    }
+  @Get('/balance')
+  async getBalanceAccount(@Req() req) {
+    return this.accountsService.getBalanceAccount(req.user.sub);
+  }
 
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Get('/orders')
-    async getOrdersAccount(@Req() req){
-        return this.accountsService.getOrdersAccount(req.user.sub)
-    }
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/orders')
+  async getOrdersAccount(@Req() req) {
+    return this.accountsService.getOrdersAccount(req.user.sub);
+  }
 
-    // Endpoint de prueba solo para administradores
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async getAllUsersWithRoles() {
+    return await this.accountsService.findAllWithRoles();
+  }
+
+  // Endpoint de prueba solo para administradores
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'comisionista')
   @Get('admin-only')

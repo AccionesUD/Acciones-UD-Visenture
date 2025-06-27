@@ -121,7 +121,6 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadUsers();
     this.loadUserStats();
     this.setupThemeObserver();
-
     this.filterForm.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
@@ -174,35 +173,26 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.updateChartThemes();
   }
 
+  // Cambia la fuente de usuarios para la tabla a /accounts
   loadUsers(fromRefresh: boolean = false): void {
     this.isLoading = true;
     this.error = null;
     if (fromRefresh) {
-      this.selection.clear(); // Limpiar selección al refrescar
+      this.selection.clear();
     }
-
-    const filters: UserFilters = {
-      ...this.filterForm.value,
-      page: this.currentPage + 1, // API es 1-indexed
-      limit: this.pageSize,
-      sort_by: this.sort ? this.sort.active : 'first_name', // Default sort
-      sort_order: this.sort ? this.sort.direction : 'asc',
-    };
-
-    this.userService.getUsers(filters).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => {
-        this.dataSource.data = response.data;
-        this.totalUsers = response.pagination.total;
-        // MatPaginator se actualiza automáticamente si se le asigna el length
-        // this.paginator.length = this.totalUsers; // No es necesario si se usa this.totalUsers en el template
+    this.userService.getUsersFromAccounts().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (users) => {
+        console.log('Usuarios recibidos de /accounts:', users); // LOG para depuración
+        this.dataSource.data = users;
+        this.totalUsers = users.length;
         this.isLoading = false;
-        this.cdr.detectChanges(); // Forzar detección de cambios si es necesario
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = `Error al cargar usuarios: ${err.message || 'Error desconocido'}`;
         this.snackBar.open(this.error, 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] });
         this.isLoading = false;
-        this.dataSource.data = []; // Limpiar datos en caso de error
+        this.dataSource.data = [];
         this.totalUsers = 0;
         this.cdr.detectChanges();
       }
@@ -211,23 +201,27 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   loadUserStats(): void {
     this.isLoadingStats = true;
     this.userService.getUserStats().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (stats: UserStats) => {
-        // Asegurarse de que todos los campos requeridos estén definidos en stats
+      next: (stats: any) => {
+        // Mapear la data real del backend a la estructura esperada por los gráficos
+        // stats.byRole: { admin: number, commissioner: number, client: number, ... }
+        // stats.byStatus: { active: number, inactive: number, pending: number, ... }
+        // stats.registrationTrend: [{ month: '2025-06', count: 10 }, ...]
         const validatedStats: UserStats = {
           total_users: stats.total_users || 0,
-          active_users: stats.active_users || 0,
-          inactive_users: stats.inactive_users || 0,
-          pending_users: stats.pending_users || 0,
-          admins_count: stats.admins_count || 0,
-          commissioners_count: stats.commissioners_count || 0,
-          clients_count: stats.clients_count || 0,
-          registrations_by_month: stats.registrations_by_month || [],
-          // Opcional: mantener compatibilidad con campos adicionales
+          active_users: stats.byStatus?.active || 0,
+          inactive_users: stats.byStatus?.inactive || 0,
+          pending_users: stats.byStatus?.pending || 0,
+          admins_count: stats.byRole?.admin || 0,
+          commissioners_count: stats.byRole?.commissioner || 0,
+          clients_count: stats.byRole?.client || 0,
+          registrations_by_month: (stats.registrationTrend || stats.registrations_by_month || []).map((r: any) => ({
+            month: r.month || r.date || '',
+            count: r.count || 0
+          })),
           byRole: stats.byRole,
           byStatus: stats.byStatus,
-          registrationTrend: stats.registrationTrend
+          registrationTrend: stats.registrationTrend || stats.registrations_by_month || []
         };
-        
         this.initializeCharts(validatedStats);
         this.isLoadingStats = false;
         this.cdr.detectChanges();
@@ -332,22 +326,25 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   **/
   openEditUserDialog(user: User): void {
+    // Aseguramos que el usuario tenga identity_document, phone_number y address correctamente mapeados
     const dialogRef = this.dialog.open(UserEditDialogComponent, {
       width: '800px',
       maxWidth: '95vw',
-      disableClose: true, // Prevenir cierre accidental
-      autoFocus: false, // Evitar el autofocus que puede ser problemático
+      disableClose: true,
+      autoFocus: false,
       panelClass: 'user-edit-dialog',
-      data: { 
-        user: { ...user }, 
-        isAdmin: true, // Asumiendo que solo los admins pueden editar usuarios
+      data: {
+        user: {
+          ...user,
+          phone_number: user.phone_number || (user as any).phone || '',
+          address: user.address || (user as any).direccion || ''
+        },
+        isAdmin: true,
         roles: this.roles
       }
     });
-    
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Aquí iría la lógica para actualizar el usuario
         this.loadUsers();
         this.loadUserStats();
         this.snackBar.open('Usuario actualizado exitosamente.', 'Cerrar', { duration: 3000 });
@@ -427,9 +424,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // --- Métodos para Gráficos ---
   initializeCharts(stats: UserStats | null): void {
+    console.log('Estadísticas recibidas para gráficos:', stats); // LOG para depuración
     const isDark = document.documentElement.classList.contains('dark');
-    const textColor = isDark ? '#FFFFFF' : '#374151'; // Tailwind text-gray-700 or white
-    const gridColor = isDark ? '#4B5563' : '#E5E7EB'; // Tailwind gray-600 or gray-200
+    const textColor = isDark ? '#FFFFFF' : '#374151';
+    const gridColor = isDark ? '#4B5563' : '#E5E7EB';
 
     const defaultChartConfig: Partial<ChartOptions> = {
       chart: {
@@ -439,33 +437,45 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
         toolbar: { show: false }
       },
       theme: { mode: isDark ? 'dark' : 'light' },
-      dataLabels: { enabled: true, style: { colors: [isDark ? '#374151' : '#FFFFFF'] } }, // Ajustar color de datalabels
+      dataLabels: { enabled: true, style: { colors: [isDark ? '#374151' : '#FFFFFF'] } },
       legend: { position: 'bottom', labels: { colors: textColor } },
       tooltip: { theme: isDark ? 'dark' : 'light' },
-    };    // Gráfico de Distribución por Rol
+    };
+    // Gráfico de Distribución por Rol usando datos reales del backend
+    const byRole = stats?.byRole || {};
+    console.log('Datos para gráfica de roles:', byRole); // LOG para depuración
+    const roleLabels = Object.keys(byRole).length > 0 ? Object.keys(byRole).map(role => this.getRoleDisplay(role)) : ['N/A'];
+    const roleSeries = Object.keys(byRole).length > 0 ? Object.values(byRole) : [0];
+    console.log('Labels de roles:', roleLabels, 'Series de roles:', roleSeries); // LOG para depuración
     this.roleDistributionChartOptions = {
       ...defaultChartConfig,
-      series: stats ? [stats.admins_count || 0, stats.commissioners_count || 0, stats.clients_count || 0] : [0,0,0],
-      labels: ['Administradores', 'Comisionistas', 'Clientes'],
-      colors: ['#10B981', '#3B82F6', '#F59E0B'],
+      series: roleSeries,
+      labels: roleLabels,
+      colors: ['#10B981', '#3B82F6', '#F59E0B', '#6366F1', '#F43F5E', '#A21CAF', '#F472B6'],
       title: { text: 'Distribución por Rol', align: 'center', style: { color: textColor } },
     };
 
-    // Gráfico de Distribución por Estado
+    // Gráfico de Distribución por Estado usando datos reales del backend (comentado)
+    /*
+    const byStatus = stats?.byStatus || {};
+    console.log('Datos para gráfica de estado:', byStatus); // LOG para depuración
+    const statusLabels = Object.keys(byStatus).length > 0 ? Object.keys(byStatus).map(status => this.getStatusDisplay(status)) : ['N/A'];
+    const statusSeries = Object.keys(byStatus).length > 0 ? Object.values(byStatus) : [0];
     this.statusDistributionChartOptions = {
       ...defaultChartConfig,
-      series: stats ? [stats.active_users || 0, stats.inactive_users || 0, stats.pending_users || 0] : [0,0,0],
-      labels: ['Activos', 'Inactivos', 'Pendientes'],
-      colors: ['#22C55E', '#EF4444', '#6B7280'],
+      series: statusSeries,
+      labels: statusLabels,
+      colors: ['#22C55E', '#EF4444', '#6B7280', '#F59E42', '#6366F1'],
       title: { text: 'Distribución por Estado', align: 'center', style: { color: textColor } },
-    };    // Gráfico de Tendencia de Registros
-    // El servicio devuelve { month: string, count: number }[] en registrations_by_month
+    };
+    */
+    // Gráfico de Tendencia de Registros
     const registrationLabels = stats?.registrations_by_month?.map((r: { month: string, count: number }) => {
-      // Formatear el mes para que sea más legible
-      const dateObj = new Date(r.month + '-01'); // Asumir que month está en formato 'YYYY-MM'
+      const dateObj = new Date(r.month + '-01');
       return dateObj.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
     }) || ['N/A'];
     const registrationCounts = stats?.registrations_by_month?.map((r: { month: string, count: number }) => r.count) || [0];
+    console.log('Labels de registros:', registrationLabels, 'Series de registros:', registrationCounts); // LOG para depuración
 
     this.registrationTrendChartOptions = {
       chart: {
@@ -480,7 +490,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       series: [{ name: 'Nuevos Registros', data: registrationCounts }],
       xaxis: {
         type: 'category',
-        categories: registrationLabels, // Usar las etiquetas formateadas
+        categories: registrationLabels,
         labels: { style: { colors: textColor } }
       },
       yaxis: { title: { text: 'Cantidad de Registros', style: { color: textColor } }, labels: { style: { colors: textColor } } },
@@ -489,13 +499,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       grid: { borderColor: gridColor, row: { colors: [isDark ? 'transparent' : '#f3f4f6', 'transparent'], opacity: 0.5 } },
       tooltip: {
         theme: isDark ? 'dark' : 'light',
-        x: { 
-          // No se necesita format si las categorías ya son strings legibles
-          // format: 'dd MMM' // Ajustar si es necesario y si las categorías son timestamps
-        } 
+        x: { }
       },
     };
-    this.cdr.detectChanges(); // Forzar detección de cambios
+    this.cdr.detectChanges();
   }
 
   updateChartThemes(): void {
@@ -579,13 +586,15 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   public getRoleDisplay(role: string | undefined): string {
-    if (!role) return 'N/A';
-    switch (role) {
-      case 'admin': return $localize`:@@role.admin:Administrador`;
-      case 'commissioner': return $localize`:@@role.commissioner:Comisionista`;
-      case 'client': return $localize`:@@role.client:Cliente`;
-      default: return role.charAt(0).toUpperCase() + role.slice(1);
-    }
+    if (!role) return '';
+    const map: any = {
+      'admin': 'Administrador',
+      'commissioner': 'Comisionista',
+      'client': 'Cliente',
+      'usuario_premium': 'Usuario Premium',
+      'usuario': 'Usuario'
+    };
+    return map[role] || role;
   }
 
   public getStatusDisplay(status: string | undefined): string {

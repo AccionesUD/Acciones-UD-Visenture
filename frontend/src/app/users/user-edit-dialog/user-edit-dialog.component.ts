@@ -60,20 +60,16 @@ export class UserEditDialogComponent implements OnInit {
     // Configuración del diálogo
     this.dialogRef.disableClose = false;
     this.dialogRef.addPanelClass('user-edit-dialog');
-    
     // Inicialización de datos
     this.user = data.user;
-    
     // Crear formulario con valores iniciales y validaciones mejoradas
     this.editForm = this.fb.group({
       first_name: [this.user.first_name, [Validators.required, Validators.minLength(2)]],
       last_name: [this.user.last_name, [Validators.required, Validators.minLength(2)]],
       email: [this.user.email, [Validators.required, Validators.email]],
-      phone_number: [
-        this.user.phone_number, 
-        [Validators.required, phoneNumberValidator()]
-      ],
-      role: [null, Validators.required]
+      // phone_number: [this.user.phone_number || '', [Validators.required, phoneNumberValidator()]],
+      // address: [this.user.address || ''],
+      role: [this.user.role || null, Validators.required]
     });
   }
 
@@ -143,7 +139,6 @@ export class UserEditDialogComponent implements OnInit {
    */
   onSave(): void {
     this.formSubmitted = true;
-
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
       this.snackBar.open('Por favor, corrige los errores en el formulario', 'Cerrar', {
@@ -152,64 +147,39 @@ export class UserEditDialogComponent implements OnInit {
       });
       return;
     }
-
-    if (!this.user.id) {
+    if (!this.user.id && !this.user.identity_document) {
       this.snackBar.open('Error: ID de usuario no encontrado', 'Cerrar', {
         duration: 5000,
         panelClass: ['error-snackbar']
       });
       return;
     }
-
     this.isSaving = true;
     const updatedData = this.editForm.value;
-    const roleChanged = updatedData.role !== this.initialRole;
-    const updateInfo$ = this.usersService.updateUser(this.user.id, {
-      first_name: updatedData.first_name,
-      last_name: updatedData.last_name,
-      email: updatedData.email,
-      phone_number: updatedData.phone_number
-    });
-    const roleObj = this.roles.find(r => r.name === updatedData.role || r.id === updatedData.role);
-    const roleId = roleObj ? roleObj.id : updatedData.role;
-    const updateRole$ = roleChanged ? this.http.patch(`/api/accounts/${this.user.id}/roles`, { roleIds: [roleId] }) : null;
-    // Ejecutar ambas operaciones secuencialmente si aplica
-    updateInfo$.subscribe({
-      next: (infoResp: any) => {
-        if (roleChanged && updateRole$) {
-          updateRole$.subscribe({
-            next: () => {
-              this.isSaving = false;
-              this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
-              });
-              this.dialogRef.close({ ...infoResp.data, role: updatedData.role });
-            },
-            error: (error: any) => {
-              this.isSaving = false;
-              let errorMessage = 'Error al actualizar el rol';
-              if (error?.error?.message) {
-                errorMessage = error.error.message;
-              }
-              this.snackBar.open(errorMessage, 'Cerrar', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-              });
-            }
-          });
-        } else {
-          this.isSaving = false;
-          this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.dialogRef.close(infoResp.data);
-        }
+    // Solo cambiar el rol usando el endpoint correspondiente
+    const userId = typeof this.user.id === 'number' ? this.user.id : undefined;
+    console.log('Intentando cambiar rol. userId:', userId, 'Nuevo rol:', updatedData.role);
+    if (!userId) {
+      this.snackBar.open('Error: ID numérico de usuario no encontrado', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+      this.isSaving = false;
+      return;
+    }
+    this.usersService.changeUserRole(userId, updatedData.role).subscribe({
+      next: (resp) => {
+        console.log('Respuesta del cambio de rol:', resp);
+        this.isSaving = false;
+        this.snackBar.open('Rol actualizado con éxito', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.dialogRef.close({ ...updatedData });
       },
       error: (error: any) => {
         this.isSaving = false;
-        let errorMessage = 'Error al actualizar el usuario';
+        let errorMessage = 'Error al actualizar el rol';
         if (error?.error?.message) {
           errorMessage = error.error.message;
         }
