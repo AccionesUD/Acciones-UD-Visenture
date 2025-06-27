@@ -16,56 +16,33 @@ export class FundsService {
   /**
    * Obtiene el saldo actual de la cuenta del usuario
    */
-  getAccountBalance(): Observable<AccountBalance> {
-    // En producción: return this.http.get<AccountBalance>(`${this.apiUrl}/account/balance`);
-    
-    // Mock para desarrollo
-    return of({
-      id: 1,
-      user_id: 1,
-      balance: 5000.00,
-      available_balance: 4200.00,
-      pending_funds: 800.00,
-      currency: 'USD',
-      last_deposit: {
-        amount: 1000.00,
-        date: new Date(new Date().setDate(new Date().getDate() - 3)),
-        status: 'completed'
-      },
-      updated_at: new Date()
-    } as AccountBalance).pipe(
-      tap(balance => console.log('Account balance loaded:', balance)),
-      catchError(this.handleError<AccountBalance>('getAccountBalance'))
+  getAccountBalance(): Observable<any> {
+    // Llamada real al backend para ver la estructura del balance
+    return this.http.get<any>(`${this.apiUrl}/accounts/balance`).pipe(
+      tap(balance => {
+        console.log('Balance recibido del backend:', balance);
+      }),
+      catchError(this.handleError<any>('getAccountBalance'))
     );
   }
 
   /**
    * Añade fondos a la cuenta del usuario
    */
-  addFunds(request: AddFundsRequest): Observable<PaymentResponse> {
-    // En producción: return this.http.post<PaymentResponse>(`${this.apiUrl}/account/add-funds`, request);
-    
-    // Mock para desarrollo
-    return of({
-      success: true,
-      message: 'Fondos añadidos correctamente',
-      payment: {
-        id: Math.floor(Math.random() * 1000) + 1,
-        amount: request.amount,
-        description: request.description || 'Depósito de fondos',
-        status: 'pending',
-        date_created: new Date(),
-      }
-    } as PaymentResponse).pipe(
-      tap(response => console.log('Funds added:', response)),
-      catchError(this.handleError<PaymentResponse>('addFunds'))
+  addFunds(amount: number): Observable<any> {
+    // Llamada real al backend para fondeo
+    return this.http.post<any>(`${this.apiUrl}/accounts/funding`, { amountTranfer: amount }).pipe(
+      tap(response => {
+        console.log('Respuesta de fondeo:', response);
+      }),
+      catchError(this.handleError<any>('addFunds'))
     );
   }
 
   /**
    * Obtiene el historial de pagos del usuario
    */
-  getPaymentsHistory(page: number = 1, limit: number = 10): Observable<Payment[]> {
+  /**getPaymentsHistory(page: number = 1, limit: number = 10): Observable<Payment[]> {
     // En producción: return this.http.get<Payment[]>(`${this.apiUrl}/account/payments?page=${page}&limit=${limit}`);
     
     // Mock para desarrollo
@@ -97,7 +74,7 @@ export class FundsService {
       tap(payments => console.log('Payments history loaded:', payments)),
       catchError(this.handleError<Payment[]>('getPaymentsHistory', []))
     );
-  }
+  }**/
 
   /**
    * Maneja errores HTTP

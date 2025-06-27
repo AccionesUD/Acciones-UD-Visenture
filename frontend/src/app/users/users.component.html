@@ -13,18 +13,18 @@
             [disabled]="isLoading" 
             class="flex items-center px-4 py-2 bg-white border border-emerald-500 dark:bg-slate-800 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span i18n="@@common.actions.refresh">Refrescar</span>
           </button>
+          <!-- Botón de crear usuario eliminado temporalmente por falta de endpoint backend
           <button 
             (click)="openCreateUserDialog()" 
             class="flex items-center px-4 py-2 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 rounded-lg transition-colors duration-150">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
             <span i18n="@@users.actions.create.user">Crear Usuario</span>
           </button>
+          -->
         </div>
       </div>
 
@@ -91,7 +91,7 @@
             </div>
           </div>
 
-          <!-- Filtro por estado -->
+          <!-- Filtro por estado (comentado por falta de endpoint)
           <div class="relative">
             <label for="status-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" i18n="@@users.filters.status.label">Filtrar por estado</label>
             <div class="relative">
@@ -106,6 +106,7 @@
               </div>
             </div>
           </div>
+          -->
         </div>
 
         <!-- Botones de acción para los filtros -->
@@ -132,8 +133,7 @@
       <div *ngIf="!isLoading && !error" class="commissioner-table-container overflow-x-auto shadow border border-gray-500 dark:border-gray-700 rounded-lg">
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)"
-                class="min-w-full commissioner-table">
-
+          >
             <!-- Columna de Selección -->
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">
@@ -174,32 +174,30 @@
               </td>
             </ng-container>
 
-            <!-- Columna Estado -->
+            <!-- Columna Estado comentada por falta de endpoint backend
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header="status" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.status.label">Estado</th>
-              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
-                <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getStatusClass(user.status)">
-                  <svg class="inline-block mr-1.5 h-2 w-2" [ngClass]="getStatusIndicatorClass(user.status)" fill="currentColor" viewBox="0 0 8 8">
-                    <circle cx="4" cy="4" r="3" />
-                  </svg>
-                  {{ getStatusDisplay(user.status) }}
-                </span>
-              </td>
+              <th mat-header-cell *matHeaderCellDef i18n="@@users.table.status">Estado</th>
+              <td mat-cell *matCellDef="let user">{{ getStatusDisplay(user.status) }}</td>
             </ng-container>
+            -->
             
             <!-- Columna Acciones -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.actions.label">Acciones</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-right text-sm border-b border-gray-200 dark:border-gray-700">
+                <!-- Botón de ver detalles comentado por falta de endpoint
                 <button mat-icon-button (click)="viewUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.view.details.tooltip" matTooltip="Ver Detalles" class="action-icon">
                   <mat-icon>visibility</mat-icon>
                 </button>
+                -->
                 <button mat-icon-button (click)="openEditUserDialog(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.edit.user.tooltip" matTooltip="Editar Usuario" class="action-icon">
                   <mat-icon>edit</mat-icon>
                 </button>
+                <!-- Botón de eliminar usuario comentado por falta de endpoint
                 <button mat-icon-button (click)="deleteUser(user); $event.stopPropagation()" i18n-matTooltip="@@users.actions.delete.user.tooltip" matTooltip="Eliminar Usuario" class="action-icon-delete">
                   <mat-icon>delete</mat-icon>
                 </button>
+                -->
               </td>
             </ng-container>
 

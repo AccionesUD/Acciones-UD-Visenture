@@ -90,7 +90,7 @@ export class BuyStockModalComponent implements OnInit {
     });
     
     // Actualizar validators según cambie el tipo de orden
-    this.buyForm.get('orderType')?.valueChanges.subscribe(orderType => {
+    this.buyForm.get('orderType')?.valueChanges.subscribe((orderType: string) => {
       const limitPriceControl = this.buyForm.get('limitPrice');
       if (!limitPriceControl) return;
       
@@ -175,45 +175,35 @@ export class BuyStockModalComponent implements OnInit {
       Object.keys(this.buyForm.controls).forEach(key => {
         this.buyForm.get(key)?.markAsTouched();
       });
-      
       this.error = 'Por favor, complete correctamente todos los campos del formulario.';
       return;
     }
-    
     this.isLoading = true;
     this.error = null;
     this.successMessage = 'Verificando disponibilidad de fondos...';
-    
     const formValues = this.buyForm.value;
+    // Crear el objeto BuyOrder según el modelo actualizado
     const buyOrder: BuyOrder = {
-      stockId: this.data.stock.id.toString(),
-      stockSymbol: this.data.stock.symbol,
-      quantity: formValues.quantity,
-      orderType: formValues.orderType,
-      price: this.data.price,
-      timeInForce: formValues.timeInForce,
-      extendedHours: formValues.extendedHours
+      symbol: this.data.stock.symbol,
+      qty: formValues.quantity,
+      side: 'buy',
+      type: formValues.orderType,
+      time_in_force: formValues.timeInForce
     };
-    
-    // Si la orden es para un cliente, añadir el clientId
     if (this.data.clientId) {
-      buyOrder.clientId = this.data.clientId;
+      buyOrder.account_commissioner = this.data.clientId.toString();
     }
-    
     if (formValues.orderType !== 'market') {
-      buyOrder.limitPrice = formValues.limitPrice;
+      buyOrder.limit_price = formValues.limitPrice;
     }
-    
     this.buysService.checkFundsAvailability(this.estimatedNet).subscribe({
       next: (hasFunds) => {
         this.successMessage = null;
-        
         if (!hasFunds) {
           this.isLoading = false;
           this.error = 'Fondos insuficientes para completar esta compra.';
           return;
         }
-        
         this.processBuyOrder(buyOrder);
       },
       error: (err) => {
@@ -227,15 +217,22 @@ export class BuyStockModalComponent implements OnInit {
 
   private processBuyOrder(buyOrder: BuyOrder): void {
     this.successMessage = 'Procesando orden de compra...';
-    
     this.buysService.submitBuyOrder(buyOrder).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.successMessage = null;
-        
-        if (response.success) {
-          this.operationResult = response;
-          
+        if (response && response.id) {
+          this.operationResult = {
+            success: true,
+            status: response.status || 'pending',
+            orderId: response.id,
+            filledQuantity: response.qty,
+            boughtAt: response.limit_price || this.data.price,
+            totalAmount: response.qty * (response.limit_price || this.data.price || 0),
+            fee: response.fee || 0,
+            submittedAt: response.created_at ? new Date(response.created_at) : new Date(),
+            filledAt: response.filled_at ? new Date(response.filled_at) : undefined
+          };
           // Reproducir sonido de éxito
           try {
             const audio = new Audio('/assets/sounds/success.mp3');
@@ -249,7 +246,7 @@ export class BuyStockModalComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.successMessage = null;
-        this.error = 'Error de conexión. Por favor, inténtelo de nuevo.';
+        this.error = err?.error?.message || 'Error de conexión. Por favor, inténtelo de nuevo.';
         console.error('Error en la compra:', err);
       }
     });

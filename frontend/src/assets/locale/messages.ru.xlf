@@ -2420,7 +2420,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="markets.edit-opening-time.disclaimer" datatype="html">
-        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon class=&quot;text-blue-500 dark:text-blue-400 align-text-bottom text-sm&quot;&gt;"/>info<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Esta configuración sólo afecta a la hora de apertura mostrada en la aplicación. No modifica el horario real del mercado. </source>
+        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon class=&quot;text-blue-500 dark:text-blue-400 align-text-bottom text-sm&quot;&gt;"/>Информация<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Эта конфигурация влияет только на время открытия, показанное в приложении. Это не изменяет реальное график рынка. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/edit-opening-time-dialog/edit-opening-time-dialog.component.html</context>
           <context context-type="linenumber">58,60</context>
@@ -5094,6 +5094,7 @@
       </trans-unit>
       <trans-unit id="4996271085363585486" datatype="html">
         <source> Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones. </source>
+        <target> Средства, полученные из этой продажи (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) oни уже были аккредитованы в своем счете. Вы уже можете использовать эти средства для новых операций. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/sell-stock-modal/sell-stock-modal.component.html</context>
           <context context-type="linenumber">330,332</context>

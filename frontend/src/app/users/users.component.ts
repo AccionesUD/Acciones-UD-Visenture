@@ -61,7 +61,7 @@ import { UsersService } from '../services/user.service';
 })
 export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   // Propiedades para la tabla
-  displayedColumns: string[] = ['select', 'name', 'email', 'role', 'status', 'actions']; // Eliminado 'last_login'
+  displayedColumns: string[] = ['select', 'name', 'email', 'role'/*, 'status'*/, 'actions']; // Columna 'status' comentada
   dataSource: MatTableDataSource<User> = new MatTableDataSource<User>([]);
   selection = new SelectionModel<User>(true, []);
 
@@ -77,17 +77,15 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   // Filtros
   filterForm: FormGroup;
   roles: { value: string, label: string }[] = [
-    { value: '', label: 'Todos los roles' },
-    { value: 'admin', label: 'Administrador' },
-    { value: 'commissioner', label: 'Comisionista' },
-    { value: 'client', label: 'Cliente' }
+    { value: '', label: 'Todos los roles' }
   ];
-  statuses: { value: string, label: string }[] = [
-    { value: '', label: 'Todos los estados' },
-    { value: 'active', label: 'Activo' },
-    { value: 'inactive', label: 'Inactivo' },
-    { value: 'pending', label: 'Pendiente' }
-  ];
+  // Filtro de estado comentado por falta de endpoint
+  // statuses: { value: string, label: string }[] = [
+  //   { value: '', label: 'Todos los estados' },
+  //   { value: 'active', label: 'Activo' },
+  //   { value: 'inactive', label: 'Inactivo' },
+  //   { value: 'pending', label: 'Pendiente' }
+  // ];
 
   // Paginación
   totalUsers = 0;
@@ -114,11 +112,12 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filterForm = this.fb.group({
       search: [''],
       role: [''],
-      status: ['']
+      // status: [''] // Filtro de estado comentado
     });
   }
 
   ngOnInit(): void {
+    this.loadRoles();
     this.loadUsers();
     this.loadUserStats();
     this.setupThemeObserver();
@@ -243,6 +242,29 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  /**
+   * Carga los roles dinámicamente desde el backend y actualiza el filtro
+   */
+  loadRoles(): void {
+    this.userService.getRoles().subscribe({
+      next: (roles) => {
+        this.roles = [
+          { value: '', label: 'Todos los roles' },
+          ...roles.map((r: any) => ({ value: r.name, label: r.displayName || r.name }))
+        ];
+      },
+      error: () => {
+        // Fallback si falla la carga
+        this.roles = [
+          { value: '', label: 'Todos los roles' },
+          { value: 'admin', label: 'Administrador' },
+          { value: 'commissioner', label: 'Comisionista' },
+          { value: 'client', label: 'Cliente' }
+        ];
+      }
+    });
+  }
+
   applyFilters(): void {
     this.paginator.pageIndex = 0;
     this.currentPage = 0;
@@ -285,7 +307,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id}`;
   }
-  
+  /** 
   openCreateUserDialog(): void {
     const dialogRef = this.dialog.open(UserEditDialogComponent, {
       width: '800px',
@@ -308,7 +330,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-  
+  **/
   openEditUserDialog(user: User): void {
     const dialogRef = this.dialog.open(UserEditDialogComponent, {
       width: '800px',
@@ -319,8 +341,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       data: { 
         user: { ...user }, 
         isAdmin: true, // Asumiendo que solo los admins pueden editar usuarios
-        roles: this.roles,
-        statuses: this.statuses
+        roles: this.roles
       }
     });
     
@@ -333,7 +354,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-  
+  /** 
   viewUser(user: User): void {
     const dialogRef = this.dialog.open(UserDetailDialogComponent, {
       width: '900px', // Aumentamos el ancho del diálogo
@@ -402,6 +423,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     // });
     this.snackBar.open(`Funcionalidad "Eliminar ${selectedUsers.length} Usuarios Seleccionados" no implementada completamente.`, 'Cerrar', { duration: 3000 });
   }
+  **/
 
   // --- Métodos para Gráficos ---
   initializeCharts(stats: UserStats | null): void {

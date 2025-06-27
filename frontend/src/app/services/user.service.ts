@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, delay, map } from 'rxjs';
-import { environmentExample } from '../../environments/environmentexample';
+import { environment } from '../../environments/environment';
 import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } from '../models/user.model';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } fr
 })
 
 export class UsersService {
-  private apiUrl = environmentExample.apiUrl || 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl || 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -45,6 +45,7 @@ export class UsersService {
   /**
    * Obtiene un usuario por su ID
    */
+  /**
   getUserById(userId: number): Observable<{success: boolean, data: User}> {
     // En producción:
     // return this.http.get<{success: boolean, data: User}>(`${this.apiUrl}/admin/users/${userId}`);
@@ -56,10 +57,11 @@ export class UsersService {
       data: user!
     }).pipe(delay(300));
   }
-
+  **/
   /**
    * Crea un nuevo usuario
    */
+  /**
   createUser(userData: Partial<User>): Observable<ProfileUpdateResponse> {
     // En producción:
     // return this.http.post<ProfileUpdateResponse>(`${this.apiUrl}/admin/users`, userData);
@@ -85,7 +87,7 @@ export class UsersService {
       data: newUser
     }).pipe(delay(500));
   }
-
+   */
   /**
    * Actualiza un usuario
    */
@@ -120,6 +122,7 @@ export class UsersService {
   /**
    * Elimina un usuario
    */
+  /**
   deleteUser(userId: number): Observable<{ success: boolean, message: string }> {
     // En producción:
     // return this.http.delete<{ success: boolean, message: string }>(`${this.apiUrl}/admin/users/${userId}`);
@@ -139,6 +142,7 @@ export class UsersService {
   /**
    * Elimina múltiples usuarios
    */
+  /** 
   deleteMultipleUsers(userIds: number[]): Observable<{ success: boolean, message: string, count: number }> {
     // En producción:
     // return this.http.post<{ success: boolean, message: string, count: number }>(
@@ -218,6 +222,13 @@ export class UsersService {
     };
     
     return of(stats).pipe(delay(400));
+  }
+
+  /**
+   * Obtiene la lista de roles disponibles desde el backend
+   */
+  getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/roles`);
   }
 
   // --- Métodos MOCK ---

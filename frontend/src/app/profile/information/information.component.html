@@ -160,6 +160,22 @@
           {{ getPhoneErrorMessage() }}
         </div>
       </div>
+      
+      <!-- Dirección -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@profile.information.address.label">Dirección</label>
+        <div class="relative">
+          <input 
+            type="text" 
+            formControlName="address" 
+            class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+            [ngClass]="{'bg-gray-100 dark:bg-gray-800': !isEditing}"
+          >
+          <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <mat-icon class="text-gray-400">home</mat-icon>
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Botones de acción -->

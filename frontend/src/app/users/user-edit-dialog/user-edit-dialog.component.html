@@ -29,11 +29,9 @@
 
         <!-- Campos del formulario -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
           <!-- Nombre -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
-                   i18n="@@user-edit.first-name.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.first-name.label">
               Nombre <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -58,8 +56,7 @@
 
           <!-- Apellido -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
-                   i18n="@@user-edit.last-name.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.last-name.label">
               Apellido <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -84,8 +81,7 @@
 
           <!-- Email -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
-                   i18n="@@user-edit.email.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.email.label">
               Correo Electrónico <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -110,8 +106,7 @@
 
           <!-- Teléfono -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
-                   i18n="@@user-edit.phone-number.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.phone-number.label">
               Número de Teléfono <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -134,6 +129,20 @@
             </p>
           </div>
 
+          <!-- Rol -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.role.label">
+              Rol <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <select formControlName="role" class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors">
+                <option *ngFor="let role of roles" [value]="role.name">{{ role.displayName || role.name }}</option>
+              </select>
+            </div>
+            <p *ngIf="hasFieldError('role')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('role') }}
+            </p>
+          </div>
         </div>
 
         <!-- Información adicional -->

@@ -51,7 +51,8 @@ export class InformationComponent implements OnInit {
       identity_document: [{value: '', disabled: true}],
       email: [{value: '', disabled: true}, [Validators.required, Validators.email]],
       phone_number: [{value: '', disabled: true}, [Validators.required, Validators.pattern('^[+]?[0-9 ]{10,15}$')]],
-      birthdate: [{value: '', disabled: true}]
+      birthdate: [{value: '', disabled: true}],
+      address: [{value: '', disabled: true}]
     });
   }
 
@@ -75,6 +76,7 @@ export class InformationComponent implements OnInit {
         // Aseguramos que los campos editables estén deshabilitados inicialmente
         this.profileForm.get('email')?.disable();
         this.profileForm.get('phone_number')?.disable();
+        this.profileForm.get('address')?.disable();
       },
       error: (err) => {
         console.error('Error al cargar datos del perfil:', err);
@@ -99,7 +101,8 @@ export class InformationComponent implements OnInit {
       identity_document: data.identity_document || 'No disponible',
       email: data.email,
       phone_number: data.phone_number,
-      birthdate: data.birthdate ? new Date(data.birthdate).toLocaleDateString() : 'No disponible'
+      birthdate: data.birthdate ? new Date(data.birthdate).toLocaleDateString() : 'No disponible',
+      address: data.address || 'No disponible'
     });
   }
 
@@ -111,6 +114,7 @@ export class InformationComponent implements OnInit {
       // Habilitar campos editables
       this.profileForm.get('email')?.enable();
       this.profileForm.get('phone_number')?.enable();
+      this.profileForm.get('address')?.enable();
       
       // Aplicar focus al primer campo editable
       setTimeout(() => {
@@ -123,6 +127,7 @@ export class InformationComponent implements OnInit {
       // Deshabilitar campos y restaurar valores originales
       this.profileForm.get('email')?.disable();
       this.profileForm.get('phone_number')?.disable();
+      this.profileForm.get('address')?.disable();
       
       if (this.profileData) {
         this.updateFormValues(this.profileData);
@@ -168,7 +173,8 @@ export class InformationComponent implements OnInit {
     // Preparamos solo los datos que necesitamos actualizar
     const updatedData: UpdateProfileDto = {
       email: this.profileForm.get('email')?.value,
-      phone_number: this.profileForm.get('phone_number')?.value
+      phone_number: this.profileForm.get('phone_number')?.value,
+      address: this.profileForm.get('address')?.value
     };
 
     // Guardamos los cambios mediante el servicio
@@ -190,6 +196,7 @@ export class InformationComponent implements OnInit {
           // Deshabilitar los campos editables
           this.profileForm.get('email')?.disable();
           this.profileForm.get('phone_number')?.disable();
+          this.profileForm.get('address')?.disable();
           
           // Actualizar datos locales con la respuesta del servidor
           if (response.data) {

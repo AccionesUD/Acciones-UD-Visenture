@@ -16,21 +16,8 @@ export class BuysService {
     return of(amount <= 10000000).pipe(delay(500));
   }
 
-  submitBuyOrder(order: BuyOrder): Observable<BuyResponse> {
-    // En una aplicación real, esto enviaría la orden al servidor
-    // Simulamos una respuesta exitosa con un retraso
-    const response: BuyResponse = {
-      success: true,
-      status: order.orderType === 'market' ? 'completed' : 'pending',
-      orderId: `ORD-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
-      filledQuantity: order.orderType === 'market' ? order.quantity : undefined,
-      boughtAt: order.price,
-      totalAmount: order.quantity * (order.price || 0),
-      fee: order.quantity * (order.price || 0) * 0.005,
-      submittedAt: new Date(),
-      filledAt: order.orderType === 'market' ? new Date() : undefined
-    };
-
-    return of(response).pipe(delay(1000));
+  submitBuyOrder(order: BuyOrder): Observable<any> {
+    // El modelo ya está alineado con el backend, solo enviar el objeto tal cual
+    return this.http.post<any>('http://localhost:3000/api/orders', order);
   }
 }

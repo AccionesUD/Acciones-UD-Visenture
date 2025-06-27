@@ -12,6 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 import { User, ProfileUpdateResponse } from '../../models/user.model';
 import { UsersService } from '../../services/user.service';
 import { phoneNumberValidator, getValidationErrorMessage } from '../../helpers/must-match.validator';
+import { HttpClient } from '@angular/common/http';
 
 export interface UserEditData {
   user: User;
@@ -45,13 +46,16 @@ export class UserEditDialogComponent implements OnInit {
   user: User;
   isSaving = false;
   formSubmitted = false;
+  roles: any[] = [];
+  initialRole: any;
 
   constructor(
     public dialogRef: MatDialogRef<UserEditDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserEditData,
     private fb: FormBuilder,
     private usersService: UsersService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private http: HttpClient
   ) {
     // Configuración del diálogo
     this.dialogRef.disableClose = false;
@@ -68,12 +72,28 @@ export class UserEditDialogComponent implements OnInit {
       phone_number: [
         this.user.phone_number, 
         [Validators.required, phoneNumberValidator()]
-      ]
+      ],
+      role: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
-    // Lógica de inicialización si es necesaria
+    this.loadRoles();
+    if (this.user && this.user.role) {
+      this.editForm.patchValue({ role: this.user.role });
+      this.initialRole = this.user.role;
+    }
+  }
+
+  loadRoles(): void {
+    this.usersService.getRoles().subscribe({
+      next: (roles) => { this.roles = roles; },
+      error: () => { this.roles = [
+        { id: 1, name: 'admin', displayName: 'Administrador' },
+        { id: 2, name: 'commissioner', displayName: 'Comisionista' },
+        { id: 3, name: 'client', displayName: 'Cliente' }
+      ]; }
+    });
   }
 
   /**
@@ -103,7 +123,7 @@ export class UserEditDialogComponent implements OnInit {
       'last_name': 'apellido',
       'email': 'correo electrónico',
       'phone_number': 'número de teléfono',
-      'identity_document': 'documento de identidad'
+      'role': 'rol'
     };
     
     const displayName = fieldDisplayNames[fieldName] || fieldName;
@@ -143,25 +163,56 @@ export class UserEditDialogComponent implements OnInit {
 
     this.isSaving = true;
     const updatedData = this.editForm.value;
-
-    this.usersService.updateUser(this.user.id, updatedData).subscribe({
-      next: (response: ProfileUpdateResponse) => {
-        this.isSaving = false;
-        this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.dialogRef.close(response.data);
+    const roleChanged = updatedData.role !== this.initialRole;
+    const updateInfo$ = this.usersService.updateUser(this.user.id, {
+      first_name: updatedData.first_name,
+      last_name: updatedData.last_name,
+      email: updatedData.email,
+      phone_number: updatedData.phone_number
+    });
+    const roleObj = this.roles.find(r => r.name === updatedData.role || r.id === updatedData.role);
+    const roleId = roleObj ? roleObj.id : updatedData.role;
+    const updateRole$ = roleChanged ? this.http.patch(`/api/accounts/${this.user.id}/roles`, { roleIds: [roleId] }) : null;
+    // Ejecutar ambas operaciones secuencialmente si aplica
+    updateInfo$.subscribe({
+      next: (infoResp: any) => {
+        if (roleChanged && updateRole$) {
+          updateRole$.subscribe({
+            next: () => {
+              this.isSaving = false;
+              this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
+                duration: 3000,
+                panelClass: ['success-snackbar']
+              });
+              this.dialogRef.close({ ...infoResp.data, role: updatedData.role });
+            },
+            error: (error: any) => {
+              this.isSaving = false;
+              let errorMessage = 'Error al actualizar el rol';
+              if (error?.error?.message) {
+                errorMessage = error.error.message;
+              }
+              this.snackBar.open(errorMessage, 'Cerrar', {
+                duration: 5000,
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
+        } else {
+          this.isSaving = false;
+          this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.dialogRef.close(infoResp.data);
+        }
       },
       error: (error: any) => {
         this.isSaving = false;
-        console.error('Error al actualizar usuario:', error);
-        
         let errorMessage = 'Error al actualizar el usuario';
         if (error?.error?.message) {
           errorMessage = error.error.message;
         }
-        
         this.snackBar.open(errorMessage, 'Cerrar', {
           duration: 5000,
           panelClass: ['error-snackbar']

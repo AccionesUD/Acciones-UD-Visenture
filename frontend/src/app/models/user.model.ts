@@ -38,6 +38,7 @@ export interface User {
   created_at?: string;
   updated_at?: string;
   last_login?: string;
+  address?: string; 
 }
 
 /**
@@ -70,6 +71,7 @@ export type ChartOptions = {
 export interface UpdateProfileDto {
   email?: string;
   phone_number?: string;
+  address?: string;
 }
 
 /**
