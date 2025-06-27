@@ -31,7 +31,8 @@ export interface User {
   email: string;
   phone_number: string;
   birthdate?: Date;
-  role?: 'admin' | 'commissioner' | 'client'; // Roles posibles
+  role?: string; // Rol principal (opcional, para compatibilidad)
+  roles: Array<'admin' | 'commissioner' | 'client' | 'usuario_premium' | string>; // Array de roles reales
   status?: 'active' | 'inactive' | 'pending'; // Estados posibles
   password?: string; // Contraseña para creación o actualización
   email_verified_at?: string;

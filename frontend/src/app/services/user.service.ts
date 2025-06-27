@@ -234,7 +234,7 @@ export class UsersService {
           pending_users: byStatus['pending'] || 0,
           admins_count: byRole['admin'] || 0,
           commissioners_count: byRole['commissioner'] || 0,
-          clients_count: byRole['client'] || 0,
+          clients_count: byRole['usuario'] || 0,
           registrations_by_month,
           byRole,
           byStatus,
@@ -257,7 +257,7 @@ export class UsersService {
   getUsersFromAccounts(): Observable<User[]> {
     return this.http.get<any[]>(`${this.apiUrl}/accounts`).pipe(
       map((users) => users.map(u => ({
-        id: u.userId, // para la tabla
+        accountId: u.accountId, // para la tabla y edición
         identity_document: u.userId, // para edición y PATCH
         first_name: u.firstName,
         last_name: u.lastName,
@@ -285,13 +285,15 @@ export class UsersService {
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const creationDate = new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000); // Hasta 30 días atrás
+      const role = roles[Math.floor(Math.random() * roles.length)];
       users.push({
         id: i,
         first_name: firstName,
         last_name: lastName,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@example.com`,
         phone_number: `555-01${String(i).padStart(2, '0')}`,
-        role: roles[Math.floor(Math.random() * roles.length)],
+        role: role,
+        roles: [role],
         status: statuses[Math.floor(Math.random() * statuses.length)],
         email_verified_at: Math.random() > 0.3 ? new Date().toISOString() : undefined,
         created_at: creationDate.toISOString(),
@@ -429,5 +431,19 @@ export class UsersService {
     // Endpoint real: PATCH /api/accounts/{id}/roles
     // Body: { role: 'nuevo_rol' }
     return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/accounts/${userId}/roles`, { role });
+  }
+  /**
+   * Actualiza un usuario usando el endpoint real PATCH /api/accounts/admin/update-user
+   */
+  updateUserAdmin(data: {
+    accountId: number;
+    userId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    roles: string[];
+  }): Observable<any> {
+    // El token debe ser gestionado por un interceptor o aquí si es necesario
+    return this.http.patch<any>(`${this.apiUrl}/accounts/admin/update-user`, data);
   }
 }

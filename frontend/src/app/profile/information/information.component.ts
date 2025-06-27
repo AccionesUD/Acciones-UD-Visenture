@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -28,7 +28,8 @@ import { User, UpdateProfileDto } from '../../models/user.model';
     RouterModule
   ],
   templateUrl: './information.component.html',
-  styleUrl: './information.component.css'
+  styleUrl: './information.component.css',
+  encapsulation: ViewEncapsulation.None // <-- Esto permite que los estilos de snackbar sean globales
 })
 export class InformationComponent implements OnInit {
   profileForm: FormGroup;
@@ -38,6 +39,7 @@ export class InformationComponent implements OnInit {
   profileData: User | null = null;
   formSubmitted = false;
   saveError: string | null = null;
+  saveSuccess: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -64,6 +66,7 @@ export class InformationComponent implements OnInit {
     this.isLoading = true;
     this.formSubmitted = false;
     this.saveError = null;
+    this.saveSuccess = null;
     
     // Usamos el servicio para obtener los datos del perfil
     this.profileService.getUserProfile().subscribe({
@@ -100,9 +103,9 @@ export class InformationComponent implements OnInit {
       last_name: data.last_name,
       identity_document: data.identity_document || 'No disponible',
       email: data.email,
-      phone_number: data.phone_number,
+      phone_number: data.phone_number, // Ya mapeado correctamente
       birthdate: data.birthdate ? new Date(data.birthdate).toLocaleDateString() : 'No disponible',
-      address: data.address || 'No disponible'
+      address: data.address || 'No disponible' // Mostrar dirección correctamente
     });
   }
 
@@ -138,6 +141,7 @@ export class InformationComponent implements OnInit {
   saveChanges(): void {
     this.formSubmitted = true;
     this.saveError = null;
+    this.saveSuccess = null;
     
     // Validamos el formulario
     if (this.profileForm.invalid) {
@@ -173,7 +177,7 @@ export class InformationComponent implements OnInit {
     // Preparamos solo los datos que necesitamos actualizar
     const updatedData: UpdateProfileDto = {
       email: this.profileForm.get('email')?.value,
-      phone_number: this.profileForm.get('phone_number')?.value,
+      phone_number: this.profileForm.get('phone_number')?.value, // El servicio lo adapta a 'phone'
       address: this.profileForm.get('address')?.value
     };
 
@@ -181,9 +185,9 @@ export class InformationComponent implements OnInit {
     this.profileService.updateProfile(updatedData).subscribe({
       next: (response) => {
         this.isSaving = false;
-        
         if (response.success) {
-          // Éxito al actualizar
+          this.saveSuccess = 'Perfil actualizado correctamente';
+          this.saveError = null;
           this.snackBar.open('Perfil actualizado correctamente', 'Cerrar', {
             duration: 3000,
             panelClass: ['success-snackbar']
@@ -209,8 +213,8 @@ export class InformationComponent implements OnInit {
             };
           }
         } else {
-          // Error al actualizar (según la API)
           this.saveError = response.message || 'Error al actualizar perfil';
+          this.saveSuccess = null;
           this.snackBar.open(this.saveError, 'Cerrar', {
             duration: 5000,
             panelClass: ['error-snackbar']
@@ -218,9 +222,9 @@ export class InformationComponent implements OnInit {
         }
       },
       error: (err) => {
-        // Error de comunicación o inesperado
         this.isSaving = false;
         this.saveError = 'Error al comunicarse con el servidor';
+        this.saveSuccess = null;
         console.error('Error al actualizar perfil:', err);
         this.snackBar.open(this.saveError, 'Cerrar', {
           duration: 5000,

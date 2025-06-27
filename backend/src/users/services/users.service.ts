@@ -142,6 +142,7 @@ export class UsersService {
       last_name: user.last_name,
       email: user.account?.email,
       phone: user.phone,
+      address: user.address,  
     };
   }
 

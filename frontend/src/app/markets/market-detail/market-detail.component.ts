@@ -28,7 +28,8 @@ import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-market-detail',
-  standalone: true,    imports: [
+  standalone: true,    
+  imports: [
     CommonModule,
     MatCardModule,
     MatButtonModule,

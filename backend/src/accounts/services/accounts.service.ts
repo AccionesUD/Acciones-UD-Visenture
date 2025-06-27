@@ -19,6 +19,8 @@ import { TransactionsService } from 'src/transactions/services/transaction.servi
 import { OrdersService } from 'src/orders/providers/orders.service';
 import { Role } from 'src/roles-permission/entities/role.entity';
 import { NotificationSettingsService } from 'src/notifications/notification-settings.service';
+import { UpdateUserByAdminDto } from '../dtos/update-user-by-admin.dto';
+import { UpdateUserByAdminResponse } from '../dtos/update-user-by-admin-response.dto';
 
 export class AccountsService {
   constructor(
@@ -208,6 +210,7 @@ export class AccountsService {
 
   async findAllWithRoles(): Promise<
     {
+      accountId: number; // <--- Nuevo campo agregado
       userId: string;
       firstName: string;
       lastName: string;
@@ -220,13 +223,55 @@ export class AccountsService {
       relations: ['user', 'roles'],
     });
 
-    // Mapear al formato deseado
+    // Mapear al formato deseado, incluyendo accountId
     return accounts.map((acc) => ({
+      accountId: acc.id, // <--- Nuevo campo aquí
       userId: acc.user.identity_document,
       firstName: acc.user.first_name,
       lastName: acc.user.last_name,
       email: acc.email,
       roles: acc.roles.map((r) => r.name),
     }));
+  }
+
+  async updateUserByAdmin(
+    dto: UpdateUserByAdminDto,
+  ): Promise<UpdateUserByAdminResponse> {
+    // Busca la cuenta
+    const account = await this.accountRepository.findOne({
+      where: { id: dto.accountId },
+      relations: ['user', 'roles'],
+    });
+    if (!account) throw new NotFoundException('Cuenta no encontrada');
+
+    // Actualiza datos en tabla user (si aplica)
+    if (dto.firstName) account.user.first_name = dto.firstName;
+    if (dto.lastName) account.user.last_name = dto.lastName;
+    if (dto.userId) account.user.identity_document = dto.userId;
+
+    await this.accountRepository.manager.save(account.user);
+
+    // Actualiza datos en tabla account
+    if (dto.email) account.email = dto.email;
+
+    // Actualiza roles (por nombre)
+    if (dto.roles && dto.roles.length > 0) {
+      const roles = await this.roleRepository.find({
+        where: dto.roles.map((name) => ({ name })),
+      });
+      account.roles = roles;
+    }
+
+    await this.accountRepository.save(account);
+
+    // Retorna datos útiles
+    return {
+      accountId: account.id,
+      userId: account.user.identity_document,
+      firstName: account.user.first_name,
+      lastName: account.user.last_name,
+      email: account.email,
+      roles: account.roles.map((r) => r.name),
+    };
   }
 }

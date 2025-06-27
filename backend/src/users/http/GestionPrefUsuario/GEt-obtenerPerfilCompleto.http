@@ -13,6 +13,7 @@ HTTP/1.1 200 OK
 
 {
 	"identity_document": "987654321",
+	"address"" : "CR 46
 	"first_name": "Cris",
 	"last_name": "Casas",
 	"email": "cdcasasd@udistrital.edu.co",

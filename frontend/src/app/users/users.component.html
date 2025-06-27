@@ -168,9 +168,13 @@
             <ng-container matColumnDef="role">
               <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.role.label">Rol</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
-                <span class="px-2 py-1 text-xs font-medium rounded-full" [ngClass]="getRoleClass(user.role)">
-                  {{ getRoleDisplay(user.role) }}
+                <span *ngIf="user.roles && user.roles.length > 0" [matTooltip]="user.roles.length > 1 ? user.roles.map(getRoleDisplay).join(', ') : ''" matTooltipPosition="above">
+                  <span [ngClass]="getRoleClass(user.roles[0])">{{ getRoleDisplay(user.roles[0]) }}</span>
+                  <ng-container *ngIf="user.roles.length > 1">
+                    <span class="ml-1 text-xs text-gray-400 dark:text-gray-500 align-middle">…</span>
+                  </ng-container>
                 </span>
+                <span *ngIf="!user.roles || user.roles.length === 0" class="text-gray-400 italic">Sin rol</span>
               </td>
             </ng-container>
 

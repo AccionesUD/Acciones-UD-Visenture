@@ -74,7 +74,8 @@ export class ProfileService {
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           email: data.email || '',
-          phone_number: data.phone || '',
+          phone_number: data.phone || '', // Mapeo correcto
+          address: data.address || '',    // Mapeo correcto
           birthdate: data.birthdate || null
         } as User;
       }),
@@ -87,12 +88,20 @@ export class ProfileService {
     // Mock para desarrollo
     const mockProfile: User = {
       id: 1,
-      identity_document: '1234567890',
-      first_name: 'Juan',
-      last_name: 'Pérez',
-      email: 'juan.perez@example.com',
-      phone_number: '+57 300 123 4567',
-      birthdate: new Date('1990-01-15')
+      identity_document: '123456789',
+      first_name: 'Mock',
+      last_name: 'User',
+      email: 'mock@user.com',
+      phone_number: '555-0101',
+      birthdate: new Date(),
+      role: 'admin',
+      roles: ['admin'],
+      status: 'active',
+      email_verified_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      last_login: new Date().toISOString(),
+      address: 'Calle Falsa 123'
     };
     
     return of(mockProfile).pipe(
@@ -125,8 +134,13 @@ export class ProfileService {
    * Actualiza los datos del perfil del usuario
    */
   updateProfile(profileData: UpdateProfileDto): Observable<ProfileUpdateResponse> {
-    // Llamada real al backend para actualizar el perfil
-    return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, profileData).pipe(
+    // Adaptar el DTO para enviar los nombres correctos al backend
+    const payload: any = {
+      email: profileData.email,
+      phone: profileData.phone_number, // El backend espera 'phone'
+      address: profileData.address
+    };
+    return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, payload).pipe(
       tap((response: any) => {
         if (response.success && response.data) {
           this.userProfileSubject.next(response.data as User);

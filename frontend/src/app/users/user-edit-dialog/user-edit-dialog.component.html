@@ -131,18 +131,25 @@
           </div>
           -->
 
-          <!-- Rol -->
+          <!-- Roles (checkbox múltiple) -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.role.label">
-              Rol <span class="text-red-500">*</span>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.roles.label">
+              Roles <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
-              <select formControlName="role" class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors">
-                <option *ngFor="let role of roles" [value]="role.name">{{ role.displayName || role.name }}</option>
-              </select>
+            <div class="flex flex-wrap gap-3">
+              <ng-container *ngFor="let role of roles">
+                <label class="inline-flex items-center gap-2">
+                  <input type="checkbox"
+                         [value]="role.name"
+                         [checked]="editForm.value.roles?.includes(role.name)"
+                         (change)="onRoleCheckboxChange($event, role.name)"
+                         class="form-checkbox h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500">
+                  <span>{{ role.displayName || role.name }}</span>
+                </label>
+              </ng-container>
             </div>
-            <p *ngIf="hasFieldError('role')" class="text-sm text-red-600 dark:text-red-400">
-              {{ getFieldErrorMessage('role') }}
+            <p *ngIf="hasFieldError('roles')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('roles') }}
             </p>
           </div>
 

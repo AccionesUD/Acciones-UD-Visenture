@@ -43,7 +43,7 @@ export interface UserEditData {
 })
 export class UserEditDialogComponent implements OnInit {
   editForm: FormGroup;
-  user: User;
+  user: User & { accountId?: number };
   isSaving = false;
   formSubmitted = false;
   roles: any[] = [];
@@ -69,11 +69,12 @@ export class UserEditDialogComponent implements OnInit {
       email: [this.user.email, [Validators.required, Validators.email]],
       // phone_number: [this.user.phone_number || '', [Validators.required, phoneNumberValidator()]],
       // address: [this.user.address || ''],
-      role: [this.user.role || null, Validators.required]
+      roles: [this.user.roles || [], Validators.required] // Ahora permite múltiples roles
     });
   }
 
   ngOnInit(): void {
+    console.log('[UserEditDialog] ngOnInit - user:', this.user);
     this.loadRoles();
     if (this.user && this.user.role) {
       this.editForm.patchValue({ role: this.user.role });
@@ -82,13 +83,34 @@ export class UserEditDialogComponent implements OnInit {
   }
 
   loadRoles(): void {
+    console.log('[UserEditDialog] loadRoles - solicitando roles...');
     this.usersService.getRoles().subscribe({
-      next: (roles) => { this.roles = roles; },
-      error: () => { this.roles = [
-        { id: 1, name: 'admin', displayName: 'Administrador' },
-        { id: 2, name: 'commissioner', displayName: 'Comisionista' },
-        { id: 3, name: 'client', displayName: 'Cliente' }
-      ]; }
+      next: (roles) => {
+        console.log('[UserEditDialog] loadRoles - roles recibidos:', roles);
+        // Mapear a formato amigable si es necesario
+        this.roles = roles.map((r: any) => {
+          let displayName = r.displayName || r.name;
+          switch (r.name) {
+            case 'usuario': displayName = 'Usuario estándar'; break;
+            case 'comisionista': displayName = 'Comisionista'; break;
+            case 'admin': displayName = 'Administrador'; break;
+            case 'auditor': displayName = 'Auditor'; break;
+            case 'usuario_premium': displayName = 'Usuario premium'; break;
+          }
+          return { ...r, displayName };
+        });
+        console.log('[UserEditDialog] loadRoles - roles mapeados:', this.roles);
+      },
+      error: (err) => {
+        console.error('[UserEditDialog] loadRoles - error al cargar roles:', err);
+        this.roles = [
+          { id: 1, name: 'usuario', displayName: 'Usuario estándar' },
+          { id: 2, name: 'comisionista', displayName: 'Comisionista' },
+          { id: 3, name: 'admin', displayName: 'Administrador' },
+          { id: 4, name: 'auditor', displayName: 'Auditor' },
+          { id: 5, name: 'usuario_premium', displayName: 'Usuario premium' }
+        ];
+      }
     });
   }
 
@@ -147,8 +169,11 @@ export class UserEditDialogComponent implements OnInit {
       });
       return;
     }
-    if (!this.user.id && !this.user.identity_document) {
-      this.snackBar.open('Error: ID de usuario no encontrado', 'Cerrar', {
+    // Usar accountId real del usuario
+    const accountId = (this.user as any).accountId ?? this.user.accountId ?? this.user.id;
+    if (!accountId || isNaN(Number(accountId))) {
+      console.warn('[UserEditDialog] onSave - accountId no encontrado o inválido:', accountId, this.user);
+      this.snackBar.open('Error: accountId de cuenta no encontrado', 'Cerrar', {
         duration: 5000,
         panelClass: ['error-snackbar']
       });
@@ -156,22 +181,20 @@ export class UserEditDialogComponent implements OnInit {
     }
     this.isSaving = true;
     const updatedData = this.editForm.value;
-    // Solo cambiar el rol usando el endpoint correspondiente
-    const userId = typeof this.user.id === 'number' ? this.user.id : undefined;
-    console.log('Intentando cambiar rol. userId:', userId, 'Nuevo rol:', updatedData.role);
-    if (!userId) {
-      this.snackBar.open('Error: ID numérico de usuario no encontrado', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['error-snackbar']
-      });
-      this.isSaving = false;
-      return;
-    }
-    this.usersService.changeUserRole(userId, updatedData.role).subscribe({
+    const payload = {
+      accountId: Number(accountId),
+      userId: String(this.user.identity_document ?? this.user.id),
+      firstName: updatedData.first_name,
+      lastName: updatedData.last_name,
+      email: updatedData.email,
+      roles: updatedData.roles as string[]
+    };
+    console.log('[UserEditDialog] onSave - payload a enviar:', payload);
+    this.usersService.updateUserAdmin(payload).subscribe({
       next: (resp) => {
-        console.log('Respuesta del cambio de rol:', resp);
         this.isSaving = false;
-        this.snackBar.open('Rol actualizado con éxito', 'Cerrar', {
+        console.log('[UserEditDialog] onSave - respuesta backend:', resp);
+        this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
@@ -179,10 +202,11 @@ export class UserEditDialogComponent implements OnInit {
       },
       error: (error: any) => {
         this.isSaving = false;
-        let errorMessage = 'Error al actualizar el rol';
+        let errorMessage = 'Error al actualizar el usuario';
         if (error?.error?.message) {
           errorMessage = error.error.message;
         }
+        console.error('[UserEditDialog] onSave - error backend:', error);
         this.snackBar.open(errorMessage, 'Cerrar', {
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -211,5 +235,23 @@ export class UserEditDialogComponent implements OnInit {
     } else {
       this.closeDialog();
     }
+  }
+
+  /**
+   * Maneja el cambio de selección de roles (checkbox múltiple)
+   */
+  onRoleCheckboxChange(event: Event, roleName: string): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const currentRoles: string[] = this.editForm.value.roles || [];
+    console.log('[UserEditDialog] onRoleCheckboxChange - antes:', currentRoles, 'checked:', checked, 'role:', roleName);
+    if (checked) {
+      if (!currentRoles.includes(roleName)) {
+        this.editForm.patchValue({ roles: [...currentRoles, roleName] });
+      }
+    } else {
+      this.editForm.patchValue({ roles: currentRoles.filter(r => r !== roleName) });
+    }
+    this.editForm.get('roles')?.markAsTouched();
+    console.log('[UserEditDialog] onRoleCheckboxChange - después:', this.editForm.value.roles);
   }
 }

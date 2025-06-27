@@ -101,6 +101,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private themeObserver!: MutationObserver;
 
+  // Lista completa de usuarios cargados
+  allUsers: User[] = [];
+
   constructor(
     private fb: FormBuilder,
     private userService: UsersService, // Corregido: UserService
@@ -121,6 +124,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadUsers();
     this.loadUserStats();
     this.setupThemeObserver();
+    // Filtros en vivo (como en el panel del comisionista)
     this.filterForm.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
@@ -128,7 +132,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe(() => {
       this.paginator.pageIndex = 0; // Reset paginator to first page
       this.currentPage = 0;
-      this.loadUsers();
+      this.applyFiltersAndPagination(); // Solo filtra y pagina en memoria
     });
   }
 
@@ -142,13 +146,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       this.paginator.page.pipe(takeUntil(this.destroy$)).subscribe(() => {
         this.currentPage = this.paginator.pageIndex;
         this.pageSize = this.paginator.pageSize;
-        this.loadUsers();
+        this.applyFiltersAndPagination(); // Solo paginación en memoria
       });
     }
-
-    // No es necesario suscribirse al sort.directionChange aquí si matSortChange se maneja en la plantilla
-    // y llama a un método que actualiza los datos.
-    // Si se usa (matSortChange)="announceSortChange($event)" en la plantilla, es suficiente.
   }
 
   ngOnDestroy(): void {
@@ -179,46 +179,95 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     this.error = null;
     if (fromRefresh) {
       this.selection.clear();
+      this.allUsers = [];
     }
-    this.userService.getUsersFromAccounts().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (users) => {
-        console.log('Usuarios recibidos de /accounts:', users); // LOG para depuración
-        this.dataSource.data = users;
-        this.totalUsers = users.length;
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.error = `Error al cargar usuarios: ${err.message || 'Error desconocido'}`;
-        this.snackBar.open(this.error, 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] });
-        this.isLoading = false;
-        this.dataSource.data = [];
-        this.totalUsers = 0;
-        this.cdr.detectChanges();
-      }
-    });
+    // Solo cargar del backend si no hay usuarios o se fuerza refresh
+    if (this.allUsers.length === 0) {
+      this.userService.getUsersFromAccounts().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (users) => {
+          this.allUsers = users;
+          this.applyFiltersAndPagination();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.error = `Error al cargar usuarios: ${err.message || 'Error desconocido'}`;
+          this.snackBar.open(this.error, 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] });
+          this.isLoading = false;
+          this.dataSource.data = [];
+          this.totalUsers = 0;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.applyFiltersAndPagination();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
+
+  /**
+   * Aplica los filtros y la paginación en memoria sobre allUsers
+   */
+  applyFiltersAndPagination(): void {
+    const filters = this.filterForm.value;
+    let filtered = this.allUsers;
+    // Filtro en vivo por nombre/email
+    if (filters.search && filters.search.trim()) {
+      const search = filters.search.trim().toLowerCase();
+      filtered = filtered.filter(u =>
+        (u.first_name && u.first_name.toLowerCase().includes(search)) ||
+        (u.last_name && u.last_name.toLowerCase().includes(search)) ||
+        (u.email && u.email.toLowerCase().includes(search))
+      );
+    }
+    // Filtro en vivo por rol (en roles[])
+    if (filters.role && filters.role !== '') {
+      filtered = filtered.filter(u => Array.isArray(u.roles) && u.roles.includes(filters.role));
+    }
+    this.totalUsers = filtered.length;
+    // Paginación en memoria (robusta: si paginator no está, mostrar la primera página)
+    let start = 0;
+    let end = this.pageSize;
+    if (this.paginator) {
+      start = this.paginator.pageIndex * this.pageSize;
+      end = start + this.pageSize;
+    }
+    this.dataSource.data = filtered.slice(start, end);
+    this.cdr.detectChanges();
+  }
+
   loadUserStats(): void {
     this.isLoadingStats = true;
     this.userService.getUserStats().pipe(takeUntil(this.destroy$)).subscribe({
       next: (stats: any) => {
         // Mapear la data real del backend a la estructura esperada por los gráficos
-        // stats.byRole: { admin: number, commissioner: number, client: number, ... }
-        // stats.byStatus: { active: number, inactive: number, pending: number, ... }
-        // stats.registrationTrend: [{ month: '2025-06', count: 10 }, ...]
+        // --- Ajuste: contar todos los roles de cada usuario ---
+        const users = this.allUsers; // Usar todos los usuarios, no solo la página actual
+        const byRole: { [key: string]: number } = {};
+        users.forEach(u => {
+          if (Array.isArray(u.roles)) {
+            u.roles.forEach(role => {
+              byRole[role] = (byRole[role] || 0) + 1;
+            });
+          } else if (u.role) {
+            byRole[u.role] = (byRole[u.role] || 0) + 1;
+          }
+        });
+        // Usar byRole calculado para la gráfica
         const validatedStats: UserStats = {
-          total_users: stats.total_users || 0,
+          total_users: stats.total_users || users.length || 0,
           active_users: stats.byStatus?.active || 0,
           inactive_users: stats.byStatus?.inactive || 0,
           pending_users: stats.byStatus?.pending || 0,
-          admins_count: stats.byRole?.admin || 0,
-          commissioners_count: stats.byRole?.commissioner || 0,
-          clients_count: stats.byRole?.client || 0,
+          admins_count: byRole['admin'] || 0,
+          commissioners_count: byRole['commissioner'] || 0,
+          clients_count: byRole['client'] || 0,
           registrations_by_month: (stats.registrationTrend || stats.registrations_by_month || []).map((r: any) => ({
             month: r.month || r.date || '',
             count: r.count || 0
           })),
-          byRole: stats.byRole,
+          byRole: byRole,
           byStatus: stats.byStatus,
           registrationTrend: stats.registrationTrend || stats.registrations_by_month || []
         };
@@ -271,13 +320,13 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearFilters(): void {
     this.filterForm.reset({ search: '', role: '', status: '' });
-    // loadUsers() se disparará por el valueChanges
+    // applyFiltersAndPagination() se disparará por valueChanges
   }
 
   handlePageEvent(event: PageEvent): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadUsers();
+    this.applyFiltersAndPagination();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
