@@ -2003,6 +2003,7 @@
       </trans-unit>
       <trans-unit id="7801719012638056517" datatype="html">
         <source>Los fondos pueden tardar hasta <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>24 horas<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> en ser procesados dependiendo del método de pago.</source>
+        <target>Les fonds peuvent prendre jusqu'à <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>24 heures<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> pour être traités selon le mode de paiement.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -2012,6 +2013,7 @@
       </trans-unit>
       <trans-unit id="379871906720521258" datatype="html">
         <source>El monto mínimo de depósito es de <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>$10.00<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</source>
+        <target>Le montant minimum du dépôt est de <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>10,00 $<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">102,103</context>
@@ -2021,6 +2023,7 @@
       </trans-unit>
       <trans-unit id="1425912660404560232" datatype="html">
         <source>Para asistencia con tus depósitos, contacta a nuestro <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>soporte técnico<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</source>
+        <target>Pour obtenir de l'aide avec vos dépôts, contactez notre <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>support technique<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">108,109</context>
@@ -2174,6 +2177,7 @@
       </trans-unit>
       <trans-unit id="home.hero.title" datatype="html">
         <source> Potencia tu Trading con <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-emerald-600 dark:text-emerald-500&quot;&gt;"/>Visenture<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+        <target> Boostez votre trading avec <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-emerald-600 dark:text-emerald-500&quot;&gt;"/>Visenture<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/home/home.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -2535,6 +2539,7 @@
       </trans-unit>
       <trans-unit id="market.detail.available.shares" datatype="html">
         <source>Acciones disponibles en <x id="INTERPOLATION" equiv-text="{{ stock.name_market }}"/></source>
+        <target>Actions disponibles dans <x id="INTERPOLATION" equiv-text="{{ stock.name_market }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
           <context context-type="linenumber">138,140</context>
@@ -5117,6 +5122,7 @@
       </trans-unit>
       <trans-unit id="4996271085363585486" datatype="html">
         <source> Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones. </source>
+        <target> Les fonds récoltés grâce à cette vente (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ont déjà été crédités sur votre compte. Vous pouvez désormais les utiliser pour de nouvelles transactions. </target>        
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/sell-stock-modal/sell-stock-modal.component.html</context>
           <context context-type="linenumber">330,332</context>
