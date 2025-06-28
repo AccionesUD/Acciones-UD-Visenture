@@ -3,11 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/replace-env.js",
+    "prebuild": "node scripts/replace-env.js",
     "start": "ng serve",
-    "prebuild": "node scripts/generate-env.js",
-    "prebuild:prod": "node scripts/generate-env-prod.js",
-    "build": "npm run prebuild && ng build",
-    "build:prod": "npm run prebuild:prod && ng build --configuration production",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:visenture_frontend": "node dist/visenture_frontend/server/server.mjs"
