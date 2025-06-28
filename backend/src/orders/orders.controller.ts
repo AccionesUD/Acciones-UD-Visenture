@@ -22,6 +22,6 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   @Post('')
   async createOrder(@Body() orderDto: OrderDto, @Request() req){
-      return this.ordersService.createOrder(orderDto, req.user.userId)
+      return this.ordersService.createOrder(orderDto, req.user.sub)
   }
 }

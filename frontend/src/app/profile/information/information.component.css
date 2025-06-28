@@ -45,3 +45,29 @@
 :host-context(.dark-theme) .field-disabled {
   background-color: #1f2937;
 }
+
+/* Eliminar estilos internos de snackbar para evitar conflicto con los globales */
+/* Para mensajes de éxito en MatSnackBar */
+/* .success-snackbar {
+  background-color: #10b981 !important;
+  color: #fff !important;
+}
+
+.error-snackbar {
+  background-color: #ef4444 !important;
+  color: #fff !important;
+} */
+
+/* Bloque de éxito: sin borde rojo, fondo y texto verde */
+.success-block {
+  background-color: #ecfdf5; /* emerald-50 */
+  border-left: 4px solid #10b981; /* emerald-500 */
+  color: #047857; /* emerald-700 */
+}
+
+html.dark .success-block {
+  background-color: #064e3b; /* emerald-900 */
+  color: #a7f3d0; /* emerald-200 */
+}
+
+/* Bloque de error: sin cambios, ya está bien */

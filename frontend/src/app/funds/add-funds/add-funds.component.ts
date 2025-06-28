@@ -5,14 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { FundsService } from '../../services/funds.service';
-import { AddFundsRequest, AccountBalance, PaymentMethod } from '../../models/payment.model';
+import { AddFundsRequest, AccountBalance } from '../../models/payment.model';
 
 @Component({
   selector: 'app-add-funds',
@@ -25,7 +24,6 @@ import { AddFundsRequest, AccountBalance, PaymentMethod } from '../../models/pay
     MatCardModule,
     MatInputModule,
     MatFormFieldModule,
-    MatSelectModule,
     MatIconModule,
     MatSnackBarModule,
     MatProgressBarModule,
@@ -41,14 +39,8 @@ export class AddFundsComponent implements OnInit {
   submitting = false;
   successAnimation = false;
   errorAnimation = false;
-  
-  // Métodos de pago disponibles
-  paymentMethods: { value: PaymentMethod, label: string }[] = [
-    { value: 'credit_card', label: 'Tarjeta de Crédito' },
-    { value: 'debit_card', label: 'Tarjeta de Débito' },
-    { value: 'bank_transfer', label: 'Transferencia Bancaria' },
-    { value: 'paypal', label: 'PayPal' }
-  ];
+  buttonText = 'Añadir Fondos';
+  buttonIcon: 'default' | 'success' | 'error' | 'loading' = 'default';
 
   constructor(
     private fb: FormBuilder,
@@ -63,13 +55,11 @@ export class AddFundsComponent implements OnInit {
   }
 
   /**
-   * Crea el formulario de agregar fondos
+   * Crea el formulario de agregar fondos (solo monto)
    */
   createForm(): void {
     this.fundsForm = this.fb.group({
-      amount: ['', [Validators.required, Validators.min(10), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)]],
-      payment_method: ['credit_card', Validators.required],
-      description: ['']
+      amount: ['', [Validators.required, Validators.min(10), Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)]]
     });
   }
 
@@ -98,64 +88,58 @@ export class AddFundsComponent implements OnInit {
     if (this.fundsForm.invalid) {
       return;
     }
-
-    const request: AddFundsRequest = this.fundsForm.value;
+    const amount = parseFloat(this.fundsForm.value.amount);
     this.submitting = true;
-
-    this.fundsService.addFunds(request).subscribe({
+    this.successAnimation = false;
+    this.errorAnimation = false;
+    this.fundsService.addFunds(amount).subscribe({
       next: (response) => {
         this.submitting = false;
-        
-        if (response.success) {
-          // Muestra la animación de éxito
+        console.log('[AddFundsComponent] Respuesta recibida en addFunds:', response);
+        if (response && response.success === true) {
           this.successAnimation = true;
-          
-          // Muestra un mensaje de éxito
+          this.errorAnimation = false;
           this.snackBar.open(response.message || 'Fondos añadidos exitosamente', 'Cerrar', { 
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          
-          // Después de un tiempo, quita la animación y resetea el formulario
           setTimeout(() => {
             this.successAnimation = false;
-            // Recarga el saldo para mostrar los cambios
             this.loadAccountBalance();
-            // Resetea el formulario
-            this.fundsForm.reset({
-              payment_method: 'credit_card',
-              amount: '',
-              description: ''
-            });
+            this.fundsForm.reset({ amount: '' });
           }, 2000);
         } else {
-          // Muestra la animación de error
+          this.successAnimation = false;
           this.errorAnimation = true;
-          
-          this.snackBar.open(response.message || 'Error al añadir fondos', 'Cerrar', { 
-            duration: 3000,
+          console.error('[AddFundsComponent] Error o respuesta inesperada:', response);
+          let errorMsg = response?.message || 'Error al añadir fondos';
+          if (typeof errorMsg === 'string' && errorMsg.toLowerCase().includes('una transacción diaria')) {
+            errorMsg = 'Solo puedes realizar una transacción de fondeo por día.';
+          }
+          this.snackBar.open(errorMsg, 'Cerrar', { 
+            duration: 4000,
             panelClass: ['error-snackbar']
           });
-          
-          // Después de un tiempo, quita la animación
           setTimeout(() => {
             this.errorAnimation = false;
           }, 2000);
         }
       },
       error: (error) => {
-        console.error('Error añadiendo fondos:', error);
         this.submitting = false;
-        
-        // Muestra la animación de error
+        this.successAnimation = false;
         this.errorAnimation = true;
-        
-        this.snackBar.open('Error en la transacción', 'Cerrar', { 
-          duration: 3000,
+        console.error('[AddFundsComponent] Error en addFunds:', error);
+        let errorMsg = 'Error en la transacción';
+        if (error?.error?.code === 'DAILY_LIMIT_EXCEEDED' || (error?.error?.message && error.error.message.toLowerCase().includes('una transacción diaria'))) {
+          errorMsg = 'Solo puedes realizar una transacción de fondeo por día.';
+        } else if (error?.error?.message) {
+          errorMsg = error.error.message;
+        }
+        this.snackBar.open(errorMsg, 'Cerrar', { 
+          duration: 4000,
           panelClass: ['error-snackbar']
         });
-        
-        // Después de un tiempo, quita la animación
         setTimeout(() => {
           this.errorAnimation = false;
         }, 2000);

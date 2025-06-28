@@ -1,0 +1,22 @@
+GET /api/accounts HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA5OTAzMzksImV4cCI6MTc1MDk5MzkzOX0.NXhueIU-FmWX8v9cdV6nbvOo76JYVPyFTvq6l-6sJiU
+Host: localhost:3000
+
+// se debe enviar el token de autenticación en la cabecera Authorization con rol admin
+
+
+response:
+
+[
+	{
+		"userId": "987654321",
+		"firstName": "Cris",
+		"lastName": "Casas",
+		"email": "cdcasasd@udistrital.edu.co",
+		"roles": [
+			"admin",
+			"usuario_premium"
+		]
+	}
+]

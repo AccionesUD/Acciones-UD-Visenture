@@ -1310,10 +1310,6 @@
           <context context-type="sourcefile">src/app/commissioner-panel/commissioner-panel.component.html</context>
           <context context-type="linenumber">472,473</context>
         </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">179,180</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="common.actions.clear" datatype="html">
         <source>Limpiar</source>
@@ -1324,7 +1320,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">119,121</context>
+          <context context-type="linenumber">120,122</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.actions.apply" datatype="html">
@@ -1336,7 +1332,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">126,128</context>
+          <context context-type="linenumber">127,129</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.filters.active" datatype="html">
@@ -1488,7 +1484,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">192,193</context>
+          <context context-type="linenumber">190,191</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.actions.view.details" datatype="html">
@@ -1776,7 +1772,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">572</context>
+          <context context-type="linenumber">652</context>
         </context-group>
       </trans-unit>
       <trans-unit id="status.inactive" datatype="html">
@@ -1788,7 +1784,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">573</context>
+          <context context-type="linenumber">653</context>
         </context-group>
       </trans-unit>
       <trans-unit id="status.pending" datatype="html">
@@ -1800,7 +1796,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">574</context>
+          <context context-type="linenumber">654</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6862114254895937884" datatype="html">
@@ -1813,9 +1809,9 @@
         <note priority="1" from="description">Page title</note>
         <note priority="1" from="meaning">dashboard</note>
       </trans-unit>
-      <trans-unit id="104091633055369294" datatype="html">
-        <source>{VAR_SELECT, select, true {Usar Datos Reales} other {Usar Datos Simulados}}</source>
-        <target>{VAR_SELECT, select, true {Использовать реальные данные} other {Использовать симулированные данные}}</target>
+      <trans-unit id="2170548696761841412" datatype="html">
+        <source>{VAR_SELECT, select, &apos;true&apos; {Usar Datos Reales} other {Usar Datos Simulados}}</source>
+        <target>__Icu_placeholder_0__</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">13,15</context>
@@ -1870,8 +1866,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.data_mode" datatype="html">
-        <source>{VAR_SELECT, select, true {Datos Simulados} other {Datos en Vivo}}</source>
-        <target>{VAR_SELECT, select, true {Симулированные данные} other {Живые данные}}</target>
+        <source>{VAR_SELECT, select, &apos;true&apos; {Datos Simulados} other {Datos en Vivo}}</source>
+        <target>__Icu_placeholder_0__</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">92,93</context>
@@ -1894,8 +1890,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.market_status" datatype="html">
-        <source>{VAR_SELECT, select, true {Abierto} other {Cerrado}}</source>
-        <target>{VAR_SELECT, select, true {Открыто} other {Закрыто}}</target>
+        <source>{VAR_SELECT, select, &apos;true&apos; {Abierto} other {Cerrado}}</source>
+        <target>__Icu_placeholder_0__</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">158,159</context>
@@ -1919,7 +1915,7 @@
       </trans-unit>
       <trans-unit id="dashboard.transaction_type" datatype="html">
         <source>{VAR_SELECT, select, buy {Compra} sell {Venta} other {Desconocido}}</source>
-        <target>{VAR_SELECT, select, buy {Покупка} sell {Продажа} other {Неизвестно}}</target>
+        <target>__Icu_placeholder_0__</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard.component.html</context>
           <context context-type="linenumber">200,202</context>
@@ -1977,7 +1973,7 @@
       </trans-unit>
       <trans-unit id="8958027187253226915" datatype="html">
         <source>{VAR_SELECT, select, completed {Completado} pending {Pendiente} failed {Fallido} other {Desconocido}}</source>
-        <target>{VAR_SELECT, select, completed {Завершено} pending {В ожидании} failed {Сбой} other {Неизвестно}}</target>
+        <target>__Icu_placeholder_0__</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">65</context>
@@ -2007,6 +2003,7 @@
       </trans-unit>
       <trans-unit id="7801719012638056517" datatype="html">
         <source>Los fondos pueden tardar hasta <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>24 horas<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> en ser procesados dependiendo del método de pago.</source>
+        <target>Средства могут занять до <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>24 часа<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/> для обработки в зависимости от способа оплаты.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">96,97</context>
@@ -2016,6 +2013,7 @@
       </trans-unit>
       <trans-unit id="379871906720521258" datatype="html">
         <source>El monto mínimo de depósito es de <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>$10.00<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</source>
+        <target>Минимальная сумма депозита составляет <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>$10.00<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">102,103</context>
@@ -2025,6 +2023,7 @@
       </trans-unit>
       <trans-unit id="1425912660404560232" datatype="html">
         <source>Para asistencia con tus depósitos, contacta a nuestro <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>soporte técnico<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</source>
+        <target>Для получения помощи по вашим депозитам свяжитесь с нашей <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong class=&quot;text-gray-800 dark:text-gray-200&quot;&gt;"/>технической поддержкой<x id="CLOSE_TAG_STRONG" ctype="x-strong" equiv-text="&lt;/strong&gt;"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
           <context context-type="linenumber">108,109</context>
@@ -2041,7 +2040,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">234,236</context>
+          <context context-type="linenumber">193,195</context>
         </context-group>
         <note priority="1" from="description">Add funds title</note>
         <note priority="1" from="meaning">addFunds</note>
@@ -2106,52 +2105,12 @@
         <note priority="1" from="description">Amount format error</note>
         <note priority="1" from="meaning">addFunds</note>
       </trans-unit>
-      <trans-unit id="4200288240330439280" datatype="html">
-        <source>Método de Pago</source>
-        <target>Способ оплаты</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">160,161</context>
-        </context-group>
-        <note priority="1" from="description">Payment method label</note>
-        <note priority="1" from="meaning">addFunds</note>
-      </trans-unit>
-      <trans-unit id="9105842051047605655" datatype="html">
-        <source>Descripción (Opcional)</source>
-        <target>Описание (необязательно)</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">178,179</context>
-        </context-group>
-        <note priority="1" from="description">Description label</note>
-        <note priority="1" from="meaning">addFunds</note>
-      </trans-unit>
-      <trans-unit id="7937808461617629894" datatype="html">
-        <source>Añade una nota o referencia para este depósito</source>
-        <target>Добавить примечание или ссылку на этот депозит</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">183,184</context>
-        </context-group>
-        <note priority="1" from="description">Description placeholder</note>
-        <note priority="1" from="meaning">addFunds</note>
-      </trans-unit>
-      <trans-unit id="3705122731262060385" datatype="html">
-        <source>Transacción segura</source>
-        <target>Верная транзакция</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">198,200</context>
-        </context-group>
-        <note priority="1" from="description">Secure transaction</note>
-        <note priority="1" from="meaning">addFunds</note>
-      </trans-unit>
       <trans-unit id="8158875155469136544" datatype="html">
         <source>Procesando...</source>
         <target>Обработка ...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">231,232</context>
+          <context context-type="linenumber">190,191</context>
         </context-group>
         <note priority="1" from="description">Processing button text</note>
         <note priority="1" from="meaning">addFunds</note>
@@ -2161,7 +2120,7 @@
         <target>Добавлены средства!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">232,233</context>
+          <context context-type="linenumber">191,192</context>
         </context-group>
         <note priority="1" from="description">Success button text</note>
         <note priority="1" from="meaning">addFunds</note>
@@ -2171,7 +2130,7 @@
         <target>Ошибка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/funds/add-funds/add-funds.component.html</context>
-          <context context-type="linenumber">233,234</context>
+          <context context-type="linenumber">192,193</context>
         </context-group>
         <note priority="1" from="description">Error button text</note>
         <note priority="1" from="meaning">addFunds</note>
@@ -2218,7 +2177,7 @@
       </trans-unit>
       <trans-unit id="home.hero.title" datatype="html">
         <source> Potencia tu Trading con <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-emerald-600 dark:text-emerald-500&quot;&gt;"/>Visenture<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
-        <target> Улучшите свою торговлю с помощью <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-emerald-600 dark:text-emerald-500&quot;&gt;"/>Висентуре<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
+        <target> Повысьте эффективность своей торговли с помощью <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-emerald-600 dark:text-emerald-500&quot;&gt;"/>Висентуре<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/home/home.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -2580,6 +2539,7 @@
       </trans-unit>
       <trans-unit id="market.detail.available.shares" datatype="html">
         <source>Acciones disponibles en <x id="INTERPOLATION" equiv-text="{{ stock.name_market }}"/></source>
+        <target>Действия доступны в <x id="INTERPOLATION" equiv-text="{{ stock.name_market }}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
           <context context-type="linenumber">138,140</context>
@@ -2693,7 +2653,7 @@
         <target>Активный</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
-          <context context-type="linenumber">216,217</context>
+          <context context-type="linenumber">217,218</context>
         </context-group>
       </trans-unit>
       <trans-unit id="market.detail.status.inactive" datatype="html">
@@ -2701,7 +2661,7 @@
         <target>Неактивный</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
-          <context context-type="linenumber">217,219</context>
+          <context context-type="linenumber">218,220</context>
         </context-group>
       </trans-unit>
       <trans-unit id="market.detail.tooltip.view.details" datatype="html">
@@ -2709,7 +2669,7 @@
         <target>Смотрите детали</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
-          <context context-type="linenumber">220,221</context>
+          <context context-type="linenumber">222,223</context>
         </context-group>
       </trans-unit>
       <trans-unit id="market.detail.tooltip.buy.share" datatype="html">
@@ -2717,7 +2677,7 @@
         <target>Купить действие</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
-          <context context-type="linenumber">223,224</context>
+          <context context-type="linenumber">225,226</context>
         </context-group>
       </trans-unit>
       <trans-unit id="market.detail.tooltip.sell.share" datatype="html">
@@ -2725,7 +2685,7 @@
         <target>Продавать действие</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/markets/market-detail/market-detail.component.html</context>
-          <context context-type="linenumber">226,227</context>
+          <context context-type="linenumber">228,229</context>
         </context-group>
       </trans-unit>
       <trans-unit id="markets.available_markets" datatype="html">
@@ -2890,7 +2850,7 @@
       </trans-unit>
       <trans-unit id="portfolio.filters.performance.high" datatype="html">
         <source>Alto rendimiento (&gt;5%)</source>
-        <target>Высокая производительность (> 5%)</target>
+        <target>Высокая производительность (&gt; 5%)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/portfolio/filters/filters.component.ts</context>
           <context context-type="linenumber">39</context>
@@ -3233,7 +3193,7 @@
         <target>Редактировать</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">13,14</context>
+          <context context-type="linenumber">15,16</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.cancel-button" datatype="html">
@@ -3241,11 +3201,11 @@
         <target>Отмена</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">14,18</context>
+          <context context-type="linenumber">16,20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">175,178</context>
+          <context context-type="linenumber">229,232</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.loading" datatype="html">
@@ -3253,7 +3213,7 @@
         <target>Загрузка информации ...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">22,25</context>
+          <context context-type="linenumber">24,27</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.first-name.label" datatype="html">
@@ -3261,7 +3221,15 @@
         <target>Имя</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">45,47</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.first-name.placeholder" datatype="html">
+        <source>Nombre</source>
+        <target>Имя</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">69</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.last-name.label" datatype="html">
@@ -3269,7 +3237,15 @@
         <target>Фамилия</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">61,63</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.last-name.placeholder" datatype="html">
+        <source>Apellido</source>
+        <target>Фамилия</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">86,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.id-document.label" datatype="html">
@@ -3277,7 +3253,15 @@
         <target>Идентификационный документ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">77,79</context>
+          <context context-type="linenumber">97,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.id-document.placeholder" datatype="html">
+        <source>Documento de identidad</source>
+        <target>Идентификационный документ</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">104,105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.birth-date.label" datatype="html">
@@ -3285,7 +3269,15 @@
         <target>Дата рождения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">93,95</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.birth-date.placeholder" datatype="html">
+        <source>Fecha de nacimiento</source>
+        <target>Дата рождения</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">122,123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.email.label" datatype="html">
@@ -3293,7 +3285,7 @@
         <target>Электронная почта</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">110,111</context>
+          <context context-type="linenumber">134,135</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.editable-field" datatype="html">
@@ -3301,11 +3293,23 @@
         <target>Редактируемое поле</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">111,113</context>
+          <context context-type="linenumber">135,137</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">140,142</context>
+          <context context-type="linenumber">166,168</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">196,198</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.email.placeholder" datatype="html">
+        <source>Correo electrónico</source>
+        <target>Электронная почта</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">150,151</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.phone.label" datatype="html">
@@ -3313,7 +3317,31 @@
         <target>Телефон</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">139,140</context>
+          <context context-type="linenumber">165,166</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.phone.placeholder" datatype="html">
+        <source>Teléfono</source>
+        <target>Телефон</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">180,181</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.address.label" datatype="html">
+        <source>Dirección</source>
+        <target>Адрес</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">195,196</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.address.placeholder" datatype="html">
+        <source>Dirección</source>
+        <target>Адрес</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">209,210</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.saving" datatype="html">
@@ -3321,7 +3349,7 @@
         <target>Держа ...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">185,186</context>
+          <context context-type="linenumber">239,240</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.save-changes" datatype="html">
@@ -3329,7 +3357,7 @@
         <target>Сохранить изменения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">186,191</context>
+          <context context-type="linenumber">240,245</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.security-title" datatype="html">
@@ -3337,7 +3365,7 @@
         <target>Безопасность счета</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">195,196</context>
+          <context context-type="linenumber">249,250</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.information.security-description" datatype="html">
@@ -3345,15 +3373,23 @@
         <target>Управляйте своим паролем и конфигурацией безопасности</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">196,199</context>
+          <context context-type="linenumber">250,253</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="profile.information.go-to-security" datatype="html">
-        <source>Ir a Seguridad</source>
+      <trans-unit id="profile.information.security.button.tooltip" datatype="html">
+        <source>Ir a seguridad</source>
         <target>Перейти к безопасности</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
-          <context context-type="linenumber">204,208</context>
+          <context context-type="linenumber">257,259</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profile.information.security.button" datatype="html">
+        <source>Cambiar contraseña</source>
+        <target>Изменить пароль</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/profile/information/information.component.html</context>
+          <context context-type="linenumber">260,264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.title" datatype="html">
@@ -3417,7 +3453,7 @@
         <target> Уведомления уведомит вас, когда действие достигнет установленной вами цены. </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">102,105</context>
+          <context context-type="linenumber">103,106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.enable_notifications" datatype="html">
@@ -3425,7 +3461,7 @@
         <target>Активировать цены уведомлений</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">109,110</context>
+          <context context-type="linenumber">110,111</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.enable_description" datatype="html">
@@ -3433,14 +3469,14 @@
         <target> Получить оповещения, когда ваши действия достигают целевых цен </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">111,113</context>
+          <context context-type="linenumber">112,114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.form_title" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ editingAlertId === null ? &apos;Nueva alerta de precio&apos; : &apos;Editar alerta de precio&apos; }}"/> </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">125,127</context>
+          <context context-type="linenumber">126,128</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.ticker" datatype="html">
@@ -3448,7 +3484,7 @@
         <target>Тикер</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">130,131</context>
+          <context context-type="linenumber">131,132</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.ticker_placeholder" datatype="html">
@@ -3456,7 +3492,7 @@
         <target>Пример: AAPL</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">136,137</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.required_ticker" datatype="html">
@@ -3464,7 +3500,7 @@
         <target>Билет обязательен</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">153,155</context>
+          <context context-type="linenumber">154,156</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.stock_name" datatype="html">
@@ -3472,7 +3508,7 @@
         <target>Название действия (необязательно)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">159,161</context>
+          <context context-type="linenumber">160,162</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.stock_name_placeholder" datatype="html">
@@ -3480,7 +3516,7 @@
         <target>Пример: Apple Inc.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">164,165</context>
+          <context context-type="linenumber">165,166</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.target_price" datatype="html">
@@ -3488,7 +3524,7 @@
         <target>Целевая цена</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">172,173</context>
+          <context context-type="linenumber">173,174</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.price_placeholder" datatype="html">
@@ -3496,7 +3532,7 @@
         <target>0,00</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">179</context>
+          <context context-type="linenumber">180</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.required_target_price" datatype="html">
@@ -3504,7 +3540,7 @@
         <target>Объективная цена является обязательной</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">190,191</context>
+          <context context-type="linenumber">191,192</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.price_min" datatype="html">
@@ -3512,7 +3548,7 @@
         <target>Цена должна быть больше 0</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">191,193</context>
+          <context context-type="linenumber">192,194</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.condition" datatype="html">
@@ -3520,7 +3556,7 @@
         <target>Состояние</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">197,199</context>
+          <context context-type="linenumber">198,200</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.condition_above" datatype="html">
@@ -3528,7 +3564,7 @@
         <target>Выше целевой цены</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">204,205</context>
+          <context context-type="linenumber">205,206</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.condition_below" datatype="html">
@@ -3536,7 +3572,7 @@
         <target>Ниже целевой цены</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">205,207</context>
+          <context context-type="linenumber">206,208</context>
         </context-group>
       </trans-unit>
       <trans-unit id="validation.required_condition" datatype="html">
@@ -3544,7 +3580,7 @@
         <target>Состояние обязательно</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">208,210</context>
+          <context context-type="linenumber">209,211</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.active" datatype="html">
@@ -3552,7 +3588,7 @@
         <target> Активное предупреждение </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">221,222</context>
+          <context context-type="linenumber">222,223</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.cancel" datatype="html">
@@ -3560,7 +3596,7 @@
         <target>Отмена</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">237,238</context>
+          <context context-type="linenumber">238,239</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.create_alert" datatype="html">
@@ -3568,7 +3604,7 @@
         <target>Создать предупреждение</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">250,252</context>
+          <context context-type="linenumber">251,253</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.update_alert" datatype="html">
@@ -3576,7 +3612,7 @@
         <target>Обновить бдительность</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">263,265</context>
+          <context context-type="linenumber">264,266</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.my_alerts" datatype="html">
@@ -3584,7 +3620,7 @@
         <target>Мои настроенные оповещения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">270,272</context>
+          <context context-type="linenumber">271,273</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.no_alerts" datatype="html">
@@ -3592,7 +3628,7 @@
         <target>У вас нет настроенных предупреждений о ценах</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">282,283</context>
+          <context context-type="linenumber">283,284</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.alerts.create_instruction" datatype="html">
@@ -3600,7 +3636,7 @@
         <target>Создайте новое предупреждение, используя верхнюю форму</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">283,286</context>
+          <context context-type="linenumber">284,287</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.inactive" datatype="html">
@@ -3608,7 +3644,7 @@
         <target> Неактивный </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">290,291</context>
+          <context context-type="linenumber">291,292</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.config_title" datatype="html">
@@ -3616,7 +3652,7 @@
         <target>Конфигурация методов уведомления</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">348,349</context>
+          <context context-type="linenumber">349,350</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.description" datatype="html">
@@ -3624,7 +3660,7 @@
         <target> Выберите, как вы хотите получить свои уведомления и оповещения </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">350,351</context>
+          <context context-type="linenumber">351,352</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.email" datatype="html">
@@ -3632,7 +3668,7 @@
         <target>Электронная почта</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">358,359</context>
+          <context context-type="linenumber">359,360</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.email_description" datatype="html">
@@ -3640,7 +3676,7 @@
         <target> Получить уведомления по электронной почте </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">360,362</context>
+          <context context-type="linenumber">361,363</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.push_title" datatype="html">
@@ -3648,7 +3684,7 @@
         <target>Push -уведомления</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">374,375</context>
+          <context context-type="linenumber">375,376</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.push_description" datatype="html">
@@ -3656,14 +3692,14 @@
         <target> Получить уведомления в вашем браузере или устройстве </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">376,378</context>
+          <context context-type="linenumber">377,379</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.sms" datatype="html">
         <source>SMS</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">391</context>
+          <context context-type="linenumber">392</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.sms_description" datatype="html">
@@ -3671,14 +3707,14 @@
         <target> Получить уведомления по текстовым сообщениям </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">392,394</context>
+          <context context-type="linenumber">393,395</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.whatsapp" datatype="html">
         <source>WhatsApp</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">406,407</context>
+          <context context-type="linenumber">407,408</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.notifications.whatsapp_description" datatype="html">
@@ -3686,7 +3722,7 @@
         <target> Получить уведомления для WhatsApp </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">408,410</context>
+          <context context-type="linenumber">409,411</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.title" datatype="html">
@@ -3694,7 +3730,7 @@
         <target>Рынки и интересующие сектора</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">438,439</context>
+          <context context-type="linenumber">439,440</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.description" datatype="html">
@@ -3702,7 +3738,7 @@
         <target> Настройте свои любимые рынки и сектора для мониторинга </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">440,443</context>
+          <context context-type="linenumber">441,444</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.favorite_markets" datatype="html">
@@ -3710,7 +3746,7 @@
         <target>Любимые рынки</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">445,447</context>
+          <context context-type="linenumber">446,448</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.nyse" datatype="html">
@@ -3718,7 +3754,7 @@
         <target> NYSE (Нью -Йорк) </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">456,457</context>
+          <context context-type="linenumber">457,458</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.nasdaq" datatype="html">
@@ -3726,7 +3762,7 @@
         <target> Насдак </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">468,469</context>
+          <context context-type="linenumber">469,470</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.lse" datatype="html">
@@ -3734,7 +3770,7 @@
         <target> Лондонский сумка </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">480,481</context>
+          <context context-type="linenumber">481,482</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.tsx" datatype="html">
@@ -3742,7 +3778,7 @@
         <target> Торонто Сумка </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">492,493</context>
+          <context context-type="linenumber">493,494</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.asx" datatype="html">
@@ -3750,7 +3786,7 @@
         <target> Сиднейская сумка </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">504,505</context>
+          <context context-type="linenumber">505,506</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.bmv" datatype="html">
@@ -3758,7 +3794,7 @@
         <target> Мексиканская сумка </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">516,517</context>
+          <context context-type="linenumber">517,518</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.favorite_sectors" datatype="html">
@@ -3766,7 +3802,7 @@
         <target>Любимые сектора</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">524,526</context>
+          <context context-type="linenumber">525,527</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.tech" datatype="html">
@@ -3774,7 +3810,7 @@
         <target> Технология </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">535,537</context>
+          <context context-type="linenumber">536,538</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.health" datatype="html">
@@ -3782,7 +3818,7 @@
         <target> Здоровье </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">547,549</context>
+          <context context-type="linenumber">548,550</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.finance" datatype="html">
@@ -3790,7 +3826,7 @@
         <target> Финансы </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">559,561</context>
+          <context context-type="linenumber">560,562</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.energy" datatype="html">
@@ -3798,7 +3834,7 @@
         <target> Энергия </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">571,573</context>
+          <context context-type="linenumber">572,574</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.consumer" datatype="html">
@@ -3806,7 +3842,7 @@
         <target> Потребление </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">583,585</context>
+          <context context-type="linenumber">584,586</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.markets.sector.materials" datatype="html">
@@ -3814,7 +3850,7 @@
         <target> Материалы </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">595,597</context>
+          <context context-type="linenumber">596,598</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.save" datatype="html">
@@ -3822,11 +3858,11 @@
         <target>Сохранить предпочтения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">610,612</context>
+          <context context-type="linenumber">611,613</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">746,747</context>
+          <context context-type="linenumber">747,748</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.title" datatype="html">
@@ -3834,7 +3870,7 @@
         <target>Операционная конфигурация</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">616,617</context>
+          <context context-type="linenumber">617,618</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.description" datatype="html">
@@ -3842,7 +3878,7 @@
         <target> Настройте свои предпочтения для операций на покупке и продаже </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">618,621</context>
+          <context context-type="linenumber">619,622</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.security_title" datatype="html">
@@ -3850,7 +3886,7 @@
         <target>Безопасность и ограничения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">624,626</context>
+          <context context-type="linenumber">625,627</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.daily_limit" datatype="html">
@@ -3858,7 +3894,7 @@
         <target>Ежедневный лимит операций</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">633,635</context>
+          <context context-type="linenumber">634,636</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.limit_min_error" datatype="html">
@@ -3866,7 +3902,7 @@
         <target>Предел должен быть не менее 1</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">645,646</context>
+          <context context-type="linenumber">646,647</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.limit_max_error" datatype="html">
@@ -3874,7 +3910,7 @@
         <target>Предел не может быть больше 100</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">646,648</context>
+          <context context-type="linenumber">647,649</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.daily_limit_help" datatype="html">
@@ -3882,7 +3918,7 @@
         <target> Устанавливает ограничение для вашей ежедневной работы в качестве меры безопасности </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">649,651</context>
+          <context context-type="linenumber">650,652</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.confirm_large_orders" datatype="html">
@@ -3890,7 +3926,7 @@
         <target> Дополнительное подтверждение для крупных заказов </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">663,665</context>
+          <context context-type="linenumber">664,666</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.confirm_large_orders_help" datatype="html">
@@ -3898,7 +3934,7 @@
         <target> Запросить дополнительное подтверждение на заказы, которые представляют значительные расходы </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">667,670</context>
+          <context context-type="linenumber">668,671</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.order_config" datatype="html">
@@ -3906,7 +3942,7 @@
         <target>Конфигурация заказа</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">674,676</context>
+          <context context-type="linenumber">675,677</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.default_order_type" datatype="html">
@@ -3914,7 +3950,7 @@
         <target>Предопределенный тип порядка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">683,685</context>
+          <context context-type="linenumber">684,686</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.market_order" datatype="html">
@@ -3922,7 +3958,7 @@
         <target>Рыночный заказ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">690,691</context>
+          <context context-type="linenumber">691,692</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.limit_order" datatype="html">
@@ -3930,7 +3966,7 @@
         <target>Ограниченный заказ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">691,692</context>
+          <context context-type="linenumber">692,693</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.stop_order" datatype="html">
@@ -3938,7 +3974,7 @@
         <target>Остановить порядок</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">692,693</context>
+          <context context-type="linenumber">693,694</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.stop_limit_order" datatype="html">
@@ -3946,7 +3982,7 @@
         <target>Ограниченный порядок остановки</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">693,695</context>
+          <context context-type="linenumber">694,696</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.default_order_help" datatype="html">
@@ -3954,7 +3990,7 @@
         <target> Этот тип порядка будет использоваться по умолчанию при создании новых заказов </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">696,698</context>
+          <context context-type="linenumber">697,699</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.auto_stop_loss" datatype="html">
@@ -3962,7 +3998,7 @@
         <target> Активировать автоматическую остановку </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">710,712</context>
+          <context context-type="linenumber">711,713</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.auto_stop_loss_help" datatype="html">
@@ -3970,7 +4006,7 @@
         <target> Устанавливает автоматическую остановку для всех операций в качестве защиты </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">714,716</context>
+          <context context-type="linenumber">715,717</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.stop_loss_percentage" datatype="html">
@@ -3978,7 +4014,7 @@
         <target>Остановка процент потерь (%)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">720,722</context>
+          <context context-type="linenumber">721,723</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.stop_loss_min_error" datatype="html">
@@ -3986,7 +4022,7 @@
         <target>Процент должен быть не менее 1%</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">730,731</context>
+          <context context-type="linenumber">731,732</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.operations.stop_loss_max_error" datatype="html">
@@ -3994,7 +4030,7 @@
         <target>Процент не может быть более 50%</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">731,734</context>
+          <context context-type="linenumber">732,735</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.title" datatype="html">
@@ -4002,7 +4038,7 @@
         <target>Общая конфигурация уведомления</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">755,756</context>
+          <context context-type="linenumber">756,757</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.description" datatype="html">
@@ -4010,7 +4046,7 @@
         <target> Настройте, какие уведомления вы хотите получить </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">757,760</context>
+          <context context-type="linenumber">758,761</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.market_open_close" datatype="html">
@@ -4018,7 +4054,7 @@
         <target>Открытие и закрытие рынка</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">764,765</context>
+          <context context-type="linenumber">765,766</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.market_open_close_desc" datatype="html">
@@ -4026,7 +4062,7 @@
         <target> Получить уведомления об открытии и закрытии рынков </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">766,768</context>
+          <context context-type="linenumber">767,769</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.daily_summary" datatype="html">
@@ -4034,7 +4070,7 @@
         <target>Ежедневное резюме</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">780,781</context>
+          <context context-type="linenumber">781,782</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.daily_summary_desc" datatype="html">
@@ -4042,7 +4078,7 @@
         <target> Получите ежедневную резюме вашей деятельности </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">782,784</context>
+          <context context-type="linenumber">783,785</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.executed_orders" datatype="html">
@@ -4050,7 +4086,7 @@
         <target>Заказы выполнены</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">796,797</context>
+          <context context-type="linenumber">797,798</context>
         </context-group>
       </trans-unit>
       <trans-unit id="preferences.others.executed_orders_desc" datatype="html">
@@ -4058,7 +4094,7 @@
         <target> Получите уведомления, когда ваши заказы выполняются </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/preferences/preferences.component.html</context>
-          <context context-type="linenumber">798,800</context>
+          <context context-type="linenumber">799,801</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profile.header.title" datatype="html">
@@ -4165,14 +4201,6 @@
           <context context-type="linenumber">48,50</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="profile.security.current-password-required" datatype="html">
-        <source> La contraseña actual es requerida </source>
-        <target> Требуется текущий пароль </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/profile/security/security.component.html</context>
-          <context context-type="linenumber">61,65</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="profile.security.new-password" datatype="html">
         <source>Nueva contraseña</source>
         <target>Новый пароль</target>
@@ -4231,7 +4259,7 @@
       </trans-unit>
       <trans-unit id="profile.security.req-special" datatype="html">
         <source>Al menos un caracter especial (@$!%*?&amp;)</source>
-        <target>По крайней мере, один специальный персонаж (@$!%*?&amp;)</target>
+        <target>По крайней мере, один специальный персонаж (@$!%*? &amp;)</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/profile/security/security.component.html</context>
           <context context-type="linenumber">111,114</context>
@@ -4287,7 +4315,7 @@
       </trans-unit>
       <trans-unit id="footer.copyright" datatype="html">
         <source>© 2025 Visenture. Todos los derechos reservados.</source>
-        <target>© 2025 Висентуре. Все права защищены.</target>
+        <target>© 2025 Visenture. Все права защищены.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/footer/footer.component.html</context>
           <context context-type="linenumber">4,7</context>
@@ -5094,6 +5122,7 @@
       </trans-unit>
       <trans-unit id="4996271085363585486" datatype="html">
         <source> Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones. </source>
+        <target>Средства, полученные от этой продажи (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) уже зачислены на ваш счет. Вы можете использовать эти средства для новых операций.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/sell-stock-modal/sell-stock-modal.component.html</context>
           <context context-type="linenumber">330,332</context>
@@ -5479,7 +5508,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">319,322</context>
+          <context context-type="linenumber">322,325</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.notifications_title" datatype="html">
@@ -5527,7 +5556,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">340,342</context>
+          <context context-type="linenumber">343,345</context>
         </context-group>
       </trans-unit>
       <trans-unit id="funds.manage_funds" datatype="html">
@@ -5551,7 +5580,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">348,351</context>
+          <context context-type="linenumber">351,354</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.my_profile" datatype="html">
@@ -5575,7 +5604,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">363,366</context>
+          <context context-type="linenumber">367,370</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.manage_users" datatype="html">
@@ -5587,7 +5616,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">371,374</context>
+          <context context-type="linenumber">375,378</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.logout" datatype="html">
@@ -5603,7 +5632,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">384,386</context>
+          <context context-type="linenumber">388,390</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.home" datatype="html">
@@ -5623,7 +5652,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">312,315</context>
+          <context context-type="linenumber">315,318</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.close_menu" datatype="html">
@@ -5646,7 +5675,7 @@
         <target>Портфель</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">326,329</context>
+          <context context-type="linenumber">329,332</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.orders" datatype="html">
@@ -5654,7 +5683,7 @@
         <target>Приказ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">333,335</context>
+          <context context-type="linenumber">336,338</context>
         </context-group>
       </trans-unit>
       <trans-unit id="navbar.reports" datatype="html">
@@ -5662,194 +5691,7 @@
         <target>Информация</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/navbar/navbar.component.html</context>
-          <context context-type="linenumber">355,357</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="confirmDialog.cancelButton" datatype="html">
-        <source>Cancelar</source>
-        <target>Отмена</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/confirm-dialog/confirm-dialog.component.ts</context>
-          <context context-type="linenumber">78</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="confirmDialog.confirmButton" datatype="html">
-        <source>Aceptar</source>
-        <target>Принимать</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/confirm-dialog/confirm-dialog.component.ts</context>
-          <context context-type="linenumber">79</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.dialog.title" datatype="html">
-        <source> Detalles del Usuario </source>
-        <target> Данные пользователя </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">5,7</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="common.actions.close.dialog" datatype="html">
-        <source>Cerrar diálogo</source>
-        <target>Закрыть диалог</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">8,9</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.registration.date" datatype="html">
-        <source>Fecha de registro:</source>
-        <target>Дата регистрации:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">47,48</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.last.access" datatype="html">
-        <source>Último acceso:</source>
-        <target>Последний доступ:</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">51,52</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.identity.document" datatype="html">
-        <source>Documento de Identidad</source>
-        <target>Идентификационный документ</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">64,65</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.email" datatype="html">
-        <source>Correo Electrónico</source>
-        <target>Электронная почта</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">68,69</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.birthdate" datatype="html">
-        <source>Fecha de Nacimiento</source>
-        <target>Дата рождения</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">72,73</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.phone" datatype="html">
-        <source>Teléfono</source>
-        <target>Телефон</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">80,81</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.verification.status" datatype="html">
-        <source>Estado de Verificación</source>
-        <target>Статус проверки</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">84,85</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.last.update" datatype="html">
-        <source>Última actualización</source>
-        <target>Последнее обновление</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">103,104</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.tab.activity" datatype="html">
-        <source>Actividad</source>
-        <target>Активность</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">113,115</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.activity.no.data" datatype="html">
-        <source>No hay datos de actividad disponibles para este usuario.</source>
-        <target>Для этого пользователя нет данных об активности.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">118,121</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.tab.security" datatype="html">
-        <source>Seguridad</source>
-        <target>Безопасность</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">124,126</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.security.email.verification" datatype="html">
-        <source>Verificación de Email</source>
-        <target>Проверка электронной почты</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">129,131</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="common.actions.close" datatype="html">
-        <source> Cerrar </source>
-        <target> Закрывать </target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">157,160</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="user.detail.actions.edit" datatype="html">
-        <source><x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon class=&quot;mr-1.5 h-5 w-5&quot;&gt;"/>edit<x id="CLOSE_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;/mat-icon&gt;"/> Editar usuario </source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.html</context>
-          <context context-type="linenumber">167,170</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="role.admin" datatype="html">
-        <source>Administrador</source>
-        <target>Администратор</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.ts</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">562</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="role.commissioner" datatype="html">
-        <source>Comisionista</source>
-        <target>Комиссиост</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.ts</context>
-          <context context-type="linenumber">67</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">563</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="role.client" datatype="html">
-        <source>Cliente</source>
-        <target>Клиент</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.ts</context>
-          <context context-type="linenumber">68</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.ts</context>
-          <context context-type="linenumber">564</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="role.unknown" datatype="html">
-        <source>Desconocido</source>
-        <target>Незнакомец</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/user-detail-dialog/user-detail-dialog.component.ts</context>
-          <context context-type="linenumber">69</context>
+          <context context-type="linenumber">359,361</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.dialog.title" datatype="html">
@@ -5858,6 +5700,14 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
           <context context-type="linenumber">6,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="user-edit.close-dialog.tooltip" datatype="html">
+        <source>Cerrar diálogo</source>
+        <target>Закрыть диалог</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
+          <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.editing-info-label" datatype="html">
@@ -5872,7 +5722,7 @@
         <source> Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">37,38</context>
+          <context context-type="linenumber">35,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.first-name.placeholder" datatype="html">
@@ -5880,14 +5730,14 @@
         <target>Введите имя</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">47,48</context>
+          <context context-type="linenumber">45,46</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.last-name.label" datatype="html">
         <source> Apellido <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">63,64</context>
+          <context context-type="linenumber">60,61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.last-name.placeholder" datatype="html">
@@ -5895,14 +5745,14 @@
         <target>Введите фамилию</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">73,74</context>
+          <context context-type="linenumber">70,71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.email.label" datatype="html">
         <source> Correo Electrónico <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">89,90</context>
+          <context context-type="linenumber">85,86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.email.placeholder" datatype="html">
@@ -5910,21 +5760,21 @@
         <target>user@ejemplo.com</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">99,100</context>
+          <context context-type="linenumber">95,96</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="user-edit.phone-number.label" datatype="html">
-        <source> Número de Teléfono <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
+      <trans-unit id="user-edit.roles.label" datatype="html">
+        <source> Roles <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"/>*<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&lt;/span&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">115,116</context>
+          <context context-type="linenumber">137,138</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="user-edit.phone-number.placeholder" datatype="html">
-        <source>+1 234 567 890</source>
+      <trans-unit id="user-edit.roles.checkbox.label" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ role.displayName || role.name }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">125,126</context>
+          <context context-type="linenumber">150,151</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.important-info.title" datatype="html">
@@ -5932,7 +5782,7 @@
         <target>Важная информация:</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">144,145</context>
+          <context context-type="linenumber">192,193</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.important-info.required-fields" datatype="html">
@@ -5940,7 +5790,7 @@
         <target>Поля, отмеченные (*), являются обязательными</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">146,147</context>
+          <context context-type="linenumber">194,195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.important-info.unique-email" datatype="html">
@@ -5948,7 +5798,7 @@
         <target>Электронная почта должна быть уникальной в системе</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">147,148</context>
+          <context context-type="linenumber">195,196</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.important-info.immediate-changes" datatype="html">
@@ -5956,7 +5806,7 @@
         <target>Изменения будут применяться немедленно</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">148,151</context>
+          <context context-type="linenumber">196,199</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.action.cancel" datatype="html">
@@ -5964,7 +5814,7 @@
         <target> Отмена </target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">167,171</context>
+          <context context-type="linenumber">215,219</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.action.save" datatype="html">
@@ -5972,7 +5822,7 @@
         <target>Сохранить изменения</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">178,179</context>
+          <context context-type="linenumber">226,227</context>
         </context-group>
       </trans-unit>
       <trans-unit id="user-edit.action.saving" datatype="html">
@@ -5980,7 +5830,7 @@
         <target>Держа ...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/user-edit-dialog/user-edit-dialog.component.html</context>
-          <context context-type="linenumber">179,181</context>
+          <context context-type="linenumber">227,229</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.management.title" datatype="html">
@@ -5996,15 +5846,7 @@
         <target>Обновлять</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">18,20</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="users.actions.create.user" datatype="html">
-        <source>Crear Usuario</source>
-        <target>Создать пользователя</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">26,28</context>
+          <context context-type="linenumber">17,19</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.loading.title" datatype="html">
@@ -6047,12 +5889,11 @@
           <context context-type="linenumber">80,81</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="users.filters.status.label" datatype="html">
-        <source>Filtrar por estado</source>
-        <target>Фильтр по штату</target>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ role.label }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">96,97</context>
+          <context context-type="linenumber">86,87</context>
         </context-group>
       </trans-unit>
       <trans-unit id="common.role.label" datatype="html">
@@ -6063,12 +5904,12 @@
           <context context-type="linenumber">170</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="users.actions.view.details.tooltip" datatype="html">
-        <source>Ver Detalles</source>
-        <target>Смотрите детали</target>
+      <trans-unit id="users.no.role" datatype="html">
+        <source>Sin rol</source>
+        <target>Без роли</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">194,195</context>
+          <context context-type="linenumber">177,179</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.actions.edit.user.tooltip" datatype="html">
@@ -6079,20 +5920,12 @@
           <context context-type="linenumber">197,198</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="users.actions.delete.user.tooltip" datatype="html">
-        <source>Eliminar Usuario</source>
-        <target>Удалить пользователя</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">200,201</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="users.no.results.filters" datatype="html">
         <source>No se encontraron usuarios que coincidan con los filtros.</source>
         <target>Пользователи, которые соответствуют фильтрам, не были найдены.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">216,217</context>
+          <context context-type="linenumber">218,219</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.no.users.registered" datatype="html">
@@ -6100,7 +5933,7 @@
         <target>В системе нет пользователей.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">219,220</context>
+          <context context-type="linenumber">221,222</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.paginator.aria.label" datatype="html">
@@ -6108,7 +5941,7 @@
         <target>Выберите пользовательский страницу</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">235,236</context>
+          <context context-type="linenumber">237,238</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.charts.role.distribution.title" datatype="html">
@@ -6116,15 +5949,15 @@
         <target>Распределение ролей</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">243,244</context>
+          <context context-type="linenumber">245,246</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="users.charts.status.distribution.title" datatype="html">
-        <source>Distribución por Estado</source>
-        <target>Распределение по штату</target>
+      <trans-unit id="users.charts.role.no.data" datatype="html">
+        <source>No hay datos para mostrar la gráfica de roles.</source>
+        <target>Нет данных, чтобы показать график ролей.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">260,261</context>
+          <context context-type="linenumber">259,261</context>
         </context-group>
       </trans-unit>
       <trans-unit id="users.charts.registration.trend.title" datatype="html">
@@ -6132,7 +5965,15 @@
         <target>Запись тенденции</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/users/users.component.html</context>
-          <context context-type="linenumber">277,278</context>
+          <context context-type="linenumber">284,285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="users.charts.registration.no.data" datatype="html">
+        <source>No hay datos para mostrar la tendencia de registros.</source>
+        <target>Нет данных, чтобы показать записи записей.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/users/users.component.html</context>
+          <context context-type="linenumber">300,303</context>
         </context-group>
       </trans-unit>
     </body>

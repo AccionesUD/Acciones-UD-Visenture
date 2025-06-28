@@ -12,6 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 import { User, ProfileUpdateResponse } from '../../models/user.model';
 import { UsersService } from '../../services/user.service';
 import { phoneNumberValidator, getValidationErrorMessage } from '../../helpers/must-match.validator';
+import { HttpClient } from '@angular/common/http';
 
 export interface UserEditData {
   user: User;
@@ -42,38 +43,75 @@ export interface UserEditData {
 })
 export class UserEditDialogComponent implements OnInit {
   editForm: FormGroup;
-  user: User;
+  user: User & { accountId?: number };
   isSaving = false;
   formSubmitted = false;
+  roles: any[] = [];
+  initialRole: any;
 
   constructor(
     public dialogRef: MatDialogRef<UserEditDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: UserEditData,
     private fb: FormBuilder,
     private usersService: UsersService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private http: HttpClient
   ) {
     // Configuración del diálogo
     this.dialogRef.disableClose = false;
     this.dialogRef.addPanelClass('user-edit-dialog');
-    
     // Inicialización de datos
     this.user = data.user;
-    
     // Crear formulario con valores iniciales y validaciones mejoradas
     this.editForm = this.fb.group({
       first_name: [this.user.first_name, [Validators.required, Validators.minLength(2)]],
       last_name: [this.user.last_name, [Validators.required, Validators.minLength(2)]],
       email: [this.user.email, [Validators.required, Validators.email]],
-      phone_number: [
-        this.user.phone_number, 
-        [Validators.required, phoneNumberValidator()]
-      ]
+      // phone_number: [this.user.phone_number || '', [Validators.required, phoneNumberValidator()]],
+      // address: [this.user.address || ''],
+      roles: [this.user.roles || [], Validators.required] // Ahora permite múltiples roles
     });
   }
 
   ngOnInit(): void {
-    // Lógica de inicialización si es necesaria
+    console.log('[UserEditDialog] ngOnInit - user:', this.user);
+    this.loadRoles();
+    if (this.user && this.user.role) {
+      this.editForm.patchValue({ role: this.user.role });
+      this.initialRole = this.user.role;
+    }
+  }
+
+  loadRoles(): void {
+    console.log('[UserEditDialog] loadRoles - solicitando roles...');
+    this.usersService.getRoles().subscribe({
+      next: (roles) => {
+        console.log('[UserEditDialog] loadRoles - roles recibidos:', roles);
+        // Mapear a formato amigable si es necesario
+        this.roles = roles.map((r: any) => {
+          let displayName = r.displayName || r.name;
+          switch (r.name) {
+            case 'usuario': displayName = 'Usuario estándar'; break;
+            case 'comisionista': displayName = 'Comisionista'; break;
+            case 'admin': displayName = 'Administrador'; break;
+            case 'auditor': displayName = 'Auditor'; break;
+            case 'usuario_premium': displayName = 'Usuario premium'; break;
+          }
+          return { ...r, displayName };
+        });
+        console.log('[UserEditDialog] loadRoles - roles mapeados:', this.roles);
+      },
+      error: (err) => {
+        console.error('[UserEditDialog] loadRoles - error al cargar roles:', err);
+        this.roles = [
+          { id: 1, name: 'usuario', displayName: 'Usuario estándar' },
+          { id: 2, name: 'comisionista', displayName: 'Comisionista' },
+          { id: 3, name: 'admin', displayName: 'Administrador' },
+          { id: 4, name: 'auditor', displayName: 'Auditor' },
+          { id: 5, name: 'usuario_premium', displayName: 'Usuario premium' }
+        ];
+      }
+    });
   }
 
   /**
@@ -103,7 +141,7 @@ export class UserEditDialogComponent implements OnInit {
       'last_name': 'apellido',
       'email': 'correo electrónico',
       'phone_number': 'número de teléfono',
-      'identity_document': 'documento de identidad'
+      'role': 'rol'
     };
     
     const displayName = fieldDisplayNames[fieldName] || fieldName;
@@ -123,7 +161,6 @@ export class UserEditDialogComponent implements OnInit {
    */
   onSave(): void {
     this.formSubmitted = true;
-
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
       this.snackBar.open('Por favor, corrige los errores en el formulario', 'Cerrar', {
@@ -132,36 +169,44 @@ export class UserEditDialogComponent implements OnInit {
       });
       return;
     }
-
-    if (!this.user.id) {
-      this.snackBar.open('Error: ID de usuario no encontrado', 'Cerrar', {
+    // Usar accountId real del usuario
+    const accountId = (this.user as any).accountId ?? this.user.accountId ?? this.user.id;
+    if (!accountId || isNaN(Number(accountId))) {
+      console.warn('[UserEditDialog] onSave - accountId no encontrado o inválido:', accountId, this.user);
+      this.snackBar.open('Error: accountId de cuenta no encontrado', 'Cerrar', {
         duration: 5000,
         panelClass: ['error-snackbar']
       });
       return;
     }
-
     this.isSaving = true;
     const updatedData = this.editForm.value;
-
-    this.usersService.updateUser(this.user.id, updatedData).subscribe({
-      next: (response: ProfileUpdateResponse) => {
+    const payload = {
+      accountId: Number(accountId),
+      userId: String(this.user.identity_document ?? this.user.id),
+      firstName: updatedData.first_name,
+      lastName: updatedData.last_name,
+      email: updatedData.email,
+      roles: updatedData.roles as string[]
+    };
+    console.log('[UserEditDialog] onSave - payload a enviar:', payload);
+    this.usersService.updateUserAdmin(payload).subscribe({
+      next: (resp) => {
         this.isSaving = false;
+        console.log('[UserEditDialog] onSave - respuesta backend:', resp);
         this.snackBar.open('Usuario actualizado con éxito', 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        this.dialogRef.close(response.data);
+        this.dialogRef.close({ ...updatedData });
       },
       error: (error: any) => {
         this.isSaving = false;
-        console.error('Error al actualizar usuario:', error);
-        
         let errorMessage = 'Error al actualizar el usuario';
         if (error?.error?.message) {
           errorMessage = error.error.message;
         }
-        
+        console.error('[UserEditDialog] onSave - error backend:', error);
         this.snackBar.open(errorMessage, 'Cerrar', {
           duration: 5000,
           panelClass: ['error-snackbar']
@@ -190,5 +235,23 @@ export class UserEditDialogComponent implements OnInit {
     } else {
       this.closeDialog();
     }
+  }
+
+  /**
+   * Maneja el cambio de selección de roles (checkbox múltiple)
+   */
+  onRoleCheckboxChange(event: Event, roleName: string): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    const currentRoles: string[] = this.editForm.value.roles || [];
+    console.log('[UserEditDialog] onRoleCheckboxChange - antes:', currentRoles, 'checked:', checked, 'role:', roleName);
+    if (checked) {
+      if (!currentRoles.includes(roleName)) {
+        this.editForm.patchValue({ roles: [...currentRoles, roleName] });
+      }
+    } else {
+      this.editForm.patchValue({ roles: currentRoles.filter(r => r !== roleName) });
+    }
+    this.editForm.get('roles')?.markAsTouched();
+    console.log('[UserEditDialog] onRoleCheckboxChange - después:', this.editForm.value.roles);
   }
 }

@@ -23,7 +23,7 @@ import { ChangePasswordDto } from '../dtos/change-password.dto';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 
 @Injectable()
-export class UsersService{
+export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -33,7 +33,7 @@ export class UsersService{
     private alpacaBrokerService: AlpacaBrokerService,
     private readonly hashingProvider: HashingProvider,
   ) {}
-  
+
   async createUser(createUserDto: CreateUserDto) {
     const existingUser = await this.checkExistenceUser(
       createUserDto.identity_document,
@@ -142,6 +142,7 @@ export class UsersService{
       last_name: user.last_name,
       email: user.account?.email,
       phone: user.phone,
+      address: user.address,  
     };
   }
 
@@ -197,6 +198,8 @@ export class UsersService{
       phone: updatedUser?.phone,
     };
   }
+
+  //retornar todo para admin
 
   // async changePassword(identity_document: string, data: ChangePasswordDto) {
   //   // Busca el usuario y la cuenta relacionada

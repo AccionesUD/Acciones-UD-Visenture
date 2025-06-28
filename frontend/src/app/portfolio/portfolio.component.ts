@@ -113,6 +113,16 @@ export class PortfolioComponent implements OnInit, OnDestroy {
     
     // Cargar datos mediante el servicio
     this.loadPortfolioData();
+    
+    // Llamar a getOrders para ver la respuesta del endpoint
+    this.portfolioService.getOrders().subscribe({
+      next: (orders) => {
+        console.log('[PortfolioComponent] Órdenes recibidas:', orders);
+      },
+      error: (err) => {
+        console.error('[PortfolioComponent] Error al obtener órdenes:', err);
+      }
+    });
   }
 
   /**

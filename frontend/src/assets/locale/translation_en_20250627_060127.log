@@ -1,0 +1,2083 @@
+Translation log for en
+Source file: src/assets/locale/messages.xlf
+Output file: src/assets/locale/messages.en.xlf
+Date: 2025-06-27 06:01:27
+==================================================
+
+
+=== Translation Summary ===
+Total strings found: 689
+Successfully translated: 634
+Skipped (complex/empty): 34
+Failed translations: 21
+Success rate: 96.8%
+
+
+=== Missing Translations ===
+ID: forgot-password.brand-name
+Source: Visenture
+--------------------------------------------------
+ID: forgot-password.title
+Source: Recuperar contraseña
+--------------------------------------------------
+ID: forgot-password.subtitle
+Source: Ingresa tu correo electrónico para recibir instrucciones
+--------------------------------------------------
+ID: forgot-password.success.title
+Source: ¡Correo enviado!
+--------------------------------------------------
+ID: forgot-password.success.message
+Source: Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña.
+--------------------------------------------------
+ID: forgot-password.success.back-to-login
+Source: Volver a inicio de sesión
+--------------------------------------------------
+ID: forgot-password.email.label
+Source: Correo electrónico
+--------------------------------------------------
+ID: forgot-password.email.placeholder
+Source: nombre@ejemplo.com
+--------------------------------------------------
+ID: forgot-password.email.error.required
+Source: El correo electrónico es requerido.
+--------------------------------------------------
+ID: forgot-password.email.error.invalid
+Source: Ingresa un correo electrónico válido.
+--------------------------------------------------
+ID: forgot-password.submit.sending
+Source: Enviando...
+--------------------------------------------------
+ID: forgot-password.submit.send-link
+Source: Enviar enlace de recuperación
+--------------------------------------------------
+ID: forgot-password.back-to-login
+Source: Volver al inicio de sesión
+--------------------------------------------------
+ID: forgotPassword.success.title
+Source: ¡Correo enviado!
+--------------------------------------------------
+ID: forgotPassword.success.message
+Source: Revisa tu bandeja y sigue las instrucciones para restablecer tu contraseña.
+--------------------------------------------------
+ID: resetPassword.button
+Source: Restablecer contraseña
+--------------------------------------------------
+ID: forgotPassword.returnToLogin
+Source: Volver a iniciar sesión
+--------------------------------------------------
+ID: login.brand-name
+Source: Visenture
+--------------------------------------------------
+ID: login.credentials.title
+Source: Iniciar Sesión
+--------------------------------------------------
+ID: login.credentials.subtitle
+Source: Ingresa tus datos para iniciar sesión en tu cuenta
+--------------------------------------------------
+ID: login.credentials.email.label
+Source: Correo Electrónico
+--------------------------------------------------
+ID: login.credentials.email.placeholder
+Source: ejemplo@correo.com
+--------------------------------------------------
+ID: login.credentials.email.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: login.credentials.email.error.invalid
+Source: Por favor, ingresa un correo válido.
+--------------------------------------------------
+ID: login.credentials.password.label
+Source: Contraseña
+--------------------------------------------------
+ID: login.credentials.password.placeholder
+Source: ••••••••
+--------------------------------------------------
+ID: login.credentials.password.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: login.credentials.password.error.minlength
+Source: Mínimo 6 caracteres.
+--------------------------------------------------
+ID: login.credentials.submit-button
+Source: Siguiente
+--------------------------------------------------
+ID: login.credentials.verifying
+Source: Verificando...
+--------------------------------------------------
+ID: login.credentials.forgot-password
+Source: ¿Olvidaste tu contraseña?
+--------------------------------------------------
+ID: login.token.title
+Source: Verificación de Dos Pasos
+--------------------------------------------------
+ID: login.token.instruction-prefix
+Source: Hemos enviado un código de verificación a
+--------------------------------------------------
+ID: login.token.your-email
+Source: tu correo
+--------------------------------------------------
+ID: login.token.instruction-suffix
+Source: Por favor, ingrésalo a continuación.
+--------------------------------------------------
+ID: login.token.code.label
+Source: Código de Verificación
+--------------------------------------------------
+ID: login.token.code.placeholder
+Source: VFX45E
+--------------------------------------------------
+ID: login.token.code.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: login.token.code.error.length
+Source: El código debe tener 6 caracteres.
+--------------------------------------------------
+ID: login.token.code.error.format
+Source: El código solo puede contener números y letras mayúsculas.
+--------------------------------------------------
+ID: login.token.back-button
+Source: Volver
+--------------------------------------------------
+ID: login.token.verify-button
+Source: Verificar e Iniciar Sesión
+--------------------------------------------------
+ID: login.token.verifying
+Source: Verificando...
+--------------------------------------------------
+ID: login.token.resend-button
+Source: ¿No recibiste el código? Reenviar
+--------------------------------------------------
+ID: login.token.resending
+Source: Reenviando código...
+--------------------------------------------------
+ID: login.no-account.question
+Source: ¿No tienes una cuenta?
+--------------------------------------------------
+ID: login.no-account.register-link
+Source: Regístrate aquí
+--------------------------------------------------
+ID: register.brand-name
+Source: Visenture
+--------------------------------------------------
+ID: register.title
+Source: Crear Cuenta
+--------------------------------------------------
+ID: register.subtitle
+Source: Completa tus datos para registrarte
+--------------------------------------------------
+ID: register.name.label
+Source: Nombre Completo
+--------------------------------------------------
+ID: register.name.placeholder
+Source: Tu nombre
+--------------------------------------------------
+ID: register.name.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.identification.label
+Source: Identificación
+--------------------------------------------------
+ID: register.identification.placeholder
+Source: Tu identificación
+--------------------------------------------------
+ID: register.identification.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.identification.error.length
+Source: La identificación debe tener 8 caracteres.
+--------------------------------------------------
+ID: register.birth-date.label
+Source: Fecha de Nacimiento
+--------------------------------------------------
+ID: register.birth-date.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.address.label
+Source: Dirección
+--------------------------------------------------
+ID: register.address.placeholder
+Source: Tu dirección
+--------------------------------------------------
+ID: register.address.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.phone.label
+Source: Teléfono
+--------------------------------------------------
+ID: register.phone.placeholder
+Source: Tu teléfono
+--------------------------------------------------
+ID: register.phone.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.phone.error.length
+Source: El teléfono debe tener 10 dígitos.
+--------------------------------------------------
+ID: register.email.label
+Source: Correo Electrónico
+--------------------------------------------------
+ID: register.email.placeholder
+Source: ejemplo@correo.com
+--------------------------------------------------
+ID: register.email.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.email.error.invalid
+Source: Por favor, ingresa un correo válido.
+--------------------------------------------------
+ID: register.password.label
+Source: Contraseña
+--------------------------------------------------
+ID: register.password.placeholder
+Source: ••••••••
+--------------------------------------------------
+ID: register.password.error.required
+Source: Este campo es requerido.
+--------------------------------------------------
+ID: register.password.error.minlength
+Source: Mínimo 6 caracteres.
+--------------------------------------------------
+ID: register.confirm-password.label
+Source: Confirmar Contraseña
+--------------------------------------------------
+ID: register.confirm-password.placeholder
+Source: ••••••••
+--------------------------------------------------
+ID: register.confirm-password.error.mismatch
+Source: Las contraseñas no coinciden.
+--------------------------------------------------
+ID: register.error.validation-title
+Source: Error de validación:
+--------------------------------------------------
+ID: register.submit-button
+Source: Registrarse
+--------------------------------------------------
+ID: register.creating-account
+Source: Creando cuenta...
+--------------------------------------------------
+ID: register.already-have-account.question
+Source: ¿Ya tienes una cuenta?
+--------------------------------------------------
+ID: register.already-have-account.login-link
+Source: Inicia sesión aquí
+--------------------------------------------------
+ID: common.brand-name
+Source: Visenture
+--------------------------------------------------
+ID: reset-password.title
+Source: Restablecer contraseña
+--------------------------------------------------
+ID: reset-password.subtitle
+Source: Ingresa tu nueva contraseña
+--------------------------------------------------
+ID: reset-password.verifying
+Source: Verificando enlace...
+--------------------------------------------------
+ID: reset-password.invalid_link_title
+Source: Enlace inválido
+--------------------------------------------------
+ID: reset-password.invalid_link_message
+Source: El enlace para restablecer la contraseña no es válido o ha expirado.
+--------------------------------------------------
+ID: reset-password.request_new_link
+Source: Solicitar un nuevo enlace
+--------------------------------------------------
+ID: reset-password.new_password_label
+Source: Nueva contraseña
+--------------------------------------------------
+ID: resetPassword.password.placeholder
+Source: ••••••••
+--------------------------------------------------
+ID: validation.password_required
+Source: La contraseña es requerida.
+--------------------------------------------------
+ID: validation.password_minlength
+Source: La contraseña debe tener al menos 8 caracteres.
+--------------------------------------------------
+ID: reset-password.confirm_password_label
+Source: Confirmar contraseña
+--------------------------------------------------
+ID: resetPassword.confirmPassword.placeholder
+Source: ••••••••
+--------------------------------------------------
+ID: validation.confirm_password_required
+Source: La confirmación de contraseña es requerida.
+--------------------------------------------------
+ID: validation.passwords_mismatch
+Source: Las contraseñas no coinciden.
+--------------------------------------------------
+ID: reset-password.updating
+Source: Actualizando...
+--------------------------------------------------
+ID: reset-password.update_password
+Source: Actualizar contraseña
+--------------------------------------------------
+ID: reset-password.success_title
+Source: ¡Contraseña actualizada!
+--------------------------------------------------
+ID: reset-password.success_message
+Source: Tu contraseña ha sido actualizada correctamente.
+--------------------------------------------------
+ID: auth.login_link
+Source: Iniciar sesión
+--------------------------------------------------
+ID: resetPassword.success.title
+Source: ¡Contraseña actualizada!
+--------------------------------------------------
+ID: resetPassword.success.message
+Source: Tu contraseña ha sido restablecida exitosamente.
+--------------------------------------------------
+ID: auth.login
+Source: Iniciar sesión
+--------------------------------------------------
+ID: client-report.back.tooltip
+Source: Volver al panel
+--------------------------------------------------
+ID: client-report.header.title
+Source: Reporte de Cliente: <x id="INTERPOLATION" equiv-text="{{ client ? client.name : &apos;Cargando...&ap...
+--------------------------------------------------
+ID: client-report.header.subtitle
+Source: Vista detallada de actividad y rendimiento
+--------------------------------------------------
+ID: client-report.error.help-text
+Source: Por favor, intenta nuevamente o contacta con soporte si el error persiste.
+--------------------------------------------------
+ID: client-report.error.retry-button
+Source: Reintentar
+--------------------------------------------------
+ID: client-report.client.member-since
+Source: Cliente desde <x id="INTERPOLATION" equiv-text="{{ client.registration_date | date:&apos;dd/MM/yyyy&...
+--------------------------------------------------
+ID: client-report.client.email-label
+Source: Email
+--------------------------------------------------
+ID: client-report.client.phone-label
+Source: Teléfono
+--------------------------------------------------
+ID: client-report.client.status-label
+Source: Estado
+--------------------------------------------------
+ID: client-report.kpi.total-investment.label
+Source: Inversión Total
+--------------------------------------------------
+ID: client-report.kpi.current-value.label
+Source: Valor actual: $<x id="INTERPOLATION" equiv-text="{{ clientKpis &amp;&amp; clientKpis.current_value ?...
+--------------------------------------------------
+ID: client-report.kpi.roi.label
+Source: ROI
+--------------------------------------------------
+ID: client-report.kpi.gain.label
+Source: Ganancia: $<x id="INTERPOLATION" equiv-text="{{ clientKpis &amp;&amp; clientKpis.roi_amount ? client...
+--------------------------------------------------
+ID: client-report.kpi.operations.label
+Source: Operaciones
+--------------------------------------------------
+ID: client-report.kpi.last-operation.label
+Source: Última operación: <x id="INTERPOLATION" equiv-text="{{ clientKpis &amp;&amp; clientKpis.last_operati...
+--------------------------------------------------
+ID: client-report.kpi.main-assets.label
+Source: Activos Principales
+--------------------------------------------------
+ID: client-report.filters.title
+Source: Filtros
+--------------------------------------------------
+ID: client-report.filters.period.label
+Source: Período
+--------------------------------------------------
+ID: client-report.filters.market.label
+Source: Mercado
+--------------------------------------------------
+ID: client-report.filters.status.label
+Source: Estado
+--------------------------------------------------
+ID: client-report.filters.status.all
+Source: Todos
+--------------------------------------------------
+ID: client-report.filters.status.active
+Source: Activo
+--------------------------------------------------
+ID: client-report.filters.status.inactive
+Source: Inactivo
+--------------------------------------------------
+ID: client-report.filters.status.pending
+Source: Pendiente
+--------------------------------------------------
+ID: client-report.filters.status.paid
+Source: Pagado
+--------------------------------------------------
+ID: client-report.filters.clear-button
+Source: Limpiar
+--------------------------------------------------
+ID: client-report.filters.apply-button
+Source: Aplicar
+--------------------------------------------------
+ID: client-report.filters.active-filters
+Source: Filtros activos
+--------------------------------------------------
+ID: client-report.export.pdf-button
+Source: Exportar PDF
+--------------------------------------------------
+ID: client-report.export.excel-button
+Source: Exportar Excel
+--------------------------------------------------
+ID: client-report.chart.commissions-trend.title
+Source: Tendencia de Comisiones
+--------------------------------------------------
+ID: client-report.chart.asset-distribution.title
+Source: Distribución de Activos
+--------------------------------------------------
+ID: client-report.chart.roi-benchmark.title
+Source: ROI vs Benchmark
+--------------------------------------------------
+ID: client-report.commissions-table.title
+Source: Historial de Comisiones
+--------------------------------------------------
+ID: client-report.commissions-table.subtitle
+Source: Detalle de comisiones generadas por este cliente
+--------------------------------------------------
+ID: client-report.commissions-table.month-header
+Source: Mes
+--------------------------------------------------
+ID: client-report.commissions-table.year-header
+Source: Año
+--------------------------------------------------
+ID: client-report.commissions-table.commissions-header
+Source: Comisiones
+--------------------------------------------------
+ID: client-report.commissions-table.operations-header
+Source: Operaciones
+--------------------------------------------------
+ID: client-report.commissions-table.market-header
+Source: Mercado
+--------------------------------------------------
+ID: client-report.commissions-table.status-header
+Source: Estado
+--------------------------------------------------
+ID: client-report.commissions-table.no-data
+Source: No se encontraron comisiones para este cliente con los filtros seleccionados.
+--------------------------------------------------
+ID: client-report.commissions-table.paginator-aria-label
+Source: Seleccionar página de comisiones
+--------------------------------------------------
+ID: commissioner.panel.title
+Source: Panel del Comisionista
+--------------------------------------------------
+ID: commissioner.panel.subtitle
+Source: Gestiona tus clientes y comisiones
+--------------------------------------------------
+ID: commissioner.actions.export.pdf
+Source: Exportar PDF
+--------------------------------------------------
+ID: commissioner.actions.export.excel
+Source: Exportar Excel
+--------------------------------------------------
+ID: commissioner.error.contact.support
+Source: Por favor, intenta nuevamente o contacta con soporte si el error persiste.
+--------------------------------------------------
+ID: common.actions.retry
+Source: Reintentar
+--------------------------------------------------
+ID: common.filters.title
+Source: Filtros
+--------------------------------------------------
+ID: commissioner.filters.client.search.label
+Source: Buscar cliente
+--------------------------------------------------
+ID: commissioner.filters.client.search.placeholder
+Source: Nombre, email...
+--------------------------------------------------
+ID: common.market.label
+Source: Mercado
+--------------------------------------------------
+ID: common.status.label
+Source: Estado
+--------------------------------------------------
+ID: common.actions.clear
+Source: Limpiar
+--------------------------------------------------
+ID: common.actions.apply
+Source: Aplicar
+--------------------------------------------------
+ID: common.filters.active
+Source: Filtros activos
+--------------------------------------------------
+ID: commissioner.tabs.summary.label
+Source: Resumen
+--------------------------------------------------
+ID: commissioner.stats.total.clients.title
+Source: Clientes Totales
+--------------------------------------------------
+ID: commissioner.stats.active.clients
+Source: activos
+--------------------------------------------------
+ID: commissioner.stats.commissions.month.title
+Source: Comisiones (Mes)
+--------------------------------------------------
+ID: commissioner.stats.vs.last.month
+Source: vs. último mes
+--------------------------------------------------
+ID: commissioner.stats.average.roi.title
+Source: ROI Promedio
+--------------------------------------------------
+ID: commissioner.stats.clients.negative.roi
+Source: clientes con ROI negativo
+--------------------------------------------------
+ID: commissioner.stats.total.operations.title
+Source: Total Operaciones
+--------------------------------------------------
+ID: commissioner.stats.this.month
+Source: Este mes
+--------------------------------------------------
+ID: commissioner.charts.client.distribution.title
+Source: Distribución de Clientes
+--------------------------------------------------
+ID: commissioner.charts.commissions.by.market.title
+Source: Comisiones por Mercado
+--------------------------------------------------
+ID: commissioner.top.clients.roi.title
+Source: Mejores Clientes por ROI
+--------------------------------------------------
+ID: common.client.label
+Source: Cliente
+--------------------------------------------------
+ID: common.roi.label
+Source: ROI
+--------------------------------------------------
+ID: common.actions.label
+Source: Acciones
+--------------------------------------------------
+ID: common.actions.view.details
+Source: Ver detalles
+--------------------------------------------------
+ID: commissioner.tabs.clients.label
+Source: Clientes
+--------------------------------------------------
+ID: common.name.label
+Source: Nombre
+--------------------------------------------------
+ID: common.email.label
+Source: Email
+--------------------------------------------------
+ID: common.registration.label
+Source: Registro
+--------------------------------------------------
+ID: common.investment.label
+Source: Inversión
+--------------------------------------------------
+ID: common.last.operation.label
+Source: Última Operación
+--------------------------------------------------
+ID: commissioner.actions.buy.stocks.tooltip
+Source: Comprar acciones para este cliente
+--------------------------------------------------
+ID: commissioner.actions.sell.stocks.tooltip
+Source: Vender acciones de este cliente
+--------------------------------------------------
+ID: common.actions.view.details.tooltip
+Source: Ver detalles del cliente
+--------------------------------------------------
+ID: commissioner.clients.no.results
+Source: No se encontraron clientes con los filtros seleccionados
+--------------------------------------------------
+ID: common.paginator.aria.label
+Source: Seleccionar página
+--------------------------------------------------
+ID: commissioner.tabs.commissions.label
+Source: Comisiones
+--------------------------------------------------
+ID: common.month.label
+Source: Mes
+--------------------------------------------------
+ID: common.year.label
+Source: Año
+--------------------------------------------------
+ID: common.commission.label
+Source: Comisión
+--------------------------------------------------
+ID: common.operations.label
+Source: Operaciones
+--------------------------------------------------
+ID: commissioner.commission.status.paid
+Source: Pagada
+--------------------------------------------------
+ID: commissioner.commission.status.approved
+Source: Aprobada
+--------------------------------------------------
+ID: commissioner.commission.status.pending
+Source: Pendiente
+--------------------------------------------------
+ID: commissioner.commissions.no.results
+Source: No se encontraron comisiones con los filtros seleccionados
+--------------------------------------------------
+ID: commissioner.commissions.paginator.aria.label
+Source: Seleccionar página de comisiones
+--------------------------------------------------
+ID: commissioner.filters.market.all
+Source: Todos los mercados
+--------------------------------------------------
+ID: commissioner.filters.market.us
+Source: Estados Unidos
+--------------------------------------------------
+ID: commissioner.filters.market.latam
+Source: Latinoamérica
+--------------------------------------------------
+ID: commissioner.filters.market.eu
+Source: Europa
+--------------------------------------------------
+ID: commissioner.filters.market.asia
+Source: Asia
+--------------------------------------------------
+ID: commissioner.filters.status.all
+Source: Todos los estados
+--------------------------------------------------
+ID: commissioner.filters.status.active
+Source: Activo
+--------------------------------------------------
+ID: commissioner.filters.status.inactive
+Source: Inactivo
+--------------------------------------------------
+ID: commissioner.filters.status.pending
+Source: Pendiente
+--------------------------------------------------
+ID: commissioner.error.load.failed
+Source: No se pudieron cargar los datos. Intente nuevamente.
+--------------------------------------------------
+ID: commissioner.error.load.error
+Source: Ocurrió un error al cargar los datos. Intente nuevamente.
+--------------------------------------------------
+ID: status.active
+Source: Activo
+--------------------------------------------------
+ID: status.inactive
+Source: Inactivo
+--------------------------------------------------
+ID: status.pending
+Source: Pendiente
+--------------------------------------------------
+ID: 6862114254895937884
+Source: Panel de Trading
+--------------------------------------------------
+ID: 2170548696761841412
+Source: {VAR_SELECT, select, &apos;true&apos; {Usar Datos Reales} other {Usar Datos Simulados}}
+--------------------------------------------------
+ID: 2048477378758208206
+Source: Seleccionar acción:
+--------------------------------------------------
+ID: 5618894868704094304
+Source: Periodo:
+--------------------------------------------------
+ID: 3262136419967680807
+Source: Intervalo:
+--------------------------------------------------
+ID: dashboard.refresh
+Source: Actualizar
+--------------------------------------------------
+ID: dashboard.price_evolution
+Source: Evolución de Precios
+--------------------------------------------------
+ID: dashboard.data_mode
+Source: {VAR_SELECT, select, &apos;true&apos; {Datos Simulados} other {Datos en Vivo}}
+--------------------------------------------------
+ID: dashboard.watchlist
+Source: Lista de Observación
+--------------------------------------------------
+ID: dashboard.available_markets
+Source: Mercados Disponibles
+--------------------------------------------------
+ID: dashboard.market_status
+Source: {VAR_SELECT, select, &apos;true&apos; {Abierto} other {Cerrado}}
+--------------------------------------------------
+ID: dashboard.view_all_markets
+Source: Ver todos los mercados
+--------------------------------------------------
+ID: dashboard.recent_transactions
+Source: Transacciones Recientes
+--------------------------------------------------
+ID: dashboard.transaction_type
+Source: {VAR_SELECT, select, buy {Compra} sell {Venta} other {Desconocido}}
+--------------------------------------------------
+ID: 727974718387675396
+Source: Saldo de Cuenta
+--------------------------------------------------
+ID: 4861388689592845621
+Source: Saldo Total
+--------------------------------------------------
+ID: 7776423653535917714
+Source: Saldo Disponible
+--------------------------------------------------
+ID: 6627437635683363363
+Source: Fondos Pendientes
+--------------------------------------------------
+ID: 84672458657792944
+Source: Último Depósito:
+--------------------------------------------------
+ID: 8958027187253226915
+Source: {VAR_SELECT, select, completed {Completado} pending {Pendiente} failed {Fallido} other {Desconocido}...
+--------------------------------------------------
+ID: 7834143834198768655
+Source: No se pudo cargar la información de la cuenta
+--------------------------------------------------
+ID: 5754643956407718913
+Source: Información Importante
+--------------------------------------------------
+ID: 7801719012638056517
+Source: Los fondos pueden tardar hasta <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong clas...
+--------------------------------------------------
+ID: 379871906720521258
+Source: El monto mínimo de depósito es de <x id="START_TAG_STRONG" ctype="x-strong" equiv-text="&lt;strong c...
+--------------------------------------------------
+ID: 1425912660404560232
+Source: Para asistencia con tus depósitos, contacta a nuestro <x id="START_TAG_STRONG" ctype="x-strong" equi...
+--------------------------------------------------
+ID: 8564426289226447428
+Source: Agregar Fondos
+--------------------------------------------------
+ID: 4478215513676648635
+Source: Añade saldo a tu cuenta para comenzar a invertir
+--------------------------------------------------
+ID: 4735451100809072492
+Source: Monto a Depositar
+--------------------------------------------------
+ID: 2202344634650043841
+Source: 0.00
+--------------------------------------------------
+ID: 7727867121029394548
+Source: El monto es requerido
+--------------------------------------------------
+ID: 6185262177878472121
+Source: El monto mínimo es $10.00
+--------------------------------------------------
+ID: 3570059728262053955
+Source: Formato inválido. Use solo números y hasta dos decimales
+--------------------------------------------------
+ID: 8158875155469136544
+Source: Procesando...
+--------------------------------------------------
+ID: 5050779974124505680
+Source: ¡Fondos Agregados!
+--------------------------------------------------
+ID: 343004110330221792
+Source: Error
+--------------------------------------------------
+ID: 2347614445623180252
+Source: Gestión de Fondos
+--------------------------------------------------
+ID: 78137313158024746
+Source: Recarga tu cuenta y consulta tu historial de transacciones.
+--------------------------------------------------
+ID: 2516070123982726055
+Source: Añadir Fondos
+--------------------------------------------------
+ID: 7331980230102124897
+Source: Historial de Transacciones
+--------------------------------------------------
+ID: home.hero.title
+Source: Potencia tu Trading con <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-...
+--------------------------------------------------
+ID: home.hero.description
+Source: Plataforma de day trading avanzada con herramientas de análisis en tiempo real, alertas personalizad...
+--------------------------------------------------
+ID: home.view_markets
+Source: Ver Mercados
+--------------------------------------------------
+ID: home.news.title
+Source: Noticias Financieras
+--------------------------------------------------
+ID: common.retry
+Source: Reintentar
+--------------------------------------------------
+ID: common.read_more
+Source: Leer más →
+--------------------------------------------------
+ID: home.benefits.title
+Source: ¿Por qué elegir Visenture?
+--------------------------------------------------
+ID: home.benefits.realtime_analysis.title
+Source: Análisis en Tiempo Real
+--------------------------------------------------
+ID: home.benefits.realtime_analysis.description
+Source: Accede a datos de mercado en tiempo real para tomar decisiones informadas.
+--------------------------------------------------
+ID: home.benefits.proven_strategies.title
+Source: Estrategias Probadas
+--------------------------------------------------
+ID: home.benefits.proven_strategies.description
+Source: Aplica estrategias de trading desarrolladas por expertos y optimizadas para diferentes mercados.
+--------------------------------------------------
+ID: home.benefits.custom_alerts.title
+Source: Alertas Personalizadas
+--------------------------------------------------
+ID: home.benefits.custom_alerts.description
+Source: Configura alertas para nunca perder oportunidades de trading importantes.
+--------------------------------------------------
+ID: home.benefits.advanced_security.title
+Source: Seguridad Avanzada
+--------------------------------------------------
+ID: home.benefits.advanced_security.description
+Source: Tu información y operaciones están protegidas con los más altos estándares de seguridad.
+--------------------------------------------------
+ID: home.cta.title
+Source: ¿Listo para empezar tu viaje de trading?
+--------------------------------------------------
+ID: home.cta.description
+Source: Únete a miles de traders que ya están aumentando sus ganancias con Visenture
+--------------------------------------------------
+ID: home.cta.explore_markets
+Source: Explorar mercados
+--------------------------------------------------
+ID: markets.edit-opening-time.dialog.title
+Source: Editar Hora de Apertura
+--------------------------------------------------
+ID: markets.edit-opening-time.official-time
+Source: Hora de apertura oficial: <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;fon...
+--------------------------------------------------
+ID: markets.edit-opening-time.custom-time.label
+Source: Hora de apertura personalizada
+--------------------------------------------------
+ID: markets.edit-opening-time.custom-time.placeholder
+Source: HH:MM
+--------------------------------------------------
+ID: markets.edit-opening-time.format-help
+Source: Formato: 24 horas (ejemplo: 09:30)
+--------------------------------------------------
+ID: markets.edit-opening-time.error.required
+Source: La hora de apertura es requerida.
+--------------------------------------------------
+ID: markets.edit-opening-time.error.format
+Source: El formato debe ser HH:MM (ejemplo: 09:30).
+--------------------------------------------------
+ID: markets.edit-opening-time.disclaimer
+Source: <x id="START_TAG_MAT_ICON" ctype="x-mat_icon" equiv-text="&lt;mat-icon class=&quot;text-blue-500 dar...
+--------------------------------------------------
+ID: markets.edit-opening-time.action.cancel
+Source: Cancelar
+--------------------------------------------------
+ID: markets.edit-opening-time.action.save
+Source: Guardar
+--------------------------------------------------
+ID: market.detail.loading
+Source: Cargando detalles del mercado...
+--------------------------------------------------
+ID: market.detail.initialization.required.title
+Source: Inicialización Requerida
+--------------------------------------------------
+ID: market.detail.initialization.required.message
+Source: Los mercados no han sido inicializados. Debes inicializarlos primero desde la pantalla de listado de...
+--------------------------------------------------
+ID: market.detail.back.to.markets
+Source: Volver a Mercados
+--------------------------------------------------
+ID: common.error.title
+Source: Error
+--------------------------------------------------
+ID: market.detail.market.info.title
+Source: Información del mercado
+--------------------------------------------------
+ID: market.detail.mic.code
+Source: Código MIC
+--------------------------------------------------
+ID: market.detail.operation.hours
+Source: Horario de operación
+--------------------------------------------------
+ID: market.detail.operation.days
+Source: Días de operación
+--------------------------------------------------
+ID: market.detail.country.region
+Source: País/Región
+--------------------------------------------------
+ID: market.detail.current.status.title
+Source: Estado actual
+--------------------------------------------------
+ID: market.detail.status.open
+Source: Mercado abierto
+--------------------------------------------------
+ID: market.detail.status.closed
+Source: Mercado cerrado
+--------------------------------------------------
+ID: market.detail.closes.at
+Source: Cierra:
+--------------------------------------------------
+ID: market.detail.next.opening
+Source: Próxima apertura:
+--------------------------------------------------
+ID: market.detail.last.updated
+Source: Última actualización:
+--------------------------------------------------
+ID: market.detail.available.shares
+Source: Acciones disponibles en <x id="INTERPOLATION" equiv-text="{{ stock.name_market }}"/>
+--------------------------------------------------
+ID: market.detail.loading.shares
+Source: Cargando acciones...
+--------------------------------------------------
+ID: market.detail.no.shares.title
+Source: No hay acciones disponibles
+--------------------------------------------------
+ID: market.detail.no.shares.message
+Source: No se encontraron acciones para este mercado.
+--------------------------------------------------
+ID: market.detail.featured.shares
+Source: Acciones destacadas
+--------------------------------------------------
+ID: market.detail.sector.label
+Source: Sector: <x id="INTERPOLATION" equiv-text="{{ share.sector }}"/>
+--------------------------------------------------
+ID: market.detail.view.details
+Source: Ver detalles
+--------------------------------------------------
+ID: market.detail.buy.button
+Source: Comprar
+--------------------------------------------------
+ID: market.detail.table.symbol
+Source: Símbolo
+--------------------------------------------------
+ID: market.detail.table.name
+Source: Nombre
+--------------------------------------------------
+ID: market.detail.table.class
+Source: Clase
+--------------------------------------------------
+ID: market.detail.table.sector
+Source: Sector
+--------------------------------------------------
+ID: market.detail.table.status
+Source: Estado
+--------------------------------------------------
+ID: market.detail.table.actions
+Source: Acciones
+--------------------------------------------------
+ID: market.detail.status.active
+Source: Activa
+--------------------------------------------------
+ID: market.detail.status.inactive
+Source: Inactiva
+--------------------------------------------------
+ID: market.detail.tooltip.view.details
+Source: Ver detalles
+--------------------------------------------------
+ID: market.detail.tooltip.buy.share
+Source: Comprar acción
+--------------------------------------------------
+ID: market.detail.tooltip.sell.share
+Source: Vender acción
+--------------------------------------------------
+ID: markets.available_markets
+Source: Mercados Disponibles
+--------------------------------------------------
+ID: markets.schedule_management
+Source: Panel de Gestión de Horarios
+--------------------------------------------------
+ID: markets.schedule_description
+Source: Puedes personalizar el horario de apertura de cada mercado. Haz clic en el botón de edición junto a ...
+--------------------------------------------------
+ID: markets.schedule_info
+Source: Los horarios personalizados se muestran en color verde y se aplican solo a la visualización en la ap...
+--------------------------------------------------
+ID: markets.initialization
+Source: Inicialización de Mercados
+--------------------------------------------------
+ID: markets.no_markets
+Source: No se encontraron mercados. Haz clic para inicializarlos desde Alpaca.
+--------------------------------------------------
+ID: markets.create_test_stock
+Source: Crear Acción de Prueba
+--------------------------------------------------
+ID: markets.symbol_placeholder
+Source: Símbolo (ej: AAPL, GOOGL, MSFT)
+--------------------------------------------------
+ID: markets.creating
+Source: Creando...
+--------------------------------------------------
+ID: markets.create_stock
+Source: Crear Acción
+--------------------------------------------------
+ID: markets.create_help
+Source: Crea acciones individuales para pruebas. Ejemplo de símbolos: AAPL (Apple), GOOGL (Google), MSFT (Mi...
+--------------------------------------------------
+ID: portfolio.filters.market.label
+Source: Filtrar por mercado
+--------------------------------------------------
+ID: portfolio.filters.performance.label
+Source: Filtrar por rendimiento
+--------------------------------------------------
+ID: portfolio.filters.sort.label
+Source: Ordenar por
+--------------------------------------------------
+ID: portfolio.filters.sort.none
+Source: Sin ordenar
+--------------------------------------------------
+ID: portfolio.filters.sort.highest-value
+Source: Mayor valor
+--------------------------------------------------
+ID: portfolio.filters.sort.lowest-value
+Source: Menor valor
+--------------------------------------------------
+ID: portfolio.filters.sort.highest-gain
+Source: Mayor ganancia
+--------------------------------------------------
+ID: portfolio.filters.sort.highest-loss
+Source: Mayor pérdida
+--------------------------------------------------
+ID: portfolio.filters.performance.all
+Source: Todos
+--------------------------------------------------
+ID: portfolio.filters.performance.high
+Source: Alto rendimiento (&gt;5%)
+--------------------------------------------------
+ID: portfolio.filters.performance.medium
+Source: Rendimiento medio (0-5%)
+--------------------------------------------------
+ID: portfolio.filters.performance.loss
+Source: En pérdida (&lt;0%)
+--------------------------------------------------
+ID: 2913089843219682457
+Source: Mis acciones
+--------------------------------------------------
+ID: 2572980313971749481
+Source: Cargando acciones...
+--------------------------------------------------
+ID: 8249789786562637709
+Source: Esto puede tardar unos segundos
+--------------------------------------------------
+ID: 1877598084154748373
+Source: Por favor, intenta nuevamente o contacta con soporte si el error persiste.
+--------------------------------------------------
+ID: 7579495398579524636
+Source: Reintentar
+--------------------------------------------------
+ID: 2802218933658190109
+Source: No has realizado compras aún
+--------------------------------------------------
+ID: 8886853544987096299
+Source: No tienes acciones en tu portafolio. Comienza a invertir para ver tus activos.
+--------------------------------------------------
+ID: 1233020800098087291
+Source: Explorar mercados
+--------------------------------------------------
+ID: 1826792358095356939
+Source: No hay acciones que coincidan con los filtros
+--------------------------------------------------
+ID: 9023313896265091949
+Source: Intenta con otros criterios de búsqueda.
+--------------------------------------------------
+ID: 6914113400144402731
+Source: Quitar filtros
+--------------------------------------------------
+ID: 9026940146349246309
+Source: Detalle de Acciones
+--------------------------------------------------
+ID: 5674892482265098784
+Source: {VAR_PLURAL, plural, =1 {1 acción encontrada} other {<x id="INTERPOLATION"/> acciones encontradas}}
+--------------------------------------------------
+ID: 2476472022906556832
+Source: (mostrando <x id="INTERPOLATION" equiv-text="{{pageIndex * pageSize + 1}}"/>-<x id="INTERPOLATION_1"...
+--------------------------------------------------
+ID: 6572031486106235713
+Source: Símbolo
+--------------------------------------------------
+ID: 1267523463942127961
+Source: Mercado
+--------------------------------------------------
+ID: 8555191371782357486
+Source: Cantidad
+--------------------------------------------------
+ID: 8719283247075793170
+Source: Valor Unitario
+--------------------------------------------------
+ID: 3235568772923413441
+Source: por acción
+--------------------------------------------------
+ID: 3096554444604589484
+Source: Valor Total
+--------------------------------------------------
+ID: 7332715434503902731
+Source: Inversión total
+--------------------------------------------------
+ID: 8578422222990076778
+Source: Rendimiento
+--------------------------------------------------
+ID: 3016492986949132240
+Source: Acciones
+--------------------------------------------------
+ID: 8466543688098303348
+Source: Comprar acciones
+--------------------------------------------------
+ID: 2929758632387670584
+Source: Vender acciones
+--------------------------------------------------
+ID: 4273074015614632705
+Source: No se encontraron acciones que coincidan con los filtros seleccionados.
+--------------------------------------------------
+ID: 3697342897427901446
+Source: Seleccionar página
+--------------------------------------------------
+ID: 6854794239922430373
+Source: Valor Total Invertido
+--------------------------------------------------
+ID: 7210904811734291379
+Source: Ganancias Totales
+--------------------------------------------------
+ID: 1606692261303065015
+Source: Acciones Totales
+--------------------------------------------------
+ID: 1693110669732762068
+Source: Rendimiento Total
+--------------------------------------------------
+ID: profile.information.title
+Source: Información Personal
+--------------------------------------------------
+ID: profile.information.edit-button
+Source: Editar
+--------------------------------------------------
+ID: profile.information.cancel-button
+Source: Cancelar
+--------------------------------------------------
+ID: profile.information.loading
+Source: Cargando información...
+--------------------------------------------------
+ID: profile.information.first-name.label
+Source: Nombre
+--------------------------------------------------
+ID: profile.information.first-name.placeholder
+Source: Nombre
+--------------------------------------------------
+ID: profile.information.last-name.label
+Source: Apellido
+--------------------------------------------------
+ID: profile.information.last-name.placeholder
+Source: Apellido
+--------------------------------------------------
+ID: profile.information.id-document.label
+Source: Documento de identidad
+--------------------------------------------------
+ID: profile.information.id-document.placeholder
+Source: Documento de identidad
+--------------------------------------------------
+ID: profile.information.birth-date.label
+Source: Fecha de nacimiento
+--------------------------------------------------
+ID: profile.information.birth-date.placeholder
+Source: Fecha de nacimiento
+--------------------------------------------------
+ID: profile.information.email.label
+Source: Correo electrónico
+--------------------------------------------------
+ID: profile.information.editable-field
+Source: Campo editable
+--------------------------------------------------
+ID: profile.information.email.placeholder
+Source: Correo electrónico
+--------------------------------------------------
+ID: profile.information.phone.label
+Source: Teléfono
+--------------------------------------------------
+ID: profile.information.phone.placeholder
+Source: Teléfono
+--------------------------------------------------
+ID: profile.information.address.label
+Source: Dirección
+--------------------------------------------------
+ID: profile.information.address.placeholder
+Source: Dirección
+--------------------------------------------------
+ID: profile.information.saving
+Source: Guardando...
+--------------------------------------------------
+ID: profile.information.save-changes
+Source: Guardar cambios
+--------------------------------------------------
+ID: profile.information.security-title
+Source: Seguridad de la cuenta
+--------------------------------------------------
+ID: profile.information.security-description
+Source: Gestiona tu contraseña y configuración de seguridad
+--------------------------------------------------
+ID: profile.information.security.button.tooltip
+Source: Ir a seguridad
+--------------------------------------------------
+ID: profile.information.security.button
+Source: Cambiar contraseña
+--------------------------------------------------
+ID: preferences.title
+Source: Preferencias de usuario
+--------------------------------------------------
+ID: preferences.tab.price_alerts
+Source: Alertas de Precio
+--------------------------------------------------
+ID: preferences.tab.notifications
+Source: Notificaciones
+--------------------------------------------------
+ID: preferences.tab.markets
+Source: Mercados
+--------------------------------------------------
+ID: preferences.tab.operations
+Source: Operaciones
+--------------------------------------------------
+ID: preferences.tab.others
+Source: Otros
+--------------------------------------------------
+ID: preferences.alerts.config_title
+Source: Configuración de alertas
+--------------------------------------------------
+ID: preferences.alerts.description
+Source: Las alertas te notificarán cuando una acción alcance el precio que hayas establecido.
+--------------------------------------------------
+ID: preferences.alerts.enable_notifications
+Source: Activar notificaciones de precio
+--------------------------------------------------
+ID: preferences.alerts.enable_description
+Source: Recibe alertas cuando tus acciones alcancen los precios objetivo
+--------------------------------------------------
+ID: preferences.alerts.form_title
+Source: <x id="INTERPOLATION" equiv-text="{{ editingAlertId === null ? &apos;Nueva alerta de precio&apos; : ...
+--------------------------------------------------
+ID: common.ticker
+Source: Ticker
+--------------------------------------------------
+ID: preferences.alerts.ticker_placeholder
+Source: Ej: AAPL
+--------------------------------------------------
+ID: validation.required_ticker
+Source: El ticker es obligatorio
+--------------------------------------------------
+ID: preferences.alerts.stock_name
+Source: Nombre de la acción (opcional)
+--------------------------------------------------
+ID: preferences.alerts.stock_name_placeholder
+Source: Ej: Apple Inc.
+--------------------------------------------------
+ID: preferences.alerts.target_price
+Source: Precio objetivo
+--------------------------------------------------
+ID: common.price_placeholder
+Source: 0.00
+--------------------------------------------------
+ID: validation.required_target_price
+Source: El precio objetivo es obligatorio
+--------------------------------------------------
+ID: validation.price_min
+Source: El precio debe ser mayor que 0
+--------------------------------------------------
+ID: preferences.alerts.condition
+Source: Condición
+--------------------------------------------------
+ID: preferences.alerts.condition_above
+Source: Por encima del precio objetivo
+--------------------------------------------------
+ID: preferences.alerts.condition_below
+Source: Por debajo del precio objetivo
+--------------------------------------------------
+ID: validation.required_condition
+Source: La condición es obligatoria
+--------------------------------------------------
+ID: preferences.alerts.active
+Source: Alerta activa
+--------------------------------------------------
+ID: common.cancel
+Source: Cancelar
+--------------------------------------------------
+ID: preferences.alerts.create_alert
+Source: Crear alerta
+--------------------------------------------------
+ID: preferences.alerts.update_alert
+Source: Actualizar alerta
+--------------------------------------------------
+ID: preferences.alerts.my_alerts
+Source: Mis alertas configuradas
+--------------------------------------------------
+ID: preferences.alerts.no_alerts
+Source: No tienes alertas de precio configuradas
+--------------------------------------------------
+ID: preferences.alerts.create_instruction
+Source: Crea una nueva alerta usando el formulario de arriba
+--------------------------------------------------
+ID: common.inactive
+Source: Inactiva
+--------------------------------------------------
+ID: preferences.notifications.config_title
+Source: Configuración de métodos de notificación
+--------------------------------------------------
+ID: preferences.notifications.description
+Source: Selecciona cómo quieres recibir tus notificaciones y alertas
+--------------------------------------------------
+ID: common.email
+Source: Email
+--------------------------------------------------
+ID: preferences.notifications.email_description
+Source: Recibe notificaciones por correo electrónico
+--------------------------------------------------
+ID: preferences.notifications.push_title
+Source: Notificaciones push
+--------------------------------------------------
+ID: preferences.notifications.push_description
+Source: Recibe notificaciones en tu navegador o dispositivo
+--------------------------------------------------
+ID: common.sms
+Source: SMS
+--------------------------------------------------
+ID: preferences.notifications.sms_description
+Source: Recibe notificaciones por mensaje de texto
+--------------------------------------------------
+ID: common.whatsapp
+Source: WhatsApp
+--------------------------------------------------
+ID: preferences.notifications.whatsapp_description
+Source: Recibe notificaciones por WhatsApp
+--------------------------------------------------
+ID: preferences.markets.title
+Source: Mercados y Sectores de Interés
+--------------------------------------------------
+ID: preferences.markets.description
+Source: Personaliza tus mercados y sectores favoritos para seguimiento
+--------------------------------------------------
+ID: preferences.markets.favorite_markets
+Source: Mercados Favoritos
+--------------------------------------------------
+ID: preferences.markets.nyse
+Source: NYSE (New York)
+--------------------------------------------------
+ID: preferences.markets.nasdaq
+Source: NASDAQ
+--------------------------------------------------
+ID: preferences.markets.lse
+Source: Bolsa de Londres
+--------------------------------------------------
+ID: preferences.markets.tsx
+Source: Bolsa de Toronto
+--------------------------------------------------
+ID: preferences.markets.asx
+Source: Bolsa de Sídney
+--------------------------------------------------
+ID: preferences.markets.bmv
+Source: Bolsa Mexicana
+--------------------------------------------------
+ID: preferences.markets.favorite_sectors
+Source: Sectores Favoritos
+--------------------------------------------------
+ID: preferences.markets.sector.tech
+Source: Tecnología
+--------------------------------------------------
+ID: preferences.markets.sector.health
+Source: Salud
+--------------------------------------------------
+ID: preferences.markets.sector.finance
+Source: Finanzas
+--------------------------------------------------
+ID: preferences.markets.sector.energy
+Source: Energía
+--------------------------------------------------
+ID: preferences.markets.sector.consumer
+Source: Consumo
+--------------------------------------------------
+ID: preferences.markets.sector.materials
+Source: Materiales
+--------------------------------------------------
+ID: preferences.save
+Source: Guardar preferencias
+--------------------------------------------------
+ID: preferences.operations.title
+Source: Configuración de operaciones
+--------------------------------------------------
+ID: preferences.operations.description
+Source: Personaliza tus preferencias para las operaciones de compra y venta
+--------------------------------------------------
+ID: preferences.operations.security_title
+Source: Seguridad y límites
+--------------------------------------------------
+ID: preferences.operations.daily_limit
+Source: Límite de operaciones diarias
+--------------------------------------------------
+ID: preferences.operations.limit_min_error
+Source: El límite debe ser al menos 1
+--------------------------------------------------
+ID: preferences.operations.limit_max_error
+Source: El límite no puede ser mayor a 100
+--------------------------------------------------
+ID: preferences.operations.daily_limit_help
+Source: Establece un límite para tus operaciones diarias como medida de seguridad
+--------------------------------------------------
+ID: preferences.operations.confirm_large_orders
+Source: Confirmación adicional para órdenes grandes
+--------------------------------------------------
+ID: preferences.operations.confirm_large_orders_help
+Source: Solicita una confirmación adicional para órdenes que representen un gasto significativo
+--------------------------------------------------
+ID: preferences.operations.order_config
+Source: Configuración de órdenes
+--------------------------------------------------
+ID: preferences.operations.default_order_type
+Source: Tipo de orden predeterminado
+--------------------------------------------------
+ID: preferences.operations.market_order
+Source: Orden a mercado
+--------------------------------------------------
+ID: preferences.operations.limit_order
+Source: Orden limitada
+--------------------------------------------------
+ID: preferences.operations.stop_order
+Source: Orden stop
+--------------------------------------------------
+ID: preferences.operations.stop_limit_order
+Source: Orden stop limitada
+--------------------------------------------------
+ID: preferences.operations.default_order_help
+Source: Este tipo de orden se usará por defecto al crear nuevas órdenes
+--------------------------------------------------
+ID: preferences.operations.auto_stop_loss
+Source: Activar Stop Loss automático
+--------------------------------------------------
+ID: preferences.operations.auto_stop_loss_help
+Source: Establece un Stop Loss automático para todas las operaciones como protección
+--------------------------------------------------
+ID: preferences.operations.stop_loss_percentage
+Source: Porcentaje de Stop Loss (%)
+--------------------------------------------------
+ID: preferences.operations.stop_loss_min_error
+Source: El porcentaje debe ser al menos 1%
+--------------------------------------------------
+ID: preferences.operations.stop_loss_max_error
+Source: El porcentaje no puede ser mayor al 50%
+--------------------------------------------------
+ID: preferences.others.title
+Source: Configuración general de notificaciones
+--------------------------------------------------
+ID: preferences.others.description
+Source: Personaliza qué tipo de notificaciones quieres recibir
+--------------------------------------------------
+ID: preferences.others.market_open_close
+Source: Apertura y cierre de mercados
+--------------------------------------------------
+ID: preferences.others.market_open_close_desc
+Source: Recibe notificaciones sobre la apertura y cierre de los mercados
+--------------------------------------------------
+ID: preferences.others.daily_summary
+Source: Resumen diario
+--------------------------------------------------
+ID: preferences.others.daily_summary_desc
+Source: Recibe un resumen diario de tus operaciones
+--------------------------------------------------
+ID: preferences.others.executed_orders
+Source: Órdenes ejecutadas
+--------------------------------------------------
+ID: preferences.others.executed_orders_desc
+Source: Recibe notificaciones cuando se ejecuten tus órdenes
+--------------------------------------------------
+ID: profile.header.title
+Source: Gestión de perfil
+--------------------------------------------------
+ID: profile.header.subtitle
+Source: Administra tus preferencias y configuración personal
+--------------------------------------------------
+ID: profile.menu.personal-information
+Source: Información personal
+--------------------------------------------------
+ID: profile.menu.preferences
+Source: Preferencias
+--------------------------------------------------
+ID: profile.menu.security
+Source: Seguridad
+--------------------------------------------------
+ID: profile.menu.subscription
+Source: Suscripción
+--------------------------------------------------
+ID: profile.menu.middleman
+Source: Comisionista
+--------------------------------------------------
+ID: profile.menu.historical
+Source: Historial
+--------------------------------------------------
+ID: profile.security.title
+Source: Seguridad de la cuenta
+--------------------------------------------------
+ID: profile.security.back-to-info
+Source: Volver a información personal
+--------------------------------------------------
+ID: profile.security.change-password
+Source: Cambiar contraseña
+--------------------------------------------------
+ID: profile.security.password-updated
+Source: La contraseña se ha actualizado correctamente.
+--------------------------------------------------
+ID: profile.security.current-password
+Source: Contraseña actual
+--------------------------------------------------
+ID: profile.security.new-password
+Source: Nueva contraseña
+--------------------------------------------------
+ID: profile.security.confirm-password
+Source: Confirmar contraseña
+--------------------------------------------------
+ID: profile.security.password-requirements
+Source: La contraseña debe cumplir los siguientes requisitos:
+--------------------------------------------------
+ID: profile.security.req-length
+Source: Al menos 8 caracteres
+--------------------------------------------------
+ID: profile.security.req-uppercase
+Source: Al menos una letra mayúscula
+--------------------------------------------------
+ID: profile.security.req-lowercase
+Source: Al menos una letra minúscula
+--------------------------------------------------
+ID: profile.security.req-number
+Source: Al menos un número
+--------------------------------------------------
+ID: profile.security.req-special
+Source: Al menos un caracter especial (@$!%*?&amp;)
+--------------------------------------------------
+ID: profile.security.processing
+Source: Procesando...
+--------------------------------------------------
+ID: profile.security.change-password-button
+Source: Cambiar contraseña
+--------------------------------------------------
+ID: profile.security.two-factor
+Source: Verificación en dos pasos
+--------------------------------------------------
+ID: profile.security.two-factor-description
+Source: La verificación en dos pasos añade una capa adicional de seguridad a tu cuenta. Requiere un segundo ...
+--------------------------------------------------
+ID: profile.security.setup-two-factor
+Source: Configurar verificación en dos pasos
+--------------------------------------------------
+ID: profile.security.coming-soon
+Source: Próximamente
+--------------------------------------------------
+ID: footer.copyright
+Source: © 2025 Visenture. Todos los derechos reservados.
+--------------------------------------------------
+ID: alertDialogCloseButton
+Source: Cerrar
+--------------------------------------------------
+ID: 3689397033662370281
+Source: Comprar acciones
+--------------------------------------------------
+ID: 8381355431380645808
+Source: Cerrar modal
+--------------------------------------------------
+ID: buyStockModal.current.price
+Source: Precio actual
+--------------------------------------------------
+ID: 7287175653129175187
+Source: Máximo que puede comprar:
+--------------------------------------------------
+ID: 7248798531263342598
+Source: {VAR_PLURAL, plural, =1 {1 acción} other {<x id="INTERPOLATION"/> acciones}}
+--------------------------------------------------
+ID: 5416958221136758722
+Source: Saldo disponible estimado:
+--------------------------------------------------
+ID: 499685088700984034
+Source: Orden para cliente
+--------------------------------------------------
+ID: 5757848975717842827
+Source: Esta orden será realizada en nombre de un cliente.
+--------------------------------------------------
+ID: 7626645977174134170
+Source: Cantidad a comprar
+--------------------------------------------------
+ID: 9108939006464022393
+Source: Min: 1
+--------------------------------------------------
+ID: 619940811072485378
+Source: Max: <x id="INTERPOLATION" equiv-text="{{maxQuantity}}"/>
+--------------------------------------------------
+ID: 8521521492662941811
+Source: La cantidad es requerida
+--------------------------------------------------
+ID: 4386406195142158049
+Source: La cantidad debe ser al menos 1
+--------------------------------------------------
+ID: 6283284758073915251
+Source: No tiene suficiente saldo para esta cantidad
+--------------------------------------------------
+ID: 5610728368764785144
+Source: Tipo de orden
+--------------------------------------------------
+ID: 4443933145720810388
+Source: Precio límite
+--------------------------------------------------
+ID: 6980855324247262267
+Source: Precio sugerido: más bajo que el mercado
+--------------------------------------------------
+ID: 2886444335080955133
+Source: Precio sugerido: más alto que el mercado
+--------------------------------------------------
+ID: 82533840784791616
+Source: El precio límite es requerido
+--------------------------------------------------
+ID: 4809524355050547651
+Source: El precio límite debe ser mayor a 0
+--------------------------------------------------
+ID: 7694281620791479197
+Source: Vigencia
+--------------------------------------------------
+ID: 194490000603757972
+Source: Permitir ejecución fuera de horario regular
+--------------------------------------------------
+ID: buyStockModal.important.information
+Source: Información importante
+--------------------------------------------------
+ID: order.type.selection.title
+Source: Confirmar Tipo de Orden (<x id="INTERPOLATION" equiv-text="{{ data.shareSymbol }}"/>)
+--------------------------------------------------
+ID: order.type.selection.question
+Source: ¿Para quién deseas realizar esta orden?
+--------------------------------------------------
+ID: order.type.selection.for.self
+Source: Para mí (orden personal)
+--------------------------------------------------
+ID: order.type.selection.for.client
+Source: Para un cliente
+--------------------------------------------------
+ID: order.type.selection.loading.clients
+Source: Cargando clientes...
+--------------------------------------------------
+ID: order.type.selection.select.client.label
+Source: Seleccionar Cliente
+--------------------------------------------------
+ID: order.type.selection.no.clients
+Source: No tienes clientes asignados.
+--------------------------------------------------
+ID: common.actions.cancel
+Source: Cancelar
+--------------------------------------------------
+ID: common.actions.continue
+Source: Continuar
+--------------------------------------------------
+ID: 3525984938971693929
+Source: Vender acciones
+--------------------------------------------------
+ID: 4531356355545826412
+Source: Cerrar modal
+--------------------------------------------------
+ID: 4767726247254506075
+Source: Precio actual
+--------------------------------------------------
+ID: 5280260551202617890
+Source: Cantidad disponible:
+--------------------------------------------------
+ID: 3398799455428523202
+Source: {VAR_PLURAL, plural, =1 {1 acción} other {<x id="INTERPOLATION"/> acciones}}
+--------------------------------------------------
+ID: 2088781987665221866
+Source: Valor total de tenencia:
+--------------------------------------------------
+ID: 5873058049720940446
+Source: Orden para cliente
+--------------------------------------------------
+ID: 1907849899883023431
+Source: Esta orden será realizada en nombre de un cliente.
+--------------------------------------------------
+ID: 3066135778363714695
+Source: Cantidad a vender
+--------------------------------------------------
+ID: 5258939930629202997
+Source: Min: 1
+--------------------------------------------------
+ID: 5993313772092441790
+Source: Max: <x id="INTERPOLATION" equiv-text="{{ maxQuantity }}"/>
+--------------------------------------------------
+ID: 4671522416828122415
+Source: La cantidad es requerida
+--------------------------------------------------
+ID: 536407119307338653
+Source: La cantidad debe ser al menos 1
+--------------------------------------------------
+ID: 6223386105508748766
+Source: La cantidad no puede ser mayor a <x id="INTERPOLATION" equiv-text="{{ maxQuantity }}"/>
+--------------------------------------------------
+ID: 1760729292929965748
+Source: Tipo de orden
+--------------------------------------------------
+ID: 593934069885990992
+Source: Precio límite
+--------------------------------------------------
+ID: 8259817296100911545
+Source: Precio sugerido: más alto que el mercado
+--------------------------------------------------
+ID: 3130856248412442871
+Source: Precio sugerido: más bajo que el mercado
+--------------------------------------------------
+ID: 6700116128494169635
+Source: Precio sugerido: significativamente más alto
+--------------------------------------------------
+ID: 5455906801804748028
+Source: El precio límite es requerido
+--------------------------------------------------
+ID: 959525279215728255
+Source: El precio límite debe ser mayor a 0
+--------------------------------------------------
+ID: 3844282544956659801
+Source: Vigencia
+--------------------------------------------------
+ID: 5567862961623714384
+Source: Permitir ejecución fuera de horario regular
+--------------------------------------------------
+ID: 7967290990754747738
+Source: Resumen de la operación
+--------------------------------------------------
+ID: 3923250382714385858
+Source: Precio por acción:
+--------------------------------------------------
+ID: 1506397121462394534
+Source: Cantidad:
+--------------------------------------------------
+ID: 8643979622491662720
+Source: Valor total:
+--------------------------------------------------
+ID: 3032181801510357784
+Source: Comisión estimada:
+--------------------------------------------------
+ID: 693346527471878185
+Source: Monto neto estimado:
+--------------------------------------------------
+ID: 9137727694274666641
+Source: * Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.
+--------------------------------------------------
+ID: 9154979951792012318
+Source: Procesando...
+--------------------------------------------------
+ID: 8026630823537066995
+Source: Detalles de la orden
+--------------------------------------------------
+ID: 8857225057495185544
+Source: Orden Completada
+--------------------------------------------------
+ID: 8800442896899240315
+Source: Orden Pendiente
+--------------------------------------------------
+ID: 7328996812616118902
+Source: Orden Cancelada
+--------------------------------------------------
+ID: 2806368013136567059
+Source: ID de orden:
+--------------------------------------------------
+ID: 8133778017136950138
+Source: Tipo de orden:
+--------------------------------------------------
+ID: 1863749770526151306
+Source: Mercado
+--------------------------------------------------
+ID: 1984949856598869902
+Source: Límite
+--------------------------------------------------
+ID: 6369488839600026563
+Source: Stop Loss
+--------------------------------------------------
+ID: 4622274847058282236
+Source: Take Profit
+--------------------------------------------------
+ID: 4923812610093268120
+Source: Precio de venta:
+--------------------------------------------------
+ID: 6447039198749266845
+Source: <x id="INTERPOLATION" equiv-text="{{ operationResult.filledQuantity || 0 }}"/> de <x id="INTERPOLATI...
+--------------------------------------------------
+ID: 3774886939895053872
+Source: Total:
+--------------------------------------------------
+ID: 5111105471996286763
+Source: Comisión:
+--------------------------------------------------
+ID: 5055587114200641365
+Source: Enviada:
+--------------------------------------------------
+ID: 3638035142974346770
+Source: Ejecutada:
+--------------------------------------------------
+ID: 6263519868766170917
+Source: Información importante
+--------------------------------------------------
+ID: 4996271085363585486
+Source: Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.totalAmoun...
+--------------------------------------------------
+ID: 3256069763619988052
+Source: Orden pendiente de ejecución
+--------------------------------------------------
+ID: 6814003670891632457
+Source: Su orden de venta se ejecutará cuando el precio alcance las condiciones definidas. Recibirá una noti...
+--------------------------------------------------
+ID: common.actions.accept
+Source: Aceptar
+--------------------------------------------------
+ID: snapshotModalCloseButtonTooltip
+Source: Cerrar
+--------------------------------------------------
+ID: snapshotModalLastUpdate
+Source: Última actualización
+--------------------------------------------------
+ID: snapshotModalAskPrice
+Source: Precio de compra (Ask)
+--------------------------------------------------
+ID: snapshotModalSize
+Source: Tamaño
+--------------------------------------------------
+ID: snapshotModalBidPrice
+Source: Precio de venta (Bid)
+--------------------------------------------------
+ID: snapshotModalSessionData
+Source: Datos de sesión
+--------------------------------------------------
+ID: snapshotModalVolume
+Source: Volumen
+--------------------------------------------------
+ID: snapshotModalOpen
+Source: Apertura
+--------------------------------------------------
+ID: snapshotModalHigh
+Source: Máximo
+--------------------------------------------------
+ID: snapshotModalLow
+Source: Mínimo
+--------------------------------------------------
+ID: snapshotModalPreviousSession
+Source: Sesión anterior
+--------------------------------------------------
+ID: snapshotModalClose
+Source: Cierre
+--------------------------------------------------
+ID: snapshotModalNoDataAvailable
+Source: No hay datos disponibles
+--------------------------------------------------
+ID: snapshotModalDataSource
+Source: Datos en tiempo real de Alpaca Markets
+--------------------------------------------------
+ID: snapshotModalCloseButton
+Source: Cerrar
+--------------------------------------------------
+ID: stock.selection.buy.title
+Source: Comprar acciones para <x id="INTERPOLATION" equiv-text="{{ data.clientName }}"/>
+--------------------------------------------------
+ID: stock.selection.sell.title
+Source: Vender acciones para <x id="INTERPOLATION" equiv-text="{{ data.clientName }}"/>
+--------------------------------------------------
+ID: stock.selection.search.label
+Source: Buscar acción
+--------------------------------------------------
+ID: stock.selection.search.placeholder
+Source: Introduzca el símbolo o nombre de la acción
+--------------------------------------------------
+ID: stock.selection.searching
+Source: Buscando...
+--------------------------------------------------
+ID: stock.selection.no.results
+Source: No se encontraron resultados
+--------------------------------------------------
+ID: stock.selection.buy.instruction
+Source: Busca y selecciona una acción para comprar
+--------------------------------------------------
+ID: stock.selection.buy.help
+Source: Los resultados mostrarán las acciones disponibles
+--------------------------------------------------
+ID: stock.selection.sell.no.stocks
+Source: El cliente no tiene acciones disponibles para vender
+--------------------------------------------------
+ID: stock.selection.sell.empty.portfolio
+Source: Su cartera está vacía
+--------------------------------------------------
+ID: stock.selection.sell.available.stocks
+Source: Acciones disponibles para vender
+--------------------------------------------------
+ID: 7161486288999740723
+Source: {VAR_PLURAL, plural, =1 {1 acción} other {<x id="INTERPOLATION"/> acciones}}
+--------------------------------------------------
+ID: stock.selection.portfolio.error
+Source: Error al cargar la cartera del cliente
+--------------------------------------------------
+ID: stock.selection.continue.buy
+Source: Continuar con compra
+--------------------------------------------------
+ID: stock.selection.continue.sell
+Source: Continuar con venta
+--------------------------------------------------
+ID: common.loading
+Source: Cargando...
+--------------------------------------------------
+ID: auth.register
+Source: Registrarse
+--------------------------------------------------
+ID: language.toggle
+Source: Cambiar idioma
+--------------------------------------------------
+ID: language.spanish
+Source: Español
+--------------------------------------------------
+ID: language.english
+Source: English
+--------------------------------------------------
+ID: language.french
+Source: Français
+--------------------------------------------------
+ID: language.russian
+Source: Русский
+--------------------------------------------------
+ID: theme.toggle
+Source: Cambiar tema
+--------------------------------------------------
+ID: funds.add_funds
+Source: Agregar Fondos
+--------------------------------------------------
+ID: navbar.notifications
+Source: Notificaciones
+--------------------------------------------------
+ID: navbar.notifications_title
+Source: Notificaciones
+--------------------------------------------------
+ID: notifications.transaction_completed
+Source: Nueva transacción completada
+--------------------------------------------------
+ID: common.time_ago_5min
+Source: Hace 5 minutos
+--------------------------------------------------
+ID: notifications.view_all
+Source: Ver todas las notificaciones
+--------------------------------------------------
+ID: navbar.markets
+Source: Mercados
+--------------------------------------------------
+ID: funds.manage_funds
+Source: Gestionar Fondos
+--------------------------------------------------
+ID: navbar.commissioner_panel
+Source: Panel de Comisionista
+--------------------------------------------------
+ID: navbar.my_profile
+Source: Mi Perfil
+--------------------------------------------------
+ID: navbar.settings
+Source: Configuración
+--------------------------------------------------
+ID: navbar.manage_users
+Source: Administrar Usuarios
+--------------------------------------------------
+ID: auth.logout
+Source: Cerrar Sesión
+--------------------------------------------------
+ID: navbar.home
+Source: Inicio
+--------------------------------------------------
+ID: navbar.dashboard
+Source: Dashboard
+--------------------------------------------------
+ID: navbar.close_menu
+Source: Cerrar menú
+--------------------------------------------------
+ID: sidebar.welcome
+Source: Bienvenido, <x id="INTERPOLATION" equiv-text="{{ username || &apos;Usuario&apos; }}"/>
+--------------------------------------------------
+ID: navbar.portfolios
+Source: Portafolios
+--------------------------------------------------
+ID: navbar.orders
+Source: Órdenes
+--------------------------------------------------
+ID: navbar.reports
+Source: Informes
+--------------------------------------------------
+ID: user-edit.dialog.title
+Source: Editar Usuario
+--------------------------------------------------
+ID: user-edit.close-dialog.tooltip
+Source: Cerrar diálogo
+--------------------------------------------------
+ID: user-edit.editing-info-label
+Source: Editando información de
+--------------------------------------------------
+ID: user-edit.first-name.label
+Source: Nombre <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;...
+--------------------------------------------------
+ID: user-edit.first-name.placeholder
+Source: Ingresa el nombre
+--------------------------------------------------
+ID: user-edit.last-name.label
+Source: Apellido <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&g...
+--------------------------------------------------
+ID: user-edit.last-name.placeholder
+Source: Ingresa el apellido
+--------------------------------------------------
+ID: user-edit.email.label
+Source: Correo Electrónico <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-5...
+--------------------------------------------------
+ID: user-edit.email.placeholder
+Source: usuario@ejemplo.com
+--------------------------------------------------
+ID: user-edit.roles.label
+Source: Roles <x id="START_TAG_SPAN" ctype="x-span" equiv-text="&lt;span class=&quot;text-red-500&quot;&gt;"...
+--------------------------------------------------
+ID: user-edit.roles.checkbox.label
+Source: <x id="INTERPOLATION" equiv-text="{{ role.displayName || role.name }}"/>
+--------------------------------------------------
+ID: user-edit.important-info.title
+Source: Información importante:
+--------------------------------------------------
+ID: user-edit.important-info.required-fields
+Source: Los campos marcados con (*) son obligatorios
+--------------------------------------------------
+ID: user-edit.important-info.unique-email
+Source: El correo electrónico debe ser único en el sistema
+--------------------------------------------------
+ID: user-edit.important-info.immediate-changes
+Source: Los cambios se aplicarán inmediatamente
+--------------------------------------------------
+ID: user-edit.action.cancel
+Source: Cancelar
+--------------------------------------------------
+ID: user-edit.action.save
+Source: Guardar Cambios
+--------------------------------------------------
+ID: user-edit.action.saving
+Source: Guardando...
+--------------------------------------------------
+ID: users.management.title
+Source: Gestión de Usuarios
+--------------------------------------------------
+ID: common.actions.refresh
+Source: Refrescar
+--------------------------------------------------
+ID: users.loading.title
+Source: Cargando usuarios...
+--------------------------------------------------
+ID: common.loading.wait.message
+Source: Esto puede tardar unos segundos
+--------------------------------------------------
+ID: users.filters.search.label
+Source: Buscar usuario
+--------------------------------------------------
+ID: users.filters.search.placeholder
+Source: Nombre, email...
+--------------------------------------------------
+ID: users.filters.role.label
+Source: Filtrar por rol
+--------------------------------------------------
+ID: 187187500641108332
+Source: <x id="INTERPOLATION" equiv-text="{{ role.label }}"/>
+--------------------------------------------------
+ID: common.role.label
+Source: Rol
+--------------------------------------------------
+ID: users.no.role
+Source: Sin rol
+--------------------------------------------------
+ID: users.actions.edit.user.tooltip
+Source: Editar Usuario
+--------------------------------------------------
+ID: users.no.results.filters
+Source: No se encontraron usuarios que coincidan con los filtros.
+--------------------------------------------------
+ID: users.no.users.registered
+Source: No hay usuarios registrados en el sistema.
+--------------------------------------------------
+ID: users.paginator.aria.label
+Source: Seleccionar página de usuarios
+--------------------------------------------------
+ID: users.charts.role.distribution.title
+Source: Distribución por Rol
+--------------------------------------------------
+ID: users.charts.role.no.data
+Source: No hay datos para mostrar la gráfica de roles.
+--------------------------------------------------
+ID: users.charts.registration.trend.title
+Source: Tendencia de Registros
+--------------------------------------------------
+ID: users.charts.registration.no.data
+Source: No hay datos para mostrar la tendencia de registros.
+--------------------------------------------------
