@@ -19,7 +19,6 @@ import { AccountsService } from './services/accounts.service';
 import { UpdateUserByAdminDto } from './dtos/update-user-by-admin.dto';
 import { UpdateUserByAdminResponse } from './dtos/update-user-by-admin-response.dto';
 
-@UseGuards(JwtAuthGuard)
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
