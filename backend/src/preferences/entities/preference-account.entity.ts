@@ -4,6 +4,7 @@ import { Account } from '../../accounts/entities/account.entity';
 import { SettingNotification } from './setting-notification.entity';
 import { SettingOperation } from './setting-operation.entity';
 import { SettingBriefcase } from './setting-briefcase.entity';
+import { SettingMailing } from './setting-mailing.entity';
 
 @Entity()
 export class PreferenceAccount {
@@ -25,4 +26,8 @@ export class PreferenceAccount {
   @OneToOne(() => SettingBriefcase, { cascade: true, eager: true })
   @JoinColumn({ name: 'id_setting_briefcase' })
   setting_briefcase: SettingBriefcase;
+
+  @OneToOne(() => SettingMailing, { cascade: true, eager: true })
+  @JoinColumn({ name: 'id_setting_mailing' })
+  setting_mailing: SettingMailing;
 }

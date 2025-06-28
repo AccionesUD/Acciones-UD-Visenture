@@ -6,15 +6,13 @@ import { NotificationsService } from './notifications.service';
 import { NotificationProcessor } from './notifications.processor';
 import { MailModule } from '../mail/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { NotificationSettings } from './entities/notifications-settings.entity';
+import { SettingMailing } from '../preferences/entities/setting-mailing.entity';
 import { Account } from '../accounts/entities/account.entity';
-import { NotificationSettingsService } from './notification-settings.service';
-import { NotificationSettingsController } from './notification-settings.controller';
 
 @Module({
-  controllers: [NotificationSettingsController],
+  controllers: [],
   imports: [
-    TypeOrmModule.forFeature([NotificationSettings, Account]), // ¡Añade esto primero!
+    TypeOrmModule.forFeature([SettingMailing, Account]), // ¡Añade esto primero!
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -34,12 +32,9 @@ import { NotificationSettingsController } from './notification-settings.controll
   providers: [
     NotificationsService,
     NotificationProcessor,
-    NotificationSettingsService,
   ],
   exports: [
     NotificationsService,
-    NotificationSettingsService,
-
   ],
 })
 export class NotificationsModule {}

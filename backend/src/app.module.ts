@@ -23,6 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PreferencesModule } from './preferences/preferences.module';
 
 @Module({
   imports: [
@@ -60,9 +61,10 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     TransactionsModule,
     RolesPermissionModule,
     NotificationsModule,
-    AdvisorModule
+    AdvisorModule,
     PremiumModule,
     SubscriptionsModule,
+    PreferencesModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],

@@ -15,7 +15,7 @@ import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 import { MakeFundignAccountDto } from '../dtos/make-funding-account.dto';
 import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
 import { Role } from 'src/roles-permission/entities/role.entity';
-import { NotificationSettingsService } from 'src/notifications/notification-settings.service';
+import { PreferencesService } from 'src/preferences/preferences.service';
 
 export class AccountsService {
   constructor(
@@ -26,7 +26,7 @@ export class AccountsService {
     private hashingProvider: HashingProvider,
     @Inject(forwardRef(() => AlpacaBrokerService))
     private alpacaBrokerService: AlpacaBrokerService,
-    private readonly notificationSettingsService: NotificationSettingsService,
+    private readonly preferencesService: PreferencesService,
   ) { }
 
   async createAccount(createAccountDto: CreateAccountDto) {
@@ -56,8 +56,12 @@ export class AccountsService {
     try {
       const savedAccount = await this.accountRepository.save(account);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      await this.notificationSettingsService.createDefaultSettings(
-        savedAccount);
+      
+      // Crear preferencias por defecto (incluyendo mailing)
+      savedAccount.preference = await this.preferencesService.createDefaultPreferences(savedAccount);
+
+      // Guardar cuenta con preferencias
+      return await this.accountRepository.save(savedAccount);
     } catch (error) {
       throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
     }

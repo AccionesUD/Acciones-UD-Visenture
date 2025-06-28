@@ -1,0 +1,13 @@
+#Obtener las preferencias de las alertas sobre los mercados
+
+GET http://localhost:3000/api/preferences/notifications-settings
+Authorization: Bearer <token_de_usuario>
+
+{
+  "id": 1,
+  "notify_open_close_markets": true,
+  "notify_daily_summary": true,
+  "notify_execute_orders": true,
+  "notify_price_alerts": true,
+  "last_change_time": "2025-06-28T04:39:12.089Z"
+}
