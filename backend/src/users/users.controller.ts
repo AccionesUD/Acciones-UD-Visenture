@@ -19,7 +19,6 @@ import { JwtPayloadUser } from 'src/auth/interfaces/jwt-payload-user.interface';
 import { Roles } from 'src/roles-permission/roles.decorator';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
