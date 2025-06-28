@@ -4,7 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "prebuild": "node scripts/generate-env.js",
+    "prebuild:prod": "node scripts/generate-env-prod.js",
+    "build": "npm run prebuild && ng build",
+    "build:prod": "npm run prebuild:prod && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:visenture_frontend": "node dist/visenture_frontend/server/server.mjs"
@@ -50,6 +53,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
     "autoprefixer": "^10.4.21",
+    "dotenv": "^17.0.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
