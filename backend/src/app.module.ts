@@ -23,6 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PaymentsModule } from './payments/payments.module';
 import { PreferencesModule } from './preferences/preferences.module';
 
 @Module({
@@ -64,6 +65,7 @@ import { PreferencesModule } from './preferences/preferences.module';
     AdvisorModule,
     PremiumModule,
     SubscriptionsModule,
+    PaymentsModule,
     PreferencesModule,
   ],
   controllers: [AppController, StocksController],
