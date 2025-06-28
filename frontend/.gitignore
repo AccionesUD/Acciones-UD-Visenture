@@ -1,8 +1,8 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 #environments
-environtments/environment.ts
-environments/environment.prod.ts
+src/environments/environment.ts
+src/environments/environment.prod.ts
 .env
 
 # Compiled output
