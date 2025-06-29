@@ -17,10 +17,17 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
     }),
-  )
-  app.setGlobalPrefix('api')
+  );
+  app.setGlobalPrefix('api');
   app.enableCors({
-    origin: 'http://localhost:4200', // permite configurar los dominios desde los que puede recibir peticiones
+    origin: [
+      'http://localhost:4200', // permite configurar los dominios desde los que puede recibir peticiones
+      'http://127.0.0.7:5500', // donde sirves test-pago.html
+      'http://localhost:5500', // si lo sirves así
+      // NOTA: esto se debe borrar después de hacer  la prueba y dejar solo el del front
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
   });
   // Configura Bull Board
   const notificationsQueue = app.get<Queue>(getQueueToken('notifications'));

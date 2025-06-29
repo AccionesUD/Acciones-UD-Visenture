@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test Pago</title>
+  </head>
+  <body>
+    <h1>Iniciar Pago</h1>
+    <button id="btnPago">Pagar Plan Básico</button>
+    <script>
+      document.getElementById('btnPago').onclick = async () => {
+        // JWT guardado previamente en localStorage
+        const token = localStorage.getItem('access_token');
+        const resp = await fetch(
+          'http://localhost:3000/api/payments/crear-preferencia',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+              planId: 1,
+              monto: 2000,
+              descripcion: 'Suscripción Básica',
+              emailUsuario: 'cdcasasd@udistrital.edu.co',
+            }),
+          },
+        );
+        const { init_point } = await resp.json();
+        window.location.href = init_point;
+      };
+    </script>
+  </body>
+</html>

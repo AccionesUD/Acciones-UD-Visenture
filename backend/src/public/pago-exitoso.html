@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pago Exitoso</title>
+  </head>
+  <body>
+    <h1>Pago Aprobado</h1>
+    <div id="mensaje">Activando tu plan…</div>
+    <script>
+      (async () => {
+        const params = new URLSearchParams(window.location.search);
+        // Mercado Pago regresa collection_id y preference_id
+        const paymentId = params.get('collection_id'); // ID del pago
+        const preferenceId = params.get('preference_id'); // ID de la preferencia
+        if (!paymentId || !preferenceId) {
+          document.getElementById('mensaje').textContent =
+            'Error: faltan collection_id o preference_id en la URL';
+          return;
+        }
+
+        // 2) Poner aquí el Bearer token que quieras usar
+        const token =
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiY3Jpc3RpYW5jYXNhczcwNkBnbWFpbC5jb20iLCJ1c2VySWQiOiIxMDAwMDAiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTEyNDA3MjIsImV4cCI6MTc1MTI0NDMyMn0.LKSr7KbtX7SMYmSP-grStcToiW1G-d-BK8y_nuG-KSo';
+
+        // 3) Armar el body para el subscribe
+        const planId = 1; // o tomarlo de donde lo guardaste
+
+        try {
+          const resp = await fetch(
+            'http://localhost:3000/api/payments/subscribe',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token,
+              },
+              body: JSON.stringify({ planId, paymentToken: preferenceId }),
+            },
+          );
+
+          const data = await resp.json();
+          if (!resp.ok) {
+            throw new Error(data.message || 'Error en subscribe');
+          }
+
+          document.getElementById('mensaje').textContent =
+            `¡Listo! ${data.message} (plan: ${data.plan}).`;
+        } catch (err) {
+          document.getElementById('mensaje').textContent =
+            'Error al activar suscripción: ' + err.message;
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -9,10 +9,16 @@ import { CrearPreferenciaDto } from '../dtos/crear-preferencia.dto';
 export class PaymentsService {
   private preferenceClient = new Preference(mpConfig);
 
+  //Método que sirve para llamar a la api de mercado pago y pagar
   async crearPreferencia(
     dto: CrearPreferenciaDto,
   ): Promise<{ init_point: string; id: string }> {
     const { planId, monto, descripcion, emailUsuario } = dto;
+
+    // —————— DEBUG: verifica qué correo llegó ——————
+    console.log('[crearPreferencia] dto:', dto);
+    console.log('[crearPreferencia] emailUsuario:', emailUsuario);
+    // ————————————————————————————————————————————
 
     // Llamada a la API de Mercado Pago
     const preferenceResponse = await this.preferenceClient.create({
@@ -26,9 +32,11 @@ export class PaymentsService {
             currency_id: 'COP',
           },
         ],
-        payer: { email: emailUsuario },
+        payer: {
+          email: dto.emailUsuario,
+        },
         back_urls: {
-          success: 'https://tu-dominio.com/pago-exitoso',
+          success: 'https://tu-dominio.com/pago-exitoso', //<- acá van la paginas del fron
           failure: 'https://tu-dominio.com/pago-fallido',
           pending: 'https://tu-dominio.com/pago-pendiente',
         },

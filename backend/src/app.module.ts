@@ -27,9 +27,17 @@ import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PaymentsModule } from './payments/payments.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    //Esto se puede borrar después de que hagan la prueba de la pasarela de pago
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public',
+    }),
+
     ConfigModule.forRoot({
       isGlobal: true,
     }),
