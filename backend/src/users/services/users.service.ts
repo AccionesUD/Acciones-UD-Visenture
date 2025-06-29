@@ -9,6 +9,7 @@ import {
   RequestTimeoutException,
   BadRequestException,
   Inject,
+  OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users.entity';
@@ -196,6 +197,8 @@ export class UsersService {
       phone: updatedUser?.phone,
     };
   }
+
+  //retornar todo para admin
 
   // async changePassword(identity_document: string, data: ChangePasswordDto) {
   //   // Busca el usuario y la cuenta relacionada

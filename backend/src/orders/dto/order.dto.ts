@@ -2,12 +2,15 @@ import { Type } from "class-transformer"
 import { Account } from "src/accounts/entities/account.entity"
 import { Share } from "src/shares/entities/shares.entity"
 import { sideOrder } from "../enums/side-order.enum"
-import { IsEnum, IsInt, isNotEmpty, IsNotEmpty, IsNumberString, IsOptional, IsString, Matches, ValidateIf } from "class-validator"
+import { IsEnum, IsInt, isNotEmpty, IsNotEmpty, IsNumberString, IsOptional, IsString, Matches, Max, min, Min, ValidateIf } from "class-validator"
 import { typeOrder } from "../enums/type-order.enum"
 
 export class OrderDto{
     @IsNotEmpty()
-    symbol: string
+    symbol: string 
+
+    @IsOptional()
+    share: Share
 
     @IsEnum(sideOrder)
     @IsNotEmpty()
@@ -15,19 +18,20 @@ export class OrderDto{
 
     @IsEnum(typeOrder)
     @IsNotEmpty()
-    type: string
+    type: typeOrder
 
     @IsInt()
+    @Min(1)
     @IsNotEmpty()
     qty: number
 
     @IsString()
     @IsOptional()
-    account?: number
+    account: Account
 
     @IsString()
     @IsOptional()
-    account_commisioner?: string
+    account_commissioner?: number 
 
     @IsString()
     @IsNotEmpty()
@@ -35,14 +39,14 @@ export class OrderDto{
 
     @ValidateIf(o => o.type === typeOrder.LIMIT)
     @IsNotEmpty()
-    @IsNumberString({ no_symbols: true }, { message: 'El valor debe ser un número sin símbolos' })
-    @Matches(/^\d+(\.\d{1,2})?$/, { message: 'El valor monetario debe tener como máximo dos decimales' })
-    limit_price: string
+    @Min(1)
+    @Max(9999)
+    limit_price: number
 
     @ValidateIf(o => o.type === typeOrder.STOP)
     @IsNotEmpty()
-    @IsNumberString({ no_symbols: true }, { message: 'El valor debe ser un número sin símbolos' })
-    @Matches(/^\d+(\.\d{1,2})?$/, { message: 'El valor monetario debe tener como máximo dos decimales' })
-    stop_price: string
+    @Min(1)
+    @Max(9999)
+    stop_price: number
 
 }

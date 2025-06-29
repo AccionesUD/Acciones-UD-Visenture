@@ -1,9 +1,10 @@
 import { BadRequestException, forwardRef, Inject, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { CreateTransactionDto } from '../dtos/create-transaction.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entities/transactions.entity';
 import { statusTransaction } from '../enums/status-transaction.enum';
+import { UpdateTransactionDto } from '../dtos/update-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -26,10 +27,31 @@ export class TransactionsService {
     
     async calculateCurrentBalance(accountId: number){
         const transactions = await this.transactionRepository.find({
-            where: {account: {id: accountId}, status: statusTransaction.COMPLETED}
+            where: {account: {id: accountId}, status: In([statusTransaction.COMPLETE, statusTransaction.PROCESSING])}
         })
         const balance = transactions.reduce((sum, t) => sum + t.value_transaction, 0)
         return {balance: balance}
+    }
 
+    async getTransaction(operation_id: string){
+        try {
+            const transaction = await this.transactionRepository.findOneBy({operation_id})
+            return transaction
+        } catch (error) {
+            throw new RequestTimeoutException('error en la bd')
+        }
+    
+    }
+
+    async updateTransaction(updateTransactionDto: UpdateTransactionDto){
+        const transaction = await this.getTransaction(updateTransactionDto.operation_id!)
+        if (transaction){
+            transaction.status = updateTransactionDto.status
+            try {
+                this.transactionRepository.save(transaction)
+            } catch (error) {
+                throw new RequestTimeoutException('error en la bd')
+            }
+        }
     }
 }

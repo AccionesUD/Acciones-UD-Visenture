@@ -1,0 +1,10 @@
+DELETE /api/roles/7 HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA4ODAzMTEsImV4cCI6MTc1MDg4MzkxMX0.hlOlHxZvDnnlkEH6gBnOagaZ7bNjhX2Q1NxStH_S8SU
+Host: localhost:3000
+
+// response 200 OK
+
+{
+	"message": "Rol eliminado correctamente"
+}

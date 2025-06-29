@@ -19,6 +19,9 @@ import { SharesModule } from './shares/shares.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { BriefcaseModule } from './briefcases/briefcases.module';
 import { RolesPermissionModule } from './roles-permission/roles-permission.module';
+import { AlpacaMarketService } from './alpaca_market/services/alpaca_market.service';
+import { AlpacaMarketModule } from './alpaca_market/alpaca_market.module';
+import { EventsAlpacaModule } from './events-alpaca/events-alpaca.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
@@ -64,6 +67,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     StocksModule,
     TransactionsModule,
     RolesPermissionModule,
+    AlpacaMarketModule,
+    EventsAlpacaModule,
     NotificationsModule,
     AdvisorModule,
     PremiumModule,

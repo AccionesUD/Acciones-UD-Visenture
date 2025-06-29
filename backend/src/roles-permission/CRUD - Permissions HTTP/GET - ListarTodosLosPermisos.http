@@ -1,0 +1,94 @@
+GET /api/roles/permissions HTTP/1.1
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiIsInVzdWFyaW9fcHJlbWl1bSJdLCJpYXQiOjE3NTA4ODAzMTEsImV4cCI6MTc1MDg4MzkxMX0.hlOlHxZvDnnlkEH6gBnOagaZ7bNjhX2Q1NxStH_S8SU
+Host: localhost:3000
+
+//Response 200
+HTTP/1.1 200 OK
+
+[
+	{
+		"id": 3,
+		"name": "cancel_order"
+	},
+	{
+		"id": 4,
+		"name": "view_own_orders"
+	},
+	{
+		"id": 5,
+		"name": "enqueue_off_hours_order"
+	},
+	{
+		"id": 6,
+		"name": "access_extended_hours"
+	},
+	{
+		"id": 7,
+		"name": "view_assigned_portfolio"
+	},
+	{
+		"id": 8,
+		"name": "manage_profile"
+	},
+	{
+		"id": 9,
+		"name": "manage_notification_preferences"
+	},
+	{
+		"id": 10,
+		"name": "manage_watchlist"
+	},
+	{
+		"id": 11,
+		"name": "view_premium_reports"
+	},
+	{
+		"id": 12,
+		"name": "access_premium_charts"
+	},
+	{
+		"id": 13,
+		"name": "manage_users"
+	},
+	{
+		"id": 14,
+		"name": "assign_roles"
+	},
+	{
+		"id": 15,
+		"name": "manage_roles"
+	},
+	{
+		"id": 16,
+		"name": "manage_permissions"
+	},
+	{
+		"id": 17,
+		"name": "view_reports"
+	},
+	{
+		"id": 18,
+		"name": "view_audit_logs"
+	},
+	{
+		"id": 19,
+		"name": "manage_markets"
+	},
+	{
+		"id": 20,
+		"name": "manage_subscriptions"
+	},
+	{
+		"id": 21,
+		"name": "manage_briefcase"
+	},
+	{
+		"id": 22,
+		"name": "view_market_data"
+	},
+	{
+		"id": 23,
+		"name": "manage_briefcase_two"
+	}
+]
