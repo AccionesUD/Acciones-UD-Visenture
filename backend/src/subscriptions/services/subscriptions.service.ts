@@ -22,7 +22,7 @@ export class SubscriptionsService {
     @InjectRepository(Role)
     private readonly roleRepo: Repository<Role>,
     private readonly paymentsService: PaymentsService,
-  ) {}
+  ) { }
 
   async subscribeToPremium(
     accountId: number,
@@ -118,5 +118,16 @@ export class SubscriptionsService {
         end_date: MoreThan(today),
       },
     });
+  }
+
+  async hasActivePremiumSubscription(accountId: string): Promise<boolean> {
+    const subscription = await this.subscriptionRepo.findOne({
+      where: {
+        account: { identity_document: accountId },
+        status: SubscriptionStatus.ACTIVE
+      }
+    });
+
+    return !!subscription;
   }
 }

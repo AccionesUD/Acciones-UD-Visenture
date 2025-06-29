@@ -1,0 +1,15 @@
+# Endpoint para registrar nueva notificacion personalizada para usuarios premium
+
+POST http://localhost:3000/api/price-alerts/new
+Authorization: Bearer <token_de_usuario>
+
+Body:
+
+{
+  "share_id": "IBM",
+  "target_price": 500,
+  "direction": "above",
+  "is_recurring": true
+}
+
+Response:

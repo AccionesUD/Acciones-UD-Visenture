@@ -27,6 +27,10 @@ import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PaymentsModule } from './payments/payments.module';
+import { PreferencesModule } from './preferences/preferences.module';
+import { MarketNotificationsModule } from './notifications/market-notification/market-notifications.module';
+import { PriceAlertsModule } from './price-alerts/price-alerts.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -47,6 +51,7 @@ import { PaymentsModule } from './payments/payments.module';
         host: configService.get('DB_HOST'),
       }),
     }),
+    ScheduleModule.forRoot(), 
     CacheModule.register({ ttl: 60 }), //sirve para retrasar las peticiones realizadas a la api con intervalos de un minuto
     UsersModule,
     AccountsModule,
@@ -55,7 +60,6 @@ import { PaymentsModule } from './payments/payments.module';
     TokensModule,
     MarketsModule,
     AlpacaBrokerModule,
-    StocksModule,
     AssetsModule,
     OrdersModule,
     SharesModule,
@@ -70,6 +74,9 @@ import { PaymentsModule } from './payments/payments.module';
     PremiumModule,
     SubscriptionsModule,
     PaymentsModule,
+    PreferencesModule,
+    MarketNotificationsModule,
+    PriceAlertsModule,
   ],
   controllers: [AppController, StocksController],
   providers: [AppService],
