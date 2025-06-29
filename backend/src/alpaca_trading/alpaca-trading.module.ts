@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { AlpacaTradingService } from './alpaca-trading.service';
 import { AlpacaTradingController } from './alpaca-trading.controller';
@@ -12,8 +12,8 @@ import { SharesModule } from 'src/shares/shares.module';
     HttpModule, 
     CacheModule.register(),
     ScheduleModule.forRoot(),
-    StocksModule,
-    SharesModule,
+    forwardRef(() => StocksModule),
+    forwardRef(() => SharesModule),
   ],
   providers: [AlpacaTradingService],
   controllers: [AlpacaTradingController],

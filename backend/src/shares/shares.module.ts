@@ -7,6 +7,7 @@ import { Share } from './entities/shares.entity';
 import { SharesService } from './services/shares.service';
 import { StocksModule } from 'src/stocks/stocks.module';
 import { MarketsModule } from 'src/alpaca_trading/alpaca-trading.module';
+import { OrdersModule } from 'src/orders/orders.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MarketsModule } from 'src/alpaca_trading/alpaca-trading.module';
     forwardRef(() => StocksModule), // Importamos StocksModule de forma diferida
     forwardRef(() => MarketsModule), 
     ScheduleModule.forRoot(),
+    forwardRef(() => OrdersModule) 
   ],
   controllers: [SharesController],
   providers: [SharesService],

@@ -19,7 +19,6 @@ import { TransactionsService } from 'src/transactions/services/transaction.servi
 import { OrdersService } from 'src/orders/providers/orders.service';
 import { Role } from 'src/roles-permission/entities/role.entity';
 import { PreferencesService } from 'src/preferences/preferences.service';
-import { NotificationSettingsService } from 'src/notifications/notification-settings.service';
 import { UpdateUserByAdminDto } from '../dtos/update-user-by-admin.dto';
 import { UpdateUserByAdminResponse } from '../dtos/update-user-by-admin-response.dto';
 
@@ -33,9 +32,6 @@ export class AccountsService {
     @Inject(forwardRef(() => AlpacaBrokerService))
     private alpacaBrokerService: AlpacaBrokerService,
     private readonly preferencesService: PreferencesService,
-  ) { }
-
-    private readonly notificationSettingsService: NotificationSettingsService,
     private transactionService: TransactionsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
@@ -74,9 +70,7 @@ export class AccountsService {
 
       // Guardar cuenta con preferencias
       return await this.accountRepository.save(savedAccount);
-      await this.notificationSettingsService.createDefaultSettings(
-        savedAccount,
-      );
+
     } catch (error) {
       throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
     }

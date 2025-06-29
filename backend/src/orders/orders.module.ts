@@ -17,9 +17,16 @@ import { Commission } from './entities/comissions.entity';
 import { OrderCommissions } from './entities/orders_commission.entity';
 
 @Module({
-  imports: [forwardRef(() => AccountsModule), TypeOrmModule.forFeature([Order, Commission, OrderCommissions]),HttpModule, forwardRef(() => AccountsModule), SharesModule, AlpacaMarketModule, AlpacaBrokerModule, TransactionsModule],
+  imports: [
+    forwardRef(() => AccountsModule),
+    TypeOrmModule.forFeature([Order, Commission, OrderCommissions]), 
+    HttpModule, forwardRef(() => AccountsModule), 
+    forwardRef(() => SharesModule), 
+    AlpacaMarketModule, 
+    AlpacaBrokerModule, 
+    TransactionsModule],
   controllers: [OrdersController],
   providers: [OrdersService, FactoryOrder, PurchaseOrder, SalesOrder],
   exports: [OrdersService]
 })
-export class OrdersModule {}
+export class OrdersModule { }
