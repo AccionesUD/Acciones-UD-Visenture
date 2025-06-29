@@ -1,3 +1,4 @@
+//backend\src\stocks\entities\stocks.entity.ts
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()

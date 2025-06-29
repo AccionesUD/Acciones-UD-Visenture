@@ -16,8 +16,10 @@ export class SharesService {
   constructor(
     @InjectRepository(Share)
     private readonly shareRepository: Repository<Share>,
+
     @InjectRepository(Stock)
     private readonly stockRepository: Repository<Stock>,
+    
     private readonly alpacaTradingService: AlpacaTradingService,
   ) { }
 

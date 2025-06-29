@@ -18,6 +18,7 @@ import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.se
 import { TransactionsService } from 'src/transactions/services/transaction.service';
 import { OrdersService } from 'src/orders/providers/orders.service';
 import { Role } from 'src/roles-permission/entities/role.entity';
+import { PreferencesService } from 'src/preferences/preferences.service';
 import { NotificationSettingsService } from 'src/notifications/notification-settings.service';
 import { UpdateUserByAdminDto } from '../dtos/update-user-by-admin.dto';
 import { UpdateUserByAdminResponse } from '../dtos/update-user-by-admin-response.dto';
@@ -31,6 +32,9 @@ export class AccountsService {
     private hashingProvider: HashingProvider,
     @Inject(forwardRef(() => AlpacaBrokerService))
     private alpacaBrokerService: AlpacaBrokerService,
+    private readonly preferencesService: PreferencesService,
+  ) { }
+
     private readonly notificationSettingsService: NotificationSettingsService,
     private transactionService: TransactionsService,
     @Inject(forwardRef(() => OrdersService))
@@ -64,6 +68,12 @@ export class AccountsService {
     try {
       const savedAccount = await this.accountRepository.save(account);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      
+      // Crear preferencias por defecto (incluyendo mailing)
+      savedAccount.preference = await this.preferencesService.createDefaultPreferences(savedAccount);
+
+      // Guardar cuenta con preferencias
+      return await this.accountRepository.save(savedAccount);
       await this.notificationSettingsService.createDefaultSettings(
         savedAccount,
       );

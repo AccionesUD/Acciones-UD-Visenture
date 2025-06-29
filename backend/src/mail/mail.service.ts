@@ -2,6 +2,8 @@ import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
+import { Share } from 'src/shares/entities/shares.entity';
+import { Stock } from 'src/stocks/entities/stocks.entity';
 
 @Injectable()
 export class MailService {
@@ -462,7 +464,7 @@ export class MailService {
         font-size: 12px;
       ">
         <p style="margin: 0;">
-          Saludos,<br>
+          A tu servicio,<br>
           <strong>Equipo de Acciones UD</strong>
         </p>
         <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7);">
@@ -471,5 +473,143 @@ export class MailService {
       </div>
     </div>
   `;
+  }
+  async sendMarketNotification(
+    email: string,
+    subject: string,
+    message: string,
+    stock: Stock,
+    eventType: 'opening' | 'closing'
+  ): Promise<void> {
+    const eventName = eventType === 'opening' ? 'apertura' : 'cierre';
+    const actionText = eventType === 'opening' ? 'ha abierto' : 'ha cerrado';
+
+    const htmlContent = `
+      <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; border-radius: 8px; overflow: hidden;">
+        <!-- Encabezado -->
+        <div style="background-color: #0f172b; padding: 20px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">
+            <strong>Mercados</strong> Acciones UD
+          </h1>
+        </div>
+
+        <!-- Contenido -->
+        <div style="padding: 30px; background-color: #ffffff;">
+          <p style="color: #6c757d; font-size: 14px; margin-bottom: 20px;">
+            Fecha: ${new Date().toLocaleString('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}
+          </p>
+
+          <h2 style="color: #0f172b; margin-top: 0; font-size: 20px;">
+            ${subject}
+          </h2>
+
+          <p style="color: #212529; line-height: 1.6;">
+            ${message}
+          </p>
+
+          <div style="margin-top: 20px; padding: 15px; background-color: #f1f8ff; border-left: 4px solid #00d492; border-radius: 4px;">
+            <p style="margin: 0; color: #0f172b; font-size: 14px;">
+              <strong>Mercado:</strong> ${stock.name_market} (${stock.mic})<br>
+              <strong>País/Región:</strong> ${stock.country_region}<br>
+              <strong>Horario:</strong> ${eventType === 'opening' ? stock.opening_time : stock.closing_time}
+            </p>
+          </div>
+
+          <p style="color: #6c757d; font-size: 14px; margin-top: 20px;">
+            Puedes ajustar tus preferencias de notificación en tu cuenta.
+          </p>
+        </div>
+
+        <!-- Pie de página -->
+        <div style="background-color: #081023; padding: 15px; text-align: center; color: #ffffff; font-size: 12px;">
+          <p style="margin: 0;">A tu servicio,<br><strong>Equipo de Acciones UD</strong></p>
+          <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7);">
+            accionesudinc@gmail.com
+          </p>
+        </div>
+      </div>
+    `;
+
+    await this.sendMail({
+      to: email,
+      subject,
+      html: htmlContent
+    });
+  }
+  async sendPriceAlertNotification(
+    email: string,
+    subject: string,
+    message: string,
+    share: Share,
+    targetPrice: number,
+    currentPrice: number,
+    direction: string
+  ): Promise<void> {
+    const directionText = direction === 'above' ? 'por encima' : 'por debajo';
+    
+    const htmlContent = `
+      <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; border-radius: 8px; overflow: hidden;">
+        <!-- Encabezado -->
+        <div style="background-color: #0f172b; padding: 20px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">
+            <strong>Alerta de Precio</strong> Acciones UD
+          </h1>
+        </div>
+
+        <!-- Contenido -->
+        <div style="padding: 30px; background-color: #ffffff;">
+          <p style="color: #6c757d; font-size: 14px; margin-bottom: 20px;">
+            Fecha: ${new Date().toLocaleString('es-CO', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+
+          <h2 style="color: #0f172b; margin-top: 0; font-size: 20px;">
+            ${subject}
+          </h2>
+
+          <p style="color: #212529; line-height: 1.6;">
+            ${message}
+          </p>
+
+          <div style="margin-top: 20px; padding: 15px; background-color: #f1f8ff; border-left: 4px solid #00d492; border-radius: 4px;">
+            <p style="margin: 0; color: #0f172b; font-size: 14px;">
+              <strong>Acción:</strong> ${share.name_share} (${share.symbol})<br>
+              <strong>Precio objetivo:</strong> $${targetPrice.toFixed(2)}<br>
+              <strong>Precio actual:</strong> $${currentPrice.toFixed(2)}<br>
+              <strong>Dirección:</strong> ${directionText}
+            </p>
+          </div>
+
+          <p style="color: #6c757d; font-size: 14px; margin-top: 20px;">
+            Puedes gestionar tus alertas en tu cuenta.
+          </p>
+        </div>
+
+        <!-- Pie de página -->
+        <div style="background-color: #081023; padding: 15px; text-align: center; color: #ffffff; font-size: 12px;">
+          <p style="margin: 0;">Saludos,<br><strong>Equipo de Acciones UD</strong></p>
+          <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.7);">
+            accionesudinc@gmail.com
+          </p>
+        </div>
+      </div>
+    `;
+
+    await this.sendMail({
+      to: email,
+      subject,
+      html: htmlContent
+    });
   }
 }
