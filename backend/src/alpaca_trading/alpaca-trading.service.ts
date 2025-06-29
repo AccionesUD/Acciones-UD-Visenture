@@ -10,7 +10,10 @@ import { Observable, map } from 'rxjs';
 import { MarketData } from 'src/stocks/dtos/market-data.interface';
 import { MarketDto } from 'src/stocks/dtos/market.dto';
 import { AlpacaAsset } from 'src/assets/dtos/alpaca-asset.dto';
-
+import { Share } from 'src/shares/entities/shares.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ServicesService } from 'src/stocks/services/services.service';
 
 @Injectable()
 export class AlpacaTradingService {
@@ -20,17 +23,19 @@ export class AlpacaTradingService {
   private readonly logger = new Logger(AlpacaTradingService.name);
 
   private marketData: MarketData[] = [];
-
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
+    @InjectRepository(Share)
+    private readonly shareRepository: Repository<Share>, 
+    private readonly stocksService: ServicesService, 
   ) {
     this.alpacaTradingUrl = this.configService.get<string>('ALPACA_BASE_URL') || 'https://paper-api.alpaca.markets';
     this.apiKey = this.configService.get<string>('ALPACA_API_KEY') || '';
     this.apiSecret = this.configService.get<string>('ALPACA_SECRET_KEY') || '';
   }
-
+  
   private getAuthHeaders() {
     return {
       'APCA-API-KEY-ID': this.apiKey,
@@ -166,5 +171,49 @@ export class AlpacaTradingService {
       throw new Error('Failed to fetch assets from Alpaca');
     }
   }
+  async getCurrentPrice(symbol: string): Promise<number> {
+  const url = `${this.alpacaTradingUrl}/v2/stocks/${symbol}/trades/latest`;
+  // Primero verificar si el mercado está abierto
+    const share = await this.shareRepository.findOne({ 
+      where: { symbol },
+      relations: ['stock']
+    });
+    
+    if (share && share.stock) {
+      const isMarketOpen = await this.stocksService.isMarketOpen(share.stock.mic);
+      if (!isMarketOpen) {
+        throw new Error('Mercado cerrado - no se puede obtener precio');
+      }
+    }
+  try {
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        headers: this.getAuthHeaders(),
+        timeout: 5000,
+      })
+    );
+
+    if (!response.data || !response.data.trade) {
+      throw new BadRequestException(`No trade data received for symbol ${symbol}`);
+    }
+
+    const trade = response.data.trade;
+    return trade.p; // 'p' es el precio de la última transacción
+  } catch (error) {
+    this.logger.error(`Error fetching current price for ${symbol}`, {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      url: url
+    });
+
+    if (error.response?.status === 404) {
+      throw new BadRequestException(`Symbol ${symbol} not found. Verify the symbol is correct and supported.`);
+    } else if (error.response?.status === 403) {
+      throw new BadRequestException(`API credentials invalid or insufficient permissions for symbol ${symbol}`);
+    } else {
+      throw new BadRequestException(`Failed to fetch current price for ${symbol}: ${error.message}`);
+    }
+  }
+}
 }
   

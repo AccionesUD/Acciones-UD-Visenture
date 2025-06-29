@@ -1,0 +1,60 @@
+# Obtener la lista de todas las alertas que hacen parte de la cuenta
+
+GET http://localhost:3000/api/price-alerts
+Authorization: Bearer <token_de_usuario>
+
+
+Response ej:
+{
+  "success": true,
+  "data": [
+    {
+      "id": 5,
+      "symbol": "IBM",
+      "name": "International Business Machines Corporation",
+      "target_price": "500.00",
+      "direction": "above",
+      "status": "active",
+      "is_recurring": true,
+      "created_at": "2025-06-29T08:30:00.743Z",
+      "triggered_at": null,
+      "market_name": "New York Stock Exchange"
+    },
+    {
+      "id": 4,
+      "symbol": "IBM",
+      "name": "International Business Machines Corporation",
+      "target_price": "100.00",
+      "direction": "above",
+      "status": "active",
+      "is_recurring": true,
+      "created_at": "2025-06-29T05:33:51.641Z",
+      "triggered_at": null,
+      "market_name": "New York Stock Exchange"
+    },
+    {
+      "id": 3,
+      "symbol": "IBM",
+      "name": "International Business Machines Corporation",
+      "target_price": "200.00",
+      "direction": "above",
+      "status": "active",
+      "is_recurring": true,
+      "created_at": "2025-06-29T05:29:59.985Z",
+      "triggered_at": null,
+      "market_name": "New York Stock Exchange"
+    },
+    {
+      "id": 2,
+      "symbol": "IBM",
+      "name": "International Business Machines Corporation",
+      "target_price": "290.00",
+      "direction": "above",
+      "status": "active",
+      "is_recurring": true,
+      "created_at": "2025-06-29T03:51:03.667Z",
+      "triggered_at": null,
+      "market_name": "New York Stock Exchange"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ export class SettingMailing {
   preference_account: PreferenceAccount;
 
   @Column({ default: true })
-  email_enabled: boolean;  // Cambiado a snake_case para consistencia
+  email_enabled: boolean;  
 
   @Column({ default: false })
   sms_enabled: boolean;
@@ -24,8 +24,8 @@ export class SettingMailing {
   whatsapp_enabled: boolean;
 
   @Column({ nullable: true })
-  phone_number: string;  // Cambiado a snake_case
+  phone_number: string; 
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  last_change_time: Date;  // Añadido para consistencia con otras entidades
+  last_change_time: Date;  
 }

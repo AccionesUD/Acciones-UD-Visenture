@@ -58,8 +58,8 @@ export class Account {
 
   @OneToOne(() => PreferenceAccount, (preference) => preference.account, {
     cascade: true,
-    eager: true, // Cargar automáticamente con la cuenta
-    onDelete: 'CASCADE', // Eliminar preferencias si se elimina la cuenta
+    eager: true, 
+    onDelete: 'CASCADE', 
   })
   preference: PreferenceAccount;
 }

@@ -122,4 +122,20 @@ export class PreferencesService {
 
         return this.settingMailingRepo.save(settings);
     }
+    
+    async getAccountsWithMarketNotifications(): Promise<Account[]> {
+        return this.accountRepo.find({
+            where: {
+                preference: {
+                    setting_notification: {
+                        notify_open_close_markets: true
+                    }
+                }
+            },
+            relations: [
+                'preference',
+                'preference.setting_notification'
+            ]
+        });
+    }
 }
