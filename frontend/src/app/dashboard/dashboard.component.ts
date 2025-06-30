@@ -14,7 +14,7 @@ import {
   ApexYAxis,
   ApexTheme,
   ApexTooltip, 
-  ChartComponent,
+  //ChartComponent,
   NgApexchartsModule 
 } from 'ng-apexcharts';
 import { MockChartDataService } from '../services/mock-data-chart.service';
@@ -41,7 +41,7 @@ export type ChartOptions = {
   standalone: true,  imports: [
     CommonModule, 
     FormsModule,
-    ChartComponent,
+    //ChartComponent,
     NgApexchartsModule,
     MatProgressSpinnerModule, 
     MatButtonModule,
