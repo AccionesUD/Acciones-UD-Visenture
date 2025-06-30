@@ -13,7 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -28,6 +28,7 @@ import {
   CommissionerStats, 
   CommissionerFilters 
 } from '../models/commissioner.model';
+import { ClientSharePosition } from '../models/client-portfolio.model';
 
 // Tipo para las gráficas
 export type ChartOptions = {
@@ -103,25 +104,26 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   isLoadingStats = true;
   isLoadingCommissions = true;
   error: string | null = null;
+  currentTabIndex = 0; // Rastrear la pestaña actual
   
   // Filtros
   filterForm!: FormGroup;
   
   // Markets disponibles para filtrado
   markets: {value: string, label: string}[] = [
-    { value: '', label: 'Todos los mercados' },
-    { value: 'US', label: 'Estados Unidos' },
-    { value: 'LATAM', label: 'Latinoamérica' },
-    { value: 'EU', label: 'Europa' },
-    { value: 'ASIA', label: 'Asia' }
+    { value: '', label: $localize`:@@commissioner.filters.market.all:Todos los mercados` },
+    { value: 'US', label: $localize`:@@commissioner.filters.market.us:Estados Unidos` },
+    { value: 'LATAM', label: $localize`:@@commissioner.filters.market.latam:Latinoamérica` },
+    { value: 'EU', label: $localize`:@@commissioner.filters.market.eu:Europa` },
+    { value: 'ASIA', label: $localize`:@@commissioner.filters.market.asia:Asia` }
   ];
   
   // Estados de cliente disponibles para filtrado
   statuses: {value: string, label: string}[] = [
-    { value: '', label: 'Todos los estados' },
-    { value: 'active', label: 'Activo' },
-    { value: 'inactive', label: 'Inactivo' },
-    { value: 'pending', label: 'Pendiente' }
+    { value: '', label: $localize`:@@commissioner.filters.status.all:Todos los estados` },
+    { value: 'active', label: $localize`:@@commissioner.filters.status.active:Activo` },
+    { value: 'inactive', label: $localize`:@@commissioner.filters.status.inactive:Inactivo` },
+    { value: 'pending', label: $localize`:@@commissioner.filters.status.pending:Pendiente` }
   ];
   
   private destroy$ = new Subject<void>();
@@ -163,8 +165,15 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
       let isDark = document.documentElement.classList.contains('dark');
       this.updateChartsTheme(isDark);
       
+      // Forzar detección de cambios para asegurar que las gráficas se rendericen
       this.cdr.detectChanges();
-    }, 200);
+      
+      // Segundo timeout para garantizar que las gráficas se rendericen después de que Angular haya procesado cambios
+      setTimeout(() => {
+        this.updateCharts();
+        this.cdr.detectChanges();
+      }, 300);
+    }, 500);
   }
   
   ngOnDestroy(): void {
@@ -190,13 +199,13 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
             this.processStatsData(response.data.statistics);
             this.updateCharts();
           } else {
-            this.error = 'No se pudieron cargar los datos. Intente nuevamente.';
+            this.error = $localize`:@@commissioner.error.load.failed:No se pudieron cargar los datos. Intente nuevamente.`;
           }
           this.isLoading = false;
         },
         error: (err) => {
           console.error('Error al cargar datos:', err);
-          this.error = 'Ocurrió un error al cargar los datos. Intente nuevamente.';
+          this.error = $localize`:@@commissioner.error.load.error:Ocurrió un error al cargar los datos. Intente nuevamente.`;
           this.isLoading = false;
         }
       });
@@ -378,12 +387,29 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
       });
   }
   
+  /**
+   * Inicializa completamente los gráficos desde cero
+   * Esta versión es más robusta y está diseñada para resolver problemas de renderizado
+   */
   private initCharts(): void {
-    // Detectar tema inicial
+    console.log('[CommissionerPanel] Complete chart initialization from scratch');
+    
+    // Detectar tema actual cada vez
     const isDark = document.documentElement.classList.contains('dark');
     const textColor = isDark ? '#e2e8f0' : '#334155';
     const subtitleColor = isDark ? '#94a3b8' : '#64748b';
     const gridColor = isDark ? '#334155' : '#e5e7eb';
+    
+    // Genera IDs únicos para cada gráfico para evitar conflictos
+    const chartId1 = `chart-${new Date().getTime()}-1`;
+    const chartId2 = `chart-${new Date().getTime()}-2`;
+    
+    // Asegurarse de que tenemos estadísticas para inicializar los gráficos
+    if (!this.commissionerStats) {
+      console.warn('[CommissionerPanel] No statistics available for chart initialization');
+      // En lugar de retornar, inicializamos con datos vacíos que se pueden actualizar después
+      this.commissionerStats = this.getEmptyStatistics();
+    }
     
     this.clientDistributionChartOptions = {
       series: [],
@@ -536,15 +562,42 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     // Configurar más gráficos aquí
   }
   
+  /**
+   * Actualiza los datos y la visualización de todos los gráficos
+   * Implementa una estrategia robusta para asegurar que los gráficos se rendericen correctamente
+   */
+  /**
+   * Actualiza los datos y la visualización de todos los gráficos
+   * Método mejorado con mejor manejo de errores y logging
+   */
   private updateCharts(): void {
-    if (this.commissionerStats) {
+    // Verificar si tenemos estadísticas
+    if (!this.commissionerStats) {
+      console.warn('[CommissionerPanel] No hay estadísticas disponibles para actualizar las gráficas.');
+      return;
+    }
+
+    console.log('[CommissionerPanel] Actualizando datos de gráficas');
+    
+    try {
       // Actualizar gráfico de distribución de clientes
       if (this.clientDistributionChartOptions && this.clientDistributionChartOptions.series) {
+        console.log('[CommissionerPanel] Actualizando gráfico de distribución de clientes');
+        
+        const activeClients = this.commissionerStats.active_clients || 0;
+        const totalClients = this.commissionerStats.total_clients || 0;
+        const negativeRoiClients = this.commissionerStats.clients_with_negative_roi || 0;
+        const inactiveClients = Math.max(0, totalClients - activeClients - negativeRoiClients);
+        
         this.clientDistributionChartOptions.series = [
-          this.commissionerStats.active_clients,
-          (this.commissionerStats.total_clients - this.commissionerStats.active_clients - this.commissionerStats.clients_with_negative_roi),
-          this.commissionerStats.clients_with_negative_roi
+          activeClients,
+          inactiveClients,
+          negativeRoiClients
         ];
+        
+        console.log(`[CommissionerPanel] Datos del gráfico de distribución: [${activeClients}, ${inactiveClients}, ${negativeRoiClients}]`);
+      } else {
+        console.warn('[CommissionerPanel] El gráfico de distribución de clientes no está inicializado correctamente');
       }
       
       // Actualizar gráfico de comisiones por mercado
@@ -562,8 +615,67 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
         }
       }
       
-      // Actualizar más gráficos aquí
+      // Actualizar tendencia de comisiones si existe ese gráfico y los datos correspondientes
+      if (this.commissionsTrendChartOptions && this.commissionsTrendChartOptions.series) {
+        // Usar casting a any para evitar errores de tipado
+        const statsAny = this.commissionerStats as any;
+        
+        if (statsAny.hasOwnProperty('monthly_commissions') && 
+            Array.isArray(statsAny.monthly_commissions) && 
+            statsAny.monthly_commissions.length > 0) {
+          
+          const monthlyData = statsAny.monthly_commissions;
+          
+          this.commissionsTrendChartOptions.series = [{
+            name: 'Comisiones',
+            data: monthlyData.map((m: any) => m.amount)
+          }];
+          
+          if (this.commissionsTrendChartOptions.xaxis) {
+            this.commissionsTrendChartOptions.xaxis.categories = 
+              monthlyData.map((m: any) => `${m.month}/${m.year}`);
+          }
+        }
+      }
+      
+      // Actualizar distribución de ROI si existe ese gráfico
+      if (this.roiDistributionChartOptions && this.roiDistributionChartOptions.series) {
+        // Usar casting a any para evitar errores de tipado
+        const statsAny = this.commissionerStats as any;
+        
+        // Verificar si tenemos datos de distribución de ROI
+        if (statsAny.hasOwnProperty('roi_distribution') && 
+            Array.isArray(statsAny.roi_distribution)) {
+          this.roiDistributionChartOptions.series = statsAny.roi_distribution;
+        }
+      }
+    } catch (error) {
+      console.error('[CommissionerPanel] Error al actualizar las gráficas:', error);
+      
+      // Intentar recuperarse del error
+      setTimeout(() => {
+        console.log('[CommissionerPanel] Intentando recuperarse del error en gráficas');
+        try {
+          this.initCharts();
+          this.cdr.detectChanges();
+        } catch (recoverError) {
+          console.error('[CommissionerPanel] No se pudo recuperar de error en gráficas:', recoverError);
+        }
+      }, 500);
     }
+    
+    // Forzar la detección de cambios con una serie de timeouts para garantizar renderizado
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 50);
+    
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      
+      // Verificar explícitamente el estado de los gráficos en el DOM
+      const chartElements = document.querySelectorAll('.apexcharts-canvas');
+      console.log(`[CommissionerPanel] Estado final: ${chartElements.length} elementos de gráficos encontrados`);
+    }, 200);
   }
   
   private setupThemeObserver(): void {
@@ -578,9 +690,21 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
       
       themeChangeTimeout = setTimeout(() => {
         const isDark = document.documentElement.classList.contains('dark');
+        
+        // Actualizar tema una sola vez
         this.updateChartsTheme(isDark);
-        // Forzar actualización de los gráficos tras cambio de tema
+        
+        // Actualizar gráficas con una secuencia optimizada
+        // Primera actualización inmediata
         this.updateCharts();
+        this.cdr.detectChanges();
+        
+        // Segunda actualización después de un breve retraso para asegurar que todos los cambios de tema
+        // hayan sido procesados completamente por Angular
+        setTimeout(() => {
+          this.updateCharts();
+          this.cdr.detectChanges();
+        }, 200);
       }, 100);
     });
     
@@ -706,15 +830,15 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
   
-  // Helper para obtener texto de estado en español
+  // Helper para obtener texto de estado internacionalizado
   getStatusText(status: string): string {
     switch (status) {
       case 'active':
-        return 'Activo';
+        return $localize`:@@status.active:Activo`;
       case 'inactive':
-        return 'Inactivo';
+        return $localize`:@@status.inactive:Inactivo`;
       case 'pending':
-        return 'Pendiente';
+        return $localize`:@@status.pending:Pendiente`;
       default:
         return status;
     }
@@ -738,5 +862,268 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
     const filters = this.getFiltersFromForm();
     return !!(filters.client_name || filters.market || filters.status || 
               (filters.date_range?.start || filters.date_range?.end));
+  }
+  
+  /**
+   * Maneja el cambio de pestañas en el panel del comisionista
+   * - Pestaña 0: Resumen (con gráficas)
+   * - Pestaña 1: Clientes 
+   * - Pestaña 2: Comisiones
+   */
+  onTabChange(event: any): void {
+    const newTabIndex = event.index;
+    const previousTabIndex = this.currentTabIndex;
+    this.currentTabIndex = newTabIndex;
+    
+    console.log(`[CommissionerPanel] Tab changed from ${previousTabIndex} to ${newTabIndex}`);
+    
+    // Solo actualizamos las gráficas cuando cambiamos A la pestaña "Resumen" (índice 0)
+    if (newTabIndex === 0 && previousTabIndex !== 0) {
+      console.log('[CommissionerPanel] Entrando a la pestaña Resumen - iniciando carga de gráficas');
+      
+      // Reinicializar gráficas de forma completa y robusta
+      this.reloadChartsForSummaryTab();
+    } else if (newTabIndex === 0) {
+      console.log('[CommissionerPanel] Ya estábamos en la pestaña Resumen - verificando estado de gráficas');
+      
+      // Si ya estamos en resumen, solo verificar que las gráficas estén presentes
+      setTimeout(() => {
+        const chartElements = document.querySelectorAll('.apexcharts-canvas');
+        if (chartElements.length < 2) {
+          console.log('[CommissionerPanel] Gráficas faltantes detectadas - recargando');
+          this.reloadChartsForSummaryTab();
+        }
+      }, 100);
+    }
+  }
+
+  /**
+   * Método dedicado para recargar las gráficas de la pestaña de resumen
+   * Este método implementa una estrategia robusta de recarga
+   */
+  private reloadChartsForSummaryTab(): void {
+    console.log('[CommissionerPanel] INICIANDO RECARGA COMPLETA DE GRÁFICAS');
+    
+    // Paso 1: Limpiar cualquier instancia previa de ApexCharts
+    this.clearExistingCharts();
+    
+    // Paso 2: Recargar datos desde el servidor
+    this.loadData(true);
+    
+    // Paso 3: Secuencia de reinicialización de gráficas con reintentos
+    const reinitializeCharts = () => {
+      try {
+        console.log('[CommissionerPanel] Reinicializando gráficas...');
+        
+        // Reinicializar completamente las opciones de gráficas
+        this.initCharts();
+        
+        // Actualizar datos de las gráficas
+        this.updateCharts();
+        
+        // Aplicar tema
+        const isDark = document.documentElement.classList.contains('dark');
+        this.updateChartsTheme(isDark);
+        
+        // Forzar detección de cambios
+        this.cdr.detectChanges();
+        
+        console.log('[CommissionerPanel] Reinicialización de gráficas completada');
+      } catch (error) {
+        console.error('[CommissionerPanel] Error en reinicialización de gráficas:', error);
+      }
+    };
+    
+    // Ejecutar reinicialización en múltiples momentos para garantizar éxito
+    setTimeout(() => reinitializeCharts(), 100);
+    setTimeout(() => reinitializeCharts(), 300);
+    setTimeout(() => reinitializeCharts(), 600);
+    
+    // Verificación final
+    setTimeout(() => {
+      const chartElements = document.querySelectorAll('.apexcharts-canvas');
+      console.log(`[CommissionerPanel] Verificación final: ${chartElements.length} gráficas encontradas`);
+      
+      if (chartElements.length < 2) {
+        console.log('[CommissionerPanel] ÚLTIMA OPORTUNIDAD - Intento final de carga');
+        reinitializeCharts();
+      } else {
+        console.log('[CommissionerPanel] ✅ Gráficas cargadas correctamente');
+      }
+    }, 1000);
+  }
+
+  /**
+   * Limpia todas las instancias existentes de ApexCharts
+   */
+  private clearExistingCharts(): void {
+    try {
+      console.log('[CommissionerPanel] Limpiando instancias existentes de gráficas');
+      
+      // Destruir instancias de ApexCharts si existen
+      const chartElements = document.querySelectorAll('.apexcharts-canvas');
+      chartElements.forEach((element: any) => {
+        try {
+          if (element.id && window.ApexCharts) {
+            const chartId = element.id.replace('apexcharts', '');
+            const chart = window.ApexCharts.getChartByID(chartId);
+            if (chart) {
+              chart.destroy();
+              console.log(`[CommissionerPanel] Gráfica destruida: ${chartId}`);
+            }
+          }
+        } catch (destroyError) {
+          console.warn('[CommissionerPanel] Error destruyendo gráfica:', destroyError);
+        }
+      });
+      
+      // Limpiar contenedores de gráficas
+      const chartContainers = document.querySelectorAll('.chart-container');
+      chartContainers.forEach((container: any) => {
+        if (container) {
+          container.innerHTML = '';
+          console.log('[CommissionerPanel] Contenedor de gráfica limpiado');
+        }
+      });
+      
+    } catch (error) {
+      console.error('[CommissionerPanel] Error limpiando gráficas:', error);
+    }
+  }
+  
+  /**
+   * Abre el diálogo para seleccionar acciones para comprar o vender para un cliente
+   * @param client El cliente para el que se realizará la operación
+   * @param action La acción a realizar ('buy' o 'sell')
+   */
+  openTradeDialog(client: CommissionerClient, action: 'buy' | 'sell'): void {
+    // Importar directamente el componente
+    import('../shared/modals/stock-selection-dialog/stock-selection-dialog.component').then(module => {
+      // Obtener el componente exportado
+      const StockSelectionDialogComponent = (module as any).StockSelectionDialogComponent;
+      
+      // Crear configuración del diálogo con los mismos estilos que los otros modales
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.width = '550px';
+      dialogConfig.maxHeight = '90vh';
+      dialogConfig.disableClose = false; // Permitir cerrar al hacer clic fuera
+      dialogConfig.autoFocus = false;
+      dialogConfig.panelClass = 'custom-dialog-container';
+      dialogConfig.data = {
+        action: action,
+        clientId: client.id,
+        clientName: client.name
+      };
+      
+      // Abrir el diálogo
+      const dialogRef = this.dialog.open(StockSelectionDialogComponent, dialogConfig);
+
+        // Suscribirse al resultado cuando el usuario cierra el diálogo
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            // Si el usuario seleccionó una acción, procedemos con la operación
+            this.handleStockSelection(result, client, action);
+          }
+        });
+      });
+  }
+
+  private handleStockSelection(result: any, client: CommissionerClient, action: 'buy' | 'sell'): void {
+    const stock = result.stock;
+    
+    // Importar dinámicamente los componentes necesarios
+    if (action === 'buy') {
+      import('../shared/modals/buy-stock-modal/buy-stock-modal.component')
+        .then(({ BuyStockModalComponent }) => {
+          // Abrir el modal de compra
+          const dialogRef = this.dialog.open(BuyStockModalComponent, {
+            width: '500px',
+            maxHeight: '90vh',
+            data: { 
+              stock: {
+                symbol: stock.symbol,
+                name: stock.name,
+                exchange: stock.exchange || '',
+                type: '',
+                currency: 'USD',
+                current_price: stock.current_price || 0,
+                unitValue: stock.current_price || 0
+              },
+              price: stock.current_price || 0,
+              clientId: client.id
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+
+          dialogRef.afterClosed().subscribe(buyResult => {
+            if (buyResult && buyResult.success) {
+              this.snackBar.open(`Orden de compra procesada exitosamente para ${client.name}.`, 'Aceptar', { duration: 3000 });
+              // Recargar datos
+              this.loadData(true);
+            }
+          });
+        });
+    } else if (action === 'sell') {
+      import('../shared/modals/sell-stock-modal/sell-stock-modal.component')
+        .then(({ SellStockModalComponent }) => {
+          // Abrir el modal de venta
+          const dialogRef = this.dialog.open(SellStockModalComponent, {
+            width: '500px',
+            maxHeight: '90vh',
+            data: { 
+              stock: {
+                symbol: stock.symbol,
+                name: stock.name,
+                exchange: stock.exchange || '',
+                type: '',
+                currency: 'USD',
+                current_price: stock.current_price || 0,
+                unitValue: stock.current_price || 0
+              },
+              price: stock.current_price || 0,
+              clientId: client.id
+            },
+            panelClass: 'custom-dialog-container',
+            autoFocus: false
+          });
+
+          dialogRef.afterClosed().subscribe(sellResult => {
+            if (sellResult && sellResult.success) {
+              this.snackBar.open(`Orden de venta procesada exitosamente para ${client.name}.`, 'Aceptar', { duration: 3000 });
+              // Recargar datos
+              this.loadData(true);
+            }
+          });
+        });
+    }
+  }
+  
+  /**
+   * Retorna un objeto de estadísticas vacío pero con la estructura correcta
+   * Útil cuando no hay datos reales disponibles pero necesitamos inicializar gráficos
+   */
+  private getEmptyStatistics(): CommissionerStats {
+    // Creamos un objeto con estructura básica y lo forzamos a CommissionerStats
+    // Primero convertimos a unknown y luego a CommissionerStats para evitar errores TypeScript
+    const emptyStats = {
+      total_clients: 0,
+      active_clients: 0,
+      clients_with_negative_roi: 0,
+      total_commissions_month: 0,
+      total_commissions_year: 0,
+      commission_growth: 0,
+      average_roi_clients: 0,
+      totalOperations: 0,
+      total_investments_managed: 0,
+      top_performing_clients: [],
+      commissions_by_market: [
+        { market: 'US', amount: 0 },
+        { market: 'LATAM', amount: 0 },
+        { market: 'EU', amount: 0 },
+      ]
+    };
+    
+    return emptyStats as unknown as CommissionerStats;
   }
 }

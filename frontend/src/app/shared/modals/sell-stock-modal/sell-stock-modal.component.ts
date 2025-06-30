@@ -18,6 +18,7 @@ export interface SellStockDialogData {
   stock: Stock;
   price?: number; // Precio actual de la acción
   action?: 'sell'; // Tipo de acción, por defecto 'sell'
+  clientId?: number; // ID del cliente si la orden es realizada por un comisionista para un cliente
 }
 
 @Component({
@@ -272,6 +273,11 @@ export class SellStockModalComponent implements OnInit {
       timeInForce: formValues.timeInForce,
       extendedHours: formValues.extendedHours
     };
+    
+    // Si la orden es para un cliente, añadir el clientId
+    if (this.data.clientId) {
+      sellOrder.clientId = this.data.clientId;
+    }
     
     // Añadir precio límite si es necesario
     if (formValues.orderType !== 'market') {

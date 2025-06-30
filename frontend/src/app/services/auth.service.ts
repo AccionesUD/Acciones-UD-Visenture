@@ -4,7 +4,7 @@ import { delay, tap, catchError, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
 import { JwtService } from './jwt.service';
 import { AuthStateService } from './auth-state.service';
 import { LoginCredentials, MfaVerification, User, AuthResponse } from '../models/auth.model';
@@ -23,8 +23,8 @@ export class AuthService {
   private platformId = inject(PLATFORM_ID);
   
   // URL base para las peticiones de autenticación desde las variables de entorno
-  private registerUrl = environment.apiUrl;
-  private apiUrl = environment.authApiUrl;
+  private registerUrl = environmentExample.apiUrl;
+  private apiUrl = environmentExample.authApiUrl;
     constructor(
     private router: Router,
     private jwtService: JwtService,
@@ -360,5 +360,14 @@ export class AuthService {
       clearTimeout(this.tokenExpirationTimer);
       this.tokenExpirationTimer = null;
     }
+  }
+  
+  /**
+   * Verifica si el usuario actual tiene el rol de comisionista
+   * @returns true si el usuario es comisionista, false en caso contrario
+   */
+  public isCommissioner(): boolean {
+    const user = this.currentUserSubject.value;
+    return !!user && user.role === 'commissioner';
   }
 }

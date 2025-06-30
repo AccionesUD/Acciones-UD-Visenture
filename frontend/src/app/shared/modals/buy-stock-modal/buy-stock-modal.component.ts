@@ -18,6 +18,7 @@ export interface BuyStockDialogData {
   stock: Stock;
   price?: number; // Precio actual de la acción
   maxQuantity?: number; // Máximo de acciones que puede comprar según su saldo
+  clientId?: number; // ID del cliente si la orden es realizada por un comisionista para un cliente
 }
 
 @Component({
@@ -193,6 +194,11 @@ export class BuyStockModalComponent implements OnInit {
       timeInForce: formValues.timeInForce,
       extendedHours: formValues.extendedHours
     };
+    
+    // Si la orden es para un cliente, añadir el clientId
+    if (this.data.clientId) {
+      buyOrder.clientId = this.data.clientId;
+    }
     
     if (formValues.orderType !== 'market') {
       buyOrder.limitPrice = formValues.limitPrice;

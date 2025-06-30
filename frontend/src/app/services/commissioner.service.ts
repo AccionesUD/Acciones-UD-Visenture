@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
 import { 
   CommissionerClient, 
   ClientKpi, 
@@ -16,7 +16,7 @@ import {
   providedIn: 'root'
 })
 export class CommissionerService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -126,6 +126,21 @@ export class CommissionerService {
     
     return of(clients).pipe(
       tap(data => console.log('Clientes cargados:', data.length))
+    );
+  }
+
+  /**
+   * Obtiene los clientes asignados al comisionista actual con un formato adecuado para la selección en diálogos
+   * @returns Lista de clientes con ID, nombre completo y correo electrónico
+   */
+  getAssignedClientsForOrderSelection(): Observable<any[]> {
+    return this.getAssignedClients().pipe(
+      map(clients => clients.map(client => ({
+        id: client.id,
+        fullName: client.name,
+        email: client.email || 'Sin correo',
+        status: client.status
+      })))
     );
   }
 

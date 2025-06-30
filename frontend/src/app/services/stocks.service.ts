@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
+
 import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
 
 /**
@@ -13,7 +14,7 @@ import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
   providedIn: 'root'
 })
 export class StocksService {
-  private apiUrl = `${environment.apiUrl}/stocks`;
+  private apiUrl = `${environmentExample.apiUrl}/stocks`;
   private stocksSubject = new BehaviorSubject<Stock[] | null>(null);
   public stocks$ = this.stocksSubject.asObservable();
   
@@ -263,5 +264,102 @@ export class StocksService {
     const closeTimeInMinutes = closeHour * 60 + closeMinute;
     
     return currentTimeInMinutes >= openTimeInMinutes && currentTimeInMinutes < closeTimeInMinutes;
+  }
+  
+  /**
+   * Busca stocks/acciones por nombre o símbolo
+   * @param query Texto a buscar
+   * @returns Observable con los resultados de la búsqueda
+   */
+  searchStocks(query: string): Observable<any[]> {
+    // En producción: return this.http.get<any[]>(`${this.apiUrl}/search`, { params: { query } });
+    
+    // Para desarrollo, usar datos en caché o simular búsqueda
+    if (this.stocksCache && this.stocksCache.length > 0) {
+      // Convertimos a any[] para manejar las propiedades dinámicas
+      const results = (this.stocksCache as any[]).filter(stock => 
+        (stock.symbol && stock.symbol.toLowerCase().includes(query.toLowerCase())) || 
+        (stock.name && stock.name.toLowerCase().includes(query.toLowerCase()))
+      );
+      return of(results.slice(0, 10));
+    }
+    
+    // Si no hay cache, hacer una petición y simular resultados
+    // Datos de ejemplo para desarrollo
+    const mockStocks = [
+      { symbol: 'AAPL', name: 'Apple Inc.', current_price: 175.34 },
+      { symbol: 'MSFT', name: 'Microsoft Corporation', current_price: 340.67 },
+      { symbol: 'GOOGL', name: 'Alphabet Inc.', current_price: 130.45 },
+      { symbol: 'AMZN', name: 'Amazon.com Inc.', current_price: 178.23 },
+      { symbol: 'META', name: 'Meta Platforms Inc.', current_price: 481.09 },
+      { symbol: 'TSLA', name: 'Tesla Inc.', current_price: 177.56 },
+      { symbol: 'NFLX', name: 'Netflix Inc.', current_price: 630.78 },
+      { symbol: 'NVDA', name: 'NVIDIA Corporation', current_price: 950.32 },
+      { symbol: 'V', name: 'Visa Inc.', current_price: 270.41 },
+      { symbol: 'JPM', name: 'JPMorgan Chase & Co.', current_price: 187.63 }
+    ];
+    
+    const filteredStocks = mockStocks.filter(stock => 
+      stock.symbol.toLowerCase().includes(query.toLowerCase()) || 
+      stock.name.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    return of(filteredStocks.slice(0, 10));
+  }
+  
+  /**
+   * Actualiza el horario de apertura personalizado para una acción/mercado específico
+   * @param mic Identificador del mercado a actualizar
+   * @param customTime Hora de apertura personalizada en formato 'HH:MM'
+   */
+  updateCustomOpeningTime(mic: string, customTime: string): Observable<Stock> {
+    // En una implementación real, este endpoint debería existir en el backend
+    // return this.http.patch<Stock>(`${this.apiUrl}/${mic}/custom-opening`, { custom_opening_time: customTime });
+    
+    // Como alternativa temporal, actualizamos la caché y simulamos una respuesta exitosa
+    const index = this.stocksCache.findIndex(stock => stock.mic === mic);
+    
+    if (index !== -1) {
+      const updatedStock = {
+        ...this.stocksCache[index],
+        custom_opening_time: customTime
+      };
+      
+      this.stocksCache[index] = updatedStock;
+      this.stocksSubject.next([...this.stocksCache]);
+      
+      // Simulamos almacenar esta configuración en localStorage para persistencia
+      if (typeof localStorage !== 'undefined') {
+        const customTimesKey = 'custom_opening_times';
+        const storedTimes = JSON.parse(localStorage.getItem(customTimesKey) || '{}');
+        storedTimes[mic] = customTime;
+        localStorage.setItem(customTimesKey, JSON.stringify(storedTimes));
+      }
+      
+      return of(updatedStock);
+    }
+    
+    return throwError(() => new Error(`No se encontró el mercado con MIC: ${mic}`));
+  }
+  
+  /**
+   * Obtiene el horario de apertura personalizado para un mercado específico
+   * @param mic Identificador del mercado
+   */
+  getCustomOpeningTime(mic: string): string | null {
+    // Primero intentamos obtenerlo del caché
+    const stock = this.stocksCache.find(s => s.mic === mic);
+    if (stock?.custom_opening_time) {
+      return stock.custom_opening_time;
+    }
+    
+    // Si no está en caché, buscamos en localStorage
+    if (typeof localStorage !== 'undefined') {
+      const customTimesKey = 'custom_opening_times';
+      const storedTimes = JSON.parse(localStorage.getItem(customTimesKey) || '{}');
+      return storedTimes[mic] || null;
+    }
+    
+    return null;
   }
 }

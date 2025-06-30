@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, delay, map } from 'rxjs';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
 import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } from '../models/user.model';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } fr
 })
 
 export class UsersService {
-  private apiUrl = environment.apiUrl || 'http://localhost:3000/api';
+  private apiUrl = environmentExample.apiUrl || 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -34,7 +34,14 @@ export class UsersService {
     const response = this.generateMockUsers(filters ? { ...filters } : {});
     return of(response).pipe(delay(500)); // Añadimos un delay para simular latencia
   }
-  
+  /**
+   * Obtiene el usuario actual
+   */
+  getCurrentUser(): Observable<User>{
+    // Mock para desarrollo: devuelve el primer usuario como usuario actual
+    const currentUser = this.mockUsers[0];
+    return of(currentUser).pipe(delay(300));
+  }
   /**
    * Obtiene un usuario por su ID
    */
@@ -161,6 +168,15 @@ export class UsersService {
     // return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/admin/users/${userId}/role`, { role });
 
     return this.updateUser(userId, { role });
+  }
+  getUserRole(): Observable<User['role'] | undefined> {
+    //usuario produccion
+    //return this.http.get<User>(`/api/user/me`).pipe(map(user => user.role));
+
+    //usuario mock
+    return this.getCurrentUser().pipe(
+      map(user => user.role)
+    );
   }
 
   /**

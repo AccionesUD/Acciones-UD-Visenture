@@ -1,7 +1,9 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <!-- Filtros por mercado -->
   <div class="relative">
-    <label for="market-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por mercado</label>
+    <label for="market-filter" 
+           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" 
+           i18n="@@portfolio.filters.market.label">Filtrar por mercado</label>
     <select 
       id="market-filter"
       [(ngModel)]="selectedFilter"
@@ -15,7 +17,9 @@
 
   <!-- Filtros por rendimiento -->
   <div class="relative">
-    <label for="performance-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por rendimiento</label>
+    <label for="performance-filter" 
+           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" 
+           i18n="@@portfolio.filters.performance.label">Filtrar por rendimiento</label>
     <select 
       id="performance-filter"
       [(ngModel)]="selectedPerformance"
@@ -29,7 +33,9 @@
 
   <!-- Opciones de ordenamiento -->
   <div class="relative">
-    <label for="sort-option" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordenar por</label>
+    <label for="sort-option" 
+           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" 
+           i18n="@@portfolio.filters.sort.label">Ordenar por</label>
     <select 
       id="sort-option"
       [(ngModel)]="selectedSort"

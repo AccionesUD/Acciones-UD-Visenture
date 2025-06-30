@@ -4,13 +4,14 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Portfolio, PortfolioShare, PortfolioSummary, PortfolioPosition } from '../models/portfolio.model';
 import { SellOrder, SellResponse } from '../models/sell.model';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioService {
-  private apiUrl = `${environment.apiUrl}/portfolio`;
+  private apiUrl = `${environmentExample.apiUrl}/portfolio`;
 
   constructor(private http: HttpClient) {}
 
@@ -40,7 +41,7 @@ export class PortfolioService {
    * Usamos endpoint de shares y en caso de error retornamos mocks
    */
   getPortfolioStocks(): Observable<PortfolioShare[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/shares`).pipe(
+    return this.http.get<any[]>(`${environmentExample.apiUrl}/shares`).pipe(
       map(shares => shares.map(s => ({
         id: s.symbol,
         companyName: s.name_share,
@@ -68,37 +69,75 @@ export class PortfolioService {
     ];
   }
 
-  /**
-   * Obtiene el historial de rendimiento del portafolio para un rango de días
-   * @param days Número de días a consultar (por defecto 30)
-   */
   getPortfolioHistory(days: number = 30): Observable<any[]> {
     const params = new HttpParams().set('days', days.toString());
     return this.http.get<any[]>(`${this.apiUrl}/history`, { params });
   }
 
-  /**
-   * Ejecuta una orden de venta de acciones
-   * @param order Detalles de la orden de venta
-   */
   sellShare(order: SellOrder): Observable<SellResponse> {
     return this.http.post<SellResponse>(`${this.apiUrl}/sell`, order);
   }
 
-  /**
-   * Actualiza la cantidad de acciones luego de una venta
-   * @param stockId ID de la acción vendida
-   * @param quantity Nueva cantidad restante en portafolio
-   */
   updatePortfolioAfterSell(stockId: string, quantity: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/shares/${stockId}`, { quantity });
   }
 
-  /**
-   * Actualiza el balance de usuario tras una operación de venta
-   * @param amount Monto a ajustar al balance
-   */
   updateUserBalance(amount: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/balance`, { amount });
+  }
+
+  /**
+   * Obtiene el portafolio de un cliente específico (para comisionistas)
+   * @param clientId ID del cliente
+   * @returns Observable con las acciones del cliente
+   */
+  getClientPortfolio(clientId: number): Observable<any[]> {
+    // En producción: return this.http.get<any[]>(`${this.apiUrl}/clients/${clientId}/shares`);
+    
+    // Para desarrollo, simular datos
+    if (clientId > 0) {
+      // Generar un portfolio aleatorio para cada cliente basado en su ID
+      const portfolioSize = (clientId % 5) + 1; // Entre 1 y 5 acciones
+      const mockPortfolio: any[] = [];
+      
+      const tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'NFLX', 'NVDA', 'V', 'JPM'];
+      const names = [
+        'Apple Inc.', 
+        'Microsoft Corporation', 
+        'Alphabet Inc.', 
+        'Amazon.com Inc.', 
+        'Meta Platforms Inc.', 
+        'Tesla Inc.', 
+        'Netflix Inc.', 
+        'NVIDIA Corporation', 
+        'Visa Inc.', 
+        'JPMorgan Chase & Co.'
+      ];
+      
+      // Seleccionar acciones basadas en el ID del cliente
+      const startIndex = clientId % tickers.length;
+      for (let i = 0; i < portfolioSize; i++) {
+        const index = (startIndex + i) % tickers.length;
+        const quantity = 5 + (clientId % 20); // Entre 5 y 24 acciones
+        const price = 100 + (index * 10) + (clientId % 50); // Precio base + variación
+        
+        mockPortfolio.push({
+          symbol: tickers[index],
+          name: names[index],
+          quantity: quantity,
+          purchase_price: price * 0.9, // Precio de compra ligeramente menor
+          current_price: price,
+          market_value: price * quantity,
+          total_return: price * quantity * 0.1, // 10% de ganancia
+          return_percentage: 10, // 10% de ganancia
+          last_updated: new Date().toISOString()
+        });
+      }
+      
+      return of(mockPortfolio);
+    }
+    
+    // Si no hay ID de cliente válido
+    return of([]);
   }
 }

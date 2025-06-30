@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { PriceAlert, NotificationSettings, UserPreferences } from '../models/notification.model';
-import { environment } from '../../Enviroments/enviroment';
+import { environmentExample } from '../../environments/environmentexample';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
 
   constructor(private http: HttpClient) { }
 

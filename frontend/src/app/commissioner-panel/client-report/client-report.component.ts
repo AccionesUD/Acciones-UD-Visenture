@@ -176,8 +176,14 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
     // Asegurar que los gráficos se rendericen correctamente después de que la vista esté inicializada
     setTimeout(() => {
       this.configureDataTable();
+      
+      // Volver a configurar los gráficos después de la inicialización de la vista
+      if (this.clientKpis) {
+        this.setupCharts();
+      }
+      
       this.cdr.detectChanges();
-    });
+    }, 100); // Aumentamos el tiempo para garantizar que todos los componentes estén listos
   }
   
   ngOnDestroy(): void {
@@ -265,12 +271,20 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Configurar gráfico de tendencia de ROI
     this.setupRoiTrendChart();
+    
+    // Forzar la detección de cambios para actualizar los gráficos
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   setupCommissionsTrendChart(): void {
     const commissions = this.dataSourceCommissions.data;
     const months: string[] = [];
     const values: number[] = [];
+    
+    // Detectar tema inicial
+    const isDark = document.documentElement.classList.contains('dark');
 
     // Agrupar por mes-año y ordenar cronológicamente
     const monthlyCommissions = commissions.reduce((acc: any, curr) => {
@@ -317,8 +331,13 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         toolbar: {
           show: false
         },
+        animations: {
+          enabled: true,
+          speed: 300
+        },
         background: 'transparent',
         fontFamily: 'Inter, sans-serif',
+        foreColor: isDark ? '#e2e8f0' : '#334155'
       },
       dataLabels: {
         enabled: false
@@ -333,7 +352,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#334155'
+          color: isDark ? '#e2e8f0' : '#334155'
         }
       },
       subtitle: {
@@ -341,7 +360,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#64748b'
+          color: isDark ? '#94a3b8' : '#64748b'
         }
       },
       xaxis: {
@@ -350,16 +369,19 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           text: "Período",
           style: {
             fontFamily: 'Inter, sans-serif',
-            color: '#64748b'
+            color: isDark ? '#94a3b8' : '#64748b'
           }
         },
         labels: {
           style: {
             fontFamily: 'Inter, sans-serif',
-            colors: '#64748b'
+            colors: isDark ? '#e2e8f0' : '#64748b'
           }
         },
         axisBorder: {
+          show: false
+        },
+        axisTicks: {
           show: false
         }
       },
@@ -368,18 +390,19 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           text: "Comisiones ($)",
           style: {
             fontFamily: 'Inter, sans-serif',
-            color: '#64748b'
+            color: isDark ? '#94a3b8' : '#64748b'
           }
         },
         labels: {
           style: {
             fontFamily: 'Inter, sans-serif',
-            colors: '#64748b'
+            colors: isDark ? '#e2e8f0' : '#64748b'
           },
           formatter: (value: number) => { return `$${value.toFixed(2)}` }
         }
       },
       tooltip: {
+        theme: isDark ? 'dark' : 'light',
         x: {
           format: "MM/yy"
         },
@@ -394,16 +417,20 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           opacityFrom: 0.7,
           opacityTo: 0.3,
           stops: [0, 90, 100]
-        }
+        },
+        opacity: 0.85
       },
       grid: {
-        borderColor: '#f1f5f9',
+        borderColor: isDark ? '#334155' : '#f1f5f9',
         strokeDashArray: 4,
         xaxis: {
           lines: {
             show: true
           }
         }
+      },
+      theme: {
+        mode: isDark ? 'dark' : 'light'
       }
     };
   }
@@ -412,6 +439,9 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.clientKpis || !this.clientKpis.main_assets || this.clientKpis.main_assets.length === 0) {
       return;
     }
+    
+    // Detectar tema inicial
+    const isDark = document.documentElement.classList.contains('dark');
 
     const assets = this.clientKpis.main_assets;
     const labels = assets.map(asset => asset.symbol);
@@ -420,22 +450,27 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
     this.assetDistributionChartOptions = {
       series: data,
       chart: {
-        type: "pie",
+        type: "donut",
         height: 320,
         fontFamily: 'Inter, sans-serif',
         background: 'transparent',
         toolbar: {
           show: false
-        }
+        },
+        animations: {
+          enabled: true,
+          speed: 300
+        },
+        foreColor: isDark ? '#e2e8f0' : '#334155'
       },
       labels: labels,
-      colors: ['#10b981', '#3b82f6', '#6366f1', '#f97316', '#8b5cf6', '#ef4444', '#f59e0b'],
+      colors: ['#10B981', '#3b82f6', '#6366f1', '#f97316', '#8b5cf6', '#ef4444', '#f59e0b'],
       title: {
         text: "Distribución de Activos",
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#334155'
+          color: isDark ? '#e2e8f0' : '#334155'
         }
       },
       subtitle: {
@@ -443,42 +478,64 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#64748b'
+          color: isDark ? '#94a3b8' : '#64748b'
         }
       },
       legend: {
         position: "bottom",
+        horizontalAlign: 'center',
         fontFamily: 'Inter, sans-serif',
         fontSize: '13px',
         markers: {
           width: 10,
           height: 10
         },
-        offsetY: 5
+        offsetY: 5,
+        labels: {
+          colors: isDark ? '#e2e8f0' : '#334155'
+        }
       },
       dataLabels: {
-        formatter: (val: number) => { return val.toFixed(1) + '%' }
+        enabled: true,
+        formatter: (val: number) => { return val.toFixed(1) + '%' },
+        style: {
+          colors: [isDark ? '#e2e8f0' : '#334155']
+        }
       },
       tooltip: {
+        theme: isDark ? 'dark' : 'light',
         y: {
           formatter: (val: number) => { return val.toFixed(1) + '%' }
         }
       },
       plotOptions: {
         pie: {
-          expandOnClick: false,
           donut: {
             size: '55%',
             labels: {
-              show: false,
+              show: true,
+              total: {
+                show: true,
+                label: 'Total',
+                formatter: function(w: any) {
+                  return w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0) + '%';
+                },
+                color: isDark ? '#e2e8f0' : '#334155'
+              }
             }
           }
         }
+      },
+      theme: {
+        mode: isDark ? 'dark' : 'light'
       }
     };
   }
 
   setupRoiTrendChart(): void {
+    // Detectar tema inicial
+    const isDark = document.documentElement.classList.contains('dark');
+    
     // Datos simulados para la tendencia ROI (en un caso real, vendrían de la API)
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     const roi = [1.2, 2.3, 2.8, 2.1, 3.5, 4.2, 3.8, 4.5, 5.1, 5.8, 6.2, 6.9];
@@ -504,8 +561,13 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         toolbar: {
           show: false
         },
+        animations: {
+          enabled: true,
+          speed: 300
+        },
         background: 'transparent',
-        fontFamily: 'Inter, sans-serif'
+        fontFamily: 'Inter, sans-serif',
+        foreColor: isDark ? '#e2e8f0' : '#334155'
       },
       stroke: {
         width: [3, 2],
@@ -518,7 +580,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#334155'
+          color: isDark ? '#e2e8f0' : '#334155'
         }
       },
       subtitle: {
@@ -526,7 +588,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
         align: "left",
         style: {
           fontFamily: 'Inter, sans-serif',
-          color: '#64748b'
+          color: isDark ? '#94a3b8' : '#64748b'
         }
       },
       xaxis: {
@@ -535,16 +597,19 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           text: "Mes",
           style: {
             fontFamily: 'Inter, sans-serif',
-            color: '#64748b'
+            color: isDark ? '#94a3b8' : '#64748b'
           }
         },
         labels: {
           style: {
             fontFamily: 'Inter, sans-serif',
-            colors: '#64748b'
+            colors: isDark ? '#e2e8f0' : '#64748b'
           }
         },
         axisBorder: {
+          show: false
+        },
+        axisTicks: {
           show: false
         }
       },
@@ -553,13 +618,13 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           text: "ROI (%)",
           style: {
             fontFamily: 'Inter, sans-serif',
-            color: '#64748b'
+            color: isDark ? '#94a3b8' : '#64748b'
           }
         },
         labels: {
           style: {
             fontFamily: 'Inter, sans-serif',
-            colors: '#64748b'
+            colors: isDark ? '#e2e8f0' : '#64748b'
           },
           formatter: (value: number) => { return `${value.toFixed(1)}%` }
         }
@@ -573,21 +638,28 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
           width: 10,
           height: 10
         },
-        offsetY: -10
+        offsetY: -10,
+        labels: {
+          colors: isDark ? '#e2e8f0' : '#334155'
+        }
       },
       tooltip: {
+        theme: isDark ? 'dark' : 'light',
         y: {
           formatter: (value: number) => { return `${value.toFixed(2)}%` }
         }
       },
       grid: {
-        borderColor: '#f1f5f9',
+        borderColor: isDark ? '#334155' : '#f1f5f9',
         strokeDashArray: 4,
-        xaxis: {
+        yaxis: {
           lines: {
             show: true
           }
         }
+      },
+      theme: {
+        mode: isDark ? 'dark' : 'light'
       }
     };
   }
@@ -598,8 +670,8 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
   private setupThemeObserver(): void {
     // Observar cambios en el tema (claro/oscuro)
     const observer = new MutationObserver(() => {
-      const isDarkTheme = document.documentElement.classList.contains('dark');
-      this.updateChartsTheme(isDarkTheme);
+      const isDark = document.documentElement.classList.contains('dark');
+      this.updateChartsTheme(isDark);
     });
     
     observer.observe(document.documentElement, {
@@ -608,23 +680,23 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     
     // Configurar tema inicial
-    const isDarkTheme = document.documentElement.classList.contains('dark');
-    this.updateChartsTheme(isDarkTheme);
+    const isDark = document.documentElement.classList.contains('dark');
+    this.updateChartsTheme(isDark);
   }
   
   /**
    * Actualiza el tema de todos los gráficos según el modo claro/oscuro
    */
-  private updateChartsTheme(isDarkTheme: boolean): void {
-    // Actualizar colores y estilos para modo claro/oscuro
-    const textColor = isDarkTheme ? '#e2e8f0' : '#334155';
-    const subtitleColor = isDarkTheme ? '#94a3b8' : '#64748b';
-    const gridColor = isDarkTheme ? '#334155' : '#f1f5f9';
-    const backgroundColor = isDarkTheme ? 'transparent' : 'transparent';
+  private updateChartsTheme(isDark: boolean): void {
+    // Actualizar colores de los gráficos según el tema
+    const textColor = isDark ? '#e2e8f0' : '#334155';
+    const subtitleColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? '#334155' : '#f1f5f9';
+    const backgroundColor = 'transparent';
     
-    // Comisiones Trend Chart
+    // Actualizar el gráfico de tendencia de comisiones
     if (this.commissionsTrendChartOptions) {
-      // Actualizar título y estilos
+      // Actualizar título y subtítulo
       if (this.commissionsTrendChartOptions.title) {
         this.commissionsTrendChartOptions.title.style = {
           fontFamily: 'Inter, sans-serif',
@@ -670,8 +742,19 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
       
       // Actualizar grilla
       this.commissionsTrendChartOptions.grid = {
-        ...this.commissionsTrendChartOptions.grid,
-        borderColor: gridColor
+        borderColor: gridColor,
+        strokeDashArray: 4,
+        xaxis: {
+          lines: {
+            show: true
+          }
+        }
+      };
+      
+      // Actualizar tooltip
+      this.commissionsTrendChartOptions.tooltip = {
+        ...this.commissionsTrendChartOptions.tooltip,
+        theme: isDark ? 'dark' : 'light'
       };
       
       // Aplicar tema
@@ -682,11 +765,11 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
       };
       
       this.commissionsTrendChartOptions.theme = {
-        mode: isDarkTheme ? 'dark' : 'light'
+        mode: isDark ? 'dark' : 'light'
       };
     }
     
-    // Asset Distribution Chart
+    // Actualizar el gráfico de distribución de activos
     if (this.assetDistributionChartOptions) {
       // Actualizar título y estilos
       if (this.assetDistributionChartOptions.title) {
@@ -718,7 +801,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
       };
       
       this.assetDistributionChartOptions.theme = {
-        mode: isDarkTheme ? 'dark' : 'light'
+        mode: isDark ? 'dark' : 'light'
       };
     }
     
@@ -789,7 +872,7 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
       };
       
       this.roiTrendChartOptions.theme = {
-        mode: isDarkTheme ? 'dark' : 'light'
+        mode: isDark ? 'dark' : 'light'
       };
     }
     
@@ -843,6 +926,17 @@ export class ClientReportComponent implements OnInit, OnDestroy, AfterViewInit {
       filters.market || 
       filters.status
     );
+  }
+
+  resetFilters(): void {
+    // Reiniciar todos los campos del formulario
+    this.filterForm.reset({
+      period: '3',
+      market: '',
+      status: ''
+    });
+    
+    // No es necesario llamar a applyFilters aquí, ya que el valueChanges del form lo disparará
   }
 
   getMonthNumber(month: string): number {
