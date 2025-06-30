@@ -81,7 +81,8 @@ export class ProfileService {
       last_name: 'Pérez',
       email: 'juan.perez@example.com',
       phone_number: '+57 300 123 4567',
-      birthdate: new Date('1990-01-15')
+      birthdate: new Date('1990-01-15'),
+      
     };
     
     return of(mockProfile).pipe(
@@ -222,35 +223,12 @@ export class ProfileService {
   /**
    * Cambiar contraseña del usuario
    */
-  changePassword(passwordData: ChangePasswordDto): Observable<ProfileUpdateResponse> {
-    // En producción: return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/profile/password`, passwordData).pipe(...
-    
-    // Mock para desarrollo: validamos que la contraseña actual sea "password123" para simular verificación
-    if (passwordData.current_password !== 'password123') {
-      return of({
-        success: false,
-        message: 'La contraseña actual es incorrecta'
-      }).pipe(
-        tap(result => console.log('Password change result:', result))
-      );
-    }
-    
-    // Verificamos que las contraseñas nuevas coincidan
-    if (passwordData.new_password !== passwordData.confirm_password) {
-      return of({
-        success: false,
-        message: 'Las contraseñas nuevas no coinciden'
-      }).pipe(
-        tap(result => console.log('Password change result:', result))
-      );
-    }
-    
-    // Si todo está bien, simulamos éxito
-    return of({
-      success: true,
-      message: 'Contraseña actualizada correctamente'
-    }).pipe(
-      tap(result => console.log('Password change result:', result)),
+  /**
+   * Cambiar contraseña del usuario
+   */
+  changePassword(passwordData: { currentPassword: string, newPassword: string }): Observable<ProfileUpdateResponse> {
+    // Llamada real al backend para cambiar la contraseña
+    return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/auth/perfil/password`, passwordData).pipe(
       catchError(this.handleError<ProfileUpdateResponse>('changePassword', {
         success: false,
         message: 'Error al cambiar la contraseña'
@@ -263,9 +241,8 @@ export class ProfileService {
    */
   changePasswordLegacy(passwords: { current: string, new: string, confirm: string }): Observable<any> {
     return this.changePassword({
-      current_password: passwords.current,
-      new_password: passwords.new,
-      confirm_password: passwords.confirm
+      currentPassword: passwords.current,
+      newPassword: passwords.new
     });
   }
 

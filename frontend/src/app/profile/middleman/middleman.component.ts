@@ -52,10 +52,14 @@ export type ChartOptions = {
 @Component({
   selector: 'app-middleman',
   templateUrl: './middleman.component.html',
-  styleUrls: ['./middleman.component.css']
+  styleUrls: ['./middleman.component.css'],
+  imports: [CommonModule]
 })
-
 export class MiddlemanComponent implements OnInit, OnDestroy, AfterViewInit {
+  // Acción para el botón "Ver detalles" en el ranking de mejores comisionistas
+  viewComissionerDetails(client: any): void {
+    this.viewClientDetails(client);
+  }
    // Variables para comisionistas
     displayedColumns: string[] = ['name', 'email', 'registration_date', 'status', 'total_investment', 'roi_percentage', 'last_operation_date', 'actions'];
     dataSource = new MatTableDataSource<CommissionerList>([]);

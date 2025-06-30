@@ -104,75 +104,74 @@
       <div *ngIf="!isLoading && !error && stocks.length > 0">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-stretch">
           <div *ngFor="let stock of stocks" class="market-card-custom bg-white dark:bg-slate-800 border-emerald-200 dark:border-slate-700 border-2 shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300">
-            <!-- Contenedor para todo el contenido visible de la tarjeta -->
-            <div class="card-content-wrapper" (click)="navigateToStockDetail(stock)">
-              <!-- Cabecera del mercado -->
-              <div class="relative h-24 bg-gradient-to-r from-emerald-400 to-teal-600 dark:from-emerald-700 dark:to-teal-900 flex items-center justify-between px-6">
-                <div>
-                  <h3 class="text-xl font-bold text-white">{{ stock.name_market }}</h3>
-                  <p class="text-white text-opacity-80">{{ stock.country_region || 'Internacional' }}</p>
-                </div>
-                <div class="absolute top-2 right-2 px-2 py-1 rounded-full" 
-                     [ngClass]="{'bg-green-100 text-green-800': stock.is_open, 'bg-red-100 text-red-800': !stock.is_open}">
-                  <span class="text-xs font-medium">{{ getStatusLabel(stock) }}</span>
-                </div>
-              </div>
-              
-              <!-- Cuerpo con información del mercado -->
-              <div class="p-6">
-                <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
-                  <span class="font-medium">ID del mercado:</span>
-                  <span class="text-emerald-600 dark:text-emerald-400 font-mono">{{ stock.mic }}</span>
-                </div>
-                
-                <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
-                  <span class="font-medium">Horario:</span>
-                  <div class="flex items-center">
-                    <span [class.text-emerald-600]="stock.custom_opening_time">{{ getDisplayOpeningTime(stock) }} - {{ stock.closing_time }}</span>
-                    
-                    <!-- Botón de edición de horario visible para todos -->
-                    <button mat-icon-button 
-                            class="ml-1 text-gray-500 hover:text-emerald-600"
-                            matTooltip="Editar hora de apertura"
-                            (click)="openEditOpeningTimeDialog(stock, $event)">
-                      <mat-icon class="text-sm">edit</mat-icon>
-                    </button>
-                  </div>
-                </div>
-                
-                <!-- Indicador de horario personalizado -->
-                <div *ngIf="stock.custom_opening_time" class="mb-2 text-xs text-emerald-600 dark:text-emerald-400 flex items-center">
-                  <mat-icon class="text-xs mr-1">schedule</mat-icon>
-                  <span>Horario personalizado (oficial: {{ stock.opening_time }})</span>
-                </div>
-                
-                <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
-                  <span class="font-medium">Días operación:</span>
-                  <span>{{ stock.days_operation }}</span>
-                </div>
-                
-                <p class="text-gray-600 dark:text-gray-400 text-sm mt-4">
-                  {{ stock.name_market }} es un mercado ubicado en {{ stock.country_region }} que opera {{ stock.days_operation }}.
-                </p>
-              </div>
-              
-              <!-- Footer con botón de acción -->
-              <div class="px-6 py-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 flex items-center justify-between">
-                <span class="text-sm text-gray-500 dark:text-gray-400">
-                  <span class="inline-block w-2 h-2 rounded-full mr-1 align-middle"
-                        [ngClass]="{'bg-green-500': stock.is_open, 'bg-red-500': !stock.is_open}"></span>
-                  {{ stock.is_open ? 'En operación' : 'Cerrado' }}
-                </span>
-                <button mat-stroked-button
-                        color="primary"
-                        class="text-xs px-2 py-1">
-                  Ver acciones
-                </button>
-              </div>
+        <!-- Contenedor para todo el contenido visible de la tarjeta -->
+        <div class="card-content-wrapper" (click)="navigateToStockDetail(stock)">
+          <!-- Cabecera del mercado -->
+          <div class="relative h-24 bg-gradient-to-r from-emerald-400 to-teal-600 dark:from-emerald-700 dark:to-teal-900 flex items-center justify-between px-6">
+            <div>
+          <h3 class="text-xl font-bold text-white" i18n="@@markets.market_name">{{ stock.name_market }}</h3>
+          <p class="text-white text-opacity-80" i18n="@@markets.country_region">{{ stock.country_region || 'Internacional' }}</p>
             </div>
+            <div class="absolute top-2 right-2 px-2 py-1 rounded-full" 
+             [ngClass]="{'bg-green-100 text-green-800': stock.is_open, 'bg-red-100 text-red-800': !stock.is_open}">
+          <span class="text-xs font-medium" i18n="@@markets.status_label">{{ getStatusLabel(stock) }}</span>
+            </div>
+          </div>
+          
+          <!-- Cuerpo con información del mercado -->
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
+          <span class="font-medium" i18n="@@markets.market_id">ID del mercado:</span>
+          <span class="text-emerald-600 dark:text-emerald-400 font-mono">{{ stock.mic }}</span>
+            </div>
+            
+            <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
+          <span class="font-medium" i18n="@@markets.schedule">Horario:</span>
+          <div class="flex items-center">
+            <span [class.text-emerald-600]="stock.custom_opening_time" i18n="@@markets.opening_closing_time">{{ getDisplayOpeningTime(stock) }} - {{ stock.closing_time }}</span>
+            
+            <!-- Botón de edición de horario visible para todos -->
+            <button mat-icon-button 
+                class="ml-1 text-gray-500 hover:text-emerald-600"
+                matTooltip="Editar hora de apertura"
+                i18n-matTooltip="@@markets.edit_opening_time"
+                (click)="openEditOpeningTimeDialog(stock, $event)">
+              <mat-icon class="text-sm" i18n="@@markets.edit_icon">edit</mat-icon>
+            </button>
+          </div>
+            </div>
+            
+            <!-- Indicador de horario personalizado -->
+            <div *ngIf="stock.custom_opening_time" class="mb-2 text-xs text-emerald-600 dark:text-emerald-400 flex items-center">
+          <mat-icon class="text-xs mr-1" i18n="@@markets.schedule_icon">schedule</mat-icon>
+          <span i18n="@@markets.custom_schedule">Horario personalizado (oficial: {{ stock.opening_time }})</span>
+            </div>
+            
+            <div class="flex items-center justify-between mb-2 text-gray-700 dark:text-gray-300">
+          <span class="font-medium" i18n="@@markets.operation_days">Días operación:</span>
+          <span>{{ stock.days_operation }}</span>
+            </div>
+            
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-4" i18n="@@markets.market_description">
+          {{ stock.name_market }} es un mercado ubicado en {{ stock.country_region }} que opera {{ stock.days_operation }}.
+            </p>
+          </div>
+          
+          <!-- Footer con botón de acción -->
+          <div class="px-6 py-4 bg-gray-50 dark:bg-slate-700 border-t border-gray-200 dark:border-slate-600 flex items-center justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="inline-block w-2 h-2 rounded-full mr-1 align-middle"
+            [ngClass]="{'bg-green-500': stock.is_open, 'bg-red-500': !stock.is_open}"></span>
+          <span i18n="@@markets.operation_status">{{ stock.is_open ? 'En operación' : 'Cerrado' }}</span>
+            </span>
+            <button mat-stroked-button
+            color="primary"
+            class="text-xs px-2 py-1"
+            i18n="@@markets.view_stocks">
+          Ver acciones
+            </button>
+          </div>
+        </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>

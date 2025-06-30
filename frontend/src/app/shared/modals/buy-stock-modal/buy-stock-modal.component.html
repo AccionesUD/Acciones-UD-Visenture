@@ -51,7 +51,9 @@
         <!-- Precio actual -->
         <div class="ml-auto text-right">
           <div class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.current.price">Precio actual</div>
-          <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-lg font-bold text-gray-900 dark:text-white">
+            {{ currentPrice !== null && currentPrice !== undefined ? (currentPrice | currency:'USD':'symbol':'1.2-2') : (data.price | currency:'USD':'symbol':'1.2-2') }}
+          </div>
         </div>
       </div>
       
@@ -62,7 +64,7 @@
         </div>
         <div class="flex justify-between text-sm mt-1">
           <span i18n="buyStockModal|Available balance label" class="text-gray-700 dark:text-gray-300">Saldo disponible estimado:</span>
-          <span class="font-bold text-blue-600 dark:text-blue-400">{{ (maxQuantity * data.price!) | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="font-bold text-blue-600 dark:text-blue-400">{{ availableBalance }}</span>
         </div>
       </div>
     </div>
@@ -204,7 +206,9 @@
         
         <div class="grid grid-cols-2 gap-1 text-sm">
           <div class="text-gray-600 dark:text-gray-400">Precio por acción:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white">
+            {{ currentPrice !== null && currentPrice !== undefined ? (currentPrice | currency:'USD':'symbol':'1.2-2') : (data.price | currency:'USD':'symbol':'1.2-2') }}
+          </div>
           
           <div class="text-gray-600 dark:text-gray-400">Cantidad:</div>
           <div class="text-right font-medium text-gray-900 dark:text-white">{{ buyForm.get('quantity')?.value || 0 }} acciones</div>
@@ -272,7 +276,7 @@
           
           <dt class="text-sm text-gray-600 dark:text-gray-400">Precio de compra:</dt>
           <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-            {{ operationResult.boughtAt | currency:'COP':'symbol':'1.0-0' }}
+            {{ currentPrice !== null && currentPrice !== undefined ? (currentPrice | currency:'USD':'symbol':'1.2-2') : (operationResult.boughtAt | currency:'USD':'symbol':'1.2-2') }}
           </dd>
           
           <dt class="text-sm text-gray-600 dark:text-gray-400">Cantidad:</dt>
@@ -280,16 +284,26 @@
             {{ operationResult.filledQuantity || 0 }} de {{ buyForm.get('quantity')?.value || 0 }}
           </dd>
 
+          <dt class="text-sm text-gray-600 dark:text-gray-400">Total cobrado real:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+            {{ realOrderTotal != null ? (realOrderTotal | currency:'COP':'symbol':'1.0-0') : 'No disponible' }}
+          </dd>
+          
           <dt class="text-sm text-gray-600 dark:text-gray-400">Total:</dt>
           <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-            {{ operationResult.totalAmount | currency:'COP':'symbol':'1.0-0' }}
+            {{ getOrderPrice() * getOrderQuantity() | currency:'USD':'symbol':'1.2-2' }}
           </dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Comisión:</dt>
+          <dt class="text-sm text-gray-600 dark:text-gray-400">Comisión app (20%):</dt>
           <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-            {{ operationResult.fee | currency:'COP':'symbol':'1.0-0' }}
+            {{ getOrderPrice() * getOrderQuantity() * 0.20 | currency:'USD':'symbol':'1.2-2' }}
           </dd>
           
+          <dt *ngIf="data.clientId" class="text-sm text-gray-600 dark:text-gray-400">Comisión comisionista (60%):</dt>
+          <dd *ngIf="data.clientId" class="text-sm font-medium text-gray-900 dark:text-white text-right">
+            {{ (currentPrice !== null && currentPrice !== undefined && operationResult.filledQuantity !== undefined) ? (currentPrice * operationResult.filledQuantity * 0.60) : (operationResult.boughtAt && operationResult.filledQuantity ? operationResult.boughtAt * operationResult.filledQuantity * 0.60 : 0) | currency:'USD':'symbol':'1.2-2' }}
+          </dd>
+
           <dt class="text-sm text-gray-600 dark:text-gray-400">Enviada:</dt>
           <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
             {{ operationResult.submittedAt | date:'dd/MM/yyyy HH:mm' }}

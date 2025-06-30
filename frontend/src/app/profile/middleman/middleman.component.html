@@ -1,33 +1,33 @@
 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-500 dark:border-slate-700 mb-6">
-                <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@commissioner.top.clients.roi.title">Ranking mejores comisionistas</h3>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-900/50">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.client.label">Cliente</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.roi.label">ROI</th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.actions.label">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-transparent divide-y divide-gray-200 dark:divide-gray-700">
-                      <tr *ngFor="let client of commissionerStats?.top_performing_clients || []" class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="font-medium text-gray-900 dark:text-white">{{ client.client_name }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm font-medium text-emerald-600 dark:text-emerald-400">{{ formatPercentage(client.roi_percentage) }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                          <button 
-                            (click)="viewComissionerDetails(client)"
-                            class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
-                            i18n="@@common.actions.view.details"
-                          >
-                            Ver detalles
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@commissioner.top.clients.roi.title">Ranking mejores comisionistas</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-900/50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.client.label">Cliente</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.roi.label">ROI</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@common.actions.label">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white dark:bg-transparent divide-y divide-gray-200 dark:divide-gray-700">
+        <tr *ngFor="let client of commissionerStats?.top_performing_clients || []" class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="font-medium text-gray-900 dark:text-white">{{ client.client_name }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-emerald-600 dark:text-emerald-400">{{ formatPercentage(client.roi_percentage) }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+            <button 
+              (click)="viewComissionerDetails(client)"
+              class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium transition-colors"
+              i18n="@@common.actions.view.details"
+            >
+              Ver detalles
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

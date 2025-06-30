@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, delay, map } from 'rxjs';
-import { environmentExample } from '../../environments/environmentexample';
+import { environment } from '../../environments/environment';
 import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } from '../models/user.model';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { User, ProfileUpdateResponse, UserFilters, UsersResponse, UserStats } fr
 })
 
 export class UsersService {
-  private apiUrl = environmentExample.apiUrl || 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl || 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -35,7 +35,7 @@ export class UsersService {
     return of(response).pipe(delay(500)); // Añadimos un delay para simular latencia
   }
   /**
-   * Obtiene el usuario actual
+   * Obtiene el usuario current
    */
   getCurrentUser(): Observable<User>{
     // Mock para desarrollo: devuelve el primer usuario como usuario actual
@@ -45,6 +45,7 @@ export class UsersService {
   /**
    * Obtiene un usuario por su ID
    */
+  /**
   getUserById(userId: number): Observable<{success: boolean, data: User}> {
     // En producción:
     // return this.http.get<{success: boolean, data: User}>(`${this.apiUrl}/admin/users/${userId}`);
@@ -56,10 +57,11 @@ export class UsersService {
       data: user!
     }).pipe(delay(300));
   }
-
+  **/
   /**
    * Crea un nuevo usuario
    */
+  /**
   createUser(userData: Partial<User>): Observable<ProfileUpdateResponse> {
     // En producción:
     // return this.http.post<ProfileUpdateResponse>(`${this.apiUrl}/admin/users`, userData);
@@ -85,7 +87,7 @@ export class UsersService {
       data: newUser
     }).pipe(delay(500));
   }
-
+   */
   /**
    * Actualiza un usuario
    */
@@ -120,6 +122,7 @@ export class UsersService {
   /**
    * Elimina un usuario
    */
+  /**
   deleteUser(userId: number): Observable<{ success: boolean, message: string }> {
     // En producción:
     // return this.http.delete<{ success: boolean, message: string }>(`${this.apiUrl}/admin/users/${userId}`);
@@ -139,6 +142,7 @@ export class UsersService {
   /**
    * Elimina múltiples usuarios
    */
+  /** 
   deleteMultipleUsers(userIds: number[]): Observable<{ success: boolean, message: string, count: number }> {
     // En producción:
     // return this.http.post<{ success: boolean, message: string, count: number }>(
@@ -163,12 +167,14 @@ export class UsersService {
   /**
    * Cambia el rol de un usuario
    */
+  /**
   changeUserRole(userId: number, role: 'admin' | 'commissioner' | 'client'): Observable<ProfileUpdateResponse> {
     // En producción:
     // return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/admin/users/${userId}/role`, { role });
 
     return this.updateUser(userId, { role });
   }
+   */
   getUserRole(): Observable<User['role'] | undefined> {
     //usuario produccion
     //return this.http.get<User>(`/api/user/me`).pipe(map(user => user.role));
@@ -190,34 +196,78 @@ export class UsersService {
   }
     /**
    * Obtiene estadísticas de usuarios (para los gráficos)
+   * Ahora calcula las estadísticas a partir de los usuarios reales de /accounts
    */
   getUserStats(): Observable<UserStats> {
-    // En producción:
-    // return this.http.get<UserStats>(`${this.apiUrl}/admin/users/stats`);
+    return this.getUsersFromAccounts().pipe(
+      map((users: User[]) => {
+        // Calcular conteos por rol
+        const byRole: { [key: string]: number } = {};
+        users.forEach(u => {
+          const role = u.role || 'sin_rol';
+          byRole[role] = (byRole[role] || 0) + 1;
+        });
+        // Calcular conteos por estado (si existiera el campo status)
+        const byStatus: { [key: string]: number } = {};
+        users.forEach(u => {
+          const status = u.status || 'N/A';
+          byStatus[status] = (byStatus[status] || 0) + 1;
+        });
+        // Calcular tendencia de registros por mes
+        const registrationsByMonth: { [month: string]: number } = {};
+        users.forEach(u => {
+          if (u.created_at) {
+            const month = u.created_at.substring(0, 7); // YYYY-MM
+            registrationsByMonth[month] = (registrationsByMonth[month] || 0) + 1;
+          }
+        });
+        const registrations_by_month = Object.entries(registrationsByMonth)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([month, count]) => ({ month, count }));
+        // Para compatibilidad con UserStats, registrationTrend debe tener 'date' en vez de 'month'
+        const registrationTrend = registrations_by_month.map(({ month, count }) => ({ date: month, count }));
+        // Estructura final
+        return {
+          total_users: users.length,
+          active_users: byStatus['active'] || 0,
+          inactive_users: byStatus['inactive'] || 0,
+          pending_users: byStatus['pending'] || 0,
+          admins_count: byRole['admin'] || 0,
+          commissioners_count: byRole['commissioner'] || 0,
+          clients_count: byRole['usuario'] || 0,
+          registrations_by_month,
+          byRole,
+          byStatus,
+          registrationTrend
+        };
+      })
+    );
+  }
 
-    // Mock para desarrollo:
-    const mockData = this.generateMockUserStats();
-      // Adapta el formato de los datos mock a la estructura de UserStats
-    const stats: UserStats = {
-      total_users: Object.values(mockData.byRole).reduce((sum, val) => sum + val, 0),
-      active_users: mockData.byStatus["active"] || 0,
-      inactive_users: mockData.byStatus["inactive"] || 0,
-      pending_users: mockData.byStatus["pending"] || 0,
-      admins_count: mockData.byRole["admin"] || 0,
-      commissioners_count: mockData.byRole["commissioner"] || 0,
-      clients_count: mockData.byRole["client"] || 0,
-      // Convertir el formato de fecha a formato de mes para registrations_by_month
-      registrations_by_month: mockData.registrationTrend.map(item => ({
-        month: item.date.substring(0, 7), // Extrae YYYY-MM de YYYY-MM-DD
-        count: item.count
-      })),
-      // Mantener los datos originales para compatibilidad con código existente
-      byRole: mockData.byRole,
-      byStatus: mockData.byStatus,
-      registrationTrend: mockData.registrationTrend
-    };
-    
-    return of(stats).pipe(delay(400));
+  /**
+   * Obtiene la lista de roles disponibles desde el backend
+   */
+  getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/roles`);
+  }
+
+  /**
+   * Obtiene usuarios desde el endpoint real /accounts
+   */
+  getUsersFromAccounts(): Observable<User[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/accounts`).pipe(
+      map((users) => users.map(u => ({
+        accountId: u.accountId, // para la tabla y edición
+        identity_document: u.userId, // para edición y PATCH
+        first_name: u.firstName,
+        last_name: u.lastName,
+        email: u.email,
+        phone_number: u.phone || '',
+        address: u.address || '',
+        role: Array.isArray(u.roles) && u.roles.length > 0 ? u.roles[0] : undefined,
+        roles: u.roles
+      } as User)))
+    );
   }
 
   // --- Métodos MOCK ---
@@ -235,13 +285,15 @@ export class UsersService {
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const creationDate = new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000); // Hasta 30 días atrás
+      const role = roles[Math.floor(Math.random() * roles.length)];
       users.push({
         id: i,
         first_name: firstName,
         last_name: lastName,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@example.com`,
         phone_number: `555-01${String(i).padStart(2, '0')}`,
-        role: roles[Math.floor(Math.random() * roles.length)],
+        role: role,
+        roles: [role],
         status: statuses[Math.floor(Math.random() * statuses.length)],
         email_verified_at: Math.random() > 0.3 ? new Date().toISOString() : undefined,
         created_at: creationDate.toISOString(),
@@ -365,5 +417,33 @@ export class UsersService {
     registrationTrend.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return { byRole, byStatus, registrationTrend };
+  }
+  /**
+   * Actualiza un usuario usando el endpoint real PATCH /api/users/{identity_document}
+   */
+  updateUserReal(identity_document: string, data: { email: string; phone: string; address?: string }): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/users/${identity_document}`, data);
+  }
+  /**
+   * Cambia el rol de un usuario usando el endpoint real PATCH /api/accounts/{id}/roles
+   */
+  changeUserRole(userId: number, role: string): Observable<ProfileUpdateResponse> {
+    // Endpoint real: PATCH /api/accounts/{id}/roles
+    // Body: { role: 'nuevo_rol' }
+    return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/accounts/${userId}/roles`, { role });
+  }
+  /**
+   * Actualiza un usuario usando el endpoint real PATCH /api/accounts/admin/update-user
+   */
+  updateUserAdmin(data: {
+    accountId: number;
+    userId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    roles: string[];
+  }): Observable<any> {
+    // El token debe ser gestionado por un interceptor o aquí si es necesario
+    return this.http.patch<any>(`${this.apiUrl}/accounts/admin/update-user`, data);
   }
 }

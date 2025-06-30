@@ -1,470 +1,291 @@
-/* Estilos para la tabla */
-.commissioner-table-container {
-  background-color: transparent;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #6b7280; /* gray-500 para unificar con otros módulos */
+/* Estilos para el diálogo de edición de usuario */
+:host {
+  display: block;
 }
 
-.dark .commissioner-table-container {
-  border-color: #4b5563; /* gray-600 para modo oscuro */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+/* Estilos para asegurar que el diálogo tenga el fondo y apariencia correctos */
+::ng-deep .user-edit-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #f9fafb !important; /* gray-50 */
+  color: #111827 !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
 }
 
-.commissioner-table {
-  width: 100%;
-  background: transparent !important;
+::ng-deep html.dark .user-edit-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #f1f5f9 !important; /* slate-100 */
 }
 
-/* Estilos para los iconos de acciones */
-.action-icon {
-  color: #065f46; /* emerald-800 */
-  transition: all 0.2s ease;
-  opacity: 0.9;
+/* Estilos para la tarjeta principal */
+.min-w-\[800px\] {
+  min-width: 800px;
 }
 
-.action-icon:hover {
-  transform: scale(1.15);
-  color: #047857; /* emerald-700 */
-  opacity: 1;
+/* Mejoras responsivas para diferentes tamaños de pantalla */
+@media (max-width: 840px) {
+  .min-w-\[800px\] {
+    min-width: 90vw;
+  }
 }
 
-.dark .action-icon {
-  color: #10B981; /* emerald-500 */
-  opacity: 0.9;
+@media (max-width: 640px) {
+  .min-w-\[800px\] {
+    min-width: 95vw;
+    padding: 1rem !important;
+  }
+  
+  ::ng-deep .user-edit-dialog .grid.grid-cols-1.md\:grid-cols-2 {
+    grid-template-columns: 1fr !important; /* Cambia a una sola columna */
+  }
+  
+  ::ng-deep .user-edit-dialog .flex.justify-end.space-x-3 {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 
-.dark .action-icon:hover {
-  color: #6ee7b7; /* emerald-300 */
-  opacity: 1;
-  box-shadow: 0 0 4px rgba(110, 231, 183, 0.4); /* emerald-300 con transparencia */
+/* Estilos específicos para los botones de acción */
+::ng-deep .user-edit-dialog .mat-dialog-actions {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-/* Estilos específicos para el icono de eliminar */
-.action-icon-delete {
-  color: #dc2626; /* red-600 */
-  transition: all 0.2s ease;
-  opacity: 0.9;
+::ng-deep .user-edit-dialog mat-dialog-actions button {
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
-.action-icon-delete:hover {
-  transform: scale(1.15);
-  color: #b91c1c; /* red-700 */
-  opacity: 1;
+::ng-deep .user-edit-dialog button.mat-flat-button[disabled] {
+  background-color: #9ca3af !important; /* gray-400 */
+  color: #f3f4f6 !important; /* gray-100 */
 }
 
-.dark .action-icon-delete {
-  color: #f87171; /* red-400 */
-  opacity: 0.9;
+::ng-deep .dark .user-edit-dialog button.mat-flat-button[disabled] {
+  background-color: #4b5563 !important; /* gray-600 */
+  color: #d1d5db !important; /* gray-300 */
 }
 
-.dark .action-icon-delete:hover {
-  color: #fca5a5; /* red-300 */
-  opacity: 1;
-  box-shadow: 0 0 4px rgba(252, 165, 165, 0.4); /* red-300 con transparencia */
-}
-/* Estilos para el paginador */
-::ng-deep .mat-mdc-paginator {
-  background: transparent !important;
-  font-family: inherit;
+/* Colores exactos para los botones */
+::ng-deep .dark .user-edit-dialog button.mat-stroked-button {
+  border-color: #4b5563 !important; /* gray-600 */
+  color: #f9fafb !important; /* gray-50 */
 }
 
-/* Estilos modo oscuro para paginador */
-::ng-deep .dark .mat-mdc-paginator-container {
-  color: #e2e8f0;
+::ng-deep .dark .user-edit-dialog button.mat-stroked-button:hover {
+  background-color: rgba(75, 85, 99, 0.3) !important; /* gray-600 con opacidad */
 }
 
-::ng-deep .dark .mat-mdc-paginator-range-label,
-::ng-deep .dark .mat-mdc-paginator-page-size-label {
-  color: #e2e8f0;
-  opacity: 1;
+/* Estilo para eliminar scrollbar pero mantener funcionalidad */
+.hide-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-::ng-deep .dark .mat-mdc-icon-button .mat-mdc-button-persistent-ripple {
-  opacity: 0.2;
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-::ng-deep .dark .mdc-icon-button {
-  fill: #e2e8f0;
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
 }
 
-::ng-deep .dark .mat-mdc-icon-button {
-  color: #e2e8f0;
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
-::ng-deep .dark .mat-mdc-icon-button:hover {
-  background-color: rgba(226, 232, 240, 0.1);
+.dark .hide-scrollbar::-webkit-scrollbar-thumb,
+::ng-deep html.dark .user-edit-dialog .hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569;
 }
 
-::ng-deep .dark .mat-mdc-icon-button[disabled] {
-  color: rgba(226, 232, 240, 0.5) !important;
+.dark .hide-scrollbar::-webkit-scrollbar-thumb:hover,
+::ng-deep html.dark .user-edit-dialog .hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
-::ng-deep .dark .mat-mdc-select-value-text {
-  color: #e2e8f0 !important;
+/* Estilos para campos de formulario */
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
 }
 
-::ng-deep .dark .mat-mdc-select-arrow {
-  color: #e2e8f0 !important;
+.space-y-6 > * + * {
+  margin-top: 1.5rem;
 }
 
-::ng-deep .dark .mat-mdc-paginator-icon {
-  fill: #e2e8f0 !important;
+/* Efectos de transición para inputs */
+input[type="text"], 
+input[type="email"], 
+input[type="tel"] {
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Estilos modo claro para paginador */
-::ng-deep .mat-mdc-paginator-container {
-  color: #000000;
+/* Estados de validación para inputs */
+input.border-red-500 {
+  border-color: #ef4444 !important;
 }
 
-::ng-deep .mat-mdc-paginator-range-label,
-::ng-deep .mat-mdc-paginator-page-size-label {
-  color: #000000;
-  opacity: 1;
+input.border-red-500:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
-::ng-deep .mdc-icon-button {
-  fill: #000000;
+/* Estilos para iconos en estado de error */
+.text-red-500 {
+  color: #ef4444 !important;
 }
 
-::ng-deep .mat-mdc-icon-button {
-  color: #000000;
+/*
+ * Estilos específicos para los botones en el diálogo de edición
+ * Se aplican selectores con alta especificidad para sobrescribir los estilos de Material
+ */
+
+/* Botón de cancelar (outlined/stroked) */
+::ng-deep .user-edit-dialog .mdc-button--outlined {
+  padding: 0.375rem 1.25rem !important; /* px-5 py-1.5 */
+  border-radius: 0.5rem !important; /* rounded-lg */
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #4b5563 !important; /* border-gray-700 */
+  transition: all 0.2s ease !important;
 }
 
-::ng-deep .mat-mdc-icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+::ng-deep .user-edit-dialog .mdc-button--outlined .mdc-button__label {
+  color: #111827 !important; /* text-gray-900 */
+  font-weight: 500 !important;
 }
 
-::ng-deep .mat-mdc-icon-button[disabled] {
-  color: rgba(0, 0, 0, 0.38) !important;
+::ng-deep .user-edit-dialog .mdc-button--outlined:hover {
+  background-color: #f3f4f6 !important; /* hover:bg-gray-100 */
 }
 
-::ng-deep .mat-mdc-select-value-text {
-  color: #000000 !important;
+/* Estilos para el tema oscuro */
+::ng-deep html.dark .user-edit-dialog .mdc-button--outlined,
+::ng-deep .dark .user-edit-dialog .mdc-button--outlined {
+  border-color: #4b5563 !important; /* dark:border-gray-600 */
 }
 
-::ng-deep .mat-mdc-select-arrow {
-  color: #000000 !important;
+::ng-deep html.dark .user-edit-dialog .mdc-button--outlined .mdc-button__label,
+::ng-deep .dark .user-edit-dialog .mdc-button--outlined .mdc-button__label {
+  color: #f3f4f6 !important; /* dark:text-gray-100 */
 }
 
-::ng-deep .mat-mdc-paginator-icon {
-  fill: #000000 !important; 
+::ng-deep html.dark .user-edit-dialog .mdc-button--outlined:hover,
+::ng-deep .dark .user-edit-dialog .mdc-button--outlined:hover {
+  background-color: #374151 !important; /* dark:hover:bg-gray-700 */
 }
 
-/* Estilos para la tabla */
-.users-table-container {
-  background-color: transparent;
+/* Botón de guardar cambios (unelevated/flat) */
+::ng-deep .user-edit-dialog .mdc-button--unelevated {
+  padding: 0.375rem 1.25rem !important; /* px-5 py-1.5 */
+  border-radius: 0.5rem !important; /* rounded-lg */
+  background-color: #3b82f6 !important; /* bg-blue-500 */
+  transition: all 0.2s ease !important;
 }
 
-/* Celdas de la tabla */
-::ng-deep .mat-mdc-header-cell,
-::ng-deep .mat-mdc-cell {
-  padding: 12px 16px !important;
-  color: #374151 !important; /* Actualizado al color de texto de client-report */
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: rgba(229, 231, 235, 0.5) !important; /* Mismo estilo que client-report */
-  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-  font-size: 0.875rem !important;
+::ng-deep .user-edit-dialog .mdc-button--unelevated .mdc-button__label {
+  color: white !important;
+  font-weight: 500 !important;
 }
 
-/* Modo oscuro para encabezado y celdas de tabla */
-::ng-deep .dark .mat-mdc-header-cell,
-::ng-deep .dark .mat-mdc-cell {
-  color: #e5e7eb !important; /* Actualizado al color de client-report */
-  border-bottom-color: rgba(55, 65, 81, 0.5) !important; /* Mismo estilo que client-report */
-  background-color: transparent !important;
+::ng-deep .user-edit-dialog .mdc-button--unelevated:hover {
+  background-color: #2563eb !important; /* hover:bg-blue-600 */
 }
 
-/* Color de texto para encabezados en modo oscuro */
-::ng-deep .dark .mat-mdc-header-row {
-  background-color: transparent !important;
+/* Estilos para el tema oscuro */
+::ng-deep html.dark .user-edit-dialog .mdc-button--unelevated,
+::ng-deep .dark .user-edit-dialog .mdc-button--unelevated {
+  background-color: #2563eb !important; /* dark:bg-blue-600 */
 }
 
-/* Estilos para la cabecera en modo oscuro */
-::ng-deep .dark .mat-mdc-header-cell {
-  color: #10b981 !important; /* Color emerald-500 para coincidir con client-report */
-  font-weight: 600 !important;
-  background-color: transparent !important;
+::ng-deep html.dark .user-edit-dialog .mdc-button--unelevated:hover,
+::ng-deep .dark .user-edit-dialog .mdc-button--unelevated:hover {
+  background-color: #1d4ed8 !important; /* dark:hover:bg-blue-700 */
 }
 
-/* Estilos para el fondo de la tabla en modo oscuro */
-::ng-deep .dark .mat-mdc-table {
-  background-color: transparent !important;
+/* Estilos para estados deshabilitados */
+::ng-deep .user-edit-dialog .mdc-button--unelevated:disabled {
+  background-color: #9ca3af !important; /* gray-400 */
+  opacity: 0.9 !important;
+  cursor: not-allowed !important;
 }
 
-/* Borde para la tabla */
-::ng-deep .mat-mdc-table {
-  border: 1px solid #6b7280; /* gray-500 para unificar con otros módulos */
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: transparent !important; /* Transparente para coincidir con client-report */
+::ng-deep html.dark .user-edit-dialog .mdc-button--unelevated:disabled,
+::ng-deep .dark .user-edit-dialog .mdc-button--unelevated:disabled {
+  background-color: #4b5563 !important; /* gray-600 */
+  opacity: 0.75 !important;
 }
 
-::ng-deep .dark .mat-mdc-table {
-  border-color: #4b5563; /* gray-600 para modo oscuro */
-  background-color: transparent !important;
+/* Animación para el ícono de carga */
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
-/* Mejoras para el fondo de la tabla en modo oscuro */
-::ng-deep .dark .mat-mdc-table {
-  background-color: transparent !important;
-  color: #e2e8f0 !important;
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Mejorar el estilo de las filas al pasar el mouse */
-::ng-deep .mat-mdc-row:hover {
-  background-color: rgba(229, 231, 235, 0.3) !important; /* Mismo estilo que client-report */
+/* Mejoras para el tema oscuro en el contenido del diálogo */
+::ng-deep html.dark .user-edit-dialog .bg-white,
+::ng-deep .dark .user-edit-dialog .bg-white {
+  background-color: #1e293b !important; /* slate-800 */
 }
 
-::ng-deep .dark .mat-mdc-row:hover {
-  background-color: rgba(55, 65, 81, 0.3) !important; /* Mismo estilo que client-report */
+::ng-deep html.dark .user-edit-dialog .text-gray-800,
+::ng-deep .dark .user-edit-dialog .text-gray-800 {
+  color: #f1f5f9 !important; /* slate-100 */
 }
 
-/* Estilo para las filas de la tabla */
-::ng-deep .mat-mdc-table .mdc-data-table__row {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.5) !important;
+::ng-deep html.dark .user-edit-dialog .text-gray-600,
+::ng-deep .dark .user-edit-dialog .text-gray-600,
+::ng-deep html.dark .user-edit-dialog .text-gray-700,
+::ng-deep .dark .user-edit-dialog .text-gray-700 {
+  color: #cbd5e1 !important; /* slate-300 */
 }
 
-::ng-deep .dark .mat-mdc-table .mdc-data-table__row {
-  border-bottom: 1px solid rgba(55, 65, 81, 0.5) !important;
-}
-
-/* Mejorar selección de fila */
-::ng-deep .mat-mdc-row.selected-row {
+/* Estilos para cada color de contraste */
+::ng-deep html.dark .user-edit-dialog .bg-emerald-100,
+::ng-deep .dark .user-edit-dialog .bg-emerald-100 {
   background-color: rgba(16, 185, 129, 0.1) !important;
 }
 
-::ng-deep .dark .mat-mdc-row.selected-row {
-  background-color: rgba(16, 185, 129, 0.2) !important;
+::ng-deep html.dark .user-edit-dialog .text-emerald-600,
+::ng-deep .dark .user-edit-dialog .text-emerald-600 {
+  color: #10b981 !important; /* emerald-500 */
 }
 
-::ng-deep .mat-mdc-header-cell {
-  font-weight: 600 !important;
-  color: #047857 !important; /* emerald-700, para coincidir con client-report */
-  font-size: 0.875rem !important; /* Mismo tamaño que client-report */
-  background-color: rgba(20, 184, 166, 0.1) !important; /* Mismo color de fondo que client-report */
+/* Asegurar que el contenido del diálogo tenga el fondo correcto en modo oscuro */
+::ng-deep .user-edit-dialog .mat-mdc-dialog-content {
+  color: #111827 !important; /* gray-900 */
 }
 
-::ng-deep .dark .mat-mdc-header-cell {
-  background-color: rgba(20, 184, 166, 0.05) !important; /* Mismo color de fondo que client-report en modo oscuro */
+::ng-deep html.dark .user-edit-dialog .mat-mdc-dialog-content,
+::ng-deep .dark .user-edit-dialog .mat-mdc-dialog-content {
+  color: #f1f5f9 !important; /* slate-100 */
 }
 
-/* Cabeceras pegajosas */
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  font-weight: 600 !important;
-  color: #4b5563 !important;
-  background-color: #f9fafb !important;
+/* Ajustes específicos para mat-dialog-actions */
+::ng-deep .user-edit-dialog .mat-mdc-dialog-actions {
+  margin-bottom: 0 !important;
+  padding: 1rem 0 0 0 !important;
 }
 
-.dark .sticky-header {
-  color: #e5e7eb !important;
-  background-color: #1f2937 !important;
+/* Asegurar que los iconos en los botones tengan el tamaño y alineación correctos */
+::ng-deep .user-edit-dialog .mat-icon {
+  font-size: 20px !important;
+  height: 20px !important;
+  width: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* Paginador pegajoso */
-.sticky-paginator {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-}
-
-/* Estilos específicos para los iconos del paginador */
-::ng-deep .mat-mdc-paginator-navigation-first,
-::ng-deep .mat-mdc-paginator-navigation-previous,
-::ng-deep .mat-mdc-paginator-navigation-next,
-::ng-deep .mat-mdc-paginator-navigation-last {
-  margin: 0 4px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-::ng-deep .mat-mdc-paginator-navigation-first:hover,
-::ng-deep .mat-mdc-paginator-navigation-previous:hover,
-::ng-deep .mat-mdc-paginator-navigation-next:hover,
-::ng-deep .mat-mdc-paginator-navigation-last:hover {
-  transform: translateY(-1px);
-}
-
-::ng-deep .mat-mdc-paginator-navigation-first:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-previous:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-next:not([disabled]):hover,
-::ng-deep .mat-mdc-paginator-navigation-last:not([disabled]):hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-::ng-deep .dark .mat-mdc-paginator-navigation-first:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-previous:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-next:not([disabled]):hover,
-::ng-deep .dark .mat-mdc-paginator-navigation-last:not([disabled]):hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Mejorar apariencia del paginador */
-::ng-deep .mat-mdc-paginator-container {
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 56px;
-  border-top: 1px solid #e5e7eb;
-  transition: border-color 0.3s ease;
-}
-
-::ng-deep .dark .mat-mdc-paginator-container {
-  border-top-color: #374151;
-}
-
-::ng-deep .mat-mdc-paginator-page-size {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-::ng-deep .mat-mdc-paginator-page-size-select {
-  margin: 0 0.5rem;
-  width: 56px;
-}
-
-::ng-deep .mat-mdc-form-field-flex {
-  height: 36px;
-}
-
-::ng-deep .mat-mdc-select-trigger {
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-/* Ajustes adicionales para modo oscuro */
-::ng-deep .dark .mat-mdc-form-field-flex {
-  background-color: rgba(30, 41, 59, 0.5);
-}
-
-/* Ajustes para los botones de navegación */
-::ng-deep .mat-mdc-paginator-navigation-first,
-::ng-deep .mat-mdc-paginator-navigation-previous,
-::ng-deep .mat-mdc-paginator-navigation-next,
-::ng-deep .mat-mdc-paginator-navigation-last {
-  margin: 0 4px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-::ng-deep .mat-mdc-paginator-navigation-first:hover,
-::ng-deep .mat-mdc-paginator-navigation-previous:hover,
-::ng-deep .mat-mdc-paginator-navigation-next:hover,
-::ng-deep .mat-mdc-paginator-navigation-last:hover {
-  transform: translateY(-1px);
-}
-
-/* Estilo para la fila de cabecera */
-::ng-deep .mat-mdc-table .mdc-data-table__header-row {
-  background-color: rgba(20, 184, 166, 0.1) !important; /* Mismo color de fondo que client-report */
-  border-bottom: 1px solid rgba(20, 184, 166, 0.2) !important; /* Mismo borde que client-report */
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__header-row {
-  background-color: rgba(20, 184, 166, 0.05) !important; /* Mismo color de fondo que client-report en modo oscuro */
-  border-bottom: 1px solid rgba(20, 184, 166, 0.1) !important; /* Mismo borde que client-report en modo oscuro */
-}
-
-/* Estilo para las filas de la tabla */
-::ng-deep .mat-mdc-table .mdc-data-table__row {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.5) !important;
-}
-
-::ng-deep .dark .mat-mdc-table .mdc-data-table__row {
-  border-bottom: 1px solid rgba(55, 65, 81, 0.5) !important;
-}
-
-/* Estilos para las tarjetas de gráficos */
-.chart-card {
-  border-radius: 0.5rem;
-  border: 1px solid #6b7280; /* gray-500 para unificar con otros bordes */
-  overflow: hidden;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.dark .chart-card {
-  border-color: #4b5563; /* gray-600 para modo oscuro */
-}
-
-.chart-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.dark .chart-card:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Ajuste para los gráficos ApexCharts */
-:host-context(.dark) .apexcharts-tooltip {
-  background: #1f2937 !important;
-  color: #e2e8f0 !important;
-  border-color: #4b5563 !important;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25) !important;
-}
-
-:host-context(.dark) .apexcharts-tooltip-title {
-  background: #111827 !important;
-  border-color: #374151 !important;
-}
-
-:host-context(.dark) .apexcharts-tooltip-marker {
-  background-color: #FFFFFF !important;
-}
-
-/* Estilos para los inputs y select en formularios */
-::ng-deep .mat-form-field {
-  width: 100%;
-}
-
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  height: auto;
-}
-
-/* Asegurar que las tarjetas tengan transiciones suaves */
-.chart-card, .commissioner-table-container, 
-button, input, select, .action-icon {
-  transition: all 0.3s ease;
-}
-
-/* Mejoras para inputs en modo oscuro */
-.dark input, .dark select {
-  background-color: #1e293b !important; /* slate-800 */
-  color: #e2e8f0 !important; /* Texto más claro para mejor contraste */
-  border-color: #4b5563 !important; /* gray-600 */
-}
-
-.dark input:focus, .dark select:focus {
-  border-color: #10b981 !important; /* emerald-500 */
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important; /* emerald-500 con opacidad */
-}
-
-/* Ajustar colores para los iconos en modo claro/oscuro */
-.text-emerald-600 {
-  color: #047857 !important; /* emerald-700 para mejor consistencia */
-}
-
-.dark .text-emerald-400 {
-  color: #10b981 !important; /* emerald-500 para mejor consistencia */
+/* Mejorar la animación de spin para el ícono de carga */
+::ng-deep .user-edit-dialog .animate-spin {
+  animation: spin 1s linear infinite;
 }
