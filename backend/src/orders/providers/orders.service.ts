@@ -1,8 +1,7 @@
 import { Injectable, HttpException, HttpStatus, BadRequestException, forwardRef, Inject } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
-import { SellOrderDto } from '../dto/sell-stock.dto';
+import { firstValueFrom, share } from 'rxjs';
 import { OrderDto } from '../dto/order.dto';
 import { FactoryOrder } from './factory-order.provider';
 import { AccountsService } from 'src/accounts/services/accounts.service';
@@ -14,6 +13,7 @@ import { Repository } from 'typeorm';
 import { Order } from '../entities/orders.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Commission } from '../entities/comissions.entity';
+import { OrderUpdateDto } from '../dto/order-update.dto';
 
 
 @Injectable()
@@ -44,11 +44,23 @@ export class OrdersService {
     orderDto.account = account
     return this.factoryOrder.create(orderDto)
   }
-  async listOrderAccount(account: Account){
+  async listOrderAccount(accountId: number){
     const orders = await this.orderRepository.find({
-      where: {account: {id: account.id}},
-      relations: ['commissions']
+      where: {account: {id: accountId}},
+      relations: ['commissions', 'share']
     })
     return orders
   }
+
+  async updateOrder(orderUpdateDto: OrderUpdateDto){
+      const order = await this.getOneOrder(orderUpdateDto.order_id_alpaca)
+      if (order){
+         await this.factoryOrder.update(orderUpdateDto, order)
+      }
+   }
+
+   private async getOneOrder(order_id_alpaca: string){
+      const orderFind = await this.orderRepository.findOne({where: {order_id_alpaca}, relations: ['account', 'share']})
+      return orderFind
+   }
 }

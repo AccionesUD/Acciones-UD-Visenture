@@ -9,6 +9,7 @@ import { AccountsModule } from 'src/accounts/accounts.module';
 import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
 import { RolesPermissionModule } from 'src/roles-permission/roles-permission.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { BriefcaseModule } from 'src/briefcases/briefcases.module';
 
 @Module({
   controllers: [UsersController],
@@ -21,6 +22,7 @@ import { AuthModule } from 'src/auth/auth.module';
     forwardRef(() => AccountsModule),
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([User, Account, Role]),
+    BriefcaseModule
   ],
 })
 export class UsersModule {}

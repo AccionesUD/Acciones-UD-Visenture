@@ -7,11 +7,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AccountsService } from 'src/accounts/services/accounts.service';
-import { SellOrderDto } from './dto/sell-stock.dto';
+import { AccountsService } from 'src/accounts/services/accounts.service';;
 import { Account } from 'src/accounts/entities/account.entity';
 import { OrdersService } from './providers/orders.service';
 import { OrderDto } from './dto/order.dto';
+import { OrderUpdateDto } from './dto/order-update.dto';
 
 @Controller('orders')
 export class OrdersController {

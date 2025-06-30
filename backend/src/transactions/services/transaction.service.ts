@@ -43,12 +43,21 @@ export class TransactionsService {
     
     }
 
+    async getAllTransactions(accountId: number){
+        const transactions = this.transactionRepository.find({
+            where: {account: {id: accountId}}
+        })
+        return transactions
+    }
+
     async updateTransaction(updateTransactionDto: UpdateTransactionDto){
         const transaction = await this.getTransaction(updateTransactionDto.operation_id!)
         if (transaction){
             transaction.status = updateTransactionDto.status
+            transaction.value_transaction = updateTransactionDto.value_transaction ?? transaction.value_transaction
+            if (updateTransactionDto){}
             try {
-                this.transactionRepository.save(transaction)
+                await this.transactionRepository.save(transaction)
             } catch (error) {
                 throw new RequestTimeoutException('error en la bd')
             }

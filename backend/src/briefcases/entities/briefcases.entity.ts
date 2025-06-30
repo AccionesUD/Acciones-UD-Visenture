@@ -1,10 +1,10 @@
 import { Account } from "src/accounts/entities/account.entity"
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm"
+import { Asset } from "./assets.entity"
 
-/*
 @Entity()
 export class Briefcase{
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     id: number
 
     @CreateDateColumn()
@@ -22,5 +22,5 @@ export class Briefcase{
     
     @OneToMany(() => Asset, (asset) => asset.briefcase)
     assets: [Asset]
-}*/
+}
 

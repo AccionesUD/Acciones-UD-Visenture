@@ -14,6 +14,10 @@ export class UpdateTransactionDto{
     @IsOptional()
     operation_id?: string
 
+    @IsNumber()
+    @IsOptional()
+    value_transaction?: number
+
     constructor(partial?: Partial<UpdateTransactionDto>) {
         Object.assign(this, partial);
     }

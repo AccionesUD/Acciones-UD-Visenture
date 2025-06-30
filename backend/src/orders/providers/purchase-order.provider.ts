@@ -17,6 +17,10 @@ import { share } from "rxjs";
 import { Commission } from "../entities/comissions.entity";
 import { listCommission } from "../enums/list-commissions.enum";
 import { OrderCommissions } from "../entities/orders_commission.entity";
+import { OrderUpdateDto } from "../dto/order-update.dto";
+import { StatusEventsOrder } from "../enums/status-order.enum";
+import { UpdateTransactionDto } from "src/transactions/dtos/update-transaction.dto";
+import { BriefcaseService } from "src/briefcases/services/briefcases.service";
 
 @Injectable()
 export class PurchaseOrder extends AbstractOrder {
@@ -24,6 +28,7 @@ export class PurchaseOrder extends AbstractOrder {
    constructor(
       private readonly transactionService: TransactionsService,
       private readonly alpacaBrokerService: AlpacaBrokerService,
+      private readonly briefcasesService: BriefcaseService,
       @InjectRepository(Order)
       private readonly orderRepository: Repository<Order>,
       @InjectRepository(Commission)
@@ -85,5 +90,42 @@ export class PurchaseOrder extends AbstractOrder {
       return quoteAmmount + comissionAmount
    }
 
+   async updateOrder(orderUpdateDto: OrderUpdateDto, order: Order) {
+      if (orderUpdateDto.status == StatusEventsOrder.FILLED) {
+         order.fill_qyt = orderUpdateDto.fill_qyt
+         order.filled_avg_price = orderUpdateDto.filled_avg_price
+      
+         const commisions = await super.listCommissions(listCommission.APPCOMMISSION)
+         const ammountOrder = order.fill_qyt! * order.filled_avg_price!
+         const commisionApply = ammountOrder * commisions?.percent_value!
+         order.approximate_total = ammountOrder + commisionApply
 
+         await this.transactionService.updateTransaction(new UpdateTransactionDto({
+            status: statusTransaction.COMPLETE,
+            value_transaction: ammountOrder + commisionApply,
+            operation_id: order.id
+         }))
+         await super.updateCommissions(order)
+         await this.briefcasesService.addAssetsBriefcase(order)         
+      }
+      if ([StatusEventsOrder.REJECTED, StatusEventsOrder.EXPIRED, StatusEventsOrder.CANCELED].includes(orderUpdateDto.status)) {
+         const updateTransactionDto = new UpdateTransactionDto({
+            status: statusTransaction.CANCELED,
+            operation_id: order.id
+         })
+         await this.transactionService.updateTransaction(updateTransactionDto)
+      }
+      order = {
+         ...order,
+         filled_at: orderUpdateDto.filled_at!,
+         canceled_at: orderUpdateDto.canceled_at!,
+         expired_at: orderUpdateDto.expired_at!,
+         status: orderUpdateDto.status
+      }
+      try {
+         await this.orderRepository.save(order)
+      } catch (error) {
+         throw new RequestTimeoutException(error, 'error el la bd')
+      }
+   }
 }

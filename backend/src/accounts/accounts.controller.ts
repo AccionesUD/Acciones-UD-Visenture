@@ -22,7 +22,9 @@ import { UpdateUserByAdminResponse } from './dtos/update-user-by-admin-response.
 @UseGuards(JwtAuthGuard)
 @Controller('accounts')
 export class AccountsController {
-  constructor(private readonly accountsService: AccountsService) {}
+  constructor(
+    private readonly accountsService: AccountsService
+  ) { }
 
   @Post('/funding')
   async createTransaction(
@@ -37,8 +39,15 @@ export class AccountsController {
 
   @Get('/balance')
   async getBalanceAccount(@Req() req) {
-    return this.accountsService.getBalanceAccount(req.user.sub);
+    return this.accountsService.getBalanceAccount(req.user.sub)
   }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/transactions')
+  async getTransactionsAccount(@Req() req){
+    return this.accountsService.getTransactions(req.user.sub)
+  }
+
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/orders')

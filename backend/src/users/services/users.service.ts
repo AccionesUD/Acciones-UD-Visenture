@@ -23,7 +23,7 @@ import { ChangePasswordDto } from '../dtos/change-password.dto';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 
 @Injectable()
-export class UsersService {
+export class UsersService  {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,

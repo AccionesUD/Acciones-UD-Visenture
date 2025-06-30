@@ -70,6 +70,7 @@ export class AccountsService {
 
       // Guardar cuenta con preferencias
       return await this.accountRepository.save(savedAccount);
+      return savedAccount
 
     } catch (error) {
       throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
@@ -88,18 +89,21 @@ export class AccountsService {
     };
     return this.alpacaBrokerService.makeFundignAccount(makeFundignAccountDto);
   }
+
   async getBalanceAccount(accountId: number) {
     return this.transactionService.calculateCurrentBalance(accountId);
   }
 
-  async getOrdersAccount(accountId: number) {
-    const account = await this.accountRepository.findOneBy({ id: accountId });
-    if (!account) {
-      throw new BadRequestException('El usuario no existe');
-    }
-    return this.ordersService.listOrderAccount(account);
+
+  async getTransactions(accountId: number){
+    return this.transactionService.getAllTransactions(accountId)
   }
 
+  async getOrdersAccount(accountId: number){
+    return this.ordersService.listOrderAccount(accountId)
+    
+  }
+   
   async checkExistenceAccount(
     email?: string,
     accountId?: number,

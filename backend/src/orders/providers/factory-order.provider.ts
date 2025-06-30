@@ -13,6 +13,8 @@ import { LimitBuy } from "../strategies/limit-buy.strategy";
 import { MarketSell } from "../strategies/market-sell.strategy";
 import { AlpacaMarketService } from "src/alpaca_market/services/alpaca_market.service";
 import { StopBuy } from "../strategies/stop-buy.strategy";
+import { OrderUpdateDto } from "../dto/order-update.dto";
+import { Order } from "../entities/orders.entity";
 
 @Injectable()
 export class FactoryOrder {
@@ -28,7 +30,6 @@ export class FactoryOrder {
         let strategy: IOrderTypeStrategy
         switch (side) {
             case (sideOrder.BUY):
-                console.log(type)
                 switch (type) {
                     case typeOrder.MARKET:
                         strategy = new MarketBuy(orderDto, this.alpacaMarketService)
@@ -62,5 +63,16 @@ export class FactoryOrder {
 
 
         
+    }
+
+    async update(orderUpdateDto: OrderUpdateDto, order: Order){
+        const { side } = order
+
+        switch (side){
+            case (sideOrder.BUY):
+                 await this.purchaseOrder.updateOrder(orderUpdateDto, order)
+            case (sideOrder.SELL):
+                break
+        }
     }
 }

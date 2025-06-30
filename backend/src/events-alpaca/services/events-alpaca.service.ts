@@ -9,6 +9,7 @@ import { statusTransaction } from 'src/transactions/enums/status-transaction.enu
 import { TransactionsService } from 'src/transactions/services/transaction.service';
 import { UpdateTransactionDto } from 'src/transactions/dtos/update-transaction.dto';
 import { IsLowercase } from 'class-validator';
+import { OrderUpdateDto } from 'src/orders/dto/order-update.dto';
 
 @Injectable()
 export class EventsAlpacaService implements OnModuleInit {
@@ -40,8 +41,17 @@ export class EventsAlpacaService implements OnModuleInit {
 
         const observer = {
             next: x => {
-                if (x.event in HandlerStatusEventsOrder){
-                    
+                if (HandlerStatusEventsOrder.includes(x.event)){
+                    const updateOrderDto = new OrderUpdateDto({
+                        order_id_alpaca: x.order.id,
+                        filled_at: x.order.filled_at ?? null,
+                        canceled_at: x.order.canceled_at ?? null,
+                        expired_at: x.order.expired_at ?? null,
+                        fill_qyt: Number(x.order.filled_qty) ?? 0,
+                        filled_avg_price: Number(x.order.filled_avg_price) ?? 0,
+                        status: x.order.status
+                    })
+                this.orderService.updateOrder(updateOrderDto)
                 }
             },
             error: err => (console.log(err))

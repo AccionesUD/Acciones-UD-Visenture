@@ -13,7 +13,7 @@ export class OrderCommissions{
     @JoinColumn({name: 'id_order'})
     order: Order
 
-    @ManyToOne(() => Commission, {cascade: true, eager: true})
+    @ManyToOne(() => Commission, (Comissions) => (Comissions.orders_commission), {cascade: true, eager: true})
     @JoinColumn({name: 'id_commission'})
     commission: Commission
 
