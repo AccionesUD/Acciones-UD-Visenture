@@ -3,6 +3,7 @@ import { Column, CreateDateColumn, Decimal128, Entity, JoinColumn, ManyToOne, Pr
 import { typeTransaction } from "../enums/type-transaction.enum";
 import { statusTransaction } from "../enums/status-transaction.enum";
 import { CreateAccountDto } from "src/accounts/dtos/create-account.dto";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class Transaction {
@@ -31,6 +32,7 @@ export class Transaction {
     @UpdateDateColumn()
     date_update: Date
 
+    @Exclude()
     @Column({ type: 'varchar', length: 80, unique: true })
     operation_id: string
 

@@ -32,5 +32,5 @@ export class Commission {
     percent_value: number
 
     @OneToMany(() => OrderCommissions, (OrderCommissions) => OrderCommissions.commission)
-    orders: OrderCommissions
+    orders_commission: OrderCommissions
 }

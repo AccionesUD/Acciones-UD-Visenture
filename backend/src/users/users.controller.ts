@@ -10,7 +10,6 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtPayloadUser } from 'src/auth/interfaces/jwt-payload-user.interface';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,

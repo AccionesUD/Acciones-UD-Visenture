@@ -7,6 +7,7 @@ import { response } from 'express';
 import { LoginDto } from 'src/auth/dto/login.dto';
 import { plainToInstance } from 'class-transformer';
 import { QuoteLatestDto } from '../dtos/quote-latest.dto';
+import { TradesLatestDto } from '../dtos/trades-latest.dto';
 
 @Injectable()
 export class AlpacaMarketService {
@@ -18,7 +19,7 @@ export class AlpacaMarketService {
     async getQuotesLatest(symbol: string) {
         const url = RoutesEndpointsMarket.quotesLatest(symbol)
         try {
-            const response: AxiosResponse<LoginDto> = await firstValueFrom(
+            const response: AxiosResponse<any> = await firstValueFrom(
                 this.httpService.get(url)
             )
             const infoQuote = plainToInstance(QuoteLatestDto, response.data)
@@ -26,8 +27,18 @@ export class AlpacaMarketService {
         } catch (error) {
             throw new RequestTimeoutException(error.response.data, 'error en la peticion')
         }
+    }
 
-
+    async getTradesLatest(symbol: string){
+        const url = RoutesEndpointsMarket.tradesLatest(symbol)
+        try {
+            const response: AxiosResponse<any> = await firstValueFrom(
+                this.httpService.get(url))
+            const tradesLatest = plainToInstance(TradesLatestDto, response.data)
+            return tradesLatest
+        } catch (error) {
+            throw new RequestTimeoutException(error.response.data, 'error en la peticion')
+        }
     }
 
 

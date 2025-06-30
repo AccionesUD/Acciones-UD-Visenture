@@ -7,6 +7,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { listCommission } from "../enums/list-commissions.enum";
 import { OrderCommissions } from "../entities/orders_commission.entity";
 import { BadRequestException, RequestTimeoutException } from "@nestjs/common";
+import { Comissions } from "../consts/commisions-percents.consts";
 
 
 export abstract class AbstractOrder {
@@ -46,6 +47,18 @@ export abstract class AbstractOrder {
             }
         } catch (error) {
             throw new RequestTimeoutException('error en la bd')
+        }
+    }
+
+    async updateCommissions(order: Order){
+        const order_commissions = await this.orderCommissionRepository.find({where: {order: {id: order.id}}})
+        order_commissions.forEach((value) => {
+            value.ammount_commission = (order.approximate_total * value.commission.percent_value) / (1 + value.commission.percent_value)
+        })
+        try {
+            await this.orderCommissionRepository.save(order_commissions)
+        } catch (error) {
+           throw new RequestTimeoutException('error en la bd') 
         }
     }
 }

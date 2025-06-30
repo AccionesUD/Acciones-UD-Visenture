@@ -22,27 +22,34 @@ import { AccountsService } from './services/accounts.service';
 @UseGuards(JwtAuthGuard)
 @Controller('accounts')
 export class AccountsController {
-    constructor(
-        private readonly accountsService: AccountsService
-    ) { }
+  constructor(
+    private readonly accountsService: AccountsService
+  ) { }
 
-    @Post('/funding')
-    async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
-        return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.sub)
-    }
+  @Post('/funding')
+  async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
+    return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.sub)
+  }
 
-    @Get('/balance')
-    async getBalanceAccount(@Req() req){
-        return this.accountsService.getBalanceAccount(req.user.sub)
-    }
+  @Get('/balance')
+  async getBalanceAccount(@Req() req) {
+    return this.accountsService.getBalanceAccount(req.user.sub)
+  }
 
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Get('/orders')
-    async getOrdersAccount(@Req() req){
-        return this.accountsService.getOrdersAccount(req.user.sub)
-    }
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/transactions')
+  async getTransactionsAccount(@Req() req){
+    return this.accountsService.getTransactions(req.user.sub)
+  }
 
-    // Endpoint de prueba solo para administradores
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('/orders')
+  async getOrdersAccount(@Req() req) {
+    return this.accountsService.getOrdersAccount(req.user.sub)
+  }
+
+  // Endpoint de prueba solo para administradores
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'comisionista')
   @Get('admin-only')

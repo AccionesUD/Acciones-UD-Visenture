@@ -9,7 +9,6 @@ import { AxiosResponse } from 'axios';
 import { Observable, map } from 'rxjs';
 import { MarketData } from 'src/stocks/dtos/market-data.interface';
 import { MarketDto } from 'src/stocks/dtos/market.dto';
-import { AlpacaAsset } from 'src/assets/dtos/alpaca-asset.dto';
 
 
 @Injectable()
@@ -56,7 +55,7 @@ export class AlpacaTradingService {
       'APCA-API-SECRET-KEY': secretKey,
     };
 
-    const response$ = this.httpService.get<AlpacaAsset[]>(url, { headers });
+    const response$ = this.httpService.get(url, { headers });
     const { data } = await firstValueFrom(response$);
 
     // Solo primeros 10 para ejemplo y evitar muchos requests

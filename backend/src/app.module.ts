@@ -11,7 +11,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MarketsModule } from './alpaca_trading/alpaca-trading.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AlpacaBrokerModule } from './alpaca_broker/alpaca_broker.module';
-import { AssetsModule } from './assets/assets.module';
 import { StocksController } from './stocks/stocks.controller';
 import { StocksModule } from './stocks/stocks.module';
 import { OrdersModule } from './orders/orders.module';
@@ -27,6 +26,7 @@ import { AdvisorModule } from './advisor/advisor.module';
 import { PremiumModule } from './premium/premium.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PaymentsModule } from './payments/payments.module';
+import { url } from 'inspector';
 
 @Module({
   imports: [
@@ -56,7 +56,6 @@ import { PaymentsModule } from './payments/payments.module';
     MarketsModule,
     AlpacaBrokerModule,
     StocksModule,
-    AssetsModule,
     OrdersModule,
     SharesModule,
     BriefcaseModule,

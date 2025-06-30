@@ -64,6 +64,7 @@ export class AccountsService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       await this.notificationSettingsService.createDefaultSettings(
         savedAccount);
+      return savedAccount
     } catch (error) {
       throw new HttpException('Error creando cuenta', HttpStatus.BAD_REQUEST);
     }
@@ -78,16 +79,18 @@ export class AccountsService {
     }
     return this.alpacaBrokerService.makeFundignAccount(makeFundignAccountDto);
   }
+
   async getBalanceAccount(accountId: number){
     return this.transactionService.calculateCurrentBalance(accountId)
   }
 
+
+  async getTransactions(accountId: number){
+    return this.transactionService.getAllTransactions(accountId)
+  }
+
   async getOrdersAccount(accountId: number){
-    const account = await this.accountRepository.findOneBy({id: accountId})
-    if (!account){
-      throw new BadRequestException('El usuario no existe')
-    }
-    return this.ordersService.listOrderAccount(account)
+    return this.ordersService.listOrderAccount(accountId)
     
   }
 

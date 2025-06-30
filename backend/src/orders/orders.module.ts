@@ -15,9 +15,11 @@ import { SharesModule } from 'src/shares/shares.module';
 import { Order } from './entities/orders.entity';
 import { Commission } from './entities/comissions.entity';
 import { OrderCommissions } from './entities/orders_commission.entity';
+import { Briefcase } from 'src/briefcases/entities/briefcases.entity';
+import { BriefcaseModule } from 'src/briefcases/briefcases.module';
 
 @Module({
-  imports: [forwardRef(() => AccountsModule), TypeOrmModule.forFeature([Order, Commission, OrderCommissions]),HttpModule, forwardRef(() => AccountsModule), SharesModule, AlpacaMarketModule, AlpacaBrokerModule, TransactionsModule],
+  imports: [BriefcaseModule, forwardRef(() => AccountsModule), TypeOrmModule.forFeature([Order, Commission, OrderCommissions]),HttpModule, forwardRef(() => AccountsModule), SharesModule, AlpacaMarketModule, AlpacaBrokerModule, TransactionsModule],
   controllers: [OrdersController],
   providers: [OrdersService, FactoryOrder, PurchaseOrder, SalesOrder],
   exports: [OrdersService]
