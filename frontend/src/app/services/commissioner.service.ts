@@ -4,7 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environmentExample } from '../../environments/environmentexample';
 import { 
-  CommissionerClient, 
+  CommissionerClient,
+  CommissionerList, 
   ClientKpi, 
   CommissionSummary, 
   CommissionerStats, 
@@ -193,6 +194,82 @@ export class CommissionerService {
       roi_percentage: 15.7,
       main_assets: ['V', 'MA', 'PYPL'],
       last_operation_date: new Date('2023-06-12')
+    },
+    {
+      id: 5,
+      name: 'Carlos Díaz',
+      email: 'carlos.diaz@example.com',
+      phone_number: '+57 320 444 5555',
+      registration_date: new Date('2023-01-30'),
+      status: 'pending',
+      total_investment: 5000,
+      roi_percentage: 3.2,
+      main_assets: ['KO', 'PEP', 'MCD'],
+      last_operation_date: new Date('2023-05-20')
+    },
+    {
+      id: 6,
+      name: 'Laura Martínez',
+      email: 'laura.martinez@example.com',
+      phone_number: '+57 310 222 3333',
+      registration_date: new Date('2023-05-12'),
+      status: 'active',
+      total_investment: 18000,
+      roi_percentage: 7.9,
+      main_assets: ['JNJ', 'PFE', 'UNH'],
+      last_operation_date: new Date('2023-06-08')
+    }
+  ];
+
+  // Datos de muestra para desarrollo
+  private mockCommissioner: CommissionerList[] = [
+    {
+      id: 1,
+      name: 'Camilo Duran',
+      email: 'C.duran@example.com',
+      phone_number: '+57 355 163 4567',
+      registration_date: new Date('2024-01-18'),
+      status: 'active',
+      total_investment: 1500,
+      roi_percentage: 8.5,
+      main_assets: ['AAPL', 'MSFT', 'GOOGL'],
+      last_operation_date: new Date('2025-06-10')
+    },
+    {
+      id: 2,
+      name: 'Juan González',
+      email: 'Juan.gonzalez@example.com',
+      phone_number: '+57 351 557 6543',
+      registration_date: new Date('2023-02-20'),
+      status: 'active',
+      total_investment: 4700,
+      roi_percentage: 9.8,
+      main_assets: ['AMZN', 'TSLA', 'NFLX'],
+      last_operation_date: new Date('2025-06-05')
+    },
+    {
+      id: 3,
+      name: 'Pedro Rodríguez',
+      email: 'Pedro.rodri@example.com',
+      phone_number: '+57 315 555 1234',
+      registration_date: new Date('2022-03-10'),
+      status: 'inactive',
+      total_investment: 48000,
+      roi_percentage: -6.3,
+      main_assets: ['BABA', 'NIO', 'TSM'],
+      last_operation_date: new Date('2025-04-28')
+    },
+    {
+      id: 4,
+      name: 'Camilo García',
+      email: 'Camilo7.garcia@example.com',
+      phone_number: '+57 300 777 8888',
+      registration_date: new Date('2023-04-05'),
+      status: 'active',
+      total_investment: 32000,
+      roi_percentage: 15.7,
+      main_assets: ['V', 'MA', 'PYPL'],
+      last_operation_date: new Date('2025-06-12')
     },
     {
       id: 5,
