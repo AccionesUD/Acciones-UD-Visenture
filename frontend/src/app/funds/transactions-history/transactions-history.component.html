@@ -1,27 +1,126 @@
-<div *ngIf="loading" class="text-center py-8">
-  Cargando transacciones...
-</div>
-<div *ngIf="error" class="text-red-600 text-center py-4">{{ error }}</div>
-<table *ngIf="!loading && !error && transactions.length" class="min-w-full divide-y divide-gray-200">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Tipo</th>
-      <th>Monto</th>
-      <th>Fecha</th>
-      <th>Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let tx of transactions">
-      <td>{{ tx.id }}</td>
-      <td>{{ tx.type_transaction }}</td>
-      <td>{{ tx.value_transaction | currency:'COP':'symbol' }}</td>
-      <td>{{ tx.date_create | date:'short' }}</td>
-      <td>{{ tx.status }}</td>
-    </tr>
-  </tbody>
-</table>
-<div *ngIf="!loading && !error && !transactions.length" class="text-center py-8 text-gray-500">
-  No hay transacciones registradas.
-</div>
+<mat-card>
+  <mat-card-header class="mb-4">
+    <mat-card-title i18n="Title for the transaction history section">Historial de Transacciones</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+
+    <!-- Filtros y Ordenamiento -->
+    <form *ngIf="!isLoading" [formGroup]="filterForm" class="filters-container">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Filtro por Tipo -->
+        <div class="relative">
+          <label for="type-filter" class="filter-label" i18n="Label for transaction type filter">Filtrar por Tipo</label>
+          <div class="relative">
+            <select id="type-filter" formControlName="type" class="filter-input">
+              <option value="" i18n="Filter option for all transaction types">Todos</option>
+              <option value="recharge" i18n="Filter option for recharge">Recarga</option>
+              <option value="buy" i18n="Filter option for buy">Compra</option>
+              <option value="sell" i18n="Filter option for sell">Venta</option>
+              <option value="commission" i18n="Filter option for commission">Comisión</option>
+              <option value="withdrawal" i18n="Filter option for withdrawal">Retiro</option>
+            </select>
+            <div class="filter-icon-container">
+              <mat-icon class="filter-icon">swap_horiz</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtro por Estado -->
+        <div class="relative">
+            <label for="status-filter" class="filter-label" i18n="Label for transaction status filter">Filtrar por Estado</label>
+            <div class="relative">
+              <select id="status-filter" formControlName="status" class="filter-input">
+                <option value="" i18n="Filter option for all statuses">Todos</option>
+                <option value="complete" i18n="Filter option for complete status">Completado</option>
+                <option value="processing" i18n="Filter option for processing status">Procesando</option>
+                <option value="sent_to_clearing" i18n="Filter option for sent to clearing status">Enviado a liquidación</option>
+                <option value="pending" i18n="Filter option for pending status">Pendiente</option>
+                <option value="cancelled" i18n="Filter option for cancelled status">Cancelado</option>
+              </select>
+              <div class="filter-icon-container">
+                <mat-icon class="filter-icon">sync</mat-icon>
+              </div>
+            </div>
+          </div>
+
+        <!-- Filtro de Ordenamiento -->
+        <div class="relative">
+          <label for="sort-filter" class="filter-label" i18n="Label for sorting filter">Ordenar por</label>
+          <div class="relative">
+            <select id="sort-filter" formControlName="sort" class="filter-input">
+              <option value="date_desc" i18n="Sort option for newest first">Más Recientes</option>
+              <option value="date_asc" i18n="Sort option for oldest first">Más Antiguos</option>
+              <option value="amount_desc" i18n="Sort option for amount descending">Monto (Mayor a Menor)</option>
+              <option value="amount_asc" i18n="Sort option for amount ascending">Monto (Menor a Mayor)</option>
+            </select>
+            <div class="filter-icon-container">
+              <mat-icon class="filter-icon">sort</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Spinner de Carga -->
+    <div *ngIf="isLoading" class="spinner-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p i18n="Loading message for transaction history">Cargando historial de transacciones...</p>
+    </div>
+
+    <!-- Mensaje de No Hay Datos -->
+    <div *ngIf="!isLoading && dataSource.data.length === 0" class="no-data-message">
+      <p *ngIf="!filterForm.dirty" i18n="Message when no transactions are found">No se encontraron transacciones en el historial.</p>
+      <p *ngIf="filterForm.dirty" i18n="Message when no transactions match filters">No se encontraron transacciones que coincidan con los filtros.</p>
+    </div>
+
+    <!-- Contenedor de la Tabla y Paginador -->
+    <div *ngIf="!isLoading && dataSource.data.length > 0">
+      <div class="historical-table-wrapper">
+        <div class="historical-table-container">
+          <table mat-table [dataSource]="dataSource">
+            
+            <!-- Columnas -->
+            <ng-container matColumnDef="date_create">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Date"> Fecha </th>
+              <td mat-cell *matCellDef="let tx"> {{ tx.date_create | date:'dd/MM/yy, HH:mm' }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="type_transaction">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Type"> Tipo </th>
+              <td mat-cell *matCellDef="let tx"> {{ tx.type_transaction | titlecase }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="value_transaction">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Amount"> Monto </th>
+              <td mat-cell *matCellDef="let tx" [ngClass]="{'buy-text': tx.value_transaction < 0, 'sell-text': tx.value_transaction > 0}">
+                {{ tx.value_transaction | currency:'COP':'symbol':'1.2-2' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Status"> Estado </th>
+              <td mat-cell *matCellDef="let tx"> {{ tx.status | titlecase }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="operation_id">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Transaction ID">ID Trans.</th>
+              <td mat-cell *matCellDef="let tx"> {{ tx.id }} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </div>
+      <mat-paginator
+          [length]="totalTransactions"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="pageIndex"
+          (page)="handlePageEvent($event)"
+          aria-label="Select page of transactions">
+      </mat-paginator>
+    </div>
+  </mat-card-content>
+</mat-card>

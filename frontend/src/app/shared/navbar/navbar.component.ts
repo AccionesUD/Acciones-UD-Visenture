@@ -25,6 +25,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isDarkTheme = false;
   isLoading = true;
   isCommissioner = false;
+  isAdmin = false;
   
   showLanguageMenu = false;
   currentLanguage = 'es';
@@ -74,6 +75,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.isAuthenticated = !!user;
         this.username = user?.username || null;
         this.isCommissioner = user?.role === 'commissioner' || user?.role === 'admin';
+        this.isAdmin = user?.role === 'admin';
         this.isLoading = false;
       },
       error: (err) => {
@@ -143,4 +145,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 }
+
 

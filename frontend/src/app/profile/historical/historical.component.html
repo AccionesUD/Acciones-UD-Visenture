@@ -128,6 +128,14 @@
           </table>
         </div>
       </div>
+       <mat-paginator
+          [length]="totalOrders"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="pageIndex"
+          (page)="handlePageEvent($event)"
+          aria-label="Select page of orders">
+      </mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>

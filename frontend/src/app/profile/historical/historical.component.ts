@@ -3,7 +3,7 @@ import { CommonModule, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/co
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -48,7 +48,14 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  // Paginación
+  pageSize = 5;
+  pageIndex = 0;
+  pageSizeOptions = [5, 10, 25, 100];
+  totalOrders = 0;
+
   private fullOrderHistory: Order[] = [];
+  private filteredOrderHistory: Order[] = [];
   private destroy$ = new Subject<void>();
 
   filterForm: FormGroup;
@@ -82,8 +89,7 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Conectamos el paginador al dataSource después de que la vista se inicialice
-    this.dataSource.paginator = this.paginator;
+    // No vinculamos el paginador directamente, lo manejaremos manualmente.
   }
 
   ngOnDestroy(): void {
@@ -113,7 +119,7 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   applyFiltersAndSorting(): void {
     const { symbol, side, sort } = this.filterForm.value;
-    let filteredData = this.fullOrderHistory;
+    let filteredData = [...this.fullOrderHistory];
 
     if (symbol) {
       const symbolFilter = symbol.trim().toLowerCase();
@@ -125,7 +131,7 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
       filteredData = filteredData.filter(order => order.side === side);
     }
 
-    const sortedData = [...filteredData];
+    const sortedData = filteredData;
     switch (sort) {
       case 'date_desc':
         sortedData.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
@@ -141,38 +147,50 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
     }
 
-    this.dataSource.data = sortedData;
-    
-    // Actualizamos el paginador si ya está disponible
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.length = sortedData.length;
+    this.filteredOrderHistory = sortedData;
+    this.totalOrders = this.filteredOrderHistory.length;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
     }
+    this.updateDisplayedOrders();
+  }
+
+  updateDisplayedOrders(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.dataSource.data = this.filteredOrderHistory.slice(startIndex, endIndex);
+  }
+
+  handlePageEvent(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updateDisplayedOrders();
   }
 
   canBeCancelled(order: Order): boolean {
-    return true;
+    return order.status === 'open' || order.status === 'new' || order.status === 'partially_filled';
   }
 
   cancelOrder(order: Order): void {
     const confirmation = window.confirm(`¿Estás seguro de que deseas cancelar la orden para ${order.qty} acciones de ${order.share.symbol}?`);
     
     if (confirmation) {
-      // --- LÓGICA DEL BACKEND (COMENTADA) ---
-      /*
       this.profileService.cancelOrderById(order.id).subscribe({
-        next: (response) => {
-          this.snackBar.open('Orden cancelada exitosamente.', 'Cerrar', { duration: 3000 });
+        next: () => {
+          this.snackBar.open('Orden cancelada exitosamente.', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
           this.loadOrdersHistory();
         },
         error: (err) => {
           console.error('Error al cancelar la orden:', err);
-          this.snackBar.open(`Error al cancelar la orden: ${err.message}`, 'Cerrar', { duration: 5000, panelClass: ['error-snackbar'] });
+          this.snackBar.open(`Error al cancelar la orden: ${err.error?.message || 'Error desconocido'}`, 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
-      });
-      */
-      this.snackBar.open('Funcionalidad para cancelar orden no implementada todavía.', 'Cerrar', {
-        duration: 4000,
-        panelClass: ['info-snackbar']
       });
     }
   }

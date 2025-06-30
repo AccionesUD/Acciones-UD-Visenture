@@ -13,7 +13,8 @@ export interface User {
   username: string;
   email: string;
   name: string;
-  role: string;
+  role?: string; // Making it optional as roles array will be primary
+  roles?: string[]; // Add roles array
 }
 
 export interface AuthResponse {

@@ -127,7 +127,7 @@ export class AuthService {
           email: decodedToken.email,
           username: decodedToken.email.split('@')[0], // Temporal: generamos username desde email
           name: decodedToken.name || decodedToken.email.split('@')[0], // Si no hay nombre, usamos parte del email
-          role: decodedToken.role || 'user' // Por defecto, asignamos rol 'user'
+          roles: decodedToken.roles || [] // Asignamos el array de roles
         };
         
         // Calculamos tiempo de expiración desde el token
@@ -313,8 +313,23 @@ export class AuthService {
             return;
           }
           
-          const user: User = JSON.parse(userData);
+          const decodedToken = this.jwtService.decodeToken(token);
+
+          if (!decodedToken) {
+            throw new Error('Invalid token found in localStorage');
+          }
+
+          const user: User = {
+            id: String(decodedToken.sub),
+            email: decodedToken.email,
+            username: decodedToken.email.split('@')[0],
+            name: decodedToken.name || decodedToken.email.split('@')[0],
+            roles: decodedToken.roles || []
+          };
           
+          // Update localStorage with the corrected user object
+          localStorage.setItem(this.userKey, JSON.stringify(user));
+
           // Actualizar ambos servicios para mantener consistencia
           this.currentUserSubject.next(user);
           this.authState.updateUser(user);
@@ -368,6 +383,6 @@ export class AuthService {
    */
   public isCommissioner(): boolean {
     const user = this.currentUserSubject.value;
-    return !!user && user.role === 'commissioner';
+    return !!user && (user.roles || []).includes('comisionista');
   }
 }

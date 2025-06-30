@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class PortfolioService {
-  private apiUrl = `${environment.apiUrl}/portfolio`;
+  private apiUrl = `${environment.apiUrl}`;
 
   constructor(private http: HttpClient) {}
 
@@ -18,7 +18,7 @@ export class PortfolioService {
    * Obtiene el portafolio completo del usuario
    */
   getPortfolio(): Observable<Portfolio> {
-    return this.http.get<Portfolio>(`${this.apiUrl}`);
+    return this.http.get<Portfolio>(`${this.apiUrl}/briefcase`);
   }
 
   /**
@@ -40,25 +40,38 @@ export class PortfolioService {
    * Usamos endpoint de shares y en caso de error retornamos mocks
    */
   getPortfolioStocks(): Observable<PortfolioShare[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/shares`).pipe(
-      map(shares => shares.map(s => ({
-        id: s.symbol,
-        companyName: s.name_share,
-        ticker: s.symbol,
-        stockName: s.stock?.name_market || '',
-        stockMic: s.stock?.mic || '',
-        quantity: 0,
-        unitValue: 0,
-        totalValue: 0,
-        performance: 0,
-        color: '#cccccc'
-      }))) ,
-      catchError(error => {
-        console.error('Error getPortfolioStocks, usando mocks:', error);
-        return of(this.getFallbackPortfolioShares());
-      })
-    );
-  }
+   return this.getPortfolio().pipe(
+     map((briefcase: any) => {
+       console.log('Datos del portafolio (briefcase) recibidos:', JSON.stringify(briefcase, null, 2));
+       if (briefcase && Array.isArray(briefcase.assets)) {
+         return briefcase.assets.map((asset: any) => {
+           // Verificaciones para evitar errores si las propiedades anidadas no existen
+           const order = asset.order || {};
+           const share = order.share || {};
+           const stock = share.stock || {};
+
+           return {
+             id: asset.id?.toString() || 'N/A',
+             companyName: share.name_share || 'Nombre no disponible',
+             ticker: asset.ticket_share || 'N/A',
+             stockName: stock.name_market || 'Mercado no disponible',
+             stockMic: stock.mic || 'N/A',
+             quantity: asset.currentShareQuantity || 0,
+             unitValue: order.filled_avg_price || 0,
+             totalValue: (order.filled_avg_price || 0) * (asset.currentShareQuantity || 0),
+             performance: asset.percentGainLose || 0,
+             color: (asset.percentGainLose || 0) >= 0 ? 'emerald' : 'red'
+           };
+         });
+       }
+       return [];
+     }),
+     catchError(error => {
+       console.error('Error en getPortfolioStocks, usando datos de fallback:', error);
+       return of(this.getFallbackPortfolioShares());
+     })
+   );
+ }
 
   /** Genera datos mock para el portafolio si no hay datos reales */
   private getFallbackPortfolioShares(): PortfolioShare[] {
@@ -85,11 +98,7 @@ export class PortfolioService {
     return this.http.patch(`${this.apiUrl}/balance`, { amount });
   }
 
-  /**
-   * Obtiene el portafolio de un cliente específico (para comisionistas)
-   * @param clientId ID del cliente
-   * @returns Observable con las acciones del cliente
-   */
+
   getClientPortfolio(clientId: number): Observable<any[]> {
     // En producción: return this.http.get<any[]>(`${this.apiUrl}/clients/${clientId}/shares`);
     
@@ -138,22 +147,5 @@ export class PortfolioService {
     
     // Si no hay ID de cliente válido
     return of([]);
-  }
-
-  /**
-   * Obtiene las órdenes del usuario
-   */
-  getOrders(): Observable<any> {
-    const url = `${environment.apiUrl}/accounts/orders`;
-    return this.http.get<any>(url).pipe(
-      map(res => {
-        console.log('[PortfolioService] Respuesta de getOrders:', res);
-        return res;
-      }),
-      catchError(error => {
-        console.error('[PortfolioService] Error al obtener órdenes:', error);
-        return of([]);
-      })
-    );
   }
 }

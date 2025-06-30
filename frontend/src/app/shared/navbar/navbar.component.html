@@ -136,7 +136,7 @@
               <!-- Más notificaciones irían aquí -->
             </div>
             <div class="block text-center p-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-gray-50 dark:hover:bg-slate-700">
-              <a href="#" i18n="@@notifications.view_all">Ver todas las notificaciones</a>
+              <a [routerLink]="['/notifications']" i18n="@@notifications.view_all">Ver todas las notificaciones</a>
             </div>
           </div>
         </div>
@@ -232,6 +232,7 @@
             <!-- Opción del Panel de Comisionista en el menú desplegable, temporalmente visible para todos -->
             <a [routerLink]="['/commissioner-panel']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.commissioner_panel">Panel de Comisionista</a>
             <a [routerLink]="['/users']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.manage_users">Administrar Usuarios</a>
+            <a *ngIf="isAdmin" [routerLink]="['/admin-analytics']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.admin_panel">Panel de Admin</a>
             <button (click)="logout()" class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-emerald-50 dark:hover:bg-slate-700" i18n="@@auth.logout">Cerrar Sesión</button>
           </div>
         </div>
@@ -356,6 +357,13 @@
           </svg>
           <span i18n="@@navbar.manage_users">Administrar Usuarios</span>
         </a>
+
+        <a *ngIf="isAdmin" [routerLink]="['/admin-analytics']" (click)="navigateAndClose()" routerLinkActive="bg-emerald-700 dark:bg-slate-700" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
+           <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+           </svg>
+           <span i18n="@@navbar.admin_panel">Panel de Admin</span>
+       </a>
       </nav>
     </div>
     

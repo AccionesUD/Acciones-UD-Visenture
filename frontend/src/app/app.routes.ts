@@ -15,6 +15,7 @@ import { CommissionerPanelComponent } from './commissioner-panel/commissioner-pa
 import { ClientReportComponent } from './commissioner-panel/client-report/client-report.component';
 import { AdminAnalyticsComponent } from './admin-analytics/admin-analytics.component';
 import { FundsComponent } from './funds/funds.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 
 export const routes: Routes = [
@@ -40,5 +41,6 @@ export const routes: Routes = [
   { path: 'commissioner-panel', component: CommissionerPanelComponent },
   { path: 'commissioner-panel/client/:id', component: ClientReportComponent },
   { path: 'funds', component: FundsComponent},
+  { path: 'notifications', component: NotificationsComponent },
   { path: '**', redirectTo: 'home' }
 ];
