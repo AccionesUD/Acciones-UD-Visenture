@@ -42,7 +42,6 @@ export class PurchaseOrder extends AbstractOrder {
       await strategy.valid()
       const orderAmount = await this.calculateAmountOrder(strategy)
       const accountAmmount = await this.transactionService.calculateCurrentBalance(orderDto.account.id)
-      console.log(accountAmmount, orderAmount)
       if (orderAmount > accountAmmount.balance) {
          throw new ConflictException('El usuario no cuenta con saldo suficiente para esta transaccion')
       }
@@ -102,7 +101,7 @@ export class PurchaseOrder extends AbstractOrder {
 
          await this.transactionService.updateTransaction(new UpdateTransactionDto({
             status: statusTransaction.COMPLETE,
-            value_transaction: ammountOrder + commisionApply,
+            value_transaction: -(ammountOrder + commisionApply),
             operation_id: order.id
          }))
          await super.updateCommissions(order)

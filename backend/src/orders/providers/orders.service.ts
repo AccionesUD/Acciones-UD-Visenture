@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, BadRequestException, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, BadRequestException, forwardRef, Inject, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, share } from 'rxjs';
@@ -14,6 +14,7 @@ import { Order } from '../entities/orders.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Commission } from '../entities/comissions.entity';
 import { OrderUpdateDto } from '../dto/order-update.dto';
+import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
 
 
 @Injectable()
@@ -26,7 +27,8 @@ export class OrdersService {
     private readonly accountsService: AccountsService,
     private readonly sharesService: SharesService,
     @InjectRepository(Order)
-    private readonly orderRepository: Repository<Order>
+    private readonly orderRepository: Repository<Order>,
+    private readonly alpacaBrokerService: AlpacaBrokerService,
   ) { }
 
 
@@ -56,6 +58,21 @@ export class OrdersService {
       const order = await this.getOneOrder(orderUpdateDto.order_id_alpaca)
       if (order){
          await this.factoryOrder.update(orderUpdateDto, order)
+      }
+   }
+
+  
+   async cancelOrder(order_id: string){
+      const order = await this.orderRepository.findOne({where: {id: order_id}, relations: ['account']})
+      if (!order){
+        throw new NotFoundException('the order does not exist')
+      }
+      const response = await this.alpacaBrokerService.cancelOrder(order.order_id_alpaca!, order.account.alpaca_account_id)
+      if (response == 204){
+        return {
+          status: true,
+          message: 'order successfully canceled'
+        }
       }
    }
 

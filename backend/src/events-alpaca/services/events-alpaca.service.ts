@@ -41,18 +41,21 @@ export class EventsAlpacaService implements OnModuleInit {
 
         const observer = {
             next: x => {
-                if (HandlerStatusEventsOrder.includes(x.event)){
-                    const updateOrderDto = new OrderUpdateDto({
-                        order_id_alpaca: x.order.id,
-                        filled_at: x.order.filled_at ?? null,
-                        canceled_at: x.order.canceled_at ?? null,
-                        expired_at: x.order.expired_at ?? null,
-                        fill_qyt: Number(x.order.filled_qty) ?? 0,
-                        filled_avg_price: Number(x.order.filled_avg_price) ?? 0,
-                        status: x.order.status
-                    })
-                this.orderService.updateOrder(updateOrderDto)
+                if (x.order) {
+                    if (HandlerStatusEventsOrder.includes(x.order.status)) {
+                        const updateOrderDto = new OrderUpdateDto({
+                            order_id_alpaca: x.order.id,
+                            filled_at: x.order.filled_at ?? null,
+                            canceled_at: x.order.canceled_at ?? null,
+                            expired_at: x.order.expired_at ?? null,
+                            fill_qyt: Number(x.order.filled_qty) ?? 0,
+                            filled_avg_price: Number(x.order.filled_avg_price) ?? 0,
+                            status: x.order.status
+                        })
+                        this.orderService.updateOrder(updateOrderDto)
+                    }
                 }
+
             },
             error: err => (console.log(err))
         }
@@ -60,19 +63,22 @@ export class EventsAlpacaService implements OnModuleInit {
 
     }
 
-    async transactionEvents(){
+    async transactionEvents() {
         const url = `${this.configService.get('ALPACA_BROKER_BASE_URL')}${RoutesEndpointsEvents.transferEvents}`
         const response = this.connecSSEProvider.EventsBroker(url, this.authorization())
 
         const observer = {
             next: x => {
-                if (HandlerStatusEventsTransfer.includes(x.status_to)){
-                    const UpdateDto = new UpdateTransactionDto({
-                        status: x.status_to.toLowerCase(),
-                        operation_id: x.transfer_id
-                    })
-                    this.transactionService.updateTransaction(UpdateDto)
+                if (x.status_to) {
+                    if (HandlerStatusEventsTransfer.includes(x.status_to)) {
+                        const UpdateDto = new UpdateTransactionDto({
+                            status: x.status_to.toLowerCase(),
+                            operation_id: x.transfer_id
+                        })
+                        this.transactionService.updateTransaction(UpdateDto)
+                    }
                 }
+
             }
         }
         response.subscribe(observer)
