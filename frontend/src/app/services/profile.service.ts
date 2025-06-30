@@ -4,13 +4,14 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
   
   // BehaviorSubject para mantener el perfil del usuario actual
   private userProfileSubject = new BehaviorSubject<User | null>(null);
@@ -65,43 +66,22 @@ export class ProfileService {
    * Obtiene el perfil completo del usuario
    */
   getUserProfile(): Observable<User> {
-    return this.http.get<any>(`${this.apiUrl}/users/perfilCompleto`).pipe(
-      map((data: any) => {
-        // Mapear la respuesta del backend a la estructura User esperada
-        return {
-          id: data.id || null,
-          identity_document: data.identity_document || '',
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
-          email: data.email || '',
-          phone_number: data.phone || '', // Mapeo correcto
-          address: data.address || '',    // Mapeo correcto
-          birthdate: data.birthdate || null
-        } as User;
-      }),
-      tap((profile: User) => {
-        this.userProfileSubject.next(profile);
-      }),
-      catchError(this.handleError<User>('getUserProfile'))
-    );
+    // Si ya tenemos el perfil en caché, lo retornamos
+    if (this.userProfileSubject.value) {
+      return of(this.userProfileSubject.value);
+    }
+    
+    // En producción: return this.http.get<User>(`${this.apiUrl}/profile`).pipe(...
     
     // Mock para desarrollo
     const mockProfile: User = {
       id: 1,
-      identity_document: '123456789',
-      first_name: 'Mock',
-      last_name: 'User',
-      email: 'mock@user.com',
-      phone_number: '555-0101',
-      birthdate: new Date(),
-      role: 'admin',
-      roles: ['admin'],
-      status: 'active',
-      email_verified_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      last_login: new Date().toISOString(),
-      address: 'Calle Falsa 123'
+      identity_document: '1234567890',
+      first_name: 'Juan',
+      last_name: 'Pérez',
+      email: 'juan.perez@example.com',
+      phone_number: '+57 300 123 4567',
+      birthdate: new Date('1990-01-15')
     };
     
     return of(mockProfile).pipe(
@@ -132,39 +112,31 @@ export class ProfileService {
   
   /**
    * Actualiza los datos del perfil del usuario
-   * MOCK: retorna siempre un objeto con success, message y data
    */
   updateProfile(profileData: UpdateProfileDto): Observable<ProfileUpdateResponse> {
-    // En producción:
-    // const payload: any = {
-    //   email: profileData.email,
-    //   phone: profileData.phone_number, // El backend espera 'phone'
-    //   address: profileData.address
-    // };
-    // return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, payload).pipe(...)
-
-    // MOCK para desarrollo:
-    const mockUser: User = {
-      id: 1,
-      first_name: 'Mock',
-      last_name: 'User',
-      email: profileData.email || 'mock@user.com',
-      phone_number: profileData.phone_number || '555-0101',
-      address: profileData.address || 'Calle Falsa 123',
-      roles: ['admin'],
-      status: 'active',
-      email_verified_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      last_login: new Date().toISOString(),
-      identity_document: '123456789',
-      birthdate: new Date()
-    };
-    return of({
-      success: true,
-      message: 'Perfil actualizado correctamente',
-      data: mockUser
-    });
+    // En producción: return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/profile`, profileData).pipe(...
+    
+    // Mock para desarrollo
+    return this.getUserProfile().pipe(
+      map(currentProfile => {
+        const updatedProfile = {
+          ...currentProfile,
+          ...profileData
+        };
+        
+        this.userProfileSubject.next(updatedProfile);
+        
+        return {
+          success: true,
+          message: 'Perfil actualizado correctamente',
+          data: updatedProfile
+        };
+      }),
+      catchError(this.handleError<ProfileUpdateResponse>('updateProfile', {
+        success: false,
+        message: 'Error al actualizar el perfil'
+      }))
+    );
   }
   
   /**
@@ -250,9 +222,35 @@ export class ProfileService {
   /**
    * Cambiar contraseña del usuario
    */
-  changePassword(passwordData: { currentPassword: string, newPassword: string }): Observable<ProfileUpdateResponse> {
-    // Llamada real al backend para cambiar la contraseña
-    return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/auth/perfil/password`, passwordData).pipe(
+  changePassword(passwordData: ChangePasswordDto): Observable<ProfileUpdateResponse> {
+    // En producción: return this.http.patch<ProfileUpdateResponse>(`${this.apiUrl}/profile/password`, passwordData).pipe(...
+    
+    // Mock para desarrollo: validamos que la contraseña actual sea "password123" para simular verificación
+    if (passwordData.current_password !== 'password123') {
+      return of({
+        success: false,
+        message: 'La contraseña actual es incorrecta'
+      }).pipe(
+        tap(result => console.log('Password change result:', result))
+      );
+    }
+    
+    // Verificamos que las contraseñas nuevas coincidan
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      return of({
+        success: false,
+        message: 'Las contraseñas nuevas no coinciden'
+      }).pipe(
+        tap(result => console.log('Password change result:', result))
+      );
+    }
+    
+    // Si todo está bien, simulamos éxito
+    return of({
+      success: true,
+      message: 'Contraseña actualizada correctamente'
+    }).pipe(
+      tap(result => console.log('Password change result:', result)),
       catchError(this.handleError<ProfileUpdateResponse>('changePassword', {
         success: false,
         message: 'Error al cambiar la contraseña'
@@ -265,8 +263,9 @@ export class ProfileService {
    */
   changePasswordLegacy(passwords: { current: string, new: string, confirm: string }): Observable<any> {
     return this.changePassword({
-      currentPassword: passwords.current,
-      newPassword: passwords.new
+      current_password: passwords.current,
+      new_password: passwords.new,
+      confirm_password: passwords.confirm
     });
   }
 

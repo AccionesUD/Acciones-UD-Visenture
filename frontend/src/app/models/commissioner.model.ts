@@ -14,6 +14,19 @@ export interface CommissionerClient {
   last_operation_date?: Date;
 }
 
+export interface CommissionerList {
+  id: number;
+  name: string;
+  email?: string;
+  phone_number?: string;
+  registration_date: Date;
+  status: 'active' | 'inactive' | 'pending';
+  total_investment: number;
+  roi_percentage: number;
+  main_assets: string[];
+  last_operation_date?: Date;
+}
+
 /**
  * Modelo para representar las estadísticas y KPIs por cliente
  */

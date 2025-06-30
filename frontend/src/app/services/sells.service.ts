@@ -4,14 +4,14 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap, map, switchMap } from 'rxjs/operators';
 import { PortfolioShare, PortfolioPosition } from '../models/portfolio.model'; 
 import { SellOrder, SellResponse } from '../models/sell.model';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 import { PortfolioService } from './portfolio.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SellsService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environmentExample.apiUrl;
   
   constructor(
     private http: HttpClient,

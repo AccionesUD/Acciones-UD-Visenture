@@ -1,6 +1,6 @@
 import { FormGroup, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-// Validador para asegurar que dos campos coincidan (ej: contraseñas)
+// Función validadora para asegurar que dos campos coinciden (útil para validación de contraseñas)
 export function MustMatch(controlName: string, matchingControlName: string) {
   return (formGroup: FormGroup) => {
     const control = formGroup.controls[controlName];
@@ -10,31 +10,19 @@ export function MustMatch(controlName: string, matchingControlName: string) {
       return;
     }
 
-    // Si ya hay otros errores en confirm_password, no sobrescribirlos
     if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
       return;
     }
-
-    // Solo establecer el error en confirm_password
+    
     if (control.value !== matchingControl.value) {
-      matchingControl.setErrors({ ...matchingControl.errors, mustMatch: true });
+      matchingControl.setErrors({ mustMatch: true });
     } else {
-      // Si no hay otros errores, limpiar mustMatch
-      if (matchingControl.errors) {
-        const { mustMatch, ...otherErrors } = matchingControl.errors;
-        if (Object.keys(otherErrors).length === 0) {
-          matchingControl.setErrors(null);
-        } else {
-          matchingControl.setErrors(otherErrors);
-        }
-      } else {
-        matchingControl.setErrors(null);
-      }
+      matchingControl.setErrors(null);
     }
   };
 }
 
-// Alias para compatibilidad
+// Alias para compatibilidad con código existente
 export function mustMatch(controlName: string, matchingControlName: string) {
   return MustMatch(controlName, matchingControlName);
 }

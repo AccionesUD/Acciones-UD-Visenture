@@ -5,7 +5,7 @@
         i18n="@@user-edit.dialog.title">
       Editar Usuario
     </h2>
-    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors" i18n-title="@@user-edit.close-dialog.tooltip" title="Cerrar diálogo">
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
       <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
     </button>
   </div>
@@ -29,9 +29,11 @@
 
         <!-- Campos del formulario -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
           <!-- Nombre -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.first-name.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+                   i18n="@@user-edit.first-name.label">
               Nombre <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -56,7 +58,8 @@
 
           <!-- Apellido -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.last-name.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+                   i18n="@@user-edit.last-name.label">
               Apellido <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -81,7 +84,8 @@
 
           <!-- Email -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.email.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+                   i18n="@@user-edit.email.label">
               Correo Electrónico <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -105,9 +109,9 @@
           </div>
 
           <!-- Teléfono -->
-          <!--
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.phone-number.label">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" 
+                   i18n="@@user-edit.phone-number.label">
               Número de Teléfono <span class="text-red-500">*</span>
             </label>
             <div class="relative">
@@ -129,59 +133,7 @@
               {{ getFieldErrorMessage('phone_number') }}
             </p>
           </div>
-          -->
 
-          <!-- Roles (checkbox múltiple) -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.roles.label">
-              Roles <span class="text-red-500">*</span>
-            </label>
-            <div class="flex flex-wrap gap-3">
-              <ng-container *ngFor="let role of roles">
-                <label class="inline-flex items-center gap-2">
-                  <input type="checkbox"
-                         [value]="role.name"
-                         [checked]="editForm.value.roles?.includes(role.name)"
-                         (change)="onRoleCheckboxChange($event, role.name)"
-                         class="form-checkbox h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-                         i18n-title="@@user-edit.roles.checkbox.tooltip"
-                         [title]="'Seleccionar rol ' + (role.displayName || role.name)"
-                  >
-                  <span i18n="@@user-edit.roles.checkbox.label">{{ role.displayName || role.name }}</span>
-                </label>
-              </ng-container>
-            </div>
-            <p *ngIf="hasFieldError('roles')" class="text-sm text-red-600 dark:text-red-400">
-              {{ getFieldErrorMessage('roles') }}
-            </p>
-          </div>
-
-          <!-- Dirección -->
-          <!--
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.address.label">
-              Dirección <span class="text-red-500">*</span>
-            </label>
-            <div class="relative">
-              <input 
-                type="text" 
-                formControlName="address" 
-                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
-                [class.border-red-500]="hasFieldError('address')"
-                [class.focus:border-red-500]="hasFieldError('address')"
-                [class.focus:ring-red-500]="hasFieldError('address')"
-                placeholder="Ingresa la dirección"
-                i18n-placeholder="@@user-edit.address.placeholder"
-              >
-              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('address')">home</mat-icon>
-              </div>
-            </div>
-            <p *ngIf="hasFieldError('address')" class="text-sm text-red-600 dark:text-red-400">
-              {{ getFieldErrorMessage('address') }}
-            </p>
-          </div>
-          -->
         </div>
 
         <!-- Información adicional -->

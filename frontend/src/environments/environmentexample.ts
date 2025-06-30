@@ -1,4 +1,4 @@
-// filepath: /workspaces/Acciones-UD-Visenture/frontend/src/environments/environment.ts
+// filepath: /workspaces/Acciones-UD-Visenture/frontend/src/environments/environmentexample.ts
 export const environmentExample = {
     production: true,
     apiUrl: 'https://api.example.com/v1',

@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                              <div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8">
   <!-- Estado de carga -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-16">
     <mat-spinner diameter="50"></mat-spinner>
@@ -183,7 +183,7 @@
                 <button mat-stroked-button color="primary" (click)="navigateToShareDetail(share)" class="text-xs" i18n="@@market.detail.view.details">
                   Ver detalles
                 </button>
-                <button mat-flat-button color="accent" (click)="buyShare(share)" [disabled]="!share.tradable" class="text-xs" i18n="@@market.detail.buy.button">
+                <button mat-flat-button color="accent" (click)="buyShare(share)" [disabled]="!stock.is_open" class="text-xs" i18n="@@market.detail.buy.button">
                   Comprar
                 </button>
               </div>
@@ -204,8 +204,7 @@
                 <th class="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase" i18n="@@market.detail.table.actions">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr *ngFor="let share of shares" class="border-t border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+            <tbody>              <tr *ngFor="let share of shares" class="border-t border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
                 <td class="py-3 px-4 font-medium">{{ share.symbol }}</td>
                 <td class="py-3 px-4">{{ share.name_share }}</td>
                 <td class="py-3 px-4">{{ share.class }}</td>
@@ -217,15 +216,14 @@
                     <ng-container *ngIf="share.status" i18n="@@market.detail.status.active">Activa</ng-container>
                     <ng-container *ngIf="!share.status" i18n="@@market.detail.status.inactive">Inactiva</ng-container>
                   </span>
-                </td>
-                <td class="py-2 px-4 text-right">
+                </td>                <td class="py-2 px-4 text-right">
                   <button mat-icon-button color="primary" (click)="navigateToShareDetail(share)" i18n-matTooltip="@@market.detail.tooltip.view.details" matTooltip="Ver detalles">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button mat-icon-button color="accent" (click)="buyShare(share)" [disabled]="!share.tradable" i18n-matTooltip="@@market.detail.tooltip.buy.share" matTooltip="Comprar acción">
+                  <button mat-icon-button color="accent" (click)="buyShare(share)" [disabled]="!stock.is_open || !share.tradable" i18n-matTooltip="@@market.detail.tooltip.buy.share" matTooltip="Comprar acción">
                     <mat-icon>shopping_cart</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="sellShare(share)" [disabled]="!share.tradable" i18n-matTooltip="@@market.detail.tooltip.sell.share" matTooltip="Vender acción">
+                  <button mat-icon-button color="warn" (click)="sellShare(share)" [disabled]="!stock.is_open || !share.tradable" i18n-matTooltip="@@market.detail.tooltip.sell.share" matTooltip="Vender acción">
                     <mat-icon>sell</mat-icon>
                   </button>
                 </td>
@@ -233,6 +231,7 @@
             </tbody>
           </table>
         </div>
+
       </div>
     </div>
   </div>

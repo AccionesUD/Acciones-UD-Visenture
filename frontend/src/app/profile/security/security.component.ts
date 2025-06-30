@@ -13,7 +13,6 @@ import { ProfileService } from '../../services/profile.service';
 import { ProfileNavigationService } from '../../services/profile-navigation.service';
 import { ChangePasswordDto } from '../../models/user.model';
 import { MustMatch } from '../../helpers/must-match.validator';
-import { strongPasswordValidator } from '../../helpers/strong-password.validator';
 
 @Component({
   selector: 'app-security',
@@ -52,10 +51,10 @@ export class SecurityComponent implements OnInit {
   ) {
     this.passwordForm = this.fb.group({
       current_password: ['', [Validators.required]],
-      new_password: ['', [Validators.required, Validators.minLength(8), strongPasswordValidator()]],
+      new_password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)]],
       confirm_password: ['', Validators.required]
     }, {
-      validator: MustMatch('current_password', 'confirm_password')
+      validator: MustMatch('new_password', 'confirm_password')
     });
   }
 
@@ -77,87 +76,76 @@ export class SecurityComponent implements OnInit {
     // Mostrar indicador de carga
     this.isLoading = true;
 
-    // Preparar datos para cambio de contraseña (nombres esperados por el backend)
-    const passwordData = {
-      currentPassword: this.passwordForm.value.current_password,
-      newPassword: this.passwordForm.value.new_password
+    // Preparar datos para cambio de contraseña
+    const passwordData: ChangePasswordDto = {
+      current_password: this.passwordForm.value.current_password,
+      new_password: this.passwordForm.value.new_password,
+      confirm_password: this.passwordForm.value.confirm_password
     };
 
     // Llamada al servicio
     this.profileService.changePassword(passwordData).subscribe({
       next: (response) => {
         this.isLoading = false;
-        if (response && response.success) {
+        
+        if (response.success) {
           // Éxito en el cambio de contraseña
           this.passwordChanged = true;
-          this.changeError = null;
           this.snackBar.open('Contraseña actualizada correctamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar', 'snackbar-success']
+            duration: 5000,
+            panelClass: ['success-snackbar']
           });
+          
+          // Limpiar formulario
           this.passwordForm.reset();
           this.formSubmitted = false;
+          
+          // Restaurar visibilidad de contraseñas
           this.hideCurrentPassword = true;
           this.hideNewPassword = true;
           this.hideConfirmPassword = true;
-          setTimeout(() => window.location.reload(), 1200);
         } else {
-          // Error según la API o respuesta inesperada
-          this.passwordChanged = false;
-          this.changeError = response?.message || 'Error al cambiar contraseña';
+          // Error según la API
+          this.changeError = response.message || 'Error al cambiar contraseña';
           this.snackBar.open(this.changeError, 'Cerrar', {
             duration: 5000,
-            panelClass: ['error-snackbar', 'snackbar-error']
+            panelClass: ['error-snackbar']
           });
         }
       },
       error: (err) => {
+        // Error de comunicación o inesperado
         this.isLoading = false;
-        this.passwordChanged = false;
-        let errorMsg = 'Error al comunicarse con el servidor';
-        if (err?.error?.message) {
-          errorMsg = err.error.message;
-        } else if (err?.message) {
-          errorMsg = err.message;
-        }
-        this.changeError = errorMsg;
+        this.changeError = 'Error al comunicarse con el servidor';
         console.error('Error al cambiar contraseña:', err);
-        this.snackBar.open(errorMsg, 'Cerrar', {
+        this.snackBar.open(this.changeError, 'Cerrar', {
           duration: 5000,
-          panelClass: ['error-snackbar', 'snackbar-error']
+          panelClass: ['error-snackbar']
         });
       }
     });
   }
 
-  getCurrentPasswordErrorMessage(): string {
-    const control = this.passwordForm.get('current_password');
-    if (control?.hasError('required')) {
-      return 'La contraseña actual es requerida';
-    }
-    return '';
-  }
-
   getNewPasswordErrorMessage(): string {
-    const control = this.passwordForm.get('new_password');
-    if (control?.hasError('required')) {
+    const passwordControl = this.passwordForm.get('new_password');
+    if (passwordControl?.hasError('required')) {
       return 'La nueva contraseña es requerida';
     }
-    if (control?.hasError('minlength')) {
+    if (passwordControl?.hasError('minlength')) {
       return 'La contraseña debe tener al menos 8 caracteres';
     }
-    if (control?.hasError('strongPassword')) {
-      return 'La contraseña debe incluir mayúsculas, números y caracteres especiales';
+    if (passwordControl?.hasError('pattern')) {
+      return 'La contraseña debe incluir mayúsculas, minúsculas, números y caracteres especiales';
     }
     return '';
   }
 
   getConfirmPasswordErrorMessage(): string {
-    const control = this.passwordForm.get('confirm_password');
-    if (control?.hasError('required')) {
+    const confirmControl = this.passwordForm.get('confirm_password');
+    if (confirmControl?.hasError('required')) {
       return 'Confirme su contraseña';
     }
-    if (control?.hasError('mustMatch')) {
+    if (confirmControl?.hasError('mustMatch')) {
       return 'Las contraseñas no coinciden';
     }
     return '';

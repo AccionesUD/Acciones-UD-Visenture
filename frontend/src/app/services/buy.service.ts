@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { BuyOrder } from '../models/buy.model';
-import { environment } from '../../environments/environment';
-import { map, tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { BuyOrder, BuyResponse } from '../models/buy.model';
+import { delay } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,39 +10,27 @@ import { map, tap } from 'rxjs/operators';
 export class BuysService {
   constructor(private http: HttpClient) {}
 
-  submitBuyOrder(order: BuyOrder): Observable<any> {
-    console.log('[BuysService] Enviando orden de compra al backend:', order); // LOG para depuración
-    // Mostrar ejemplo de cómo se debe enviar la petición
-    console.log('[BuysService] Ejemplo de petición enviada:', {
-      url: `${environment.apiUrl}/orders`,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer <token>'
-      },
-      body: order
-    });
-    return this.http.post<any>(`${environment.apiUrl}/orders`, order, { observe: 'response' }).pipe(
-      // Normalización de la respuesta para robustez
-      // Si el backend responde { status: true }, lo mapeamos a { success: true }
-      // Si responde { success: true }, lo dejamos igual
-      // Si no, devolvemos success: false
-      // El componente solo debe usar response.success
-      // Además, log completo de la respuesta
-      tap(resp => {
-        console.log('[BuysService] Respuesta cruda del backend:', resp);
-      }),
-      map((resp: any) => {
-        // Si la respuesta es HttpResponse, extraemos el body
-        const body = resp?.body || resp;
-        if (body && typeof body === 'object') {
-          if (typeof body.success === 'boolean') {
-            return { ...body, httpStatus: resp.status };
-          } else if (typeof body.status === 'boolean') {
-            return { ...body, success: body.status, httpStatus: resp.status };
-          }
-        }
-        return { success: false, message: body?.message || 'Respuesta inesperada del servidor', data: body, httpStatus: resp.status };
-      })
-    );
+  checkFundsAvailability(amount: number): Observable<boolean> {
+    // En una aplicación real, esto haría una llamada HTTP para verificar el saldo
+    // Simulamos una respuesta exitosa si el monto es menor a 10 millones
+    return of(amount <= 10000000).pipe(delay(500));
+  }
+
+  submitBuyOrder(order: BuyOrder): Observable<BuyResponse> {
+    // En una aplicación real, esto enviaría la orden al servidor
+    // Simulamos una respuesta exitosa con un retraso
+    const response: BuyResponse = {
+      success: true,
+      status: order.orderType === 'market' ? 'completed' : 'pending',
+      orderId: `ORD-${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+      filledQuantity: order.orderType === 'market' ? order.quantity : undefined,
+      boughtAt: order.price,
+      totalAmount: order.quantity * (order.price || 0),
+      fee: order.quantity * (order.price || 0) * 0.005,
+      submittedAt: new Date(),
+      filledAt: order.orderType === 'market' ? new Date() : undefined
+    };
+
+    return of(response).pipe(delay(1000));
   }
 }

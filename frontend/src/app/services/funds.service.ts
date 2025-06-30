@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AccountBalance, AddFundsRequest, Payment, PaymentResponse } from '../models/payment.model';
 
@@ -16,66 +16,56 @@ export class FundsService {
   /**
    * Obtiene el saldo actual de la cuenta del usuario
    */
-  getAccountBalance(): Observable<any> {
-    // Llamada real al backend para ver la estructura del balance
-    return this.http.get<any>(`${this.apiUrl}/accounts/balance`).pipe(
-      tap(balance => {
-        console.log('Balance recibido del backend:', balance);
-      }),
-      catchError(this.handleError<any>('getAccountBalance'))
+  getAccountBalance(): Observable<AccountBalance> {
+    // En producción: return this.http.get<AccountBalance>(`${this.apiUrl}/account/balance`);
+    
+    // Mock para desarrollo
+    return of({
+      id: 1,
+      user_id: 1,
+      balance: 5000.00,
+      available_balance: 4200.00,
+      pending_funds: 800.00,
+      currency: 'USD',
+      last_deposit: {
+        amount: 1000.00,
+        date: new Date(new Date().setDate(new Date().getDate() - 3)),
+        status: 'completed'
+      },
+      updated_at: new Date()
+    } as AccountBalance).pipe(
+      tap(balance => console.log('Account balance loaded:', balance)),
+      catchError(this.handleError<AccountBalance>('getAccountBalance'))
     );
   }
 
   /**
    * Añade fondos a la cuenta del usuario
    */
-  addFunds(amount: number): Observable<PaymentResponse> {
-    // Llamada real al backend para fondeo
-    return this.http.post<any>(`${this.apiUrl}/accounts/funding`, { amountTranfer: amount }).pipe(
-      tap(response => {
-        console.log('[FundsService] Respuesta de fondeo:', response);
-      }),
-      // Mapeo robusto: acepta 'succes' o 'success' y normaliza la respuesta
-      // para que el componente solo use 'success'
-      // Si la respuesta es null o no tiene success, se fuerza a error
-      // Se mantiene el resto de campos (message, data, etc)
-      // Si la respuesta es un error HTTP, se maneja en catchError
-      // Si la respuesta es un objeto, se normaliza
-      // Si no, se retorna un error genérico
-      // El componente solo debe usar response.success
-      //
-      // Nota: PaymentResponse debe tener success: boolean, message: string, data?: any
-      //
-      // Si el backend responde 'succes', lo mapeamos a 'success'
-      // Si responde 'success', lo dejamos igual
-      // Si no responde ninguno, devolvemos success: false
-      //
-      // El catchError ya retorna un objeto con success: false
-      //
-      // Usamos map de rxjs
-      map((resp: any) => {
-        if (resp && typeof resp === 'object') {
-          if (typeof resp.success === 'boolean') {
-            return resp;
-          } else if (typeof resp.succes === 'boolean') {
-            return { ...resp, success: resp.succes };
-          } else {
-            return { success: false, message: resp.message || 'Respuesta inesperada del servidor', data: resp };
-          }
-        }
-        return { success: false, message: 'Respuesta inválida del servidor', data: resp };
-      }),
-      catchError(error => {
-        console.error('[FundsService] Error en addFunds:', error);
-        return this.handleError<PaymentResponse>('addFunds')({ success: false, message: 'Error en la transacción', data: error });
-      })
+  addFunds(request: AddFundsRequest): Observable<PaymentResponse> {
+    // En producción: return this.http.post<PaymentResponse>(`${this.apiUrl}/account/add-funds`, request);
+    
+    // Mock para desarrollo
+    return of({
+      success: true,
+      message: 'Fondos añadidos correctamente',
+      payment: {
+        id: Math.floor(Math.random() * 1000) + 1,
+        amount: request.amount,
+        description: request.description || 'Depósito de fondos',
+        status: 'pending',
+        date_created: new Date(),
+      }
+    } as PaymentResponse).pipe(
+      tap(response => console.log('Funds added:', response)),
+      catchError(this.handleError<PaymentResponse>('addFunds'))
     );
   }
 
   /**
    * Obtiene el historial de pagos del usuario
    */
-  /**getPaymentsHistory(page: number = 1, limit: number = 10): Observable<Payment[]> {
+  getPaymentsHistory(page: number = 1, limit: number = 10): Observable<Payment[]> {
     // En producción: return this.http.get<Payment[]>(`${this.apiUrl}/account/payments?page=${page}&limit=${limit}`);
     
     // Mock para desarrollo
@@ -107,7 +97,7 @@ export class FundsService {
       tap(payments => console.log('Payments history loaded:', payments)),
       catchError(this.handleError<Payment[]>('getPaymentsHistory', []))
     );
-  }**/
+  }
 
   /**
    * Maneja errores HTTP

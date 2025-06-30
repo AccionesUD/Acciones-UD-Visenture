@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { catchError, map, tap, switchMap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
+
 import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
 
 /**
@@ -13,7 +14,7 @@ import { Stock, StockInitResponse, MarketClock } from '../models/stock.model';
   providedIn: 'root'
 })
 export class StocksService {
-  private apiUrl = `${environment.apiUrl}/stocks`;
+  private apiUrl = `${environmentExample.apiUrl}/stocks`;
   private stocksSubject = new BehaviorSubject<Stock[] | null>(null);
   public stocks$ = this.stocksSubject.asObservable();
   

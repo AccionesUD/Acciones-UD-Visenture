@@ -31,15 +31,13 @@ export interface User {
   email: string;
   phone_number: string;
   birthdate?: Date;
-  role?: string; // Rol principal (opcional, para compatibilidad)
-  roles: Array<'admin' | 'commissioner' | 'client' | 'usuario_premium' | string>; // Array de roles reales
+  role?: 'admin' | 'commissioner' | 'client'; // Roles posibles
   status?: 'active' | 'inactive' | 'pending'; // Estados posibles
   password?: string; // Contraseña para creación o actualización
   email_verified_at?: string;
   created_at?: string;
   updated_at?: string;
   last_login?: string;
-  address?: string; 
 }
 
 /**
@@ -72,7 +70,6 @@ export type ChartOptions = {
 export interface UpdateProfileDto {
   email?: string;
   phone_number?: string;
-  address?: string;
 }
 
 /**

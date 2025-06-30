@@ -155,8 +155,49 @@
             </div>
           </div>
           
+          <!-- Campo de método de pago -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="addFunds|Payment method label">Método de Pago</label>
+            <div class="relative">
+              <select
+                formControlName="payment_method"
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 payment-method-select"
+              >
+                <option *ngFor="let method of paymentMethods" [value]="method.value" class="payment-method-option">
+                  {{ method.label }}
+                </option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400">account_balance</mat-icon>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Campo de descripción -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="addFunds|Description label">Descripción (Opcional)</label>
+            <div class="relative">
+              <textarea 
+                formControlName="description" 
+                rows="3"
+                placeholder="Añade una nota o referencia para este depósito"
+                i18n-placeholder="addFunds|Description placeholder"
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-slate-700 py-2 px-3 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50"
+              ></textarea>
+              <div class="absolute top-2 right-0 flex items-start pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400">description</mat-icon>
+              </div>
+            </div>
+          </div>
+          
           <!-- Botón de envío -->
-          <div class="flex items-center justify-end pt-4">
+          <div class="flex items-center justify-between pt-4">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              <span class="flex items-center">
+                <mat-icon class="mr-1 text-base">shield</mat-icon>
+                <span i18n="addFunds|Secure transaction">Transacción segura</span>
+              </span>
+            </div>
             <button 
               type="submit" 
               class="add-funds-button relative bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-medium rounded-lg px-6 py-2.5 shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-150 ease-in-out flex items-center"

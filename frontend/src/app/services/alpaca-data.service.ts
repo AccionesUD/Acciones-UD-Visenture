@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, catchError } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
-import { environment} from '../../environments/environment';
+import { environmentExample } from '../../environments/environmentexample';
 import { MarketClock } from '../models/stock.model';
 import { StockBar } from '../models/share.model';
 import { AlpacaNews, GetNewsParams } from '../models/news.model';
@@ -24,14 +24,14 @@ import {
 @Injectable({ providedIn: 'root' })
 export class AlpacaDataService {
   // URLs base para diferentes endpoints de la API de Alpaca
-  private baseUrl = environment.alpaca.baseUrl;            // Trading endpoints (v2 - clock, assets)
-  private dataBaseUrl = environment.alpaca.dataBaseUrl;    // Data endpoints (v2 - bars, quotes, trades)
+  private baseUrl = environmentExample.alpaca.baseUrl;            // Trading endpoints (v2 - clock, assets)
+  private dataBaseUrl = environmentExample.alpaca.dataBaseUrl;    // Data endpoints (v2 - bars, quotes, trades)
   private newsBaseUrl = 'https://data.alpaca.markets/v1beta1/news'; // Endpoint específico para noticias (v1beta1)
   
   // Headers comunes para todas las peticiones a Alpaca
   private headers = new HttpHeaders({
-    'APCA-API-KEY-ID': environment.alpaca.apiKey,
-    'APCA-API-SECRET-KEY': environment.alpaca.secretKey,
+    'APCA-API-KEY-ID': environmentExample.alpaca.apiKey,
+    'APCA-API-SECRET-KEY': environmentExample.alpaca.secretKey,
     'accept': 'application/json'
   });
 

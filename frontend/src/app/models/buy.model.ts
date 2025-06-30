@@ -1,11 +1,13 @@
 export interface BuyOrder {
-  symbol: string; // stockSymbol
-  qty: number; // quantity
-  side: 'buy';
-  type: 'market' | 'limit' | 'stop-loss';
-  time_in_force: 'day' | 'gtc' | 'ioc';
-  account_commissioner?: string; // ID del comisionista si aplica
-  limit_price?: number; // Solo para órdenes limit/stop-loss
+  stockId: string;
+  stockSymbol: string;
+  quantity: number;
+  orderType: 'market' | 'limit' | 'stop-loss';
+  price?: number;
+  limitPrice?: number;
+  timeInForce: 'day' | 'gtc' | 'ioc';
+  extendedHours: boolean;
+  clientId?: number; // ID del cliente si el comisionista está haciendo la orden para un cliente
 }
 
 export interface BuyResponse {

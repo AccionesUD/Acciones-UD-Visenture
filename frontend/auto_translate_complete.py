@@ -135,7 +135,7 @@ class AutomaticTranslator:
         # Control de rate limiting
         if self.request_count >= self.max_requests_per_minute:
             print("Rate limit reached, waiting...")
-            time.sleep(20)
+            time.sleep(60)
             self.request_count = 0
         
         # Intentar diferentes métodos de traducción
@@ -178,7 +178,7 @@ class AutomaticTranslator:
             print(f"LibreTranslate failed: {e}")
         
         # Sistema de reintentos con espera exponencial
-        max_retries = 0
+        max_retries = 3
         retry_count = 0
         
         while retry_count < max_retries:
@@ -200,17 +200,20 @@ class AutomaticTranslator:
             
             for translate_func, service_name in retry_services:
                 try:
+                    print(f"Retrying with {service_name}...")
                     translated = translate_func(text_to_translate, target_lang, source_lang)
                     if translated and translated != text_to_translate:
                         # Restaurar expresiones ICU en el texto traducido
                         if icu_placeholders:
                             translated = restore_icu_parts(translated, icu_placeholders, icu_originals)
                         self.translation_cache[cache_key] = translated
+                        print(f"Retry successful with {service_name}")
                         return translated
                 except Exception as e:
                     print(f"{service_name} retry failed: {e}")
         
         # Si todo falla después de los reintentos, devolver texto original
+        print(f"Warning: Could not translate '{text_to_translate[:50]}...' to {target_lang} after {max_retries} retry attempts")
         return text  # Devolvemos el texto original completo con las expresiones ICU intactas
     
     def _translate_with_google(self, text: str, target_lang: str, source_lang: str) -> Optional[str]:
@@ -403,12 +406,16 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
             # Solo traducir textos que no contengan elementos XML complejos y no estén vacíos
             if '<x id=' in source_text or '</' in source_text or not source_text_clean:
                 skipped_translations += 1
+                print(f"Skipped complex/empty text: '{source_text_clean[:50]}...'")
                 return trans_unit
             
             # Detectar expresiones ICU en el texto source
             icu_pattern = r'\{([A-Z_]+),[^{}]+\}'
             has_icu = re.search(icu_pattern, source_text_clean)
-
+            if has_icu:
+                print(f"Detected ICU expression in: '{source_text_clean[:50]}...'")
+                # Si es una expresión ICU, la manejaremos con nuestra función especial de traducción que preserva las keywords
+            
             # Verificar si ya tiene target
             has_target = f'<{ns_prefix}target>' in trans_unit
             
@@ -417,6 +424,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                 has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
                 
                 # Traducir el texto
+                print(f"Translating ({total_translations}): '{source_text_clean[:60]}...'")
                 translated_text = translator.translate_text(source_text_clean, target_lang)
                 
                 if translated_text and translated_text != source_text_clean:
@@ -447,6 +455,9 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                     target_element = f'\n        <{ns_prefix}target>{translated_text}</{ns_prefix}target>'
                     trans_unit = trans_unit.replace(f'</{ns_prefix}source>', f'</{ns_prefix}source>{target_element}')
                     
+                    print(f"✓ Translated: '{source_text_clean}' -> '{translated_text}'")
+                else:
+                    print(f"✗ Failed to translate: '{source_text_clean}'")
             else:
                 # Ya tiene target, verificar si necesita actualización
                 target_pattern = f'<{ns_prefix}target>(.*?)</{ns_prefix}target>'
@@ -460,6 +471,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                         # Detectar entidades HTML en el texto original
                         has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
                         
+                        print(f"Updating empty target ({total_translations}): '{source_text_clean[:60]}...'")
                         translated_text = translator.translate_text(source_text_clean, target_lang)
                         
                         if translated_text and translated_text != source_text_clean:
@@ -488,6 +500,7 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                             
                             # Actualizar target
                             trans_unit = re.sub(target_pattern, f'<{ns_prefix}target>{translated_text}</{ns_prefix}target>', trans_unit)
+                            print(f"✓ Updated: '{source_text_clean}' -> '{translated_text}'")
                         else:
                             print(f"✗ Failed to update: '{source_text_clean}'")
         
