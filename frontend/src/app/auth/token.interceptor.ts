@@ -4,7 +4,7 @@ import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { environmentExample } from '../../environments/environmentexample';
+import { environment} from '../../environments/environment';
 
 // Interceptor funcional para Angular 17+
 export function tokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {  // Rutas públicas que no necesitan autenticación
@@ -18,7 +18,7 @@ export function tokenInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn)
   ];
 
   // Si la petición es a una ruta pública o no es a nuestra API, no añadimos el token
-  if (!req.url.includes(environmentExample.apiUrl) || 
+  if (!req.url.includes(environment.apiUrl) || 
       publicRoutes.some(route => req.url.includes(route))) {
     return next(req);
   }
@@ -64,7 +64,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Si la petición no va a nuestra API, no añadimos el token
-    if (!request.url.includes(environmentExample.apiUrl) && !request.url.includes(environmentExample.authApiUrl)) {
+    if (!request.url.includes(environment.apiUrl) && !request.url.includes(environment.authApiUrl)) {
       return next.handle(request);
     }
 

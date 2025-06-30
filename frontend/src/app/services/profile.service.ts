@@ -4,14 +4,13 @@ import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
-import { environmentExample } from '../../environments/environmentexample';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = environmentExample.apiUrl;
+  private apiUrl = environment.apiUrl;
   
   // BehaviorSubject para mantener el perfil del usuario actual
   private userProfileSubject = new BehaviorSubject<User | null>(null);
@@ -66,23 +65,43 @@ export class ProfileService {
    * Obtiene el perfil completo del usuario
    */
   getUserProfile(): Observable<User> {
-    // Si ya tenemos el perfil en caché, lo retornamos
-    if (this.userProfileSubject.value) {
-      return of(this.userProfileSubject.value);
-    }
-    
-    // En producción: return this.http.get<User>(`${this.apiUrl}/profile`).pipe(...
+    return this.http.get<any>(`${this.apiUrl}/users/perfilCompleto`).pipe(
+      map((data: any) => {
+        // Mapear la respuesta del backend a la estructura User esperada
+        return {
+          id: data.id || null,
+          identity_document: data.identity_document || '',
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+          email: data.email || '',
+          phone_number: data.phone || '', // Mapeo correcto
+          address: data.address || '',    // Mapeo correcto
+          birthdate: data.birthdate || null
+        } as User;
+      }),
+      tap((profile: User) => {
+        this.userProfileSubject.next(profile);
+      }),
+      catchError(this.handleError<User>('getUserProfile'))
+    );
     
     // Mock para desarrollo
     const mockProfile: User = {
       id: 1,
-      identity_document: '1234567890',
-      first_name: 'Juan',
-      last_name: 'Pérez',
-      email: 'juan.perez@example.com',
-      phone_number: '+57 300 123 4567',
-      birthdate: new Date('1990-01-15'),
-      
+      identity_document: '123456789',
+      first_name: 'Mock',
+      last_name: 'User',
+      email: 'mock@user.com',
+      phone_number: '555-0101',
+      birthdate: new Date(),
+      role: 'admin',
+      roles: ['admin'],
+      status: 'active',
+      email_verified_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      last_login: new Date().toISOString(),
+      address: 'Calle Falsa 123'
     };
     
     return of(mockProfile).pipe(
