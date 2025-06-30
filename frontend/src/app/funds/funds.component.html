@@ -22,10 +22,13 @@
           </div>
       </mat-tab>
       <mat-tab>
-          <ng-template mat-tab-label>
-              <mat-icon class="mr-2">history</mat-icon>
-              <ng-container i18n="funds|Transaction history tab">Historial de Transacciones</ng-container>
-          </ng-template>
+        <ng-template mat-tab-label>
+          <mat-icon class="mr-2">history</mat-icon>
+          <ng-container i18n="funds|Transaction history tab">Historial de Transacciones</ng-container>
+        </ng-template>
+        <div class="py-6">
+          <app-transactions-history></app-transactions-history>
+        </div>
       </mat-tab>
     </mat-tab-group>
   </div>

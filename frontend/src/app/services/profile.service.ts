@@ -5,6 +5,7 @@ import { catchError, tap, map } from 'rxjs/operators';
 import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
 import { environment } from '../../environments/environment';
+import { Order } from '../models/order.model'; 
 
 @Injectable({
   providedIn: 'root'
@@ -236,6 +237,15 @@ export class ProfileService {
     return of(mockTickers).pipe(
       tap(tickers => console.log('Tickers loaded:', tickers.length)),
       catchError(this.handleError<{ticker: string, name: string}[]>('getAvailableTickers', []))
+    );
+  }
+
+  getOrdersHistory(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/accounts/orders`).pipe(
+      tap(orders => {
+        console.log('Respuesta original del backend (historial de órdenes):', JSON.stringify(orders, null, 2));
+      }),
+      catchError(this.handleError<Order[]>('getOrdersHistory', []))
     );
   }
 

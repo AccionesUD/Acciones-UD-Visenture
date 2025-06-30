@@ -210,7 +210,7 @@
           </button>
         </div>
 
-        <div class="relative group">
+        <div class="relative group z-50">
           <button class="flex items-center justify-center rounded-full hover:bg-emerald-50 dark:hover:bg-slate-800 transition duration-200 p-1">
             <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white">
               {{ (username ? username.charAt(0) : 'U') | uppercase }}
@@ -220,6 +220,7 @@
             <div class="block px-4 py-2 text-sm font-medium text-gray-900 dark:text-white border-b border-gray-100 dark:border-slate-700">
               {{ username || 'Usuario' }}
             </div>
+            <a [routerLink]="['/profile']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.my_profile">Mi Perfil</a>            
             <a [routerLink]="['/markets']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.markets">Mercados</a>
             <!-- Opción de gestión de fondos -->
             <a [routerLink]="['/funds']" class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center">
@@ -230,8 +231,6 @@
             </a>
             <!-- Opción del Panel de Comisionista en el menú desplegable, temporalmente visible para todos -->
             <a [routerLink]="['/commissioner-panel']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.commissioner_panel">Panel de Comisionista</a>
-            <a [routerLink]="['/profile']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.my_profile">Mi Perfil</a>
-            <a [routerLink]="['/dashboard']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.settings">Configuración</a>
             <a [routerLink]="['/users']" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400" i18n="@@navbar.manage_users">Administrar Usuarios</a>
             <button (click)="logout()" class="w-full text-left block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-emerald-50 dark:hover:bg-slate-700" i18n="@@auth.logout">Cerrar Sesión</button>
           </div>
@@ -267,7 +266,6 @@
         <a [routerLink]="['/mercados']" class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.markets">
           Mercados
         </a>        
-        <a href="#" class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.settings">Configuración</a>
         <button (click)="logout()" class="w-full text-left block py-2 text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition duration-200" i18n="@@auth.logout">
           Cerrar Sesión
         </button>
@@ -329,13 +327,6 @@
           <span i18n="@@navbar.portfolios">Portafolios</span>
         </a>
         
-        <a [routerLink]="['/ordenes']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
-          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <span i18n="@@navbar.orders">Órdenes</span>
-        </a>
-        
         <a [routerLink]="['/markets']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
           <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
@@ -358,15 +349,6 @@
           </svg>
           <span i18n="@@navbar.reports">Informes</span>
         </a>
-        
-        <a [routerLink]="['/configuracion']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
-          <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span i18n="@@navbar.settings">Configuración</span>
-        </a>
-
         <!-- Enlace a la administración de usuarios -->
         <a [routerLink]="['/users']" (click)="navigateAndClose()" class="group flex items-center px-2 py-2 text-base font-medium rounded-md text-emerald-100 hover:bg-emerald-700 dark:hover:bg-slate-700 hover:text-white">
           <svg class="mr-4 h-6 w-6 text-emerald-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

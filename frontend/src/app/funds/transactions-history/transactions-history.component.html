@@ -1,0 +1,27 @@
+<div *ngIf="loading" class="text-center py-8">
+  Cargando transacciones...
+</div>
+<div *ngIf="error" class="text-red-600 text-center py-4">{{ error }}</div>
+<table *ngIf="!loading && !error && transactions.length" class="min-w-full divide-y divide-gray-200">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Tipo</th>
+      <th>Monto</th>
+      <th>Fecha</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let tx of transactions">
+      <td>{{ tx.id }}</td>
+      <td>{{ tx.type_transaction }}</td>
+      <td>{{ tx.value_transaction | currency:'COP':'symbol' }}</td>
+      <td>{{ tx.date_create | date:'short' }}</td>
+      <td>{{ tx.status }}</td>
+    </tr>
+  </tbody>
+</table>
+<div *ngIf="!loading && !error && !transactions.length" class="text-center py-8 text-gray-500">
+  No hay transacciones registradas.
+</div>
