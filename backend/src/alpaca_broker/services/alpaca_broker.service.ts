@@ -82,5 +82,18 @@ export class AlpacaBrokerService {
         }
     }
 
+
+    async cancelOrder(order_id_alpaca: string, account_id_alpaca: string){
+        const url = RoutesEndpointsBroker.cancelOrder(order_id_alpaca, account_id_alpaca)
+        try {
+            const response: AxiosResponse<any> = await firstValueFrom(
+                this.httpService.delete(url)
+            )
+            return response.status
+        } catch (error) {
+             throw new BadRequestException(error.response.data)
+        }
+    }
+
 }
 

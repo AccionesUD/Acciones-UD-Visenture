@@ -19,13 +19,13 @@ export class Order {
     @UpdateDateColumn({nullable: true})
     update_at: Date
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     filled_at?: Date
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     canceled_at?: Date
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     expired_at?: Date
 
     @ManyToOne(() => Share)
