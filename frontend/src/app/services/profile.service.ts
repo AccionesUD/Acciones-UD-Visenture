@@ -6,6 +6,7 @@ import { UserPreferences } from '../models/notification.model';
 import { User, UpdateProfileDto, ChangePasswordDto, ProfileUpdateResponse } from '../models/user.model';
 import { environmentExample } from '../../environments/environmentexample';
 
+
 @Injectable({
   providedIn: 'root'
 })

@@ -6,6 +6,7 @@ import { Portfolio, PortfolioShare, PortfolioSummary, PortfolioPosition } from '
 import { SellOrder, SellResponse } from '../models/sell.model';
 import { environmentExample } from '../../environments/environmentexample';
 
+
 @Injectable({
   providedIn: 'root'
 })
