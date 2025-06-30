@@ -19,9 +19,16 @@ import { Briefcase } from 'src/briefcases/entities/briefcases.entity';
 import { BriefcaseModule } from 'src/briefcases/briefcases.module';
 
 @Module({
-  imports: [BriefcaseModule, forwardRef(() => AccountsModule), TypeOrmModule.forFeature([Order, Commission, OrderCommissions]),HttpModule, forwardRef(() => AccountsModule), SharesModule, AlpacaMarketModule, AlpacaBrokerModule, TransactionsModule],
+  imports: [
+    BriefcaseModule, forwardRef(() => AccountsModule),
+    TypeOrmModule.forFeature([Order, Commission, OrderCommissions]), 
+    HttpModule, forwardRef(() => AccountsModule), 
+    forwardRef(() => SharesModule), 
+    AlpacaMarketModule, 
+    AlpacaBrokerModule, 
+    TransactionsModule],
   controllers: [OrdersController],
   providers: [OrdersService, FactoryOrder, PurchaseOrder, SalesOrder],
   exports: [OrdersService]
 })
-export class OrdersModule {}
+export class OrdersModule { }

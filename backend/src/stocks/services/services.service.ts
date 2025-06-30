@@ -1,19 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { Stock } from '../entities/stocks.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class ServicesService {
+  private readonly MARKET_STATUS_CACHE_PREFIX = 'market_status_';
+  private readonly MARKET_HOURS_CACHE_PREFIX = 'market_hours_';
+  private readonly CACHE_TTL = 60 * 5; // 5 minutes
+
   constructor(
     @InjectRepository(Stock)
     private readonly stockRepo: Repository<Stock>,
     private readonly configService: ConfigService,
     private readonly httpService: HttpService,
-  ) {}
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
+  ) { }
 
   async inicializarMercados(): Promise<any> {
     // MICs requeridos y nombres exactos según la API de Alpaca
@@ -102,5 +111,111 @@ export class ServicesService {
 
   async findAll(): Promise<Stock[]> {
     return this.stockRepo.find();
+  }
+
+  async isMarketOpen(mic: string): Promise<boolean> {
+    const cacheKey = `${this.MARKET_STATUS_CACHE_PREFIX}${mic}`;
+    
+    try {
+      // Intentar obtener del caché primero
+      const cachedStatus = await this.cacheManager.get<boolean>(cacheKey);
+      if (cachedStatus !== undefined && cachedStatus !== null) {
+        return Boolean(cachedStatus);
+      }
+
+      // Obtener datos del mercado
+      const market = await this.getMarketWithCache(mic);
+      if (!market) {
+        return false;
+      }
+
+      // Calcular estado del mercado
+      const isOpen = this.calculateMarketStatus(market);
+
+      // Almacenar en caché
+      await this.cacheManager.set(cacheKey, isOpen, this.CACHE_TTL);
+      
+      return isOpen;
+    } catch (error) {
+      console.error(`Error checking market status for ${mic}:`, error);
+      return false;
+    }
+  }
+
+  async getMarketTradingHours(mic: string): Promise<Stock | null> {
+    const cacheKey = `${this.MARKET_HOURS_CACHE_PREFIX}${mic}`;
+    
+    try {
+      // Intentar obtener del caché primero
+      const cachedHours = await this.cacheManager.get<Stock>(cacheKey);
+      if (cachedHours) {
+        return cachedHours;
+      }
+
+      // Obtener de la base de datos
+      const market = await this.stockRepo.findOneBy({ mic });
+      if (!market) {
+        return null;
+      }
+
+      // Almacenar en caché
+      await this.cacheManager.set(cacheKey, market, this.CACHE_TTL * 24); // Cache más largo para datos estáticos
+
+      return market;
+    } catch (error) {
+      console.error(`Error getting trading hours for ${mic}:`, error);
+      return null;
+    }
+  }
+
+  private async getMarketWithCache(mic: string): Promise<Stock | null> {
+    const cacheKey = `${this.MARKET_HOURS_CACHE_PREFIX}${mic}`;
+    const cachedMarket = await this.cacheManager.get<Stock>(cacheKey);
+    
+    if (cachedMarket) {
+      return cachedMarket;
+    }
+
+    const market = await this.stockRepo.findOneBy({ mic });
+    if (market) {
+      await this.cacheManager.set(cacheKey, market, this.CACHE_TTL * 24); // 24 horas para datos estáticos
+    }
+    
+    return market;
+  }
+
+  private calculateMarketStatus(market: Stock): boolean {
+  try {
+    // Verificar que moment está correctamente importado
+    if (!moment || typeof moment.tz !== 'function') {
+      throw new Error('moment-timezone no está correctamente configurado');
+    }
+
+    const timezone = 'America/New_York';
+    const now = moment().tz(timezone);
+    
+    if (!now.isValid()) {
+      throw new Error('Fecha/hora inválida');
+    }
+
+    const currentDay = now.format('dddd').toLowerCase();
+    const currentTime = now.format('HH:mm');
+
+    if (!market.days_operation.toLowerCase().includes(currentDay)) {
+      return false;
+    }
+
+    return currentTime >= market.opening_time && currentTime <= market.closing_time;
+  } catch (error) {
+    console.error('Error calculando estado del mercado:', error);
+    return false;
+  }
+}
+  // Método para limpiar caché manualmente si es necesario
+  async clearMarketCache(mic: string): Promise<void> {
+    const statusKey = `${this.MARKET_STATUS_CACHE_PREFIX}${mic}`;
+    const hoursKey = `${this.MARKET_HOURS_CACHE_PREFIX}${mic}`;
+    await this.cacheManager.del(statusKey);
+    await this.cacheManager.del(hoursKey);
   }
 }

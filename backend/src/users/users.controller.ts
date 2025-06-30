@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './services/users.service';
 import { Get, UseGuards, Req } from '@nestjs/common';
@@ -8,6 +16,7 @@ import { UpdateProfileDto } from './dtos/update-profile.dto';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtPayloadUser } from 'src/auth/interfaces/jwt-payload-user.interface';
+import { Roles } from 'src/roles-permission/roles.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -88,6 +97,18 @@ export class UsersController {
   async updateProfile(@Req() req: Request, @Body() body: UpdateProfileDto) {
     const { userId } = req.user as JwtPayloadUser;
     return this.usersService.updateProfile(userId, body);
+  }
+
+  @Patch(':userId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async adminUpdateUserProfile(
+    @Param('userId') userId: string,
+    @Body() body: UpdateProfileDto,
+  ) {
+    const updated = await this.usersService.updateProfile(userId, body);
+    if (!updated) throw new NotFoundException('Usuario no encontrado');
+    return { message: 'Usuario actualizado', user: updated };
   }
 
   //users.controller.ts

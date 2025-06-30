@@ -1,4 +1,4 @@
-// account.entity.ts
+// src/accounts/entities/account.entity.ts
 import { User } from 'src/users/users.entity';
 import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import {
@@ -13,9 +13,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import { Role } from 'src/roles-permission/entities/role.entity';
-import { NotificationSettings } from 'src/notifications/entities/notifications-settings.entity';
+import { PreferenceAccount } from 'src/preferences/entities/preference-account.entity';
 
 @Entity()
 export class Account {
@@ -40,7 +39,6 @@ export class Account {
   @Column({ type: 'varchar', nullable: true, unique: true, length: 50 })
   alpaca_account_id: string;
 
-  // Agrega la columna foránea explícita:
   @Column({ type: 'varchar', length: 10, nullable: false })
   identity_document: string;
 
@@ -55,13 +53,13 @@ export class Account {
   @JoinTable()
   roles: Role[];
 
-  @OneToOne(() => NotificationSettings, settings => settings.account, { 
-    cascade: true,
-    eager: true // Cargar siempre con la cuenta
-  })
-  notificationSettings: NotificationSettings;
-
-  // Relación uno-a-muchos con Subscription
   @OneToMany(() => Subscription, (subscription) => subscription.account)
   subscriptions: Subscription[];
+
+  @OneToOne(() => PreferenceAccount, (preference) => preference.account, {
+    cascade: true,
+    eager: true, 
+    onDelete: 'CASCADE', 
+  })
+  preference: PreferenceAccount;
 }

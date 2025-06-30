@@ -10,7 +10,7 @@ import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
 import { TransactionsModule } from 'src/transactions/transactions.module';
 import { OrdersModule } from 'src/orders/orders.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
-
+import { PreferencesModule } from 'src/preferences/preferences.module';
 @Module({
   controllers: [AccountsController],
   providers: [AccountsService],
@@ -18,7 +18,8 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     AuthModule,
     TypeOrmModule.forFeature([User, Account, Role]),
     forwardRef(() => AlpacaBrokerModule),
-    NotificationsModule, 
+    NotificationsModule,
+    forwardRef(() => PreferencesModule),
   ],
   exports: [AccountsService],
 })

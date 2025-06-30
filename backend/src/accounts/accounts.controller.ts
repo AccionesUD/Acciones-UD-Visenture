@@ -16,8 +16,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/roles-permission/roles.decorator';
 import { RolesGuard } from 'src/roles-permission/roles.guard';
 import { AccountsService } from './services/accounts.service';
-
-
+import { UpdateUserByAdminDto } from './dtos/update-user-by-admin.dto';
+import { UpdateUserByAdminResponse } from './dtos/update-user-by-admin-response.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('accounts')
@@ -27,8 +27,14 @@ export class AccountsController {
   ) { }
 
   @Post('/funding')
-  async createTransaction(@Body() makeFundignAccountDto: MakeFundignAccountDto, @Req() req) {
-    return this.accountsService.fundingAccount(makeFundignAccountDto, req.user.sub)
+  async createTransaction(
+    @Body() makeFundignAccountDto: MakeFundignAccountDto,
+    @Req() req,
+  ) {
+    return this.accountsService.fundingAccount(
+      makeFundignAccountDto,
+      req.user.sub,
+    );
   }
 
   @Get('/balance')
@@ -46,7 +52,14 @@ export class AccountsController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('/orders')
   async getOrdersAccount(@Req() req) {
-    return this.accountsService.getOrdersAccount(req.user.sub)
+    return this.accountsService.getOrdersAccount(req.user.sub);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async getAllUsersWithRoles() {
+    return await this.accountsService.findAllWithRoles();
   }
 
   // Endpoint de prueba solo para administradores
@@ -84,5 +97,14 @@ export class AccountsController {
       Number(id),
       body.roleIds,
     );
+  }
+
+  @Patch('admin/update-user')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async updateUserByAdmin(
+    @Body() dto: UpdateUserByAdminDto,
+  ): Promise<UpdateUserByAdminResponse> {
+    return this.accountsService.updateUserByAdmin(dto);
   }
 }

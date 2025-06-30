@@ -1,0 +1,13 @@
+# Obtener los canales de comunicacion (SMS, correo, whatsapp)
+
+GET http://localhost:3000/api/preferences/mailing-settings
+Authorization: Bearer <token_de_usuario>
+
+{
+  "id": 1,
+  "email_enabled": true,
+  "sms_enabled": false,
+  "whatsapp_enabled": false,
+  "phone_number": null,
+  "last_change_time": "2025-06-28T04:39:12.176Z"
+}
