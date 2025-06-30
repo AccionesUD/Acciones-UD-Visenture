@@ -1,0 +1,26 @@
+POST /api/payments/subscribe HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiY3Jpc3RpYW5jYXNhczcwNkBnbWFpbC5jb20iLCJ1c2VySWQiOiIxMDAwMDAiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3NTEyMzQyOTgsImV4cCI6MTc1MTIzNzg5OH0.jy-ebPed5gzn61eQsJSn_2R8Od94klNgxfr0MMUyzxo
+Host: localhost:3000
+Content-Length: 67
+
+{
+ "planId": 1,
+ "paymentToken": "cualquier-string-para-simular"
+}
+
+// response: HTTP/1.1 200 OK
+
+{
+	"message": "Suscripción premium activada",
+	"plan": "básico"
+}
+
+Este endpoint se utiliza para activar una suscripción premium para un usuario. a nivel local.
+
+Este endpoint recibe un token de pago simulado y un ID de plan. El token de pago es una cadena que se utiliza para simular el proceso de pago, ya que en este entorno no se realiza una transacción real.
+
+Como tal este endpoint debe ser llamado después de que el usuario haya completado el proceso de pago en la pasarela de pago (MercadoPago).
+
+Y así se hará la transacción en la base de datos, actualizando el estado del usuario a premium y asignándole el plan correspondiente.
