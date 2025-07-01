@@ -1,3 +1,4 @@
 GET http://localhost:3000/api/accounts/balance
 Content-Type:application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIzLCJlbWFpbCI6ImpvaG5kb2VAZ21haWwuY29tIiwidXNlcklkIjoiMTA1NzM1MDA5NCIsInJvbGVzIjpbXSwiaWF0IjoxNzUxMzAwMzkyLCJleHAiOjE3NTEzMDM5OTJ9.kOf3Tye_z4lxymavxQEjzlJXAvzXL6_Ie1mcOi2SAv0
+Authorization: Bearer <token_user>
+

@@ -18,8 +18,8 @@ export class MarketBuy implements IOrderTypeStrategy {
     }
     async calculateAmountOrder(): Promise<number> {
         const { symbol, qty } = this.orderDto
-        const quoteLatestSymbol = await this.alpacaMarketService.getQuotesLatest(symbol)
-        const askPrice = quoteLatestSymbol.quotes[symbol].ap
+        const quoteLatestSymbol = await this.alpacaMarketService.getTradesLatest(symbol)
+        const askPrice = quoteLatestSymbol.trade.p
         return askPrice * qty
     }
 
