@@ -17,7 +17,7 @@ export class TokensService {
   ) {}
 
   async storeToken(email: string, token: string, typeToken: typesToken){
-    const expirationMinutes = this.configService.get('2MFA_EXPIRATION_TOKEN');
+    const expirationMinutes = this.configService.get('MFA_EXPIRATION_TOKEN');
     const expiresAt = new Date(Date.now() + expirationMinutes * 60 * 1000);
     //const typeToken = typesToken.LOGIN2FMA
 
