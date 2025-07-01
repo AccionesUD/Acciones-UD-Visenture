@@ -1,6 +1,6 @@
 POST http://localhost:3000/api/accounts/funding
 Content-Type:application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDU3MzUwMDk0IiwiZW1haWwiOiJqb2huZG9lQGdtYWlsLmNvbSIsInJvbGVzIjpbXSwiaWF0IjoxNzUwOTU1MDEzLCJleHAiOjE3NTA5NTg2MTN9.UTwuCXwke1iQNLp9W1tDbIfKKM4mpl6A8rhV-EUnTk4
+Authorization: Bearer <token_user>
 
 {
     "amountTranfer": 200

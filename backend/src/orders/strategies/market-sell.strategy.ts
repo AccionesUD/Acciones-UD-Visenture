@@ -6,15 +6,24 @@ import { BadRequestException } from "@nestjs/common";
 export class MarketSell implements IOrderTypeStrategy {
     constructor(
         private readonly orderDto: OrderDto,
+        private readonly alpacaMarketService: AlpacaMarketService
     ) {
 
     }
-    valid(): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    calculateAmountOrder(): Promise<number> {
-        throw new Error("Method not implemented.");
+    async valid(): Promise<void> {
+        const { limit_price, stop_price } = this.orderDto
+        if (limit_price || stop_price) {
+            throw new BadRequestException('Campos invalidos para el tipo de orden')
+        }
     }
 
-  
+    async calculateAmountOrder(): Promise<number> {
+        const { symbol, qty } = this.orderDto
+        const quoteLatestSymbol = await this.alpacaMarketService.getTradesLatest(symbol)
+        console.log(quoteLatestSymbol)
+        const askPrice = quoteLatestSymbol.trade.p
+        return askPrice * qty
+    }
+
+
 }

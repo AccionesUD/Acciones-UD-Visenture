@@ -14,9 +14,8 @@ export class LimitBuy implements IOrderTypeStrategy {
         if (!limit_price || stop_price){
             throw new BadRequestException(`Datos de orden invalidos para orden de tipo ${side} - ${type}`)
         }
-        const quoteAmmount = await this.alpacaMarketService.getQuotesLatest(symbol)
-        console.log(quoteAmmount.quotes[symbol].ap)
-        if ( limit_price >= quoteAmmount.quotes[symbol].ap){
+        const quoteAmmount = await this.alpacaMarketService.getTradesLatest(symbol)
+        if ( limit_price >= quoteAmmount.trade.p){
             throw new BadRequestException('El valor limit_price no puede ser mayor al precio de mercado de la accion, o se ejecutara como market')
         }
     }
