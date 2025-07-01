@@ -1,0 +1,3 @@
+DELETE http://localhost:3000/api/orders/64
+Content-Type:application/json
+Authorization: Bearer <token_user>

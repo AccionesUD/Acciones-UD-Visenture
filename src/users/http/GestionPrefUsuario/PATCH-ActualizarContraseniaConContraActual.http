@@ -1,0 +1,22 @@
+#endpoint que permite actualizar la contraseña del usuario autenticado
+# Este endpoint permite actualizar la contraseña del usuario autenticado.
+# El usuario debe estar autenticado y enviar un token JWT válido en el encabezado Authorization.
+# El cuerpo de la solicitud debe contener la contraseña actual y la nueva contraseña.
+
+PATCH http://localhost:3000/api/auth/perfil/password HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJjb21pc2lvbmlzdGEiLCJhZG1pbiJdLCJpYXQiOjE3NTAwMjg5NDYsImV4cCI6MTc1MDAzMjU0Nn0.4XSdZRLZVbvVuJxV2jSyihKXjdQQUUhWTZvzY7z6UuM
+Content-Length: 62
+
+{
+  "currentPassword": "12345678",
+  "newPassword": "123456"
+}
+
+Response:
+HTTP/1.1 200 OK
+
+{
+  "message": "Contraseña actualizada correctamente"
+}

@@ -1,0 +1,10 @@
+#Se debe pasar el bearer token de un usuario con el rol de admin o comisionistas
+#ESTE ES DE PRUEBA No necesariamente debe ser un endpoint real, sí le da uso mejor
+
+GET http://localhost:3000/api/accounts/admin-only
+Authorization: Bearer <token_de_usuario_admin>
+Response:
+HTTP/1.1 200 OK
+{
+	"message": "Solo admins/comisionistas pueden ver esto"
+}

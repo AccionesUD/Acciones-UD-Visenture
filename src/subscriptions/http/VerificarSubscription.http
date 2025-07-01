@@ -1,0 +1,30 @@
+POST /api/subscriptions/subscribe HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3NTA0NTMxOTQsImV4cCI6MTc1MDQ1Njc5NH0.JyNVlpNeqhsInhS4P6BxiaqEylFYqTRRE5KOWGaIueE
+Host: localhost:3000
+Content-Length: 49
+
+{
+  "planId": 2,
+  "paymentToken": "token_1234"
+}
+
+#Response esperado:
+
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+	"message": "Suscripción premium activada",
+	"plan": "pro"
+}
+
+# Este endpoint tiene como objetivo activar una suscripción premium.
+# El endpoint debe estar protegido por un middleware de autenticación JWT.
+# El token JWT debe ser generado por el servidor y debe incluir los roles necesarios para acceder a la funcionalidad de suscripción.
+# El cuerpo de la solicitud debe incluir el ID del plan y el token de pago.
+# El servidor debe validar el token de pago y activar la suscripción premium.
+# Si la suscripción se activa correctamente, el servidor debe devolver un mensaje de éxito y el plan de suscripción activado.
+# Si la suscripción no se activa correctamente, el servidor debe devolver un mensaje de error y un código de estado HTTP 400 Bad Request.
+# El servidor debe registrar la actividad de la suscripción en la base de datos.

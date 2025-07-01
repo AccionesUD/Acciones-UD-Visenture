@@ -1,0 +1,28 @@
+#Actualizar Perfil de Usuario
+# Este endpoint permite actualizar el perfil del usuario autenticado.
+# El usuario debe estar autenticado y enviar un token JWT válido en el encabezado Authorization.
+# El cuerpo de la solicitud debe contener los campos que se desean actualizar.
+# Campos opcionales: phone, email, address.
+# Respuesta exitosa: 200 OK con el mensaje de confirmación y los datos actualizados.
+
+PUT /api/users/perfil HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsImVtYWlsIjoiY2RjYXNhc2RAdWRpc3RyaXRhbC5lZHUuY28iLCJ1c2VySWQiOiI5ODc2NTQzMjEiLCJyb2xlcyI6WyJjb21pc2lvbmlzdGEiLCJhZG1pbiJdLCJpYXQiOjE3NTAwMjg5NDYsImV4cCI6MTc1MDAzMjU0Nn0.4XSdZRLZVbvVuJxV2jSyihKXjdQQUUhWTZvzY7z6UuM
+Host: localhost:3000
+Content-Length: 63
+
+Body:
+{
+  "phone": "3101234589",
+  "email": "cdcasasd@udistrital.edu.co",
+  "address": "Avenida Siempre"
+}
+
+Response:
+HTTP/1.1 200 OK
+{
+	"message": "Perfil actualizado correctamente",
+	"email": "cdcasasd@udistrital.edu.co",
+	"phone": "3101234589"
+}

@@ -1,0 +1,59 @@
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer <token_user>
+
+{
+  "symbol": "TSLA",
+  "qty": 1,
+  "side": "sell",
+  "type": "market",
+  "time_in_force": "gtc"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
