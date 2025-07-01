@@ -45,7 +45,10 @@ export class TransactionsService {
 
     async getAllTransactions(accountId: number){
         const transactions = this.transactionRepository.find({
-            where: {account: {id: accountId}}
+            where: {account: {id: accountId}},
+            order: {
+                date_create: 'DESC'
+            }
         })
         return transactions
     }

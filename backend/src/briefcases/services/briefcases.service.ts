@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException, RequestTimeoutException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { BadRequestException, Injectable, NotFoundException, OnModuleInit, RequestTimeoutException } from '@nestjs/common';
+import { MoreThan, Repository } from 'typeorm';
 import { Briefcase } from '../entities/briefcases.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBriefcaseDto } from '../dtos/create-briefcase.dto';
@@ -18,6 +18,7 @@ export class BriefcaseService {
         private readonly alpacaMarketService: AlpacaMarketService
     ) { }
 
+
     async createBriefcase(account_id: number) {
         const briefcase = this.briefcaseRepository.create({ account: { id: account_id } })
         try {
@@ -35,16 +36,16 @@ export class BriefcaseService {
 
     async getBriefcaseAssets(accountId: number) {
         const briefcase = await this.briefcaseRepository.findOne({
-            where: { account: { id: accountId } },
+            where: { account: { id: accountId }, assets: { currentShareQuantity: MoreThan(0) } },
             relations: ['assets']
         })
         if (briefcase?.assets) {
             await Promise.all(
                 briefcase.assets.map(async (asset) => {
                     const tradesLastSymbol = await this.alpacaMarketService.getTradesLatest(asset.ticket_share);
-                    asset.percentGainLose = (((parseFloat(tradesLastSymbol.trade.p) - asset.order.filled_avg_price!) 
-                                            / asset.order.filled_avg_price!) * 100);
-                    
+                    asset.percentGainLose = (((parseFloat(tradesLastSymbol.trade.p) - asset.order.filled_avg_price!)
+                        / asset.order.filled_avg_price!) * 100);
+
                     asset.returnOfMoney = (tradesLastSymbol.trade.p - asset.order.filled_avg_price!) * asset.order.fill_qyt!;
                 })
             );
@@ -71,4 +72,31 @@ export class BriefcaseService {
         }
     }
 
+
+    async discountAssetsBriefcase(order: Order) {
+        const assets = await this.assetsRepository.find({
+            where: {
+                order: { account: { id: order.account.id } },
+                ticket_share: order.share.symbol,
+                currentShareQuantity: MoreThan(0)
+            }
+        })
+        let discountNumber = order.fill_qyt!
+        for (const asset of assets) {
+            let assetQuantity = asset.currentShareQuantity
+            while (assetQuantity > 0 && discountNumber > 0) {
+                assetQuantity -= 1
+                discountNumber -= 1
+            }
+            asset.currentShareQuantity = assetQuantity
+            if (discountNumber == 0) {
+                break
+            }
+        }
+        try {
+            await this.assetsRepository.save(assets)
+        } catch (error) {
+            throw new RequestTimeoutException('error e la bd')
+        }
+    }
 }

@@ -26,56 +26,26 @@ import { BriefcaseService } from "src/briefcases/services/briefcases.service";
 export class PurchaseOrder extends AbstractOrder {
 
    constructor(
-      private readonly transactionService: TransactionsService,
-      private readonly alpacaBrokerService: AlpacaBrokerService,
-      private readonly briefcasesService: BriefcaseService,
+      readonly briefcasesService: BriefcaseService,
       @InjectRepository(Order)
-      private readonly orderRepository: Repository<Order>,
+      readonly orderRepository: Repository<Order>,
       @InjectRepository(Commission)
       readonly commissionRepository: Repository<Commission>,
       @InjectRepository(OrderCommissions)
-      readonly orderCommissionRepository: Repository<OrderCommissions>
+      readonly orderCommissionRepository: Repository<OrderCommissions>,
+      readonly alpacaBrokerService: AlpacaBrokerService,
+      readonly transactionService: TransactionsService
 
-   ) { super(commissionRepository, orderCommissionRepository) }
+   ) { super(commissionRepository, orderCommissionRepository, alpacaBrokerService, orderRepository, transactionService, briefcasesService) }
 
    async createOrder(orderDto: OrderDto, strategy: IOrderTypeStrategy) {
       await strategy.valid()
-      const orderAmount = await this.calculateAmountOrder(strategy)
+      const { quoteAmmount, comissionAmount } = await this.calculateAmountOrder(strategy)
       const accountAmmount = await this.transactionService.calculateCurrentBalance(orderDto.account.id)
-      if (orderAmount > accountAmmount.balance) {
+      if ((quoteAmmount + comissionAmount) > accountAmmount.balance) {
          throw new ConflictException('El usuario no cuenta con saldo suficiente para esta transaccion')
       }
-      const orderAlpaca = await this.alpacaBrokerService.createOrder(orderDto)
-      const order = this.orderRepository.create({
-         ...orderDto,
-         share: orderDto.share,
-         account: orderDto.account,
-         account_commissioner: orderDto.account_commissioner
-            ? { id: orderDto.account_commissioner }
-            : null,
-         order_id_alpaca: orderAlpaca,
-         approximate_total: parseFloat(orderAmount.toFixed(4))
-      })
-      try {
-         const orderCreate = await this.orderRepository.save(order)
-         const transaccionOrder = new CreateTransactionDto({
-            account: orderDto.account!,
-            value_transaction: -order.approximate_total,
-            type_transaction: typeTransaction.BUY,
-            status: statusTransaction.PROCESSING,
-            operation_id: orderCreate.id
-         })
-         await this.transactionService.createTransaction(transaccionOrder)
-         await super.generatedCommissions(orderCreate)
-         return {
-            status: true,
-            message: 'Orden creada con exito'
-         }
-      } catch (error) {
-         throw new RequestTimeoutException(error, {
-            description: 'Se presento un error en la operacion, intente luego',
-         });
-      }
+      return super.generateOrder(orderDto, quoteAmmount, comissionAmount)
    }
 
    async calculateAmountOrder(strategy: IOrderTypeStrategy) {
@@ -86,45 +56,17 @@ export class PurchaseOrder extends AbstractOrder {
          commisionApply = Comissions.AppCommission
       }
       let comissionAmount = (quoteAmmount * commisionApply!)
-      return quoteAmmount + comissionAmount
+      return {quoteAmmount, comissionAmount}
    }
 
    async updateOrder(orderUpdateDto: OrderUpdateDto, order: Order) {
-      if (orderUpdateDto.status == StatusEventsOrder.FILLED) {
-         order.fill_qyt = orderUpdateDto.fill_qyt
-         order.filled_avg_price = orderUpdateDto.filled_avg_price
-      
-         const commisions = await super.listCommissions(listCommission.APPCOMMISSION)
-         const ammountOrder = order.fill_qyt! * order.filled_avg_price!
-         const commisionApply = ammountOrder * commisions?.percent_value!
-         order.approximate_total = ammountOrder + commisionApply
-
-         await this.transactionService.updateTransaction(new UpdateTransactionDto({
-            status: statusTransaction.COMPLETE,
-            value_transaction: -(ammountOrder + commisionApply),
-            operation_id: order.id
-         }))
-         await super.updateCommissions(order)
-         await this.briefcasesService.addAssetsBriefcase(order)         
-      }
-      if ([StatusEventsOrder.REJECTED, StatusEventsOrder.EXPIRED, StatusEventsOrder.CANCELED].includes(orderUpdateDto.status)) {
-         const updateTransactionDto = new UpdateTransactionDto({
-            status: statusTransaction.CANCELED,
-            operation_id: order.id
-         })
-         await this.transactionService.updateTransaction(updateTransactionDto)
-      }
-      order = {
-         ...order,
-         filled_at: orderUpdateDto.filled_at!,
-         canceled_at: orderUpdateDto.canceled_at!,
-         expired_at: orderUpdateDto.expired_at!,
-         status: orderUpdateDto.status
-      }
-      try {
-         await this.orderRepository.save(order)
-      } catch (error) {
-         throw new RequestTimeoutException(error, 'error el la bd')
+      await super.generateUpdateOrder(orderUpdateDto, order)
+      if (orderUpdateDto.status == StatusEventsOrder.FILLED){
+         const orderUpdate = await this.orderRepository.findOne({
+                where: {id: order.id},
+                relations: ['account', 'share']
+             })
+         await this.briefcasesService.addAssetsBriefcase(orderUpdate!)
       }
    }
 }

@@ -15,6 +15,8 @@ import { AlpacaMarketService } from "src/alpaca_market/services/alpaca_market.se
 import { StopBuy } from "../strategies/stop-buy.strategy";
 import { OrderUpdateDto } from "../dto/order-update.dto";
 import { Order } from "../entities/orders.entity";
+import { LimitSell } from "../strategies/limit-sell.strategy";
+import { StopSell } from "../strategies/stop-sell.strategy";
 
 @Injectable()
 export class FactoryOrder {
@@ -47,10 +49,13 @@ export class FactoryOrder {
             case (sideOrder.SELL):
                 switch (type){
                     case typeOrder.MARKET:
-                        strategy = new MarketSell(orderDto)
+                        strategy = new MarketSell(orderDto, this.alpacaMarketService)
                         break
                     case typeOrder.LIMIT:
-                        strategy = new LimitBuy(orderDto, this.alpacaMarketService)
+                        strategy = new LimitSell(orderDto, this.alpacaMarketService)
+                        break
+                    case typeOrder.STOP:
+                        strategy = new StopSell(orderDto, this.alpacaMarketService)
                         break
                     default:
                         throw new BadRequestException(`Tipo de orden ${type} no soportado para orden ${side}`)
@@ -58,11 +63,7 @@ export class FactoryOrder {
                 return this.salesOrder.createOrder(orderDto, strategy)
             default:
                 throw new BadRequestException('Tipo de side no es valido')
-        }
-
-
-
-        
+        }  
     }
 
     async update(orderUpdateDto: OrderUpdateDto, order: Order){
@@ -70,8 +71,10 @@ export class FactoryOrder {
 
         switch (side){
             case (sideOrder.BUY):
-                 await this.purchaseOrder.updateOrder(orderUpdateDto, order)
+                await this.purchaseOrder.updateOrder(orderUpdateDto, order)
+                break
             case (sideOrder.SELL):
+                await this.salesOrder.updateOrder(orderUpdateDto, order)
                 break
         }
     }
