@@ -12,6 +12,7 @@ import {
   NotFoundException,
   RequestTimeoutException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { HashingProvider } from 'src/auth/providers/bcrypt.provider';
 import { MakeFundignAccountDto } from '../dtos/make-funding-account.dto';
 import { AlpacaBrokerService } from 'src/alpaca_broker/services/alpaca_broker.service';
@@ -35,6 +36,7 @@ export class AccountsService {
     private transactionService: TransactionsService,
     @Inject(forwardRef(() => OrdersService))
     private ordersService: OrdersService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount(createAccountDto: CreateAccountDto) {
@@ -272,7 +274,17 @@ export class AccountsService {
 
     await this.accountRepository.save(account);
 
-    // Retorna datos útiles
+    // Generar un nuevo token con los datos actualizados
+    const payload = {
+      sub: account.id,
+      email: account.email,
+      userId: account.user.identity_document,
+      roles: account.roles.map((r) => r.name),
+      name: `${account.user.first_name} ${account.user.last_name}`,
+    };
+    const token = this.jwtService.sign(payload);
+
+    // Retorna datos útiles, incluyendo el nuevo token
     return {
       accountId: account.id,
       userId: account.user.identity_document,
@@ -280,6 +292,7 @@ export class AccountsService {
       lastName: account.user.last_name,
       email: account.email,
       roles: account.roles.map((r) => r.name),
+      token: token,
     };
   }
 }

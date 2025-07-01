@@ -35,7 +35,7 @@ export class PriceAlertsController {
         throw new BadRequestException('Faltan campos requeridos: share_id, target_price o direction');
       }
 
-      const result = await this.alertsService.create(req.user.accountId, createDto);
+      const result = await this.alertsService.create(Number(req.user.accountId), createDto);
       return {
         success: true,
         message: 'Alerta de precio creada correctamente',

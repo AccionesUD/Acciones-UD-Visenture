@@ -85,7 +85,7 @@
       <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-2" 
           i18n="@@login.token.title">Verificación de Dos Pasos</h2>
       <p class="text-center text-gray-600 dark:text-gray-400 mb-6">
-        <ng-container i18n="@@login.token.instruction-prefix">Hemos enviado un código de verificación a</ng-container>
+        <ng-container i18n="@@login.token.instruction-prefix">Hemos enviado un código de verificación a </ng-container>
         <strong *ngIf="userEmailForToken" class="text-gray-900 dark:text-white">{{ userEmailForToken }}</strong>
         <strong *ngIf="!userEmailForToken" class="text-gray-900 dark:text-white" i18n="@@login.token.your-email">tu correo</strong>.
         <ng-container i18n="@@login.token.instruction-suffix">Por favor, ingrésalo a continuación.</ng-container>

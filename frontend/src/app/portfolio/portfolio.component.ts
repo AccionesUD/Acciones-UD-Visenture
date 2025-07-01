@@ -83,7 +83,7 @@ export class PortfolioComponent implements OnInit, OnDestroy {
   constructor(
     private portfolioService: PortfolioService,
     private dialog: MatDialog
-  ) {}  
+  ) {}
   
   // Variable para mantener el estado del tema
   isDarkMode = false;
@@ -122,18 +122,19 @@ export class PortfolioComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
     this.portfolioService.getPortfolioStocks().subscribe({
-      next: (shares: PortfolioShare[]) => {
-        this.stocks = shares.map(share => ({
-          id: share.id.toString(), 
-          company: share.companyName,
-          symbol: share.ticker,
-          marketName: share.stockName,
-          marketId: share.stockMic,
-          quantity: share.quantity,
-          unitValue: share.unitValue,
-          totalValue: share.totalValue,
-          performance: share.performance,
-          color: share.color
+      next: (response: any) => {
+        const assets = response.assets || [];
+        this.stocks = assets.map((asset: any) => ({
+          id: asset.id.toString(),
+          company: asset.ticket_share,
+          symbol: asset.ticket_share,
+          marketName: 'Desconocido', // La respuesta no incluye el mercado
+          marketId: 'UNKNOWN',
+          quantity: asset.currentShareQuantity,
+          unitValue: asset.order.filled_avg_price,
+          totalValue: parseFloat(asset.order.approximate_total),
+          performance: asset.percentGainLose,
+          color: asset.percentGainLose >= 0 ? 'emerald' : 'red'
         }));
         this.applyFilters();
         this.updateDisplayedStocks();
