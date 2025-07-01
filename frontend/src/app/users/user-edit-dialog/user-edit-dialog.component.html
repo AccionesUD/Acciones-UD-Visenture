@@ -1,0 +1,230 @@
+<div class="min-w-[800px] max-w-4xl p-6">
+  <!-- Cabecera del diálogo -->
+  <div class="flex justify-between items-center border-b border-gray-700 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent" 
+        i18n="@@user-edit.dialog.title">
+      Editar Usuario
+    </h2>
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors" i18n-title="@@user-edit.close-dialog.tooltip" title="Cerrar diálogo">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
+    </button>
+  </div>
+  
+  <mat-dialog-content class="min-h-[400px] max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <!-- Formulario de edición -->
+    <form [formGroup]="editForm" (ngSubmit)="onSave()" class="space-y-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-700 dark:border-gray-700 shadow-md p-6">
+        
+        <!-- Información del usuario que se está editando -->
+        <div class="flex items-center mb-6 pb-4 border-b border-gray-700 dark:border-gray-700">
+          <div class="p-3 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+            <mat-icon>edit</mat-icon>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-100" 
+                i18n="@@user-edit.editing-info-label">Editando información de</h3>
+            <p class="text-gray-600 dark:text-gray-400">{{user.first_name}} {{user.last_name}} ({{user.email}})</p>
+          </div>
+        </div>
+
+        <!-- Campos del formulario -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Nombre -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.first-name.label">
+              Nombre <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="first_name" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('first_name')"
+                [class.focus:border-red-500]="hasFieldError('first_name')"
+                [class.focus:ring-red-500]="hasFieldError('first_name')"
+                placeholder="Ingresa el nombre"
+                i18n-placeholder="@@user-edit.first-name.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('first_name')">person</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('first_name')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('first_name') }}
+            </p>
+          </div>
+
+          <!-- Apellido -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.last-name.label">
+              Apellido <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="last_name" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('last_name')"
+                [class.focus:border-red-500]="hasFieldError('last_name')"
+                [class.focus:ring-red-500]="hasFieldError('last_name')"
+                placeholder="Ingresa el apellido"
+                i18n-placeholder="@@user-edit.last-name.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('last_name')">person_outline</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('last_name')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('last_name') }}
+            </p>
+          </div>
+
+          <!-- Email -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.email.label">
+              Correo Electrónico <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="email" 
+                formControlName="email" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('email')"
+                [class.focus:border-red-500]="hasFieldError('email')"
+                [class.focus:ring-red-500]="hasFieldError('email')"
+                placeholder="usuario@ejemplo.com"
+                i18n-placeholder="@@user-edit.email.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('email')">email</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('email')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('email') }}
+            </p>
+          </div>
+
+          <!-- Teléfono -->
+          <!--
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.phone-number.label">
+              Número de Teléfono <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="tel" 
+                formControlName="phone_number" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('phone_number')"
+                [class.focus:border-red-500]="hasFieldError('phone_number')"
+                [class.focus:ring-red-500]="hasFieldError('phone_number')"
+                placeholder="+1 234 567 890"
+                i18n-placeholder="@@user-edit.phone-number.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('phone_number')">phone</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('phone_number')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('phone_number') }}
+            </p>
+          </div>
+          -->
+
+          <!-- Roles (checkbox múltiple) -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.roles.label">
+              Roles <span class="text-red-500">*</span>
+            </label>
+            <div class="flex flex-wrap gap-3">
+              <ng-container *ngFor="let role of roles">
+                <label class="inline-flex items-center gap-2">
+                  <input type="checkbox"
+                         [value]="role.name"
+                         [checked]="editForm.value.roles?.includes(role.name)"
+                         (change)="onRoleCheckboxChange($event, role.name)"
+                         class="form-checkbox h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                         i18n-title="@@user-edit.roles.checkbox.tooltip"
+                         [title]="'Seleccionar rol ' + (role.displayName || role.name)"
+                  >
+                  <span i18n="@@user-edit.roles.checkbox.label">{{ role.displayName || role.name }}</span>
+                </label>
+              </ng-container>
+            </div>
+            <p *ngIf="hasFieldError('roles')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('roles') }}
+            </p>
+          </div>
+
+          <!-- Dirección -->
+          <!--
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" i18n="@@user-edit.address.label">
+              Dirección <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <input 
+                type="text" 
+                formControlName="address" 
+                class="block w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-700 py-2 px-3 pr-10 text-gray-900 dark:text-white shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-500 focus:ring-opacity-50 transition-colors"
+                [class.border-red-500]="hasFieldError('address')"
+                [class.focus:border-red-500]="hasFieldError('address')"
+                [class.focus:ring-red-500]="hasFieldError('address')"
+                placeholder="Ingresa la dirección"
+                i18n-placeholder="@@user-edit.address.placeholder"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <mat-icon class="text-gray-400" [class.text-red-500]="hasFieldError('address')">home</mat-icon>
+              </div>
+            </div>
+            <p *ngIf="hasFieldError('address')" class="text-sm text-red-600 dark:text-red-400">
+              {{ getFieldErrorMessage('address') }}
+            </p>
+          </div>
+          -->
+        </div>
+
+        <!-- Información adicional -->
+        <div class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
+          <div class="flex items-start space-x-3 text-sm text-gray-600 dark:text-gray-400">
+            <mat-icon class="text-blue-500 mt-0.5">info</mat-icon>
+            <div>
+              <p class="font-medium" i18n="@@user-edit.important-info.title">Información importante:</p>
+              <ul class="mt-1 space-y-1 list-disc list-inside">
+                <li i18n="@@user-edit.important-info.required-fields">Los campos marcados con (*) son obligatorios</li>
+                <li i18n="@@user-edit.important-info.unique-email">El correo electrónico debe ser único en el sistema</li>
+                <li i18n="@@user-edit.important-info.immediate-changes">Los cambios se aplicarán inmediatamente</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <!-- Acciones del diálogo -->
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-700 dark:border-gray-700">
+    <button 
+      mat-stroked-button 
+      (click)="cancelEdit()" 
+      [disabled]="isSaving"
+      class="mr-2"
+      i18n="@@user-edit.action.cancel"
+    >
+      Cancelar
+    </button>
+    
+    <button 
+      mat-flat-button 
+      (click)="onSave()"
+      [disabled]="isSaving || editForm.invalid"
+      class="flex items-center"
+    >
+      <mat-icon class="mr-1.5 h-5 w-5" *ngIf="!isSaving">save</mat-icon>
+      <mat-icon class="mr-1.5 h-5 w-5 animate-spin" *ngIf="isSaving">refresh</mat-icon>
+      <span i18n="@@user-edit.action.save" *ngIf="!isSaving">Guardar Cambios</span>
+      <span i18n="@@user-edit.action.saving" *ngIf="isSaving">Guardando...</span>
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,212 @@
+mat-card.mat-mdc-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Contenedor que da el marco visual a la tabla. */
+.table-container {
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid #a8c2b4; /* Color del borde en modo claro (emerald-100) */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Borde para el modo oscuro. */
+::ng-deep .dark .table-container {
+  border-color: #374151; /* gray-700 */
+}
+
+/* Anulamos el fondo de la tabla de Material. */
+::ng-deep .table-container .mat-mdc-table {
+  background: transparent !important;
+}
+
+/* --- ESTILOS DE LA CABECERA --- */
+::ng-deep .table-container .mat-mdc-header-cell {
+  background-color: #ecfdf5 !important; /* emerald-50 */
+  color: rgb(56, 61, 53) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: 1px solid #d1fae5 !important; /* Mismo color que el borde */
+}
+
+/* Cabecera en modo oscuro. */
+::ng-deep .dark .table-container .mat-mdc-header-cell {
+  background-color: rgba(55, 65, 81, 0.6) !important; /* Fondo más oscuro */
+  color: rgb(176, 185, 171) !important;
+  border-bottom-color: #374151 !important; /* Mismo color que el borde */
+}
+
+/* --- ESTILOS DE LAS CELDAS Y FILAS --- */
+::ng-deep .table-container .mat-mdc-cell {
+  color: rgb(59, 59, 58) !important;
+  font-size: 0.875rem !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: 1px solid #d1fae5 !important; /* Mismo color que el borde */
+  white-space: nowrap;
+}
+
+/* Celdas en modo oscuro. */
+::ng-deep .dark .table-container .mat-mdc-cell {
+  color: white !important;
+  border-bottom-color: #374151 !important; /* Mismo color que el borde */
+}
+
+/* Quitamos el borde de la última fila. */
+::ng-deep .table-container .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none !important;
+}
+
+/* Efecto hover en las filas. */
+::ng-deep .table-container .mat-mdc-row:hover {
+  background-color: #c5d1ce !important; /* emerald-50 con más opacidad */
+}
+
+::ng-deep .dark .table-container .mat-mdc-row:hover {
+  background-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+.spinner-container, .no-data-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  color: #888;
+}
+::ng-deep .dark .spinner-container, ::ng-deep .dark .no-data-message {
+  color: #a0a0a0;
+}
+
+/* Estilos para el paginador (copiados de users.component.css) */
+::ng-deep .mat-mdc-paginator {
+  background: transparent !important;
+  font-family: inherit;
+}
+
+::ng-deep .dark .mat-mdc-paginator-container {
+  color: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-paginator-range-label,
+::ng-deep .dark .mat-mdc-paginator-page-size-label {
+  color: #e2e8f0;
+  opacity: 1;
+}
+
+::ng-deep .dark .mat-mdc-icon-button .mat-mdc-button-persistent-ripple {
+  opacity: 0.2;
+}
+
+::ng-deep .dark .mdc-icon-button {
+  fill: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-icon-button {
+  color: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-icon-button:hover {
+  background-color: rgba(226, 232, 240, 0.1);
+}
+
+::ng-deep .dark .mat-mdc-icon-button[disabled] {
+  color: rgba(226, 232, 240, 0.5) !important;
+}
+
+::ng-deep .dark .mat-mdc-select-value-text {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-select-arrow {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-paginator-icon {
+  fill: #e2e8f0 !important;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  color: #000000;
+}
+
+::ng-deep .mat-mdc-paginator-range-label,
+::ng-deep .mat-mdc-paginator-page-size-label {
+  color: #000000;
+  opacity: 1;
+}
+
+::ng-deep .mdc-icon-button {
+  fill: #000000;
+}
+
+::ng-deep .mat-mdc-icon-button {
+  color: #000000;
+}
+
+::ng-deep .mat-mdc-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+::ng-deep .mat-mdc-icon-button[disabled] {
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+::ng-deep .mat-mdc-select-value-text {
+  color: #000000 !important;
+}
+
+::ng-deep .mat-mdc-select-arrow {
+  color: #000000 !important;
+}
+
+::ng-deep .mat-mdc-paginator-icon {
+  fill: #000000 !important; 
+}
+
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  border-top: 1px solid #e5e7eb;
+  transition: border-color 0.3s ease;
+}
+
+::ng-deep .dark .mat-mdc-paginator-container {
+  border-top-color: #374151;
+}
+
+::ng-deep .mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+::ng-deep .mat-mdc-paginator-page-size-select {
+  margin: 0 0.5rem;
+  width: 56px;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
+  height: 36px;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .dark .mat-mdc-form-field-flex {
+  background-color: rgba(30, 41, 59, 0.5);
+}

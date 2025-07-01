@@ -1,0 +1,138 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Configuración básica */
+html {
+  height: 100%;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+body {
+  min-height: 100%;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: white;
+  color: #111827; 
+}
+
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Asegurarse de que el contenido ocupe al menos toda la altura disponible */
+app-root {
+  min-height: 100vh;
+}
+
+/* Estilos específicos para formularios en modo oscuro */
+html.dark input, 
+html.dark textarea, 
+
+html.dark input::placeholder, 
+html.dark textarea::placeholder {
+  color: #94a3b8; /* slate-400 */
+}
+
+/* Restaurar estilo de autofill de navegadores (Chrome, Edge) */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #111827 !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+html.dark input:-webkit-autofill,
+html.dark textarea:-webkit-autofill,
+html.dark select:-webkit-autofill {
+  -webkit-text-fill-color: #e2e8f0 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1e293b inset !important;
+}
+
+/* Forzar estilo consistente para campos autofill */
+input:-webkit-autofill::first-line,
+textarea:-webkit-autofill::first-line,
+select:-webkit-autofill::first-line {
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Angular Material Dialog styles */
+.custom-dialog-container .mat-mdc-dialog-surface {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: transparent;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+html.dark .custom-dialog-container .mat-mdc-dialog-surface {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.custom-dialog-container .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: transparent !important;
+  padding: 0;
+}
+
+html.dark .cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.mat-button-focus-overlay {
+  background-color: transparent;
+}
+
+/* Estilos para Angular Material Dialogs */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: white !important;
+  --mdc-dialog-with-divider-divider-color: #e2e8f0 !important;
+  --mdc-dialog-subhead-color: #111827 !important;
+  --mdc-dialog-supporting-text-color: #374151 !important;
+}
+
+html.dark .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #1e293b !important; /* slate-800 */
+  --mdc-dialog-with-divider-divider-color: #475569 !important; /* slate-600 */
+  --mdc-dialog-subhead-color: #e2e8f0 !important; /* slate-200 */
+  --mdc-dialog-supporting-text-color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Estilos para los diálogos personalizados */
+.user-edit-dialog .mat-mdc-dialog-surface,
+.user-detail-dialog .mat-mdc-dialog-surface {
+  background-color: white !important;
+  color: #111827 !important;
+}
+
+html.dark .user-edit-dialog .mat-mdc-dialog-surface,
+html.dark .user-detail-dialog .mat-mdc-dialog-surface {
+  background-color: #1e293b !important; /* slate-800 */
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* Overlay del diálogo */
+.cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+html.dark .cdk-overlay-dark-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* SnackBar Angular Material: Colores personalizados para éxito y error */
+.mat-mdc-snack-bar-container.success-snackbar {
+  background: #10b981 !important; /* verde emerald-500 */
+  color: #91da66 !important;
+}
+
+.mat-mdc-snack-bar-container.error-snackbar {
+  background: #ef4444 !important; /* rojo-500 */
+  color: #fff !important;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

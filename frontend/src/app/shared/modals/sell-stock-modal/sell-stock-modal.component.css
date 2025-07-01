@@ -1,0 +1,109 @@
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px; /* Ancho de la barra de desplazamiento */
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05); /* Color de fondo de la pista */
+  border-radius: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Color del "pulgar" de la barra */
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3); /* Color al pasar el ratón */
+}
+
+/* Estilos para modo oscuro */
+.dark-theme .overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.sell-stock-modal {
+  overflow: hidden;
+  animation: modalFadeIn 0.3s ease-in-out;
+  transform: translateZ(0); /* Para mejorar el rendimiento de la animación */
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ng-invalid.ng-touched:not(form) {
+  animation: errorShake 0.3s ease-in-out;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.success-message {
+  animation: successFadeIn 0.5s ease-in-out;
+}
+
+@keyframes successFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loading-spinner {
+  animation: spinFadeIn 0.5s ease-in-out;
+}
+
+@keyframes spinFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .sell-stock-modal {
+    max-width: 95% !important;
+    padding: 1rem !important;
+  }
+  
+  .btn-group {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+  
+  .btn-group button {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  
+  .input-group-full {
+    width: 100% !important;
+  }
+}

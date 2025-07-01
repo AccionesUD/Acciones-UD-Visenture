@@ -1,0 +1,75 @@
+/* Estilos para el diálogo de selección de tipo de orden */
+:host {
+  display: block;
+}
+
+/* Fondo y color base del diálogo */
+::ng-deep .order-type-selection-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-radius: 0.75rem !important;
+  padding: 24px !important;
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: #1f2937 !important; /* gray-800 */
+  color: #f9fafb !important; /* gray-50 */
+}
+
+/* Título del diálogo */
+::ng-deep .order-type-selection-dialog .mat-mdc-dialog-title {
+  color: #111827;
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-mdc-dialog-title {
+  color: #f9fafb;
+}
+
+/* Contenido del diálogo */
+::ng-deep .order-type-selection-dialog .mat-mdc-dialog-content {
+  color: #6b7280; /* gray-500 */
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-mdc-dialog-content {
+  color: #d1d5db; /* gray-300 */
+}
+
+/* Radio buttons */
+::ng-deep .order-type-selection-dialog .mat-radio-button .mdc-form-field {
+  color: #111827;
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-radio-button .mdc-form-field {
+  color: #f9fafb;
+}
+
+/* Badge "Próximamente" */
+.soon-badge {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #4b5563; /* gray-600 */
+}
+
+::ng-deep html.dark .order-type-selection-dialog .soon-badge {
+  background-color: #4b5563; /* gray-600 */
+  color: #d1d5db; /* gray-300 */
+}
+
+/* Acciones del diálogo */
+::ng-deep .order-type-selection-dialog .mat-mdc-dialog-actions {
+  border-top: 1px solid #e5e7eb; /* gray-200 */
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-mdc-dialog-actions {
+  border-top: 1px solid #374151; /* gray-700 */
+}
+
+/* Botón de cancelar */
+::ng-deep .order-type-selection-dialog .mat-mdc-button.mat-stroked-button {
+    border-color: #d1d5db;
+    color: #4b5563;
+}
+
+::ng-deep html.dark .order-type-selection-dialog .mat-mdc-button.mat-stroked-button {
+    border-color: #4b5563;
+    color: #d1d5db;
+}

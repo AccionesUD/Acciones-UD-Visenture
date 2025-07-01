@@ -1,0 +1,73 @@
+/* Estilos específicos para el componente de información */
+
+/* Botones primarios */
+:host ::ng-deep .mat-mdc-flat-button {
+  height: auto;
+  line-height: normal;
+  padding: 0.5rem 1rem;
+}
+
+/* Campos en modo de edición */
+.editable-field {
+  transition: all 0.3s ease;
+}
+
+.editable-field:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Estados diferentes de los formularios */
+.field-valid {
+  border-color: #10b981 !important;
+}
+
+.field-invalid {
+  border-color: #ef4444 !important;
+}
+
+.field-disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+/* Modo oscuro */
+:host-context(.dark-theme) .field-disabled {
+  background-color: #1f2937;
+}
+
+/* Eliminar estilos internos de snackbar para evitar conflicto con los globales */
+/* Para mensajes de éxito en MatSnackBar */
+/* .success-snackbar {
+  background-color: #10b981 !important;
+  color: #fff !important;
+}
+
+.error-snackbar {
+  background-color: #ef4444 !important;
+  color: #fff !important;
+} */
+
+/* Bloque de éxito: sin borde rojo, fondo y texto verde */
+.success-block {
+  background-color: #ecfdf5; /* emerald-50 */
+  border-left: 4px solid #10b981; /* emerald-500 */
+  color: #047857; /* emerald-700 */
+}
+
+html.dark .success-block {
+  background-color: #064e3b; /* emerald-900 */
+  color: #a7f3d0; /* emerald-200 */
+}
+
+/* Bloque de error: sin cambios, ya está bien */

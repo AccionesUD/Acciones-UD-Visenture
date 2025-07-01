@@ -1,0 +1,56 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Gestión de Suscripción</h2>
+    <span 
+      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+      [ngClass]="subscriptionActive 
+        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'"
+    >
+      <mat-icon class="mr-1">{{ subscriptionActive ? 'verified' : 'cancel' }}</mat-icon>
+      {{ subscriptionActive ? 'Activa' : 'Inactiva' }}
+    </span>
+  </div>
+
+  <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-slate-700 space-y-4">
+    <p class="text-gray-700 dark:text-gray-300">
+      Tu suscripción controla el acceso a funcionalidades avanzadas como: 
+    </p>
+
+    <ul class="text-sm space-y-2">
+      <li class="flex items-center">
+        <mat-icon class="text-emerald-500 mr-2">check_circle</mat-icon>
+        Reportes detallados de rendimiento
+      </li>
+      <li class="flex items-center">
+        <mat-icon class="text-emerald-500 mr-2">check_circle</mat-icon>
+        Soporte prioritario
+      </li>
+      <li class="flex items-center">
+        <mat-icon class="text-emerald-500 mr-2">check_circle</mat-icon>
+        Seguimiento a acciones preferidas
+      </li>
+      <li class="flex items-center">
+        <mat-icon class="text-emerald-500 mr-2">check_circle</mat-icon>
+        Notificacioens personalizadas
+      </li>
+    </ul>
+
+    <div class="mt-6 flex justify-end">
+      <button
+        mat-flat-button
+        (click)="openSubscriptionDialog()"
+        class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm px-4 py-2 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+      >
+        <mat-icon class="mr-2">workspace_premium</mat-icon>
+        <span>{{ subscriptionActive ? 'Administrar Suscripción' : 'Ver Planes Premium' }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="subscriptionActive" class="bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-500 p-4 mt-6 rounded-md">
+      <p class="text-sm text-emerald-800 dark:text-emerald-300">
+        Estás disfrutando de funcionalidades premium. ¡Gracias por ser suscriptor!
+      </p>
+    </div>
+  </div>
+</div>

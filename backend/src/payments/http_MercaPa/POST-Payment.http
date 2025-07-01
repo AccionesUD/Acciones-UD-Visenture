@@ -1,0 +1,46 @@
+POST /api/payments/crear-preferencia HTTP/1.1
+Content-Type: application/json
+User-Agent: insomnia/11.1.0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiY3Jpc3RpYW5jYXNhczcwNkBnbWFpbC5jb20iLCJ1c2VySWQiOiIxMDAwMDAiLCJyb2xlcyI6WyJhZG1pbiJdLCJpYXQiOjE3NTEyMzQyOTgsImV4cCI6MTc1MTIzNzg5OH0.jy-ebPed5gzn61eQsJSn_2R8Od94klNgxfr0MMUyzxo
+Host: localhost:3000
+Content-Length: 100
+
+{
+  "planId": 1,
+  "monto": 2000,
+  "descripcion": "Suscripción Premium",
+	"emailUsuario": "APRO"
+}
+
+
+// response:HTTP/1.1 200 OK
+
+{
+	"init_point": "https://www.mercadopago.com.co/checkout/v1/redirect?pref_id=394457267-4a2f6dbe-98e2-4c76-a24c-76b9c987b8ca",
+	"id": "394457267-4a2f6dbe-98e2-4c76-a24c-76b9c987b8ca"
+}
+
+// Este es un ejemplo de cómo se vería la respuesta de la API de MercadoPago al crear una preferencia de pago.
+
+//Se deben enviar los siguientes datos en el cuerpo de la solicitud:
+// - planId: El ID del plan al que se está suscribiendo el usuario.
+// - monto: El monto a pagar por la suscripción.
+// - descripcion: Una descripción del pago.
+// - emailUsuario: El correo electrónico del usuario que está realizando el pago. 
+// Aclaracion  el campo de email no es un email propiamente sino un 
+// identificador del usuario de la API, que indica el resultado de la operación
+
+// La respuesta contiene:
+// - init_point: La URL a la que el usuario debe ser redirigido para completar el pago.
+// - id: El ID de la preferencia de pago creada.
+
+//Revisar la carpeta public, ahí hay un html con un botón que redirige a la URL de pago de MercadoPago.
+
+// Nota: Asegúrate de que el token de autorización sea válido y que la API de MercadoPago esté configurada correctamente en tu entorno.
+
+HTML Es el siguiente: test-pago.html
+
+
+En la pasarela de pago se debe colocar los datos de tarjetas  ficticios, proporcionadas por MercadoPago para pruebas.
+
+Para más info: https://www.mercadopago.com.co/developers/es/docs/checkout-api/integration-test/test-cards

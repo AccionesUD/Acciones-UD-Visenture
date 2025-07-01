@@ -1,0 +1,326 @@
+mat-card.mat-mdc-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Contenedor que da el marco visual a la tabla. */
+.historical-table-container {
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid #a8c2b4; /* Color del borde en modo claro (emerald-100) */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* Borde para el modo oscuro. */
+::ng-deep .dark .historical-table-container {
+  border-color: #374151; /* gray-700 */
+}
+
+/* Anulamos el fondo de la tabla de Material. */
+::ng-deep .historical-table-container .mat-mdc-table {
+  background: transparent !important;
+}
+
+/* --- ESTILOS DE LA CABECERA --- */
+::ng-deep .historical-table-container .mat-mdc-header-cell {
+  background-color: #ecfdf5 !important; /* emerald-50 */
+  color: rgb(56, 61, 53) !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: 1px solid #d1fae5 !important; /* Mismo color que el borde */
+}
+
+/* Cabecera en modo oscuro. */
+::ng-deep .dark .historical-table-container .mat-mdc-header-cell {
+  background-color: rgba(55, 65, 81, 0.6) !important; /* Fondo más oscuro */
+  color: rgb(176, 185, 171) !important;
+  border-bottom-color: #374151 !important; /* Mismo color que el borde */
+}
+
+/* --- ESTILOS DE LAS CELDAS Y FILAS --- */
+::ng-deep .historical-table-container .mat-mdc-cell {
+  color: rgb(59, 59, 58) !important;
+  font-size: 0.875rem !important;
+  padding: 1rem 1.5rem !important;
+  border-bottom: 1px solid #d1fae5 !important; /* Mismo color que el borde */
+  white-space: nowrap;
+
+}
+
+/* Celdas en modo oscuro. */
+::ng-deep .dark .historical-table-container .mat-mdc-cell {
+  color: white !important;
+  border-bottom-color: #374151 !important; /* Mismo color que el borde */
+}
+
+/* Quitamos el borde de la última fila. */
+::ng-deep .historical-table-container .mat-mdc-row:last-child .mat-mdc-cell {
+  border-bottom: none !important;
+}
+
+/* Efecto hover en las filas. */
+::ng-deep .historical-table-container .mat-mdc-row:hover {
+  background-color: #c5d1ce !important; /* emerald-50 con más opacidad */
+}
+
+::ng-deep .dark .historical-table-container .mat-mdc-row:hover {
+  background-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+/* --- OTROS ESTILOS --- */
+.buy-text {
+  color: #16a34a;
+  font-weight: 600;
+}
+.sell-text {
+  color: #dc2626;
+  font-weight: 600;
+}
+::ng-deep .dark .buy-text {
+  color: #4ade80;
+}
+::ng-deep .dark .sell-text {
+  color: #f87171;
+}
+
+.spinner-container, .no-data-message {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  color: #888;
+}
+::ng-deep .dark .spinner-container, ::ng-deep .dark .no-data-message {
+  color: #a0a0a0;
+}
+
+/* --- ESTILOS PARA LOS FILTROS --- */
+.filters-container {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  border: 1px solid #abb4a8;
+}
+
+::ng-deep .dark .filters-container {
+  background-color: #1f2937; /* gray-800 */
+  border-color: #374151; /* gray-700 */
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+}
+
+::ng-deep .dark .filter-label {
+  color: #d1d5db; /* gray-300 */
+}
+
+.filter-input {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  padding-right: 2.5rem; /* Espacio para el icono */
+  background-color: white;
+  border: 1px solid #a1a3a7; /* gray-300 */
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+::ng-deep .dark .filter-input {
+  background-color: #374151; /* gray-700 */
+  border-color: #4b5563; /* gray-600 */
+  color: #f3f4f6; /* gray-100 */
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: #10b981; /* emerald-500 */
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.filter-icon-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding-right: 0.75rem;
+  pointer-events: none;
+}
+
+.filter-icon {
+  color: #9ca3af; /* gray-400 */
+}
+
+/* ... (todos los estilos anteriores) ... */
+
+/* --- ESTILOS PARA EL BOTÓN DE CANCELAR (NUEVO) --- */
+.action-icon-cancel {
+  color: #ef4444; /* red-500 */
+  transition: all 0.2s ease;
+}
+
+.action-icon-cancel:not([disabled]):hover {
+  transform: scale(1.15);
+  color: #dc2626; /* red-600 */
+  opacity: 1;
+}
+
+.action-icon-cancel[disabled] {
+  color: rgba(156, 163, 175, 0.5); /* gray-400 con opacidad */
+  cursor: not-allowed;
+}
+
+::ng-deep .dark .action-icon-cancel {
+  color: #f87171; /* red-400 */
+}
+
+::ng-deep .dark .action-icon-cancel:not([disabled]):hover {
+  color: #fca5a5; /* red-300 */
+  box-shadow: 0 0 4px rgba(252, 165, 165, 0.4);
+}
+
+::ng-deep .dark .action-icon-cancel[disabled] {
+  color: rgba(75, 85, 99, 0.6); /* gray-600 con opacidad */
+}
+
+/* Estilos para el paginador (copiados de users.component.css) */
+::ng-deep .mat-mdc-paginator {
+  background: transparent !important;
+  font-family: inherit;
+}
+
+::ng-deep .dark .mat-mdc-paginator-container {
+  color: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-paginator-range-label,
+::ng-deep .dark .mat-mdc-paginator-page-size-label {
+  color: #e2e8f0;
+  opacity: 1;
+}
+
+::ng-deep .dark .mat-mdc-icon-button .mat-mdc-button-persistent-ripple {
+  opacity: 0.2;
+}
+
+::ng-deep .dark .mdc-icon-button {
+  fill: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-icon-button {
+  color: #e2e8f0;
+}
+
+::ng-deep .dark .mat-mdc-icon-button:hover {
+  background-color: rgba(226, 232, 240, 0.1);
+}
+
+::ng-deep .dark .mat-mdc-icon-button[disabled] {
+  color: rgba(226, 232, 240, 0.5) !important;
+}
+
+::ng-deep .dark .mat-mdc-select-value-text {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-select-arrow {
+  color: #e2e8f0 !important;
+}
+
+::ng-deep .dark .mat-mdc-paginator-icon {
+  fill: #e2e8f0 !important;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  color: #000000;
+}
+
+::ng-deep .mat-mdc-paginator-range-label,
+::ng-deep .mat-mdc-paginator-page-size-label {
+  color: #000000;
+  opacity: 1;
+}
+
+::ng-deep .mdc-icon-button {
+  fill: #000000;
+}
+
+::ng-deep .mat-mdc-icon-button {
+  color: #000000;
+}
+
+::ng-deep .mat-mdc-icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+::ng-deep .mat-mdc-icon-button[disabled] {
+  color: rgba(0, 0, 0, 0.38) !important;
+}
+
+::ng-deep .mat-mdc-select-value-text {
+  color: #000000 !important;
+}
+
+::ng-deep .mat-mdc-select-arrow {
+  color: #000000 !important;
+}
+
+::ng-deep .mat-mdc-paginator-icon {
+  fill: #000000 !important; 
+}
+
+.sticky-paginator {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+::ng-deep .mat-mdc-paginator-container {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  border-top: 1px solid #e5e7eb;
+  transition: border-color 0.3s ease;
+}
+
+::ng-deep .dark .mat-mdc-paginator-container {
+  border-top-color: #374151;
+}
+
+::ng-deep .mat-mdc-paginator-page-size {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+::ng-deep .mat-mdc-paginator-page-size-select {
+  margin: 0 0.5rem;
+  width: 56px;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
+  height: 36px;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .dark .mat-mdc-form-field-flex {
+  background-color: rgba(30, 41, 59, 0.5);
+}

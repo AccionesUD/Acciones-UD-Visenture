@@ -28,10 +28,10 @@ export class PriceAlertsService {
         private readonly subscriptionsService: SubscriptionsService
     ) { }
 
-    async create(accountId: string, createDto: CreatePriceAlertDto): Promise<PriceAlert> {
+    async create(accountId: number, createDto: CreatePriceAlertDto): Promise<PriceAlert> {
         try {
             // Verificar que el usuario tiene suscripción premium activa
-            const isPremium = await this.subscriptionsService.hasActivePremiumSubscription(accountId);
+            const isPremium = await this.subscriptionsService.hasActiveSubscription(accountId);
             if (!isPremium) {
                 throw new ForbiddenException({
                     statusCode: 403,
@@ -40,7 +40,7 @@ export class PriceAlertsService {
                 });
             }
 
-            const account = await this.accountRepository.findOneBy({ identity_document: accountId });
+            const account = await this.accountRepository.findOneBy({ identity_document: String(accountId) });
             if (!account) {
                 throw new NotFoundException({
                     statusCode: 404,
@@ -61,7 +61,7 @@ export class PriceAlertsService {
             // Verificar si ya existe una alerta similar activa
             const existingAlert = await this.alertRepository.findOne({
                 where: {
-                    account: { identity_document: accountId },
+                    account: { identity_document: String(accountId) },
                     share: { symbol: createDto.share_id },
                     target_price: createDto.target_price,
                     direction: createDto.direction as AlertDirection,

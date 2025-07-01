@@ -43,6 +43,7 @@ export class PurchaseOrder extends AbstractOrder {
       const { quoteAmmount, comissionAmount } = await this.calculateAmountOrder(strategy)
       const accountAmmount = await this.transactionService.calculateCurrentBalance(orderDto.account.id)
       if ((quoteAmmount + comissionAmount) > accountAmmount.balance) {
+
          throw new ConflictException('El usuario no cuenta con saldo suficiente para esta transaccion')
       }
       return super.generateOrder(orderDto, quoteAmmount, comissionAmount)
@@ -67,6 +68,7 @@ export class PurchaseOrder extends AbstractOrder {
                 relations: ['account', 'share']
              })
          await this.briefcasesService.addAssetsBriefcase(orderUpdate!)
+
       }
    }
 }

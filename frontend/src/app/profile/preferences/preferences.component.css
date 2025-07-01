@@ -1,0 +1,263 @@
+/* Estilos específicos para el componente de preferencias */
+
+/* Variables de colores */
+:root {
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #022c22;
+}
+
+/* Contenedor principal */
+.preferences-container {
+  padding: 1rem;
+  max-width: 100%;
+}
+
+/* Estilos para las pestañas */
+.tabs-container {
+  margin-bottom: 1.5rem;
+}
+
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+
+.tabs-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.tab-button {
+  position: relative;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+  font-weight: 500;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+  background: none;
+  border-right: none;
+  border-left: none;
+  border-top: none;
+  cursor: pointer;
+}
+
+.tab-button:focus {
+  outline: none;
+}
+
+.tab-button.active {
+  color: var(--emerald-600);
+  border-bottom-color: var(--emerald-600);
+}
+
+.tab-button:not(.active):hover {
+  color: #4b5563;
+  border-bottom-color: #e5e7eb;
+}
+
+.tab-content {
+  padding: 1.5rem 0;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Estilo para tarjetas y paneles */
+.card {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Spinner de carga nativo */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(16, 185, 129, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--emerald-500);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Animación para alertas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.space-y-3 > * {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Estilos para los botones de acción en las alertas */
+.edit-button, .delete-button {
+  transform: scale(1);
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-button:hover, .delete-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Estilos para checkboxes */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--emerald-500);
+  border-color: var(--emerald-500);
+  accent-color: var(--emerald-500);
+}
+
+input[type="checkbox"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 0.125rem;
+  background-color: gray;
+}
+
+.dark input[type="checkbox"] {
+  border-color: #4b5563;
+}
+
+.dark input[type="checkbox"]:checked {
+  background-color: var(--emerald-400);
+  border-color: var(--emerald-400);
+  accent-color: var(--emerald-400);
+}
+
+/* Estilos para controles de navegación de pestañas */
+.tabs-nav-container {
+  position: relative;
+  width: 100%;
+  padding: 0 25px; /* Espacio para los botones de navegación */
+}
+
+.tabs-nav {
+  width: 100%;
+  position: relative;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+
+.tabs-scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #eaeaea;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.tabs-scroll-button:hover {
+  background-color: var(--emerald-50);
+  border-color: var(--emerald-200);
+}
+
+.tabs-scroll-left {
+  left: 0;
+}
+
+.tabs-scroll-right {
+  right: 0;
+}
+
+.dark .tabs-scroll-button {
+  background-color: rgba(31, 41, 55, 0.9);
+  border-color: #374151;
+  color: white;
+}
+
+.dark .tabs-scroll-button:hover {
+  background-color: rgba(5, 150, 105, 0.2);
+  border-color: var(--emerald-800);
+}
+
+.dark .tabs-scroll-button {
+  background-color: rgba(31, 41, 55, 0.8);
+  color: white;
+}
+
+/* Estilos para Angular Material slide toggle - simplificados */
+::ng-deep .mat-emerald-toggle {
+  margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .preferences-container {
+    padding: 0.5rem;
+  }
+  
+  .tab-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
