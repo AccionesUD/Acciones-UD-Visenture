@@ -1,0 +1,49 @@
+<div class="min-w-[600px] max-w-3xl p-6">
+  <!-- Cabecera del diálogo -->
+  <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+    <h2 class="text-2xl font-semibold bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 dark:from-emerald-400 dark:via-emerald-500 dark:to-emerald-600 bg-clip-text text-transparent">
+      Selecciona un Plan de Suscripción
+    </h2>
+    <button mat-icon-button (click)="closeDialog()" class="focus:outline-none hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors" title="Cerrar diálogo">
+      <mat-icon class="text-gray-700 dark:text-gray-300">close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="max-h-[70vh] overflow-y-auto hide-scrollbar p-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Tarjeta de Plan -->
+      <div *ngFor="let plan of plans" 
+           class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg p-6 flex flex-col transition-transform hover:scale-105">
+        
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">{{ plan.description }}</p>
+
+        <div class="my-6">
+          <span class="text-4xl font-extrabold text-gray-900 dark:text-white">${{ plan.price | number:'1.0-0' }}</span>
+          <span class="text-base font-medium text-gray-500 dark:text-gray-400">/mes</span>
+        </div>
+
+        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300 flex-grow">
+          <li *ngFor="let feature of plan.features" class="flex items-center">
+            <mat-icon class="text-emerald-500 mr-2">check_circle</mat-icon>
+            <span>{{ feature }}</span>
+          </li>
+        </ul>
+
+        <button 
+          mat-flat-button 
+          (click)="selectPlan(plan)" 
+          [disabled]="isProcessing"
+          class="mt-8 w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-md shadow-sm px-4 py-3 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+          <div *ngIf="isProcessing" class="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+          <span *ngIf="!isProcessing">Seleccionar Plan</span>
+          <span *ngIf="isProcessing">Procesando...</span>
+        </button>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <button mat-stroked-button (click)="closeDialog()">Cancelar</button>
+  </mat-dialog-actions>
+</div>
