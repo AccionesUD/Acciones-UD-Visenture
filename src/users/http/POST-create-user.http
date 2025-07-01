@@ -2,14 +2,14 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "identity_document": "1423223121",
-  "first_name": "Ricardo",
-  "last_name": "Perez",
-  "phone": "+573151234567",
-  "birthdate": "2000-01-01",
-  "address": "Calle Falsa 123", 
+  "identity_document": "1058350094",
+  "first_name": "Santiago",
+  "last_name": "Avella Torres",
+  "phone": "+573123551663",
+  "birthdate": "2003-12-20",
+  "address": "Calle 45#13-05", 
   "account": {
-    "email": "ricke@gmail.com",
+    "email": "ksavellat@ud.com",
     "password": "A1#asdasadasda"
   }
 }

@@ -111,14 +111,6 @@ export class PriceAlertsService {
                 relations: ['account', 'share', 'share.stock']
             });
 
-            if (!alerts || alerts.length === 0) {
-                throw new NotFoundException({
-                    statusCode: 404,
-                    message: 'No se encontraron alertas activas',
-                    error: 'Not Found'
-                });
-            }
-
             return alerts;
         } catch (error) {
             if (error instanceof NotFoundException) {

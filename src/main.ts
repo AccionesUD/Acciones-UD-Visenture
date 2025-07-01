@@ -18,7 +18,7 @@ async function bootstrap() {
   )
   app.setGlobalPrefix('api')
   app.enableCors({
-    origin: 'http://localhost:4200', // permite configurar los dominios desde los que puede recibir peticiones
+    origin: process.env.APP_BASE_FRONTEND_URL, // permite configurar los dominios desde los que puede recibir peticiones
   });
   // Configura Bull Board
   const notificationsQueue = app.get<Queue>(getQueueToken('notifications'));

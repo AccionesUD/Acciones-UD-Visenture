@@ -42,13 +42,15 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false
+          }
+        },
         autoLoadEntities: configService.get('DB_AUTOLOADENTITIES') === 'true',
         synchronize: configService.get('DB_SYNCRONIZE') === 'true',
-        port: configService.get('DB_PORT', 10),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
-        host: configService.get('DB_HOST'),
+        url: configService.get('DB_URL')
       }),
     }),
     ScheduleModule.forRoot(), 

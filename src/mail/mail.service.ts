@@ -8,9 +8,10 @@ import { Stock } from 'src/stocks/entities/stocks.entity';
 @Injectable()
 export class MailService {
   private transporter: Transporter;
-  private readonly logger = new Logger(MailService.name);
+  private readonly logger = new Logger(MailService.name)
 
   constructor(private readonly configService: ConfigService) {
+
     try {
       this.transporter = nodemailer.createTransport({
         service: configService.get('MAIL_SERVICE'),
@@ -190,8 +191,8 @@ export class MailService {
 
   async sendPasswordResetEmail(email: string, token: string): Promise<{ success: boolean; message?: string }> {
     try {
-      const resetLink = `http://localhost:4200/reset-password?token=${token}&email=${email}`;
-
+      const host = this.configService.get('APP_BASE_FRONTEND_URL')
+      const resetLink = `${host}/reset-password?token=${token}&email=${email}`;
       const result = await this.sendMail({
         to: email,
         subject: 'Restablecimiento de contraseña',
@@ -552,7 +553,7 @@ export class MailService {
     direction: string
   ): Promise<void> {
     const directionText = direction === 'above' ? 'por encima' : 'por debajo';
-    
+
     const htmlContent = `
       <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; border-radius: 8px; overflow: hidden;">
         <!-- Encabezado -->
@@ -566,12 +567,12 @@ export class MailService {
         <div style="padding: 30px; background-color: #ffffff;">
           <p style="color: #6c757d; font-size: 14px; margin-bottom: 20px;">
             Fecha: ${new Date().toLocaleString('es-CO', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}
           </p>
 
           <h2 style="color: #0f172b; margin-top: 0; font-size: 20px;">

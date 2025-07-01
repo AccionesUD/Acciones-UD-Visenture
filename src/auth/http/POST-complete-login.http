@@ -2,6 +2,6 @@ POST http://localhost:3000/api/auth/complete-login/
 Content-Type: application/json
 
 {
-    "email": "johndoe@gmail.com",
-    "token": "446WD1"               
+    "email": "accionesudinc@gmail.com",
+    "token": "ZSRPD1"               
 }
