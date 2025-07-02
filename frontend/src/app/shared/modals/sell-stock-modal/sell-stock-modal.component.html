@@ -280,54 +280,47 @@
       
       <dl class="grid grid-cols-2 gap-2">
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Order ID label">ID de orden:</dt>
-        <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">{{ operationResult.orderId }}</dd>
+        <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">{{ operationResult.id }}</dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Order type result label">Tipo de orden:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          <ng-container *ngIf="sellForm.get('orderType')?.value === 'market'" i18n="sellStockModal|Market order type">Mercado</ng-container>
-          <ng-container *ngIf="sellForm.get('orderType')?.value === 'limit'" i18n="sellStockModal|Limit order type">Límite</ng-container>
-          <ng-container *ngIf="sellForm.get('orderType')?.value === 'stop-loss'" i18n="sellStockModal|Stop loss order type">Stop Loss</ng-container>
-          <ng-container *ngIf="sellForm.get('orderType')?.value === 'take-profit'" i18n="sellStockModal|Take profit order type">Take Profit</ng-container>
+          {{ operationResult.type }}
         </dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Sale price label">Precio de venta:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.soldAt | currency:'COP':'symbol':'1.0-0' }}
+          {{ operationResult.filled_avg_price | currency:'COP':'symbol':'1.0-0' }}
         </dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Quantity result label">Cantidad:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="sellStockModal|Shares filled quantity">
-          {{ operationResult.filledQuantity || 0 }} de {{ sellForm.get('quantity')?.value || 0 }}
+          {{ operationResult.fill_qyt }} de {{ operationResult.qty }}
         </dd>
 
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Total result label">Total:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.totalAmount | currency:'COP':'symbol':'1.0-0' }}
-        </dd>
-        
-        <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Fee result label">Comisión:</dt>
-        <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.fee | currency:'COP':'symbol':'1.0-0' }}
+          {{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'COP':'symbol':'1.0-0' }}
         </dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Submitted at label">Enviada:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.submittedAt | date:'dd/MM/yyyy HH:mm' }}
+          {{ operationResult.create_at | date:'dd/MM/yyyy HH:mm' }}
         </dd>
         
-        <dt *ngIf="operationResult.filledAt" class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Filled at label">Ejecutada:</dt>
-        <dd *ngIf="operationResult.filledAt" class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.filledAt | date:'dd/MM/yyyy HH:mm' }}        </dd>
+        <dt *ngIf="operationResult.filled_at" class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Filled at label">Ejecutada:</dt>
+        <dd *ngIf="operationResult.filled_at" class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          {{ operationResult.filled_at | date:'dd/MM/yyyy HH:mm' }}
+        </dd>
       </dl>
       
       <!-- Información adicional -->
-      <div *ngIf="operationResult.status === 'completed'" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+      <div *ngIf="operationResult.status === 'filled'" class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
         <div class="flex items-center mb-2">
           <mat-icon class="mr-2 text-blue-500">info</mat-icon>
           <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="sellStockModal|Important information title">Información importante</span>
         </div>
         <p class="text-sm text-blue-700 dark:text-blue-300" i18n="sellStockModal|Completed order info">
-          Los fondos obtenidos de esta venta ({{ (operationResult.totalAmount || 0) - (operationResult.fee || 0) | currency:'COP':'symbol':'1.0-0' }}) 
+          Los fondos obtenidos de esta venta ({{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'COP':'symbol':'1.0-0' }}) 
           ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones.
         </p>
       </div>

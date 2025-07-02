@@ -39,18 +39,11 @@
     <div class="mt-6 flex justify-end">
       <button
         mat-flat-button
-        [disabled]="isProcessing"
-        (click)="toggleSubscription()"
-        [ngClass]="subscriptionActive 
-          ? 'bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white' 
-          : 'bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white'"
-        class="rounded-md shadow-sm px-4 py-2 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+        (click)="openSubscriptionDialog()"
+        class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-md shadow-sm px-4 py-2 flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
       >
-        <div *ngIf="isProcessing" class="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
-        <mat-icon class="mr-2">
-          {{ subscriptionActive ? 'cancel' : 'bolt' }}
-        </mat-icon>
-        {{ subscriptionActive ? 'Cancelar Suscripción' : 'Activar Suscripción' }}
+        <mat-icon class="mr-2">workspace_premium</mat-icon>
+        <span>{{ subscriptionActive ? 'Administrar Suscripción' : 'Ver Planes Premium' }}</span>
       </button>
     </div>
 

@@ -13,6 +13,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AdminAnalyticsService } from '../services/admin-analytics.service';
+import { User } from '../models/user.model';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -32,16 +34,19 @@ export type ChartOptions = {
   styleUrls: ['./admin-analytics.component.css']
 })
 export class AdminAnalyticsComponent implements OnInit, OnDestroy {
-  public chartOptions: Partial<ChartOptions> = {};
-  private destroy$ = new Subject<void>();
-  isDark = document.documentElement.classList.contains('dark');
-  
-  // Datos de ejemplo
-  usuariosTotales = 1500;
-  NuevosUsuarios = 200;
-  Activos = 800;
-  sucripcionesPremium = 300;
-  ingresosPorComisiones = '$23,640,000 COP';
+ public chartOptions: Partial<ChartOptions> = {};
+ private destroy$ = new Subject<void>();
+ isDark = document.documentElement.classList.contains('dark');
+
+ // Datos reales
+ usuariosTotales = 0;
+ nuevosUsuariosHoy = 0;
+ usuariosActivos = 0;
+ suscripcionesPremium = 0;
+ ingresosPorComisiones = '$0 COP';
+ private allUsers: User[] = []; // Para almacenar todos los usuarios cargados
+
+ constructor(private adminAnalyticsService: AdminAnalyticsService) {}
 
   // Pie Chart - Distribución de riesgo
   riskDistribution = {
@@ -114,17 +119,40 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    this.setupThemeObserver();
-    this.initializeCharts();
-  }
+   this.setupThemeObserver();
+   this.loadAnalyticsData();
+ }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
-  private initializeCharts(): void {
-    this.updateChartThemes();
+  private loadAnalyticsData(): void {
+   this.adminAnalyticsService.getUsersWithRoles().subscribe((users: User[]) => {
+     this.allUsers = users; // Almacenar los usuarios
+     this.usuariosTotales = users.length;
+     
+     // Lógica para calcular nuevos usuarios (ej: en las últimas 24h)
+     const today = new Date();
+     const yesterday = new Date(today);
+     yesterday.setDate(yesterday.getDate() - 1);
+     this.nuevosUsuariosHoy = users.filter(u => u.created_at && new Date(u.created_at as string) > yesterday).length;
+
+     // Lógica para usuarios activos (ej: con login en los últimos 7 días)
+     const lastWeek = new Date(today);
+     lastWeek.setDate(lastWeek.getDate() - 7);
+     this.usuariosActivos = users.filter(u => u.last_login && new Date(u.last_login as string) > lastWeek).length;
+
+     // Lógica para suscripciones premium
+     this.suscripcionesPremium = users.filter(u => u.roles?.includes('usuario_premium')).length;
+
+     this.initializeCharts(users);
+   });
+ }
+
+  private initializeCharts(users: User[]): void {
+    this.updateChartThemes(users);
   }
 
   private setupThemeObserver(): void {
@@ -132,7 +160,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           this.isDark = document.documentElement.classList.contains('dark');
-          this.updateChartThemes();
+          this.updateChartThemes(this.allUsers); // Pasar los usuarios almacenados
         }
       });
     });
@@ -145,18 +173,29 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.destroy$.subscribe(() => observer.disconnect());
   }
 
-  private updateChartThemes(): void {
-    const labelColor = this.isDark ? '#FFFFFF' : '#333333';
-    const themeMode = this.isDark ? 'dark' : 'light';
+  private updateChartThemes(users: User[] = []): void { // Añadir users como parámetro opcional
+   const labelColor = this.isDark ? '#FFFFFF' : '#333333';
+   const themeMode = this.isDark ? 'dark' : 'light';
 
-    // Actualizar riskDistribution
-    this.riskDistribution = {
-      ...this.riskDistribution,
-      dataLabels: {
-        ...this.riskDistribution.dataLabels,
-        style: { colors: [labelColor] }
-      }
-    };
+   // Gráfica de distribución de roles
+   const roleCounts = users.reduce((acc, user) => {
+     if (user.roles) {
+       user.roles.forEach(role => {
+         acc[role] = (acc[role] || 0) + 1;
+       });
+     }
+     return acc;
+   }, {} as { [key: string]: number });
+
+   this.riskDistribution = {
+     ...this.riskDistribution,
+     series: Object.values(roleCounts).length > 0 ? Object.values(roleCounts) : [0],
+     labels: Object.keys(roleCounts).length > 0 ? Object.keys(roleCounts).map(role => role.charAt(0).toUpperCase() + role.slice(1)) : ['Sin Datos'],
+     dataLabels: {
+       ...this.riskDistribution.dataLabels,
+       style: { colors: [labelColor] }
+     }
+   };
 
     // Actualizar transactionVolume
     this.transactionVolume = {

@@ -11,6 +11,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { User, ProfileUpdateResponse } from '../../models/user.model';
 import { UsersService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { phoneNumberValidator, getValidationErrorMessage } from '../../helpers/must-match.validator';
 import { HttpClient } from '@angular/common/http';
 
@@ -55,7 +56,8 @@ export class UserEditDialogComponent implements OnInit {
     private fb: FormBuilder,
     private usersService: UsersService,
     private snackBar: MatSnackBar,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) {
     // Configuración del diálogo
     this.dialogRef.disableClose = false;
@@ -198,7 +200,26 @@ export class UserEditDialogComponent implements OnInit {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        this.dialogRef.close({ ...updatedData });
+        
+        // Si el usuario editado es el mismo que el logueado, actualizamos su estado
+        const currentUser = this.authService.currentUser;
+        if (currentUser && currentUser.id === String(resp.accountId)) {
+          // Si la respuesta incluye un nuevo token, usar el nuevo método para actualizar todo
+          if (resp.token) {
+            this.authService.updateUserTokenAndData(resp.token);
+            console.log('[UserEditDialog] onSave - Token y datos de usuario actualizados.');
+          } else {
+            // Si no hay token, mantener el comportamiento anterior
+            this.authService.updateCurrentUserData({
+              roles: resp.roles,
+              name: `${resp.firstName} ${resp.lastName}`,
+              email: resp.email
+            });
+            console.log('[UserEditDialog] onSave - Datos de usuario actualizados (sin token nuevo).');
+          }
+        }
+
+        this.dialogRef.close({ ...resp });
       },
       error: (error: any) => {
         this.isSaving = false;

@@ -89,8 +89,8 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Paginación
   totalUsers = 0;
-  pageSize = 10;
-  currentPage = 0; // MatPaginator usa pageIndex (0-indexed)
+  pageSize = 5;
+  pageIndex = 0; // MatPaginator usa pageIndex (0-indexed)
   pageSizeOptions = [5, 10, 25, 50, 100];
 
   // Gráficos
@@ -103,6 +103,8 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Lista completa de usuarios cargados
   allUsers: User[] = [];
+  // Lista de usuarios después de aplicar filtros
+  filteredUsers: User[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -130,25 +132,18 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.paginator.pageIndex = 0; // Reset paginator to first page
-      this.currentPage = 0;
+      this.pageIndex = 0; // Reset paginator to first page
+      if (this.paginator) {
+        this.paginator.pageIndex = 0;
+      }
       this.applyFiltersAndPagination(); // Solo filtra y pagina en memoria
     });
   }
 
   ngAfterViewInit(): void {
     // Vincula el paginador y el sort al dataSource
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-
-    // Si el paginador existe, suscribe a sus cambios de página
-    if (this.paginator) {
-      this.paginator.page.pipe(takeUntil(this.destroy$)).subscribe(() => {
-        this.currentPage = this.paginator.pageIndex;
-        this.pageSize = this.paginator.pageSize;
-        this.applyFiltersAndPagination(); // Solo paginación en memoria
-      });
-    }
+    // No vinculamos el paginador directamente, lo manejaremos manualmente.
+    this.dataSource.sort = this.sort; // El sort sí se vincula directamente
   }
 
   ngOnDestroy(): void {
@@ -226,14 +221,18 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
       filtered = filtered.filter(u => Array.isArray(u.roles) && u.roles.includes(filters.role));
     }
     this.totalUsers = filtered.length;
-    // Paginación en memoria (robusta: si paginator no está, mostrar la primera página)
-    let start = 0;
-    let end = this.pageSize;
+    this.filteredUsers = filtered; // Guardar los usuarios filtrados
+    this.pageIndex = 0; // Resetear a la primera página al aplicar filtros
     if (this.paginator) {
-      start = this.paginator.pageIndex * this.pageSize;
-      end = start + this.pageSize;
+      this.paginator.pageIndex = 0;
     }
-    this.dataSource.data = filtered.slice(start, end);
+    this.updateDisplayedUsers();
+  }
+
+  updateDisplayedUsers(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.dataSource.data = this.filteredUsers.slice(startIndex, endIndex);
     this.cdr.detectChanges();
   }
 
@@ -309,8 +308,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   applyFilters(): void {
-    this.paginator.pageIndex = 0;
-    this.currentPage = 0;
+    this.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
     this.loadUsers();
   }
 
@@ -324,9 +325,9 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handlePageEvent(event: PageEvent): void {
-    this.currentPage = event.pageIndex;
+    this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.applyFiltersAndPagination();
+    this.updateDisplayedUsers();
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
@@ -610,10 +611,10 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
    * aunque los filtros se aplican automáticamente gracias a la suscripción a valueChanges.
    */
   public onFilterSubmit(): void {
+    this.pageIndex = 0;
     if (this.paginator) {
       this.paginator.pageIndex = 0;
     }
-    this.currentPage = 0;
     this.applyFiltersAndLoad();
   }
 
@@ -623,7 +624,7 @@ export class UsersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.paginator) {
       this.paginator.pageIndex = 0;
     }
-    this.currentPage = 0;
+    this.pageIndex = 0;
     this.applyFiltersAndLoad();
   }
 

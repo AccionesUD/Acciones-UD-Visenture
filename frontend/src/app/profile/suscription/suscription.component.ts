@@ -1,75 +1,55 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { Component } from '@angular/core';
-import { StripeService } from '../../services/stripeService.service';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { SubscriptionDialogComponent } from './subscription-dialog/subscription-dialog.component';
+import { AuthService } from '../../services/auth.service';
+import { User } from '../../models/auth.model';
 
 @Component({
   selector: 'app-suscription',
-  imports: [CommonModule,MatIcon],
+  standalone: true,
+  imports: [CommonModule, MatIconModule, MatDialogModule, MatButtonModule],
   templateUrl: './suscription.component.html',
-  styleUrl: './suscription.component.css'
+  styleUrls: ['./suscription.component.css']
 })
-export class SuscriptionComponent {
+export class SuscriptionComponent implements OnInit {
+  
+  subscriptionActive = false;
+  currentUser: User | null = null;
 
+  constructor(
+    private dialog: MatDialog,
+    private authService: AuthService
+  ) {}
 
-subscriptionActive = false;
-  isProcessing = false;
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.checkSubscriptionStatus();
+    });
+  }
 
-  // Controla si usar Stripe real o mock
-  useMockMode = true;
-
-  constructor(private stripeService: StripeService) {}
-
-  toggleSubscription(): void {
-    this.isProcessing = true;
-
-    if (this.subscriptionActive) {
-      this.cancelSubscription();
+  checkSubscriptionStatus(): void {
+    if (this.currentUser && this.currentUser.roles) {
+      this.subscriptionActive = this.currentUser.roles.includes('usuario_premium');
     } else {
-      this.activateSubscription();
+      this.subscriptionActive = false;
     }
   }
 
-  activateSubscription(): void {
-    if (this.useMockMode) {
-      setTimeout(() => {
-        this.subscriptionActive = true;
-        this.isProcessing = false;
-        console.log('Suscripción activada (mock)');
-      }, 1500);
-    } else {
-      this.stripeService.createCheckoutSession().subscribe({
-        next: sessionUrl => {
-          window.location.href = sessionUrl;
-        },
-        error: () => {
-          this.isProcessing = false;
-          console.error('Error al iniciar sesión de Stripe.');
-        }
-      });
-    }
-  }
+  openSubscriptionDialog(): void {
+    const dialogRef = this.dialog.open(SubscriptionDialogComponent, {
+      width: '800px',
+      panelClass: 'custom-dialog-container'
+    });
 
-  cancelSubscription(): void {
-    if (this.useMockMode) {
-      setTimeout(() => {
-        this.subscriptionActive = false;
-        this.isProcessing = false;
-        console.log('Suscripción cancelada (mock)');
-      }, 1000);
-    } else {
-      this.stripeService.cancelSubscription().subscribe({
-        next: () => {
-          this.subscriptionActive = false;
-          this.isProcessing = false;
-        },
-        error: () => {
-          this.isProcessing = false;
-          console.error('Error al cancelar suscripción real.');
-        }
-      });
-    }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Podríamos actualizar el estado de la suscripción aquí si el diálogo devuelve un resultado
+        this.checkSubscriptionStatus();
+      }
+    });
   }
-
 }

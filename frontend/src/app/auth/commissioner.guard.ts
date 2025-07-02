@@ -25,9 +25,9 @@ export class CommissionerGuard implements CanActivate {
       return false;
     }
     
-    // Verifica si el usuario tiene el rol de comisionista
+    // Verifica si el usuario tiene el rol de comisionista o admin
     const currentUser = this.authService.currentUser;
-    if (currentUser && (currentUser.role === 'commissioner' || currentUser.role === 'admin')) {
+    if (currentUser && currentUser.roles && (currentUser.roles.includes('comisionista') || currentUser.roles.includes('admin'))) {
       return true;
     }
     

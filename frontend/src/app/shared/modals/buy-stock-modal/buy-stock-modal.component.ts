@@ -189,34 +189,38 @@ export class BuyStockModalComponent implements OnInit {
     return Math.floor(availableBalance / price);
   }
   
+  /**
+   * Determina el precio a utilizar para los cálculos basado en el tipo de orden.
+   * @returns El precio límite para órdenes 'limit' o 'stop-loss', o el precio de mercado actual para órdenes 'market'.
+   */
+  get priceForCalculation(): number {
+    const orderType = this.buyForm.get('orderType')?.value;
+    if (orderType === 'limit' || orderType === 'stop-loss') {
+      return this.buyForm.get('limitPrice')?.value || 0;
+    }
+    return this.currentPrice ?? this.data.price ?? 0;
+  }
+
+  /**
+   * Calcula el valor total de las acciones sin comisiones.
+   */
   get totalValue(): number {
     const quantity = this.buyForm.get('quantity')?.value || 0;
-    const price = this.currentPrice ?? this.data.price ?? 0;
-    console.log('[BuyStockModalComponent][totalValue] currentPrice:', this.currentPrice, 'data.price:', this.data.price, 'quantity:', quantity);
+    const price = this.priceForCalculation;
     if (!price || !quantity) return 0;
-    const total = price * quantity;
-    const commission = this.appCommission;
-    console.log('[BuyStockModalComponent][totalValue] total:', total, 'commission:', commission, 'final:', total + commission);
-    return total + commission;
+    return price * quantity;
   }
 
-  get appCommission(): number {
-    const quantity = this.buyForm.get('quantity')?.value || 0;
-    const price = this.currentPrice ?? this.data.price ?? 0;
-    console.log('[BuyStockModalComponent][appCommission] currentPrice:', this.currentPrice, 'data.price:', this.data.price, 'quantity:', quantity);
-    if (!price || !quantity) return 0;
-    const commission = price * quantity * 0.20;
-    console.log('[BuyStockModalComponent][appCommission] commission:', commission);
-    return commission;
-  }
-
+  /**
+   * Calcula la comisión estimada de la aplicación (20% del valor total).
+   */
   get estimatedFee(): number {
-    // Comisión app: 20% del valor de la operación
-    const price = this.currentPrice ?? this.data.price ?? 0;
-    const quantity = this.buyForm.get('quantity')?.value || 0;
-    return price > 0 && quantity > 0 ? (price * quantity * 0.20) : 0;
+    return this.totalValue * 0.20;
   }
   
+  /**
+   * Calcula el costo neto total estimado que el usuario pagará (valor de acciones + comisión).
+   */
   get estimatedNet(): number {
     return this.totalValue + this.estimatedFee;
   }

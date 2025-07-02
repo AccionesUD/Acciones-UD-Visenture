@@ -1,0 +1,21 @@
+<div class="payment-status-container">
+  <div class="payment-card">
+    <div *ngIf="paymentStatus === 'success'" class="success-message">
+      <h2>¡Pago Exitoso!</h2>
+      <p>{{ message }}</p>
+      <a routerLink="/dashboard" class="btn-home">Ir al Dashboard</a>
+    </div>
+
+    <div *ngIf="paymentStatus === 'failure'" class="failure-message">
+      <h2>Error en el Pago</h2>
+      <p>{{ message }}</p>
+      <a routerLink="/dashboard" class="btn-home">Volver al Dashboard</a>
+    </div>
+
+    <div *ngIf="!paymentStatus" class="info-message">
+      <h2>Estado de Pago</h2>
+      <p>{{ message }}</p>
+      <a routerLink="/dashboard" class="btn-home">Volver al Dashboard</a>
+    </div>
+  </div>
+</div>

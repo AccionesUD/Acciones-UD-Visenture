@@ -127,7 +127,7 @@ export class AuthService {
           email: decodedToken.email,
           username: decodedToken.email.split('@')[0], // Temporal: generamos username desde email
           name: decodedToken.name || decodedToken.email.split('@')[0], // Si no hay nombre, usamos parte del email
-          role: decodedToken.role || 'user' // Por defecto, asignamos rol 'user'
+          roles: decodedToken.roles || [] // Asignamos el array de roles
         };
         
         // Calculamos tiempo de expiración desde el token
@@ -313,8 +313,23 @@ export class AuthService {
             return;
           }
           
-          const user: User = JSON.parse(userData);
+          const decodedToken = this.jwtService.decodeToken(token);
+
+          if (!decodedToken) {
+            throw new Error('Invalid token found in localStorage');
+          }
+
+          const user: User = {
+            id: String(decodedToken.sub),
+            email: decodedToken.email,
+            username: decodedToken.email.split('@')[0],
+            name: decodedToken.name || decodedToken.email.split('@')[0],
+            roles: decodedToken.roles || []
+          };
           
+          // Update localStorage with the corrected user object
+          localStorage.setItem(this.userKey, JSON.stringify(user));
+
           // Actualizar ambos servicios para mantener consistencia
           this.currentUserSubject.next(user);
           this.authState.updateUser(user);
@@ -368,6 +383,83 @@ export class AuthService {
    */
   public isCommissioner(): boolean {
     const user = this.currentUserSubject.value;
-    return !!user && user.role === 'commissioner';
+    return !!user && (user.roles || []).includes('comisionista');
+  }
+
+  /**
+   * Actualiza los datos del usuario actual en el estado y en localStorage.
+   * @param newUserData - Un objeto parcial con los nuevos datos del usuario.
+   */
+  public updateCurrentUserData(newUserData: Partial<User>): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const currentUser = this.currentUserSubject.value;
+      if (currentUser) {
+        // Fusionar los datos antiguos con los nuevos
+        const updatedUser = { ...currentUser, ...newUserData };
+
+        // Actualizar el almacenamiento local
+        localStorage.setItem(this.userKey, JSON.stringify(updatedUser));
+
+        // Notificar a los suscriptores del cambio
+        this.currentUserSubject.next(updatedUser);
+        this.authState.updateUser(updatedUser);
+        
+        console.log('User data updated in frontend state:', updatedUser);
+      }
+    }
+  }
+
+  /**
+   * Actualiza tanto el token JWT como los datos del usuario en el estado y localStorage.
+   * Esta función debe ser llamada cuando una acción (ej. actualización de perfil con cambio de rol)
+   * devuelve un nuevo token.
+   * @param token - El nuevo token JWT.
+   */
+  public updateUserTokenAndData(token: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      if (!token) {
+        console.error('updateUserTokenAndData called with an invalid token.');
+        return;
+      }
+
+      try {
+        // 1. Decodificar el nuevo token para obtener los datos de usuario actualizados
+        const decodedToken = this.jwtService.decodeToken(token);
+        if (!decodedToken) {
+          throw new Error('Invalid token provided.');
+        }
+
+        const user: User = {
+          id: String(decodedToken.sub),
+          email: decodedToken.email,
+          username: decodedToken.email.split('@')[0],
+          name: decodedToken.name || decodedToken.email.split('@')[0],
+          roles: decodedToken.roles || []
+        };
+
+        // 2. Actualizar el almacenamiento local
+        localStorage.setItem(this.tokenKey, token);
+        localStorage.setItem(this.userKey, JSON.stringify(user));
+
+        // 3. Notificar a los suscriptores del cambio
+        this.currentUserSubject.next(user);
+        this.authState.updateUser(user);
+
+        // 4. Reiniciar el temporizador de expiración de la sesión
+        const timeRemaining = this.jwtService.getTokenTimeRemaining(token);
+        if (timeRemaining > 0) {
+          this.setAuthTimer(timeRemaining);
+        } else {
+          this.logout(); // Si el nuevo token ya expiró, cerrar sesión
+        }
+
+        console.log('Token and user data updated successfully:', user);
+
+      } catch (error) {
+        console.error('Error updating token and user data:', error);
+        // Opcional: podrías querer cerrar sesión si el proceso falla
+        this.logout();
+      }
+    }
   }
 }

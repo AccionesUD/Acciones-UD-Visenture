@@ -231,7 +231,7 @@
         <mat-paginator [length]="totalUsers"
                       [pageSize]="pageSize"
                       [pageSizeOptions]="pageSizeOptions"
-                      [pageIndex]="currentPage"
+                      [pageIndex]="pageIndex"
                       (page)="handlePageEvent($event)"
                       i18n-aria-label="@@users.paginator.aria.label"
                       aria-label="Seleccionar página de usuarios"
@@ -280,7 +280,7 @@
         </div>
         -->
 
-        <div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
+        <!--<div class="chart-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-500 dark:border-gray-700 lg:col-span-2">
           <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-3" i18n="@@users.charts.registration.trend.title">Tendencia de Registros</h3>
           <div id="userRegistrationChart" style="min-height: 365px;">
             <apx-chart *ngIf="registrationTrendChartOptions && registrationTrendChartOptions.series"
@@ -300,7 +300,7 @@
               <span i18n="@@users.charts.registration.no.data">No hay datos para mostrar la tendencia de registros.</span>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
