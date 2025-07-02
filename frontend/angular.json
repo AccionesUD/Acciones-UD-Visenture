@@ -49,7 +49,11 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "externalDependencies": [
+              "jspdf",
+              "html2canvas"
+            ]
           },
           "configurations": {
             "production": {

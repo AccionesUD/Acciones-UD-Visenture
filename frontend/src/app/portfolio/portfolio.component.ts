@@ -56,7 +56,7 @@ export class PortfolioComponent implements OnInit, OnDestroy {
   
   // DataSource para MatTable
   dataSource = new MatTableDataSource<Stock>([]);
-  displayedColumns: string[] = ['symbol', 'marketName', 'quantity', 'unitValue', 'totalValue', 'performance', 'actions'];
+  displayedColumns: string[] = ['symbol', 'quantity', 'unitValue', 'totalValue', 'performance', 'orderType', 'limitPrice', 'stopPrice', 'actions'];
   
   // Configuración de paginación
   pageSize = 10;
@@ -122,20 +122,26 @@ export class PortfolioComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
     this.portfolioService.getPortfolioStocks().subscribe({
-      next: (response: any) => {
-        const assets = response.assets || [];
-        this.stocks = assets.map((asset: any) => ({
-          id: asset.id.toString(),
-          company: asset.ticket_share,
-          symbol: asset.ticket_share,
-          marketName: 'Desconocido', // La respuesta no incluye el mercado
-          marketId: 'UNKNOWN',
-          quantity: asset.currentShareQuantity,
-          unitValue: asset.order.filled_avg_price,
-          totalValue: parseFloat(asset.order.approximate_total),
-          performance: asset.percentGainLose,
-          color: asset.percentGainLose >= 0 ? 'emerald' : 'red'
-        }));
+      next: (portfolioShares: PortfolioShare[]) => {
+        this.stocks = portfolioShares.map(asset => {
+          const order = (asset as any).order || {};
+          return {
+            id: asset.id.toString(),
+            company: asset.ticker,
+            symbol: asset.ticker,
+            marketName: 'Desconocido', // No se obtiene el mercado
+            marketId: asset.stockMic,
+            quantity: asset.quantity,
+            unitValue: asset.unitValue,
+            totalValue: asset.totalValue,
+            performance: asset.performance,
+            color: asset.color,
+            returnOfMoney: asset.returnOfMoney || 0,
+            orderType: order.type || 'N/A',
+            limitPrice: order.limit_price || null,
+            stopPrice: order.stop_price || null
+          };
+        });
         this.applyFilters();
         this.updateDisplayedStocks();
         this.isLoading = false;
@@ -155,7 +161,8 @@ export class PortfolioComponent implements OnInit, OnDestroy {
             unitValue: 100,
             totalValue: 1000,
             performance: 5,
-            color: 'emerald'
+            color: 'emerald',
+            returnOfMoney: 50 // Valor de ejemplo para fallback
           }
         ];
         // Mapear fallbackShares a stocks
@@ -169,7 +176,8 @@ export class PortfolioComponent implements OnInit, OnDestroy {
           unitValue: share.unitValue,
           totalValue: share.totalValue,
           performance: share.performance,
-          color: share.color
+          color: share.color,
+          returnOfMoney: 0 // Valor por defecto para datos de fallback
         }));
         // Aplicar filtros y paginación
         this.applyFilters();
@@ -306,7 +314,7 @@ export class PortfolioComponent implements OnInit, OnDestroy {
 
     private calculatePortfolioSummary(): void {
     const totalInvested = this.filteredStocks.reduce((sum, stock) => sum + stock.totalValue, 0);
-    const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + (stock.totalValue * stock.performance / 100), 0);
+    const totalEarnings = this.filteredStocks.reduce((sum, stock) => sum + stock.returnOfMoney, 0);
     this.portfolioSummary = {
       totalInvested,
       totalEarnings,
@@ -347,28 +355,6 @@ abrirModalCompra(stock: Stock): void {
 
   dialogRef.afterClosed().subscribe(result => {
     if (result && result.success) {
-      // Si la compra se completó, mostrar mensaje de éxito
-      if (result.status === 'completed') {
-        this.dialog.open(AlertDialogComponent, {
-          width: '400px',
-          data: { 
-            title: 'Compra completada',
-            message: `Has comprado ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
-                    Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
-            buttonText: 'Aceptar'
-          }
-        });
-      } else if (result.status === 'pending') {
-        this.dialog.open(AlertDialogComponent, {
-          width: '400px',
-          data: { 
-            title: 'Orden registrada',
-            message: `Tu orden de compra para ${result.filledQuantity} acciones de ${stock.company} ha sido registrada y está pendiente de ejecución.`,
-            buttonText: 'Aceptar'
-          }
-        });
-      }
-      
       // Recargar datos del portafolio después de una compra exitosa
       this.loadPortfolioData();
       this.filtersComponent?.resetAllFilters();

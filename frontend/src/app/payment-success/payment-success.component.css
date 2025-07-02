@@ -1,0 +1,108 @@
+.payment-status-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background-color: #f0f2f5;
+  padding: 20px;
+}
+
+.payment-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.success-message {
+  color: #28a745;
+  border: 1px solid #28a745;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #d4edda;
+}
+
+.failure-message {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f8d7da;
+}
+
+.info-message {
+  color: #007bff;
+  border: 1px solid #007bff;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #cce5ff;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 2em;
+}
+
+p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+.btn-home {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #398a47;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-home:hover {
+  background-color: #42925d8e;
+}
+
+/* Dark mode styles */
+::ng-deep .dark .payment-status-container {
+  background-color: transparent; /* Darker background for the container */
+}
+
+::ng-deep .dark .payment-card {
+  background-color: #1a2030; /* Darker background for the card */
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1); /* Lighter shadow for dark mode */
+}
+
+::ng-deep .dark .success-message {
+  color: #66bb6a; /* Lighter green for success in dark mode */
+  border-color: #65839e;
+  background-color: #388e5211; /* Slightly transparent dark green */
+}
+
+::ng-deep .dark .failure-message {
+  color: #ef5350; /* Lighter red for failure in dark mode */
+  border-color: #ef5350;
+  background-color: #d32f2f33; /* Slightly transparent dark red */
+}
+
+::ng-deep .dark .info-message {
+  color: #42a5f5; /* Lighter blue for info in dark mode */
+  border-color: #42a5f5;
+  background-color: #1976d233; /* Slightly transparent dark blue */
+}
+
+::ng-deep .dark h2,
+::ng-deep .dark p {
+  color: #e0e0e0; /* Lighter text color for dark mode */
+}
+
+::ng-deep .dark .btn-home {
+  background-color: #45688556; /* Lighter blue for button in dark mode */
+  color: #ffffff;
+}
+
+::ng-deep .dark .btn-home:hover {
+  background-color: #456885b4; /* Darker blue on hover for dark mode */
+}

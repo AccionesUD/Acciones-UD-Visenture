@@ -1,0 +1,193 @@
+<div class="min-h-screen bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-600 dark:from-indigo-800 dark:via-purple-800 dark:to-indigo-900 p-4 transition-colors duration-300">
+
+  <!-- Card Principal -->
+  <div class="flex justify-center pb-6">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-full max-w-7xl transition-all duration-300">
+      <!-- Cabecera y título -->
+      <div class="flex flex-wrap justify-between items-center mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-indigo-800 dark:text-indigo-400">Panel de Inversiones</h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-1">Visualiza el rendimiento de tu portafolio.</p>
+        </div>
+        <div class="flex space-x-2 mt-2 sm:mt-0">
+          <button 
+            (click)="exportToPdf()" 
+            class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
+          >
+            <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
+            <span>Exportar PDF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado de carga -->
+      <div *ngIf="isLoading" class="flex justify-center py-10">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <!-- Estado de error -->
+      <div *ngIf="!isLoading && error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-6 my-6 flex flex-col md:flex-row items-center justify-between shadow-md">
+        <div class="flex items-center mb-4 md:mb-0">
+          <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
+          <div>
+            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+          </div>
+        </div>
+        <button mat-stroked-button color="warn" (click)="loadInvestmentData()" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
+          <span>Reintentar</span>
+        </button>
+      </div>
+
+      <!-- Panel principal con tabs -->
+      <div *ngIf="!isLoading && !error">
+        <mat-tab-group animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start">
+          <!-- Tab de resumen -->
+          <mat-tab label="Resumen">
+            <div class="py-6">
+              <!-- Cards de estadísticas -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <!-- Valor Total del Portafolio -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Valor Total</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(portfolioSummary.totalValue) }}</div>
+                    </div>
+                    <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400">
+                      <mat-icon>account_balance_wallet</mat-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ganancias Totales -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Ganancias Totales</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(portfolioSummary.totalEarnings) }}</div>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
+                      <mat-icon>trending_up</mat-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Rendimiento Total -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Rendimiento</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatPercentage(portfolioSummary.performance) }}</div>
+                    </div>
+                    <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
+                      <mat-icon>show_chart</mat-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Total de Acciones -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total de Acciones</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ portfolioSummary.totalShares }}</div>
+                    </div>
+                    <div class="p-3 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+                      <mat-icon>inventory</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gráficos -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Distribución de Activos -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200/50 dark:border-slate-700">
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Distribución de Activos</h3>
+                  <div *ngIf="assetAllocationChartOptions" class="h-[300px] w-full">
+                    <apx-chart
+                      [series]="assetAllocationChartOptions.series ?? []"
+                      [chart]="assetAllocationChartOptions.chart"
+                      [labels]="assetAllocationChartOptions.labels ?? []"
+                      [theme]="assetAllocationChartOptions.theme"
+                    ></apx-chart>
+                  </div>
+                </div>
+
+                <!-- Rendimiento a lo largo del tiempo -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200/50 dark:border-slate-700">
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Rendimiento del Portafolio</h3>
+                  <div *ngIf="performanceChartOptions" class="h-[300px] w-full">
+                    <apx-chart
+                      [series]="performanceChartOptions.series ?? []"
+                      [chart]="performanceChartOptions.chart"
+                      [xaxis]="performanceChartOptions.xaxis"
+                      [theme]="performanceChartOptions.theme"
+                    ></apx-chart>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Tab de Órdenes Recientes -->
+          <mat-tab label="Órdenes Recientes">
+            <div class="py-6">
+              <div class="overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
+                <table mat-table [dataSource]="dataSource" matSort class="min-w-full">
+                  <!-- Symbol Column -->
+                  <ng-container matColumnDef="share">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Símbolo</th>
+                    <td mat-cell *matCellDef="let order">{{ order.share.symbol }}</td>
+                  </ng-container>
+
+                  <!-- Side Column -->
+                  <ng-container matColumnDef="side">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Lado</th>
+                    <td mat-cell *matCellDef="let order">{{ order.side }}</td>
+                  </ng-container>
+
+                  <!-- Type Column -->
+                  <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+                    <td mat-cell *matCellDef="let order">{{ order.type }}</td>
+                  </ng-container>
+
+                  <!-- Quantity Column -->
+                  <ng-container matColumnDef="qty">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+                    <td mat-cell *matCellDef="let order">{{ order.qty }}</td>
+                  </ng-container>
+
+                  <!-- Avg Price Column -->
+                  <ng-container matColumnDef="filled_avg_price">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Promedio</th>
+                    <td mat-cell *matCellDef="let order">{{ formatCurrency(order.filled_avg_price) }}</td>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+                    <td mat-cell *matCellDef="let order">{{ order.status }}</td>
+                  </ng-container>
+
+                  <!-- Created At Column -->
+                  <ng-container matColumnDef="create_at">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+                    <td mat-cell *matCellDef="let order">{{ order.create_at | date:'short' }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</div>

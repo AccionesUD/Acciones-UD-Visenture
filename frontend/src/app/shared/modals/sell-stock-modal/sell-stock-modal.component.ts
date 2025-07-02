@@ -11,14 +11,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SellsService } from '../../../services/sells.service';
-import { SellOrder, SellResponse } from '../../../models/sell.model';
+import { SellOrder } from '../../../models/sell.model';
+import { Order } from '../../../models/order.model';
 import { Stock } from '../../../models/portfolio.model';
 
 export interface SellStockDialogData {
   stock: Stock;
-  price?: number; // Precio actual de la acción
-  action?: 'sell'; // Tipo de acción, por defecto 'sell'
-  clientId?: number; // ID del cliente si la orden es realizada por un comisionista para un cliente
+  price?: number;
+  action?: 'sell';
+  clientId?: number;
 }
 
 @Component({
@@ -58,7 +59,7 @@ export class SellStockModalComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
   successMessage: string | null = null;
-  operationResult: SellResponse | null = null;
+  operationResult: Order | null = null;
   
   constructor(
     private fb: FormBuilder,
@@ -239,121 +240,45 @@ export class SellStockModalComponent implements OnInit {
    */
   submitSellOrder(): void {
     if (this.sellForm.invalid) {
-      // Marcar todos los campos como touched para mostrar todos los errores
-      Object.keys(this.sellForm.controls).forEach(key => {
-        const control = this.sellForm.get(key);
-        control?.markAsTouched();
-      });
-      
-      // Mostrar un mensaje de error para ayudar al usuario
-      this.error = 'Por favor, complete correctamente todos los campos del formulario antes de continuar.';
-      
-      // Hacer scroll al primer campo con error
-      setTimeout(() => {
-        const invalidElement = document.querySelector('.ng-invalid');
-        if (invalidElement) {
-          invalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
-      
+      this.error = 'Por favor, complete correctamente todos los campos del formulario.';
       return;
     }
-    
+
     this.isLoading = true;
     this.error = null;
     this.successMessage = null;
-    
+
     const formValues = this.sellForm.value;
     const sellOrder: SellOrder = {
-      stockId: this.data.stock.id.toString(),
-      stockSymbol: this.data.stock.symbol,
-      quantity: formValues.quantity,
-      orderType: formValues.orderType,
-      price: this.data.price,
-      timeInForce: formValues.timeInForce,
-      extendedHours: formValues.extendedHours
+      symbol: this.data.stock.symbol,
+      qty: formValues.quantity,
+      type: formValues.orderType,
+      time_in_force: formValues.timeInForce,
     };
-    
-    // Si la orden es para un cliente, añadir el clientId
-    if (this.data.clientId) {
-      sellOrder.clientId = this.data.clientId;
-    }
-    
-    // Añadir precio límite si es necesario
-    if (formValues.orderType !== 'market') {
-      sellOrder.limitPrice = formValues.limitPrice;
-    }
-    
-    // Mostrar mensaje temporal para mejorar UX
-    this.successMessage = 'Verificando disponibilidad de acciones...';
-    
-    // Verificar disponibilidad antes de enviar la orden
-    this.sellsService.checkStockAvailability(this.data.stock.symbol, formValues.quantity)
-      .subscribe({
-        next: (isAvailable) => {
-          // Limpiar el mensaje temporal
-          this.successMessage = null;
-          
-          if (!isAvailable) {
-            this.isLoading = false;
-            this.error = `No dispone de suficientes acciones de ${this.data.stock.company} (${this.data.stock.symbol}) para vender ${formValues.quantity} unidades.`;
-            return;
-          }
-          
-          // Mostrar mensaje temporal mientras se procesa la orden
-          this.successMessage = formValues.orderType === 'market' ? 
-            'Procesando orden de mercado...' : 
-            'Registrando orden de venta...';
-          
-          // Si hay disponibilidad, enviamos la orden
-          this.processSellOrder(sellOrder);
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.successMessage = null;
-          this.error = 'Error al verificar la disponibilidad de acciones. Por favor, inténtelo de nuevo.';
-          console.error('Error al verificar disponibilidad:', err);
-        }
-      });
-  }
 
-  private processSellOrder(sellOrder: SellOrder): void {
+    if (formValues.orderType !== 'market') {
+      sellOrder.limit_price = formValues.limitPrice;
+    }
+
     this.sellsService.submitSellOrder(sellOrder).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.successMessage = null; // Limpiamos mensajes temporales
-        
         if (response.success) {
-          // Mostrar mensaje diferente según sea orden de mercado u otro tipo
-          this.successMessage = sellOrder.orderType === 'market' ? 
-            '¡Orden de venta ejecutada con éxito!' : 
-            '¡Orden de venta registrada correctamente y pendiente de ejecución!';
-          
-          this.operationResult = response;
-          
-          // Efecto de éxito - esperar que el usuario vea el mensaje
-          setTimeout(() => {
-            this.successMessage = null; // Limpiamos el mensaje después de mostrarlo
-          }, 3000);
-          
-          // Reproducir sonido de éxito si está disponible
-          try {
-            const audio = new Audio('/assets/sounds/success.mp3');
-            audio.volume = 0.2;
-            audio.play().catch(() => {}); // Atrapamos error si el navegador bloquea la reproducción
-          } catch (e) {
-            // Si no se puede reproducir el sonido, no hacemos nada
-          }
+          this.successMessage =
+            sellOrder.type === 'market'
+              ? '¡Orden de venta ejecutada con éxito!'
+              : '¡Orden de venta registrada correctamente y pendiente de ejecución!';
+          this.operationResult = response.data;
+          setTimeout(() => this.dialogRef.close(this.operationResult), 3000);
         } else {
-          this.error = response.message || 'Error al procesar la orden de venta';
+          this.error = response.message || 'Error al procesar la orden de venta.';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.successMessage = null;
-        this.error = 'Error de conexión. Por favor, inténtelo de nuevo.';
+        this.error = err.error.message || 'Error de conexión. Por favor, inténtelo de nuevo.';
         console.error('Error en la venta:', err);
-      }
+      },
     });
   }
   

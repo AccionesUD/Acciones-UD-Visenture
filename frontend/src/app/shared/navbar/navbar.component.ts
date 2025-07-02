@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Subscription } from 'rxjs';
-import { UsersService } from '../../services/user.service';
 import { User } from '../../models/auth.model';
 
 // Declara la función global para que TypeScript la reconozca
@@ -17,7 +16,6 @@ declare function changeAppLanguage(lang: string): void;
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  userRole: string | null = null;
   isAuthenticated = false;
   username: string | null = null;
   mobileMenuOpen = false;
@@ -26,7 +24,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isLoading = true;
   isCommissioner = false;
   isAdmin = false;
-  
+  isPremium = false;
+
   showLanguageMenu = false;
   currentLanguage = 'es';
   
@@ -39,7 +38,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private authState: AuthStateService,
-    private userService: UsersService,
     @Inject(PLATFORM_ID) private platformId: Object,
     @Inject(DOCUMENT) private document: Document
   ) {
@@ -61,21 +59,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Suscribirse al estado de autenticación
-    
-    if (this.isAuthenticated) {
-    this.userService.getUserRole().subscribe({
-      next: role => this.userRole = role ?? null,
-      error: err => console.error('Error obteniendo rol', err)
-    });
-  }
     this.isLoading = true;
     this.authSubscription = this.authService.currentUser$.subscribe({
       next: (user) => {
         this.isAuthenticated = !!user;
         this.username = user?.username || null;
-        this.isCommissioner = user?.role === 'commissioner' || user?.role === 'admin';
-        this.isAdmin = user?.role === 'admin';
+        if (user && user.roles) {
+          this.isCommissioner = user.roles.includes('comisionista') || user.roles.includes('admin');
+          this.isAdmin = user.roles.includes('admin');
+          this.isPremium = user.roles.includes('usuario_premium');
+        } else {
+          this.isCommissioner = false;
+          this.isAdmin = false;
+          this.isPremium = false;
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -145,5 +142,3 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 }
-
-

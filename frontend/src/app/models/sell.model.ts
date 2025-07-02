@@ -1,15 +1,22 @@
-// Interface para la orden de venta (basada en el modelo de datos)
 export interface SellOrder {
-  stockId: string; // ticket_share - Código de la acción
-  stockSymbol?: string; // Para mostrar información adicional
-  quantity: number; // share_quantity - Cantidad de acciones
-  price?: number; // Precio actual de referencia
-  orderType: 'market' | 'limit' | 'stop-loss' | 'take-profit'; // type_order_type
-  limitPrice?: number; // Para órdenes con precio límite
-  accountId?: string; // id_account - cuenta desde la cual se ejecuta la orden
-  timeInForce?: 'day' | 'gtc' | 'ioc'; // time_in_force - Vigencia de la orden
-  extendedHours?: boolean; // extended_hours - Operación fuera de horario regular
-  clientId?: number; // ID del cliente si el comisionista está haciendo la orden para un cliente
+  symbol: string;
+  qty: number;
+  type: 'market' | 'limit' | 'stop' | 'trailing_stop';
+  time_in_force: 'day' | 'gtc' | 'ioc' | 'fok';
+  limit_price?: number;
+  stop_price?: number;
+  trail_price?: number;
+  trail_percent?: number;
+  extended_hours?: boolean;
+  client_order_id?: string;
+  order_class?: 'simple' | 'bracket' | 'oco' | 'oto';
+  take_profit?: {
+    limit_price: number;
+  };
+  stop_loss?: {
+    stop_price: number;
+    limit_price?: number;
+  };
 }
 
 // Interface para la respuesta de la venta

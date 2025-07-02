@@ -45,7 +45,6 @@ export class PortfolioService {
        console.log('Datos del portafolio (briefcase) recibidos:', JSON.stringify(briefcase, null, 2));
        if (briefcase && Array.isArray(briefcase.assets)) {
          return briefcase.assets.map((asset: any) => {
-           // Verificaciones para evitar errores si las propiedades anidadas no existen
            const order = asset.order || {};
            const share = order.share || {};
            const stock = share.stock || {};
@@ -60,7 +59,9 @@ export class PortfolioService {
              unitValue: order.filled_avg_price || 0,
              totalValue: (order.filled_avg_price || 0) * (asset.currentShareQuantity || 0),
              performance: asset.percentGainLose || 0,
-             color: (asset.percentGainLose || 0) >= 0 ? 'emerald' : 'red'
+             color: (asset.percentGainLose || 0) >= 0 ? 'emerald' : 'red',
+             returnOfMoney: asset.returnOfMoney || 0,
+             order: order // Incluir el objeto order completo
            };
          });
        }
@@ -73,13 +74,13 @@ export class PortfolioService {
    );
  }
 
-  /** Genera datos mock para el portafolio si no hay datos reales */
-  private getFallbackPortfolioShares(): PortfolioShare[] {
-    return [
-      { id: 'AAPL1', companyName: 'Apple Inc.', ticker: 'AAPL', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 5, unitValue: 150, totalValue: 750, performance: 2, color: '#00FF00' },
-      { id: 'MSFT1', companyName: 'Microsoft Corp.', ticker: 'MSFT', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 3, unitValue: 250, totalValue: 750, performance: 3, color: '#0000FF' }
-    ];
-  }
+ /** Genera datos mock para el portafolio si no hay datos reales */
+ private getFallbackPortfolioShares(): PortfolioShare[] {
+   return [
+     { id: 'AAPL1', companyName: 'Apple Inc.', ticker: 'AAPL', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 5, unitValue: 150, totalValue: 750, performance: 2, color: '#00FF00', returnOfMoney: 15, order: {} },
+     { id: 'MSFT1', companyName: 'Microsoft Corp.', ticker: 'MSFT', stockName: 'NASDAQ', stockMic: 'XNAS', quantity: 3, unitValue: 250, totalValue: 750, performance: 3, color: '#0000FF', returnOfMoney: 22.5, order: {} }
+   ];
+ }
 
   getPortfolioHistory(days: number = 30): Observable<any[]> {
     const params = new HttpParams().set('days', days.toString());

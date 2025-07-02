@@ -9,6 +9,10 @@ export interface Stock {
   totalValue: number;
   performance: number;
   color: string;
+  returnOfMoney: number;
+  orderType?: string; // 'market', 'limit', 'stop'
+  limitPrice?: number | null;
+  stopPrice?: number | null;
 }
 
 // Interfaz para las acciones en el portafolio (no confundir con Stock que representa mercados)
@@ -23,6 +27,8 @@ export interface PortfolioShare {
   totalValue: number;
   performance: number;
   color: string;
+  returnOfMoney: number;
+  order?: any;
 }
 
 export interface PortfolioSummary {
@@ -31,6 +37,8 @@ export interface PortfolioSummary {
   totalShares: number;  // Total de acciones diferentes
   totalValue: number;
   performance: number;
+  asset_allocation?: { asset: string, value: number }[];
+  performance_over_time?: { date: string, value: number }[];
 }
 
 export interface PortfolioPosition {
