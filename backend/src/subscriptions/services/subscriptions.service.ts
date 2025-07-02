@@ -1,4 +1,9 @@
-import { Injectable, BadRequestException, HttpException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import {
@@ -22,40 +27,33 @@ export class SubscriptionsService {
     @InjectRepository(Role)
     private readonly roleRepo: Repository<Role>,
     private readonly paymentsService: PaymentsService,
-  ) { }
+  ) {}
 
   async subscribeToPremium(
     accountId: number,
     planId: number,
-    paymentToken: string,
-  ) {
-    // 1. Verifica el plan
-    const plan: PremiumPlan | null = await this.premiumPlanRepo.findOne({
-      where: { id: planId },
-    });
-    if (!plan) throw new BadRequestException('Plan no existe');
+  ): Promise<{ message: string; plan: string }> {
+    // 1) Verificar plan
+    const plan = await this.premiumPlanRepo.findOne({ where: { id: planId } });
+    if (!plan) {
+      throw new BadRequestException('Plan no existe');
+    }
 
-    // 2. Llama PaymentsService
-    const amount = Number(plan.price);
-    const pagoOk = await this.paymentsService.validateToken(
-      paymentToken,
-      amount,
-    );
-    if (!pagoOk) throw new HttpException('Pago no procesado', 402);
-
-    // 3. Calcula fechas
+    // 2) Calcular fechas
     const start = new Date();
     const end = new Date();
     end.setDate(start.getDate() + plan.duration_days);
 
-    // 4. Busca la cuenta completa
-    const account: Account | null = await this.accountRepo.findOne({
+    // 3) Obtener cuenta con roles actuales
+    const account = await this.accountRepo.findOne({
       where: { id: accountId },
       relations: ['roles'],
     });
-    if (!account) throw new BadRequestException('Cuenta no encontrada');
+    if (!account) {
+      throw new BadRequestException('Cuenta no encontrada');
+    }
 
-    // 5. Crea la suscripción
+    // 4) Crear y guardar la suscripción
     const subscription = this.subscriptionRepo.create({
       account,
       plan,
@@ -65,48 +63,29 @@ export class SubscriptionsService {
     });
     await this.subscriptionRepo.save(subscription);
 
-    // 6. Asigna el rol usuario_premium si no lo tiene
-    // ... después de guardar la suscripción
-
-    const alreadyPremium =
-      Array.isArray(account.roles) &&
-      account.roles.some((r) => r.name === 'usuario_premium');
-
-    console.log('¿Evaluando asignación de usuario_premium?', {
-      alreadyPremium,
-    });
-
-    if (!alreadyPremium) {
+    // 5) Asignar rol usuario_premium si aún no lo tiene
+    const yaPremium = account.roles.some((r) => r.name === 'usuario_premium');
+    if (!yaPremium) {
       const premiumRole = await this.roleRepo.findOne({
         where: { name: 'usuario_premium' },
       });
-      if (premiumRole) {
-        console.log('Asignando rol usuario_premium', {
-          accId: account.id,
-          rolesAntes: account.roles.map((r) => r.name),
-          premiumRoleId: premiumRole.id,
-        });
-
-        await this.accountRepo
-          .createQueryBuilder()
-          .relation(Account, 'roles')
-          .of(account.id)
-          .add(premiumRole.id);
-
-        const updated = await this.accountRepo.findOne({
-          where: { id: account.id },
-          relations: ['roles'],
-        });
-        console.log(
-          'Roles después:',
-          updated?.roles.map((r) => r.name),
+      if (!premiumRole) {
+        throw new HttpException(
+          'Rol usuario_premium no definido en la base de datos',
+          HttpStatus.INTERNAL_SERVER_ERROR,
         );
-      } else {
-        console.log('premiumRole no encontrado en BD');
       }
+      await this.accountRepo
+        .createQueryBuilder()
+        .relation(Account, 'roles')
+        .of(accountId)
+        .add(premiumRole.id);
     }
 
-    return { message: 'Suscripción premium activada', plan: plan.name };
+    return {
+      message: 'Suscripción premium activada',
+      plan: plan.name,
+    };
   }
 
   async hasActiveSubscription(accountId: number): Promise<boolean> {
@@ -118,16 +97,5 @@ export class SubscriptionsService {
         end_date: MoreThan(today),
       },
     });
-  }
-
-  async hasActivePremiumSubscription(accountId: string): Promise<boolean> {
-    const subscription = await this.subscriptionRepo.findOne({
-      where: {
-        account: { identity_document: accountId },
-        status: SubscriptionStatus.ACTIVE
-      }
-    });
-
-    return !!subscription;
   }
 }

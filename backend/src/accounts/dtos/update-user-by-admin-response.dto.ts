@@ -6,4 +6,5 @@ export interface UpdateUserByAdminResponse {
   lastName: string;
   email: string;
   roles: string[];
+  token?: string;
 }

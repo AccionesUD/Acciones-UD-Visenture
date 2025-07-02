@@ -35,6 +35,6 @@ import { AlpacaBrokerModule } from 'src/alpaca_broker/alpaca_broker.module';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, HashingProvider],
-  exports: [AuthService, HashingProvider],
+  exports: [AuthService, HashingProvider, JwtModule],
 })
 export class AuthModule {}
