@@ -30,22 +30,23 @@ export class PriceAlertsService {
 
     async create(accountId: string, createDto: CreatePriceAlertDto): Promise<PriceAlert> {
         try {
-            // Verificar que el usuario tiene suscripción premium activa
-            const isPremium = await this.subscriptionsService.hasActivePremiumSubscription(accountId);
-            if (!isPremium) {
-                throw new ForbiddenException({
-                    statusCode: 403,
-                    message: 'Solo usuarios premium pueden crear alertas de precio',
-                    error: 'Forbidden'
-                });
-            }
-
+            // Buscar la cuenta primero
             const account = await this.accountRepository.findOneBy({ identity_document: accountId });
             if (!account) {
                 throw new NotFoundException({
                     statusCode: 404,
                     message: 'Cuenta no encontrada',
                     error: 'Not Found'
+                });
+            }
+
+            // Verificar que el usuario tiene suscripción premium activa
+            const isPremium = await this.subscriptionsService.hasActiveSubscription(account.id);
+            if (!isPremium) {
+                throw new ForbiddenException({
+                    statusCode: 403,
+                    message: 'Solo usuarios premium pueden crear alertas de precio',
+                    error: 'Forbidden'
                 });
             }
 
