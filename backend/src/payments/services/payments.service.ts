@@ -16,11 +16,11 @@ export class PaymentsService {
     const { planId, monto, descripcion, emailUsuario } = dto;
 
     // —————— DEBUG: verifica qué correo llegó ——————
-    console.log('[crearPreferencia] dto:', dto);
-    console.log('[crearPreferencia] emailUsuario:', emailUsuario);
+    
     // ————————————————————————————————————————————
 
     // Llamada a la API de Mercado Pago
+    const AppBaseFrontend = process.env.APP_BASE_FRONTEND_URL
     const preferenceResponse = await this.preferenceClient.create({
       body: {
         items: [
@@ -36,9 +36,9 @@ export class PaymentsService {
           email: dto.emailUsuario,
         },
         back_urls: {
-          success: 'https://tu-dominio.com/pago-exitoso', //<- acá van la paginas del fron
-          failure: 'https://tu-dominio.com/pago-fallido',
-          pending: 'https://tu-dominio.com/pago-pendiente',
+          success: `${AppBaseFrontend}/pago-exitoso`, //<- acá van la paginas del fron
+          failure: `${AppBaseFrontend}/pago-fallido`,
+          pending: `${AppBaseFrontend}/pago-pendiente`,
         },
         auto_return: 'approved',
       },
