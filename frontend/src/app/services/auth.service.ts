@@ -387,6 +387,15 @@ export class AuthService {
   }
 
   /**
+   * Verifica si el usuario actual tiene el rol de premium.
+   * @returns true si el usuario es premium, false en caso contrario
+   */
+  public isPremium(): boolean {
+    const user = this.currentUserSubject.value;
+    return !!user && (user.roles || []).includes('usuario_premium');
+  }
+
+  /**
    * Actualiza los datos del usuario actual en el estado y en localStorage.
    * @param newUserData - Un objeto parcial con los nuevos datos del usuario.
    */

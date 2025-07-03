@@ -1,21 +1,25 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, LOCALE_ID, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NewsService } from '../services/news.service';
 import { AlpacaNews, FinancialNews } from '../models/news.model';
+import { AuthService } from '../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-home',  
+  selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './home.component.html',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   isLoadingNews = true;
   newsError: string | null = null;
   news: AlpacaNews[] = [];
+  isAuthenticated = false;
+  private authSubscription: Subscription = new Subscription();
   
   // Contenido traducido para mensajes dinámicos
   private translations: { [lang: string]: { newsError: string; timeAgoMinutes: (mins: number) => string; timeAgoHours: (hours: number) => string; noSummary: string } } = {
@@ -159,6 +163,7 @@ export class HomeComponent implements OnInit {
   
   constructor(
     private newsService: NewsService,
+    private authService: AuthService,
     @Inject(LOCALE_ID) private localeId: string
   ) {
     // Extraer el idioma base del locale ID
@@ -175,6 +180,15 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadFinancialNews();
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated = !!user;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   loadFinancialNews(): void {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'; // Import map operator
 import { environment } from '../../environments/environment';
 import { Order } from '../models/order.model';
 import { BuyOrder } from '../models/buy.model';
@@ -15,7 +16,11 @@ export class OrdersService {
   constructor(private http: HttpClient) {}
 
   getRecentOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/orders`);
+    // Fetch the last 3 orders, similar to historical but with a limit
+    return this.http.get<Order[]>(`${this.apiUrl}/accounts/orders?limit=3`).pipe(
+      // Sort by creation date in descending order to get the most recent ones
+      map((orders: Order[]) => orders.sort((a: Order, b: Order) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime()))
+    );
   }
 
   submitBuyOrder(order: BuyOrder): Observable<any> {

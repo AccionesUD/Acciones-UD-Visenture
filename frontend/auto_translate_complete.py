@@ -7,6 +7,7 @@ import urllib.parse
 import time
 from typing import Dict, Optional, Tuple, List
 import html
+import xml.etree.ElementTree as ET
 
 # Añadimos constantes para palabras clave de ICU que no deben traducirse
 ICU_KEYWORDS = ['select', 'plural', 'VAR_SELECT', 'VAR_PLURAL', 'true', 'false', 'other', '=0', '=1', '=2']
@@ -373,49 +374,43 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
         print(f"❌ Error creating copy: {e}")
         return
     
-    # Leer el contenido del archivo copiado
-    with open(output_file, 'r', encoding='utf-8') as f:
-        content = f.read()
+    # Parsear el archivo XLIFF
+    tree = ET.parse(output_file)
+    root = tree.getroot()
+    
+    # Obtener el namespace, si existe
+    # Esto es crucial para encontrar elementos con prefijos como 'ns0:'
+    namespace_match = re.match(r'\{.*\}', root.tag)
+    ns = namespace_match.group(0) if namespace_match else ''
     
     # Buscar todas las unidades de traducción
-    pattern = r'<(?:ns0:)?trans-unit[^>]*>.*?</(?:ns0:)?trans-unit>'
-    
+    # Usamos el namespace completo si está presente
+    trans_unit_tag = f'{ns}trans-unit' if ns else 'trans-unit'
+    source_tag = f'{ns}source' if ns else 'source'
+    target_tag = f'{ns}target' if ns else 'target'
+
     total_translations = 0
     successful_translations = 0
     skipped_translations = 0
+    missing_translations = [] # Lista para mantener seguimiento de traducciones faltantes
     
-    def replace_trans_unit(match):
-        nonlocal total_translations, successful_translations, skipped_translations
-        trans_unit = match.group(0)
+    for trans_unit in root.iter(trans_unit_tag):
+        total_translations += 1
+        source_element = trans_unit.find(source_tag)
+        target_element = trans_unit.find(target_tag)
         
-        # Buscar el texto source
-        source_pattern = r'<(?:ns0:)?source>(.*?)</(?:ns0:)?source>'
-        source_match = re.search(source_pattern, trans_unit, re.DOTALL)
-        
-        if source_match:
-            total_translations += 1
-            source_text = source_match.group(1)
+        if source_element is not None and source_element.text is not None:
+            source_text = source_element.text
             source_text_clean = source_text.strip()
             
-            # Determinar el namespace a usar
-            ns_prefix = "ns0:" if "ns0:" in trans_unit else ""
-            
             # Solo traducir textos que no contengan elementos XML complejos y no estén vacíos
-            if '<x id=' in source_text or '</' in source_text or not source_text_clean:
+            # ElementTree ya maneja las entidades HTML, así que no necesitamos buscar '<x id=' o '</'
+            if not source_text_clean:
                 skipped_translations += 1
-                return trans_unit
+                continue
             
-            # Detectar expresiones ICU en el texto source
-            icu_pattern = r'\{([A-Z_]+),[^{}]+\}'
-            has_icu = re.search(icu_pattern, source_text_clean)
-
             # Verificar si ya tiene target
-            has_target = f'<{ns_prefix}target>' in trans_unit
-            
-            if not has_target:
-                # Detectar entidades HTML en el texto original
-                has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
-                
+            if target_element is None:
                 # Traducir el texto
                 translated_text = translator.translate_text(source_text_clean, target_lang)
                 
@@ -428,108 +423,59 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
                     if source_text.endswith(' ') and not translated_text.endswith(' '):
                         translated_text = translated_text + ' '
                     
-                    # Restaurar entidades HTML que pudieron ser cambiadas durante la traducción
-                    if has_html_entities:
-                        # Buscar entidades HTML en el texto fuente
-                        html_entities = re.findall(r'&[a-zA-Z0-9#]+;', source_text_clean)
-                        
-                        # Para cada entidad HTML encontrada en el texto original,
-                        # verifica si debe ser restaurada en el texto traducido
-                        for entity in html_entities:
-                            entity_text = html.unescape(entity)  # Convertir a caracter normal
-                            entity_char = entity_text  # El carácter que representa la entidad
-                            
-                            # Si el carácter está en la traducción, asegurarse de que está como entidad HTML
-                            if entity_char in translated_text and entity not in translated_text:
-                                translated_text = translated_text.replace(entity_char, entity)
-                    
                     # Añadir elemento target
-                    target_element = f'\n        <{ns_prefix}target>{translated_text}</{ns_prefix}target>'
-                    trans_unit = trans_unit.replace(f'</{ns_prefix}source>', f'</{ns_prefix}source>{target_element}')
-                    
+                    new_target_element = ET.SubElement(trans_unit, target_tag)
+                    new_target_element.text = translated_text
+                else:
+                    # Si no se pudo traducir o la traducción es igual al original, añadir a faltantes
+                    unit_id = trans_unit.get('id', 'unknown')
+                    missing_translations.append((unit_id, source_text_clean))
             else:
                 # Ya tiene target, verificar si necesita actualización
-                target_pattern = f'<{ns_prefix}target>(.*?)</{ns_prefix}target>'
-                target_match = re.search(target_pattern, trans_unit)
+                current_target = target_element.text.strip() if target_element.text else ""
                 
-                if target_match:
-                    current_target = target_match.group(1).strip()
+                # Solo actualizar si el target está vacío o es igual al source
+                if not current_target or current_target == source_text_clean:
+                    translated_text = translator.translate_text(source_text_clean, target_lang)
                     
-                    # Solo actualizar si el target está vacío o es igual al source
-                    if not current_target or current_target == source_text_clean:
-                        # Detectar entidades HTML en el texto original
-                        has_html_entities = '&' in source_text_clean and (';' in source_text_clean)
+                    if translated_text and translated_text != source_text_clean:
+                        successful_translations += 1
                         
-                        translated_text = translator.translate_text(source_text_clean, target_lang)
+                        # Preservar espacios
+                        if source_text.startswith(' ') and not translated_text.startswith(' '):
+                            translated_text = ' ' + translated_text
+                        if source_text.endswith(' ') and not translated_text.endswith(' '):
+                            translated_text = translated_text + ' '
                         
-                        if translated_text and translated_text != source_text_clean:
-                            successful_translations += 1
-                            
-                            # Preservar espacios
-                            if source_text.startswith(' ') and not translated_text.startswith(' '):
-                                translated_text = ' ' + translated_text
-                            if source_text.endswith(' ') and not translated_text.endswith(' '):
-                                translated_text = translated_text + ' '
-                            
-                            # Restaurar entidades HTML que pudieron ser cambiadas durante la traducción
-                            if has_html_entities:
-                                # Buscar entidades HTML en el texto fuente
-                                html_entities = re.findall(r'&[a-zA-Z0-9#]+;', source_text_clean)
-                                
-                                # Para cada entidad HTML encontrada en el texto original,
-                                # verifica si debe ser restaurada en el texto traducido
-                                for entity in html_entities:
-                                    entity_text = html.unescape(entity)  # Convertir a caracter normal
-                                    entity_char = entity_text  # El carácter que representa la entidad
-                                    
-                                    # Si el carácter está en la traducción, asegurarse de que está como entidad HTML
-                                    if entity_char in translated_text and entity not in translated_text:
-                                        translated_text = translated_text.replace(entity_char, entity)
-                            
-                            # Actualizar target
-                            trans_unit = re.sub(target_pattern, f'<{ns_prefix}target>{translated_text}</{ns_prefix}target>', trans_unit)
-                        else:
-                            print(f"✗ Failed to update: '{source_text_clean}'")
-        
-        return trans_unit
-    
-    # Lista para mantener seguimiento de traducciones faltantes
-    missing_translations = []
-    
-    # Extraer los IDs de las unidades de traducción que no pudieron ser traducidas
-    id_pattern = r'<(?:ns0:)?trans-unit\s+id=["\']([^"\']+)["\']'
-    
-    def find_missing_translations(match):
-        trans_unit = match.group(0)
-        
-        # Buscar el ID de la unidad de traducción
-        id_match = re.search(id_pattern, trans_unit)
-        unit_id = id_match.group(1) if id_match else "unknown"
-        
-        # Verificar si tiene source pero no target
-        has_source = "<source>" in trans_unit or "<ns0:source>" in trans_unit
-        has_target = "<target>" in trans_unit or "<ns0:target>" in trans_unit
-        
-        if has_source and not has_target:
-            # Extraer texto source
-            source_pattern = r'<(?:ns0:)?source>(.*?)</(?:ns0:)?source>'
-            source_match = re.search(source_pattern, trans_unit, re.DOTALL)
-            source_text = source_match.group(1) if source_match else ""
+                        # Actualizar target
+                        target_element.text = translated_text
+                    else:
+                        unit_id = trans_unit.get('id', 'unknown')
+                        print(f"✗ Failed to update: '{source_text_clean}' (ID: {unit_id})")
+                        missing_translations.append((unit_id, source_text_clean))
+        else:
+            # Si no hay source_element o source_text, saltar
+            skipped_translations += 1
             
-            # Añadir a la lista de traducciones faltantes
-            missing_translations.append((unit_id, source_text.strip()))
-        
-        return trans_unit
-    
-    # Buscar traducciones faltantes
-    re.sub(pattern, find_missing_translations, content, flags=re.DOTALL)
-    
-    # Aplicar las traducciones
-    content = re.sub(pattern, replace_trans_unit, content, flags=re.DOTALL)
-    
     # Escribir el archivo actualizado
+    # Usamos ET.tostring para obtener el XML como string y luego lo escribimos
+    # ET.indent para un formato legible (Python 3.9+)
+    try:
+        ET.indent(tree, space="  ", level=0) # Para un formato legible
+    except AttributeError:
+        # Fallback para versiones de Python < 3.9
+        pass 
+    
+    # Asegurarse de que la declaración XML esté presente y el encoding sea UTF-8
+    xml_declaration = '<?xml version="1.0" encoding="UTF-8" ?>\n'
+    
+    # ET.tostring devuelve bytes, necesitamos decodificarlo a string
+    # y luego añadir la declaración XML
+    content_str = ET.tostring(root, encoding='utf-8', xml_declaration=False).decode('utf-8')
+    final_content = xml_declaration + content_str
+    
     with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(content)
+        f.write(final_content)
     
     # Actualizar el archivo de registro con traducciones faltantes
     with open(log_file, 'a', encoding='utf-8') as log:
@@ -537,11 +483,14 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
         log.write(f"Total strings found: {total_translations}\n")
         log.write(f"Successfully translated: {successful_translations}\n")
         log.write(f"Skipped (complex/empty): {skipped_translations}\n")
-        log.write(f"Failed translations: {total_translations - successful_translations - skipped_translations}\n")
+        log.write(f"Failed translations: {len(missing_translations)}\n")
         
-        if total_translations > 0:
-            success_rate = (successful_translations / (total_translations - skipped_translations)) * 100 if (total_translations - skipped_translations) > 0 else 0
+        translatable_strings = total_translations - skipped_translations
+        if translatable_strings > 0:
+            success_rate = (successful_translations / translatable_strings) * 100
             log.write(f"Success rate: {success_rate:.1f}%\n\n")
+        else:
+            log.write("No translatable strings found.\n\n")
         
         if missing_translations:
             log.write("\n=== Missing Translations ===\n")
@@ -554,9 +503,9 @@ def translate_xlf_file_automatic(source_file_path: str, target_lang: str, output
     print(f"Total strings found: {total_translations}")
     print(f"Successfully translated: {successful_translations}")
     print(f"Skipped (complex/empty): {skipped_translations}")
-    print(f"Failed translations: {total_translations - successful_translations - skipped_translations}")
-    if total_translations > 0:
-        success_rate = (successful_translations / (total_translations - skipped_translations)) * 100 if (total_translations - skipped_translations) > 0 else 0
+    print(f"Failed translations: {len(missing_translations)}")
+    if translatable_strings > 0:
+        success_rate = (successful_translations / translatable_strings) * 100
         print(f"Success rate: {success_rate:.1f}%")
     print(f"File saved: {output_file}")
     print(f"Missing translations: {len(missing_translations)} (see log file for details)")

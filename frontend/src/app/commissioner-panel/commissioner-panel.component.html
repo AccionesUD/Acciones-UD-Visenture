@@ -40,7 +40,7 @@
         <div class="flex items-center mb-4 md:mb-0">
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
-            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
+            <p class="text-red-700 dark:text-red-300 font-medium" i18n="@@commissioner.error.message">{{ error }}</p>
             <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@commissioner.error.contact.support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
           </div>
         </div>
@@ -81,7 +81,7 @@
                 id="market-filter"
                 formControlName="market"
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
-                <option *ngFor="let market of markets" [value]="market.value">{{ market.label }}</option>
+                <option *ngFor="let market of markets" [value]="market.value" i18n="@@commissioner.filters.market.{{market.value}}">{{ market.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-indigo-500 dark:text-indigo-400">public</mat-icon>
@@ -97,7 +97,7 @@
                 id="status-filter"
                 formControlName="status"
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 transition-colors duration-200">
-                <option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option>
+                <option *ngFor="let status of statuses" [value]="status.value" i18n="@@commissioner.filters.status.{{status.value}}">{{ status.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-purple-500 dark:text-purple-400">verified_user</mat-icon>
@@ -148,8 +148,8 @@
                       <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@commissioner.stats.total.clients.title">Clientes Totales</h3>
                       <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats.total_clients || 0 }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span class="font-medium text-green-600 dark:text-green-400">{{ commissionerStats.active_clients || 0 }}</span> 
-                        <span i18n="@@commissioner.stats.active.clients">activos</span>
+                        <span class="font-medium text-green-600 dark:text-green-400">{{ commissionerStats.active_clients || 0 }}</span>
+                        <span i18n="@@commissioner.stats.active_clients_label">activos</span>
                       </div>
                     </div>
                     <div class="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
@@ -168,7 +168,7 @@
                         <span [ngClass]="commissionerStats.commission_growth >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
                           {{ commissionerStats.commission_growth >= 0 ? '+' : '' }}{{ commissionerStats.commission_growth || 0 }}%
                         </span> 
-                        <span i18n="@@commissioner.stats.vs.last.month">vs. último mes</span>
+                        <span i18n="@@commissioner.stats.vs_last_month_label">vs. último mes</span>
                       </div>
                     </div>
                     <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
@@ -184,8 +184,8 @@
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@commissioner.stats.average.roi.title">ROI Promedio</h3>
                       <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatPercentage(commissionerStats.average_roi_clients || 0) }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span class="font-medium text-red-600 dark:text-red-400">{{ commissionerStats.clients_with_negative_roi || 0 }}</span> 
-                        <span i18n="@@commissioner.stats.clients.negative.roi">clientes con ROI negativo</span>
+                        <span class="font-medium text-red-600 dark:text-red-400">{{ commissionerStats.clients_with_negative_roi || 0 }}</span>
+                        <span i18n="@@commissioner.stats.clients_negative_roi_label">clientes con ROI negativo</span>
                       </div>
                     </div>
                     <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
@@ -200,7 +200,7 @@
                     <div>
                       <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@commissioner.stats.total.operations.title">Total Operaciones</h3>
                       <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ commissionerStats.totalOperations || 0 }}</div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@commissioner.stats.this.month">
+                      <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" i18n="@@commissioner.stats.this_month_label">
                         Este mes
                       </div>
                     </div>
@@ -266,7 +266,7 @@
                     <tbody class="bg-white dark:bg-transparent divide-y divide-gray-200 dark:divide-gray-700">
                       <tr *ngFor="let client of commissionerStats?.top_performing_clients || []" class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
                         <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="font-medium text-gray-900 dark:text-white">{{ client.client_name }}</div>
+                          <div class="font-medium text-gray-900 dark:text-white" i18n="@@commissioner.top_clients.client_name">{{ client.client_name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                           <div class="text-sm font-medium text-emerald-600 dark:text-emerald-400">{{ formatPercentage(client.roi_percentage) }}</div>
@@ -297,7 +297,7 @@
                   <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.name.label"> Nombre </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
-                      {{ client.name }}
+                      <ng-container i18n="@@commissioner.clients.table.name">{{ client.name }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -305,7 +305,7 @@
                   <ng-container matColumnDef="email">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.email.label"> Email </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ client.email }}
+                      <ng-container i18n="@@commissioner.clients.table.email">{{ client.email }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -313,7 +313,7 @@
                   <ng-container matColumnDef="registration_date">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.registration.label"> Registro </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ formatDate(client.registration_date) }}
+                      <ng-container i18n="@@commissioner.clients.table.registration_date">{{ formatDate(client.registration_date) }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -322,7 +322,7 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.status.label"> Estado </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                       <span [ngClass]="getStatusClass(client.status)" class="px-2 py-1 text-xs font-medium rounded-full">
-                        {{ getStatusText(client.status) }}
+                        <ng-container i18n="@@commissioner.clients.table.status">{{ getStatusText(client.status) }}</ng-container>
                       </span>
                     </td>
                   </ng-container>
@@ -331,7 +331,7 @@
                   <ng-container matColumnDef="total_investment">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.investment.label"> Inversión </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ formatCurrency(client.total_investment) }}
+                      <ng-container i18n="@@commissioner.clients.table.total_investment">{{ formatCurrency(client.total_investment) }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -340,7 +340,7 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.roi.label"> ROI </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm border-b border-gray-200 dark:border-gray-700"
                         [ngClass]="client.roi_percentage >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'">
-                      {{ formatPercentage(client.roi_percentage) }}
+                      <ng-container i18n="@@commissioner.clients.table.roi_percentage">{{ formatPercentage(client.roi_percentage) }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -348,7 +348,7 @@
                   <ng-container matColumnDef="last_operation_date">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.last.operation.label"> Última Operación </th>
                     <td mat-cell *matCellDef="let client" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ client.last_operation_date ? formatDate(client.last_operation_date) : 'N/A' }}
+                      <ng-container i18n="@@commissioner.clients.table.last_operation_date">{{ client.last_operation_date ? formatDate(client.last_operation_date) : 'N/A' }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -424,7 +424,7 @@
                   <ng-container matColumnDef="client_name">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.client.label"> Cliente </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
-                      {{ commission.client_name }}
+                      <ng-container i18n="@@commissioner.commissions.table.client_name">{{ commission.client_name }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -432,7 +432,7 @@
                   <ng-container matColumnDef="month">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.month.label"> Mes </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ commission.month }}
+                      <ng-container i18n="@@commissioner.commissions.table.month">{{ commission.month }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -440,7 +440,7 @@
                   <ng-container matColumnDef="year">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.year.label"> Año </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ commission.year }}
+                      <ng-container i18n="@@commissioner.commissions.table.year">{{ commission.year }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -448,7 +448,7 @@
                   <ng-container matColumnDef="commissions_generated">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.commission.label"> Comisión </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600 dark:text-emerald-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ formatCurrency(commission.commissions_generated) }}
+                      <ng-container i18n="@@commissioner.commissions.table.commissions_generated">{{ formatCurrency(commission.commissions_generated) }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -456,7 +456,7 @@
                   <ng-container matColumnDef="operations_count">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.operations.label"> Operaciones </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ commission.operations_count }}
+                      <ng-container i18n="@@commissioner.commissions.table.operations_count">{{ commission.operations_count }}</ng-container>
                     </td>
                   </ng-container>
 
@@ -464,7 +464,7 @@
                   <ng-container matColumnDef="market">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.market.label"> Mercado </th>
                     <td mat-cell *matCellDef="let commission" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                      {{ commission.market }}
+                      <ng-container i18n="@@commissioner.commissions.table.market">{{ commission.market }}</ng-container>
                     </td>
                   </ng-container>
 

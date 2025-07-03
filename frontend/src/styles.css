@@ -134,5 +134,37 @@ html.dark .cdk-overlay-dark-backdrop {
   color: #fff !important;
 }
 
+/* Estilos para los tooltips de ApexCharts */
+.apexcharts-tooltip {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.apexcharts-tooltip-title {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Dark mode styles for tooltips */
+html.dark .apexcharts-tooltip {
+  background: #1e293b !important; /* slate-800 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border-color: #475569 !important; /* slate-600 */
+}
+
+html.dark .apexcharts-tooltip-title {
+  background: #334155 !important; /* slate-700 */
+  color: #e2e8f0 !important; /* slate-200 */
+  border-bottom: 1px solid #475569 !important; /* slate-600 */
+}
+
+/* Ensure all text within the tooltip inherits the color */
+html.dark .apexcharts-tooltip .apexcharts-tooltip-text-y-label,
+html.dark .apexcharts-tooltip .apexcharts-tooltip-text-y-value {
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -10,6 +10,7 @@ import { NotificationsService } from '../../services/notifications.service';
 import { ProfileService } from '../../services/profile.service';
 import { UsersService } from '../../services/user.service';
 import { PriceAlert, NotificationMethod, NotificationSettings, UserPreferences } from '../../models/notification.model';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -28,8 +29,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
   @ViewChild('tabsNav') tabsNavRef!: ElementRef;
   @ViewChild('tabsContainer') tabsContainerRef!: ElementRef;
   activeTabIndex: number = 0;
-  //Rol del usuario
-  userRole: string | null = null;
+  isPremium = false;
 
   // Variables para control de desplazamiento
   showLeftScrollButton: boolean = false;
@@ -75,7 +75,8 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
     private profileService: ProfileService,
     private userService: UsersService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {
     // Inicializar formularios
     this.alertForm = this.fb.group({
@@ -112,9 +113,7 @@ export class PreferencesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.userService.getUserRole().subscribe({
-      next: role => this.userRole = role ?? null
-    });
+    this.isPremium = this.authService.isPremium();
     this.loadPriceAlerts();
     this.loadNotificationSettings();
     this.loadUserPreferences();

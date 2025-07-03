@@ -37,7 +37,7 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-700 dark:text-red-200 font-semibold">{{ changeError }}</p>
+          <p class="text-sm text-red-700 dark:text-red-200 font-semibold" i18n="@@profile.security.change_error_message">{{ changeError }}</p>
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@
           </button>
         </div>
         <div *ngIf="passwordForm.get('current_password')?.invalid && (passwordForm.get('current_password')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
-          {{ getCurrentPasswordErrorMessage() }}
+          <ng-container i18n="@@profile.security.current_password_error_message">{{ getCurrentPasswordErrorMessage() }}</ng-container>
         </div>
       </div>
       
@@ -77,7 +77,7 @@
           </button>
         </div>
         <div *ngIf="passwordForm.get('new_password')?.invalid && (passwordForm.get('new_password')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
-          {{ getNewPasswordErrorMessage() }}
+          <ng-container i18n="@@profile.security.new_password_error_message">{{ getNewPasswordErrorMessage() }}</ng-container>
         </div>
       </div>
       
@@ -96,7 +96,7 @@
           </button>
         </div>
         <div *ngIf="passwordForm.get('confirm_password')?.invalid && (passwordForm.get('confirm_password')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
-          {{ getConfirmPasswordErrorMessage() }}
+          <ng-container i18n="@@profile.security.confirm_password_error_message">{{ getConfirmPasswordErrorMessage() }}</ng-container>
         </div>
       </div>
       

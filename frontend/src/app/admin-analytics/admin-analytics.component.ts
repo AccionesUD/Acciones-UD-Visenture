@@ -6,15 +6,24 @@ import {
   ApexTitleSubtitle,
   ApexYAxis,
   ApexTheme,
-  ApexTooltip, 
+  ApexTooltip,
   ChartComponent,
-  NgApexchartsModule 
+  NgApexchartsModule,
+  ApexDataLabels
 } from 'ng-apexcharts';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AdminAnalyticsService } from '../services/admin-analytics.service';
 import { User } from '../models/user.model';
+import { AdminAnalyticsData } from '../models/admin-analytics.model';
+import { StocksService } from '../services/stocks.service';
+import { SharesService } from '../services/shares.service';
+import { StockInitResponse } from '../models/stock.model';
+import { CreateShareDto } from '../models/share.model';
+import { MatIconModule } from '@angular/material/icon';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -24,12 +33,18 @@ export type ChartOptions = {
   title: ApexTitleSubtitle;
   theme: ApexTheme;
   tooltip?: ApexTooltip;
+  dataLabels?: ApexDataLabels;
 };
+
+interface ShareCreationResult {
+  success: boolean;
+  message: string;
+}
 
 @Component({
   selector: 'app-admin-analytics',
   standalone: true,
-  imports: [NgApexchartsModule, CommonModule, ChartComponent],
+  imports: [NgApexchartsModule, CommonModule, ChartComponent, FormsModule, MatIconModule],
   templateUrl: './admin-analytics.component.html',
   styleUrls: ['./admin-analytics.component.css']
 })
@@ -39,44 +54,76 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
  isDark = document.documentElement.classList.contains('dark');
 
  // Datos reales
- usuariosTotales = 0;
- nuevosUsuariosHoy = 0;
- usuariosActivos = 0;
- suscripcionesPremium = 0;
- ingresosPorComisiones = '$0 COP';
+ analyticsData: AdminAnalyticsData | null = null;
+
+ // Datos reales
+ qtyOrdersTotal = 0;
+ qtyOrdersFill = 0;
+ qtyOrdersInProcess = 0;
+ qtyOrderSell = 0;
+ qtyOrderBuy = 0;
+ qtyRechargesInAccounts = 0;
+ totalRechargeApp = 0;
+ totalCommissionApp = 0;
+ totalAssetsInBriefcases = 0;
+ qtySharesInOperation = 0;
+ qtyAccountsStandard = 0;
+ qtyAccountCommission = 0;
+ 
  private allUsers: User[] = []; // Para almacenar todos los usuarios cargados
 
- constructor(private adminAnalyticsService: AdminAnalyticsService) {}
+  // Propiedades para la inicialización de mercados
+  isInitializingMarkets = false;
+  isInitialized = false;
+  
+  // Propiedades para la creación de acciones
+  isCreatingShare = false;
+  newShareSymbol: string = '';
+  shareCreationResult: ShareCreationResult | null = null;
 
-  // Pie Chart - Distribución de riesgo
-  riskDistribution = {
-    series: [35, 45, 20],
+ constructor(
+    private adminAnalyticsService: AdminAnalyticsService,
+    private stocksService: StocksService,
+    private sharesService: SharesService,
+    private snackBar: MatSnackBar
+    ) {}
+
+  // Pie Chart - Distribución de órdenes (Compra vs Venta)
+  orderDistribution = {
+    series: [0, 0], // qty_order_buy, qty_order_sell
     chart: {
       type: 'donut',
       height: 500,
       width: 550,
       background: 'transparent',
     } as ApexChart,
-    labels: ['Conservador', 'Moderado', 'Agresivo'],
-    colors: ['#10b981', '#3b82f6', '#ef4444'],
+    labels: ['Compra', 'Venta'],
+    colors: ['#22c55e', '#ef4444'], // Verde para compra, Rojo para venta
     dataLabels: {
       enabled: true,
       style: {
         colors: [this.isDark ? '#FFFFFF' : '#333333']
       }
     },
+    tooltip: {
+      y: {
+        formatter: function (val: number) {
+          return val + " órdenes";
+        }
+      }
+    }
   };
 
-  // Bar Chart - Transacciones por mercado
-  transactionVolume = {
-    series: [{ name: 'Volumen', data: [1200, 900, 400, 700] }],
-    chart: { 
-      type: 'bar', 
+  // Bar Chart - Estado de Órdenes
+  orderStatus = {
+    series: [{ name: 'Cantidad', data: [0, 0, 0] }], // qty_orders_total, qty_orders_fill, qty_orders_in_procces
+    chart: {
+      type: 'bar',
       height: 350,
       background: 'transparent'
     } as ApexChart,
-    xaxis: { 
-      categories: ['BVC', 'NASDAQ', 'NYSE', 'CSE'],
+    xaxis: {
+      categories: ['Total', 'Completadas', 'En Proceso'],
       labels: {
         style: {
           colors: this.isDark ? '#FFFFFF' : '#333333'
@@ -90,19 +137,29 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
         }
       }
     } as ApexYAxis,
-    colors: ['#22c55e']
+    colors: ['#3b82f6'], // Azul
+    tooltip: {
+      y: {
+        formatter: function (val: number) {
+          return val + " órdenes";
+        }
+      }
+    }
   };
 
-  // Line Chart - Uso de plataforma
-  platformUsage = {
-    series: [{ name: 'Sesiones', data: [120, 130, 140, 180, 160, 190, 220] }],
-    chart: { 
-      type: 'line', 
+  // Line Chart - Recargas y Comisiones
+  rechargeCommissionChart = {
+    series: [
+      { name: 'Recargas', data: [] as number[] }, // total_recharge_app
+      { name: 'Comisiones', data: [] as number[] }  // total_commission_app
+    ],
+    chart: {
+      type: 'line',
       height: 300,
       background: 'transparent'
     } as ApexChart,
-    xaxis: { 
-      categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    xaxis: {
+      categories: ['Datos Actuales'], // Solo un punto de datos para los totales
       labels: {
         style: {
           colors: this.isDark ? '#FFFFFF' : '#333333'
@@ -116,6 +173,14 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
         }
       }
     } as ApexYAxis,
+    colors: ['#10b981', '#f59e0b'], // Verde para recargas, Naranja para comisiones
+    tooltip: {
+      y: {
+        formatter: function (val: number) {
+          return '$' + val.toFixed(2);
+        }
+      }
+    }
   };
 
   ngOnInit(): void {
@@ -129,30 +194,33 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private loadAnalyticsData(): void {
+   this.adminAnalyticsService.getAdminAnalytics().subscribe((data: AdminAnalyticsData) => {
+     this.analyticsData = data;
+     this.qtyOrdersTotal = data.qty_orders_total;
+     this.qtyOrdersFill = data.qty_orders_fill;
+     this.qtyOrdersInProcess = data.qty_orders_in_procces;
+     this.qtyOrderSell = data.qty_order_sell;
+     this.qtyOrderBuy = data.qty_order_buy;
+     this.qtyRechargesInAccounts = data.qty_recharges_in_accounts;
+     this.totalRechargeApp = data.total_recharge_app;
+     this.totalCommissionApp = data.total_commission_app;
+     this.totalAssetsInBriefcases = data.total_assets_in_briefcases;
+     this.qtySharesInOperation = data.qty_shares_in_operation;
+     this.qtyAccountsStandard = data.qty_accounts_standard;
+     this.qtyAccountCommission = data.qty_account_commission;
+
+     this.initializeCharts();
+   });
+
+   // Mantener la carga de usuarios para la distribución de roles si es necesario
    this.adminAnalyticsService.getUsersWithRoles().subscribe((users: User[]) => {
-     this.allUsers = users; // Almacenar los usuarios
-     this.usuariosTotales = users.length;
-     
-     // Lógica para calcular nuevos usuarios (ej: en las últimas 24h)
-     const today = new Date();
-     const yesterday = new Date(today);
-     yesterday.setDate(yesterday.getDate() - 1);
-     this.nuevosUsuariosHoy = users.filter(u => u.created_at && new Date(u.created_at as string) > yesterday).length;
-
-     // Lógica para usuarios activos (ej: con login en los últimos 7 días)
-     const lastWeek = new Date(today);
-     lastWeek.setDate(lastWeek.getDate() - 7);
-     this.usuariosActivos = users.filter(u => u.last_login && new Date(u.last_login as string) > lastWeek).length;
-
-     // Lógica para suscripciones premium
-     this.suscripcionesPremium = users.filter(u => u.roles?.includes('usuario_premium')).length;
-
-     this.initializeCharts(users);
+     this.allUsers = users;
+     this.initializeCharts(); // Re-inicializar para actualizar la gráfica de roles
    });
  }
 
-  private initializeCharts(users: User[]): void {
-    this.updateChartThemes(users);
+  private initializeCharts(): void {
+    this.updateChartThemes();
   }
 
   private setupThemeObserver(): void {
@@ -160,7 +228,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
       mutations.forEach((mutation) => {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           this.isDark = document.documentElement.classList.contains('dark');
-          this.updateChartThemes(this.allUsers); // Pasar los usuarios almacenados
+          this.updateChartThemes(); // No pasar argumentos
         }
       });
     });
@@ -173,54 +241,154 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
     this.destroy$.subscribe(() => observer.disconnect());
   }
 
-  private updateChartThemes(users: User[] = []): void { // Añadir users como parámetro opcional
+  private updateChartThemes(): void {
    const labelColor = this.isDark ? '#FFFFFF' : '#333333';
    const themeMode = this.isDark ? 'dark' : 'light';
 
-   // Gráfica de distribución de roles
-   const roleCounts = users.reduce((acc, user) => {
-     if (user.roles) {
-       user.roles.forEach(role => {
-         acc[role] = (acc[role] || 0) + 1;
-       });
-     }
-     return acc;
-   }, {} as { [key: string]: number });
-
-   this.riskDistribution = {
-     ...this.riskDistribution,
-     series: Object.values(roleCounts).length > 0 ? Object.values(roleCounts) : [0],
-     labels: Object.keys(roleCounts).length > 0 ? Object.keys(roleCounts).map(role => role.charAt(0).toUpperCase() + role.slice(1)) : ['Sin Datos'],
+   // Actualizar orderDistribution (anteriormente riskDistribution)
+   this.orderDistribution = {
+     ...this.orderDistribution,
+     series: [this.qtyOrderBuy, this.qtyOrderSell],
      dataLabels: {
-       ...this.riskDistribution.dataLabels,
+       ...this.orderDistribution.dataLabels,
        style: { colors: [labelColor] }
-     }
+     },
+     chart: {
+       ...this.orderDistribution.chart,
+       foreColor: labelColor, // Asegura que el texto del gráfico sea visible
+       theme: { mode: themeMode }
+     } as ApexChart
    };
 
-    // Actualizar transactionVolume
-    this.transactionVolume = {
-      ...this.transactionVolume,
-      xaxis: {
-        ...this.transactionVolume.xaxis,
-        labels: { style: { colors: labelColor } }
-      },
-      yaxis: {
-        ...this.transactionVolume.yaxis,
-        labels: { style: { colors: labelColor } }
-      }
-    };
+   // Actualizar orderStatus (anteriormente transactionVolume)
+   this.orderStatus = {
+     ...this.orderStatus,
+     series: [{
+       name: 'Cantidad',
+       data: [this.qtyOrdersTotal, this.qtyOrdersFill, this.qtyOrdersInProcess]
+     }],
+     xaxis: {
+       ...this.orderStatus.xaxis,
+       labels: { style: { colors: labelColor } }
+     },
+     yaxis: {
+       ...this.orderStatus.yaxis,
+       labels: { style: { colors: labelColor } }
+     },
+     chart: {
+       ...this.orderStatus.chart,
+       foreColor: labelColor,
+       theme: { mode: themeMode }
+     } as ApexChart
+   };
 
-    // Actualizar platformUsage
-    this.platformUsage = {
-      ...this.platformUsage,
-      xaxis: {
-        ...this.platformUsage.xaxis,
-        labels: { style: { colors: labelColor } }
+   // Actualizar rechargeCommissionChart (anteriormente platformUsage)
+   this.rechargeCommissionChart = {
+     ...this.rechargeCommissionChart,
+     series: [
+       { name: 'Recargas', data: [this.totalRechargeApp] as number[] },
+       { name: 'Comisiones', data: [this.totalCommissionApp] as number[] }
+     ],
+     xaxis: {
+       ...this.rechargeCommissionChart.xaxis,
+       labels: { style: { colors: labelColor } }
+     },
+     yaxis: {
+       ...this.rechargeCommissionChart.yaxis,
+       labels: { style: { colors: labelColor } }
+     },
+     chart: {
+       ...this.rechargeCommissionChart.chart,
+       foreColor: labelColor,
+       theme: { mode: themeMode }
+     } as ApexChart
+   };
+ }
+
+  initializeMarkets(): void {
+    this.isInitializingMarkets = true;
+    this.shareCreationResult = null;
+    
+    this.stocksService.initializeMarkets().subscribe({
+      next: (response: StockInitResponse) => {
+        console.log('Mercados inicializados:', response);
+        this.isInitialized = true;
+        
+        const marketCount = response.creado_o_actualizado?.length || 
+                           (response.count ? response.count : 'varios');
+        
+        this.shareCreationResult = {
+          success: true,
+          message: `Se han inicializado correctamente ${marketCount} mercados.`
+        };
+        
+        this.isInitializingMarkets = false;
+        
+        this.snackBar.open('Mercados inicializados correctamente', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
       },
-      yaxis: {
-        ...this.platformUsage.yaxis,
-        labels: { style: { colors: labelColor } }
+      error: (err) => {
+        console.error('Error al inicializar mercados:', err);
+        this.shareCreationResult = {
+          success: false,
+          message: `Error al inicializar mercados: ${err.message || 'Error desconocido'}`
+        };
+        this.isInitializingMarkets = false;
+        
+        this.snackBar.open('Error al inicializar mercados', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       }
+    });
+  }
+  
+  createShare(): void {
+    if (!this.newShareSymbol) {
+      this.shareCreationResult = {
+        success: false,
+        message: 'Por favor, ingrese un símbolo de acción.'
+      };
+      return;
+    }
+    
+    this.isCreatingShare = true;
+    this.shareCreationResult = null;
+    
+    const shareData: CreateShareDto = {
+      symbol: this.newShareSymbol.toUpperCase()
     };
+    
+    this.sharesService.createShare(shareData).subscribe({
+      next: (share) => {
+        console.log('Acción creada:', share);
+        this.shareCreationResult = {
+          success: true,
+          message: `Acción ${share.ticker} (${share.name_share}) creada exitosamente.`
+        };
+        this.newShareSymbol = '';
+        this.isCreatingShare = false;
+        
+        this.snackBar.open(`Acción ${share.ticker} creada correctamente`, 'Cerrar', {
+          duration: 3000
+        });
+      },
+      error: (err) => {
+        console.error('Error al crear acción:', err);
+        this.shareCreationResult = {
+          success: false,
+          message: `Error al crear acción: ${err.message || 'Error desconocido'}.`
+        };
+        this.isCreatingShare = false;
+        
+        this.snackBar.open('Error al crear la acción', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 }

@@ -1,22 +1,22 @@
 <div class="dialog-container p-6">
   <h2 mat-dialog-title class="flex items-center text-xl font-semibold mb-4">
     <mat-icon class="mr-2">person_add</mat-icon>
-    Confirmar Contratación
+    <span i18n="@@hire.commissioner.modal.title">Confirmar Contratación</span>
   </h2>
   
   <mat-dialog-content class="py-4">
-    <p class="mb-2">Estás a punto de enviar una solicitud para contratar a:</p>
-    <p class="font-bold text-lg">{{ data.commissioner.name }}</p>
-    <p class="text-sm text-gray-600 dark:text-gray-400">{{ data.commissioner.email }}</p>
-    <p class="mt-4 text-xs text-gray-500">
+    <p class="mb-2" i18n="@@hire.commissioner.modal.message">Estás a punto de enviar una solicitud para contratar a:</p>
+    <p class="font-bold text-lg" i18n="@@hire.commissioner.modal.commissioner_name">{{ data.commissioner.name }}</p>
+    <p class="text-sm text-gray-600 dark:text-gray-400" i18n="@@hire.commissioner.modal.commissioner_email">{{ data.commissioner.email }}</p>
+    <p class="mt-4 text-xs text-gray-500" i18n="@@hire.commissioner.modal.info_message">
       Se enviará una notificación al comisionista. Una vez que acepte, podrás asignarle clientes.
     </p>
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-    <button mat-stroked-button (click)="onCancel()"><span class="text-emerald-700 dark:text-emerald-600">Cancelar</span></button>
+    <button mat-stroked-button (click)="onCancel()"><span class="text-emerald-700 dark:text-emerald-600" i18n="@@common.actions.cancel">Cancelar</span></button>
     <button mat-flat-button color="primary" [disabled]="true">
-      <span class="text-emerald-700 dark:text-emerald-600">Proximamente</span>
+      <span class="text-emerald-700 dark:text-emerald-600" i18n="@@common.soon">Proximamente</span>
     </button>
   </mat-dialog-actions>
 </div>

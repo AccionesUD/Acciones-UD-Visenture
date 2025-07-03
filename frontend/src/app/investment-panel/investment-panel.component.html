@@ -6,8 +6,8 @@
       <!-- Cabecera y título -->
       <div class="flex flex-wrap justify-between items-center mb-6">
         <div>
-          <h1 class="text-2xl font-bold text-indigo-800 dark:text-indigo-400">Panel de Inversiones</h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-1">Visualiza el rendimiento de tu portafolio.</p>
+          <h1 class="text-2xl font-bold text-indigo-800 dark:text-indigo-400" i18n="@@investment.panel.title">Panel de Inversiones</h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-1" i18n="@@investment.panel.subtitle">Visualiza el rendimiento de tu portafolio.</p>
         </div>
         <div class="flex space-x-2 mt-2 sm:mt-0">
           <button 
@@ -15,7 +15,7 @@
             class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center text-sm transition-colors duration-150"
           >
             <mat-icon class="mr-1 text-sm">picture_as_pdf</mat-icon>
-            <span>Exportar PDF</span>
+            <span i18n="@@investment.panel.export_pdf">Exportar PDF</span>
           </button>
         </div>
       </div>
@@ -30,8 +30,8 @@
         <div class="flex items-center mb-4 md:mb-0">
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
-            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
-            <p class="text-xs text-red-600 dark:text-red-400 mt-1">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+            <p class="text-red-700 dark:text-red-300 font-medium" i18n="@@investment.panel.error_message">{{ error }}</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@investment.panel.error_contact_support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
           </div>
         </div>
         <button mat-stroked-button color="warn" (click)="loadInvestmentData()" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
@@ -43,7 +43,7 @@
       <div *ngIf="!isLoading && !error">
         <mat-tab-group animationDuration="300ms" mat-stretch-tabs="false" mat-align-tabs="start">
           <!-- Tab de resumen -->
-          <mat-tab label="Resumen">
+          <mat-tab i18n-label="@@investment.panel.summary_tab" label="Resumen">
             <div class="py-6">
               <!-- Cards de estadísticas -->
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -51,8 +51,8 @@
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
-                      <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1">Valor Total</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(portfolioSummary.totalValue) }}</div>
+                      <h3 class="text-gray-600 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@investment.panel.total_value_title">Valor Total</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white" i18n="@@investment.panel.total_value">{{ formatCurrency(portfolioSummary.totalValue) }}</div>
                     </div>
                     <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400">
                       <mat-icon>account_balance_wallet</mat-icon>
@@ -64,8 +64,8 @@
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
-                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Ganancias Totales</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatCurrency(portfolioSummary.totalEarnings) }}</div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@investment.panel.total_earnings_title">Ganancias Totales</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white" i18n="@@investment.panel.total_earnings">{{ formatCurrency(portfolioSummary.totalEarnings) }}</div>
                     </div>
                     <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
                       <mat-icon>trending_up</mat-icon>
@@ -77,8 +77,8 @@
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
-                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Rendimiento</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ formatPercentage(portfolioSummary.performance) }}</div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@investment.panel.performance_title">Rendimiento</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white" i18n="@@investment.panel.performance">{{ formatPercentage(portfolioSummary.performance) }}</div>
                     </div>
                     <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
                       <mat-icon>show_chart</mat-icon>
@@ -90,8 +90,8 @@
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
                   <div class="flex items-start justify-between">
                     <div>
-                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total de Acciones</h3>
-                      <div class="text-2xl font-semibold text-gray-900 dark:text-white">{{ portfolioSummary.totalShares }}</div>
+                      <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1" i18n="@@investment.panel.total_shares_title">Total de Acciones</h3>
+                      <div class="text-2xl font-semibold text-gray-900 dark:text-white" i18n="@@investment.panel.total_shares">{{ portfolioSummary.totalShares }}</div>
                     </div>
                     <div class="p-3 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
                       <mat-icon>inventory</mat-icon>
@@ -104,7 +104,7 @@
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Distribución de Activos -->
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200/50 dark:border-slate-700">
-                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Distribución de Activos</h3>
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@investment.panel.asset_distribution_title">Distribución de Activos</h3>
                   <div *ngIf="assetAllocationChartOptions" class="h-[300px] w-full">
                     <apx-chart
                       [series]="assetAllocationChartOptions.series ?? []"
@@ -117,7 +117,7 @@
 
                 <!-- Rendimiento a lo largo del tiempo -->
                 <div class="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-md border border-gray-200/50 dark:border-slate-700">
-                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4">Rendimiento del Portafolio</h3>
+                  <h3 class="text-gray-700 dark:text-gray-300 font-medium mb-4" i18n="@@investment.panel.portfolio_performance_title">Rendimiento del Portafolio</h3>
                   <div *ngIf="performanceChartOptions" class="h-[300px] w-full">
                     <apx-chart
                       [series]="performanceChartOptions.series ?? []"
@@ -132,50 +132,50 @@
           </mat-tab>
 
           <!-- Tab de Órdenes Recientes -->
-          <mat-tab label="Órdenes Recientes">
+          <mat-tab i18n-label="@@investment.panel.recent_orders_tab" label="Órdenes Recientes">
             <div class="py-6">
               <div class="overflow-x-auto shadow border border-gray-200 dark:border-gray-700 rounded-lg">
                 <table mat-table [dataSource]="dataSource" matSort class="min-w-full">
                   <!-- Symbol Column -->
                   <ng-container matColumnDef="share">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Símbolo</th>
-                    <td mat-cell *matCellDef="let order">{{ order.share.symbol }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.symbol_header">Símbolo</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.symbol_value">{{ order.share.symbol }}</td>
                   </ng-container>
 
                   <!-- Side Column -->
                   <ng-container matColumnDef="side">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Lado</th>
-                    <td mat-cell *matCellDef="let order">{{ order.side }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.side_header">Lado</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.side_value">{{ order.side }}</td>
                   </ng-container>
 
                   <!-- Type Column -->
                   <ng-container matColumnDef="type">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-                    <td mat-cell *matCellDef="let order">{{ order.type }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.type_header">Tipo</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.type_value">{{ order.type }}</td>
                   </ng-container>
 
                   <!-- Quantity Column -->
                   <ng-container matColumnDef="qty">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
-                    <td mat-cell *matCellDef="let order">{{ order.qty }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.quantity_header">Cantidad</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.quantity_value">{{ order.qty }}</td>
                   </ng-container>
 
                   <!-- Avg Price Column -->
                   <ng-container matColumnDef="filled_avg_price">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Promedio</th>
-                    <td mat-cell *matCellDef="let order">{{ formatCurrency(order.filled_avg_price) }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.avg_price_header">Precio Promedio</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.avg_price_value">{{ formatCurrency(order.filled_avg_price) }}</td>
                   </ng-container>
 
                   <!-- Status Column -->
                   <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-                    <td mat-cell *matCellDef="let order">{{ order.status }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.status_header">Estado</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.status_value">{{ order.status }}</td>
                   </ng-container>
 
                   <!-- Created At Column -->
                   <ng-container matColumnDef="create_at">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-                    <td mat-cell *matCellDef="let order">{{ order.create_at | date:'short' }}</td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header i18n="@@investment.panel.table.date_header">Fecha</th>
+                    <td mat-cell *matCellDef="let order" i18n="@@investment.panel.table.date_value">{{ order.create_at | date:'short' }}</td>
                   </ng-container>
 
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -1,5 +1,5 @@
 export const environment = {
-  production: true,
+  production: false,
   apiUrl: 'REEMPLAZAR_API_URL',
   authApiUrl: 'REEMPLAZAR_AUTH_API_URL',
   appName: 'REEMPLAZAR_APP_NAME',

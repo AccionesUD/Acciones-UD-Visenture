@@ -210,22 +210,22 @@
             {{ priceForCalculation | currency:'USD':'symbol':'1.2-2' }}
           </div>
           
-          <div class="text-gray-600 dark:text-gray-400">Cantidad:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white">{{ buyForm.get('quantity')?.value || 0 }} acciones</div>
+          <div class="text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.summary.quantity_label">Cantidad:</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.quantity_value">{buyForm.get('quantity')?.value || 0, plural, =1 {1 acción} other {{{buyForm.get('quantity')?.value || 0}} acciones}}</div>
           
-          <div class="text-gray-600 dark:text-gray-400">Valor total:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white">{{ totalValue | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.summary.total_value_label">Valor total:</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.total_value">{{ totalValue | currency:'COP':'symbol':'1.0-0' }}</div>
           
-          <div class="text-gray-600 dark:text-gray-400">Comisión estimada:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white">{{ estimatedFee | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.summary.estimated_fee_label">Comisión estimada:</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.estimated_fee">{{ estimatedFee | currency:'COP':'symbol':'1.0-0' }}</div>
           
           <div class="border-t border-blue-200 dark:border-blue-700 col-span-2 my-1"></div>
           
-          <div class="text-gray-800 dark:text-gray-200 font-medium">Total a pagar:</div>
-          <div class="text-right font-bold text-blue-600 dark:text-blue-400">{{ estimatedNet | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-gray-800 dark:text-gray-200 font-medium" i18n="@@buyStockModal.summary.total_to_pay_label">Total a pagar:</div>
+          <div class="text-right font-bold text-blue-600 dark:text-blue-400" i18n="@@buyStockModal.summary.total_to_pay">{{ estimatedNet | currency:'COP':'symbol':'1.0-0' }}</div>
         </div>
         <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
-          * Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.
+          <ng-container i18n="@@buyStockModal.summary.disclaimer">* Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.</ng-container>
         </div>
       </div>
     </form>
@@ -238,7 +238,7 @@
             <mat-icon *ngIf="operationResult.status === 'completed'" class="mr-2 text-green-500 dark:text-green-400">check_circle</mat-icon>
             <mat-icon *ngIf="operationResult.status === 'pending'" class="mr-2 text-yellow-500 dark:text-yellow-400">hourglass_empty</mat-icon>
             <mat-icon *ngIf="operationResult.status === 'canceled'" class="mr-2 text-red-500 dark:text-red-400">cancel</mat-icon>
-            Detalles de la orden
+            <span i18n="@@buyStockModal.order_details_title">Detalles de la orden</span>
           </div>
         </h3>
         
@@ -256,61 +256,57 @@
                 {{ operationResult.status === 'completed' ? 'check_circle' : 
                    operationResult.status === 'pending' ? 'hourglass_empty' : 'cancel' }}
               </mat-icon>
-              <span>{{ 
-                operationResult.status === 'completed' ? 'Orden Completada' : 
-                operationResult.status === 'pending' ? 'Orden Pendiente' : 'Orden Cancelada' 
-              }}</span>
+              <span i18n="@@buyStockModal.order_status_display">{operationResult.status, select, completed {Orden Completada} pending {Orden Pendiente} canceled {Orden Cancelada} other {Estado Desconocido}}</span>
             </div>
           </span>
         </div>
         
         <dl class="grid grid-cols-2 gap-2">
-          <dt class="text-sm text-gray-600 dark:text-gray-400">ID de orden:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">{{ operationResult.orderId }}</dd>
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.order_id_label">ID de orden:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.order_id">{{ operationResult.orderId }}</dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Tipo de orden:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-            {{ buyForm.get('orderType')?.value === 'market' ? 'Mercado' :
-               buyForm.get('orderType')?.value === 'limit' ? 'Límite' : 'Stop Loss' }}
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.order_type_label">Tipo de orden:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.order_type_value">
+            {buyForm.get('orderType')?.value, select, market {Mercado} limit {Límite} stop-loss {Stop Loss} other {Desconocido}}
           </dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Precio de compra:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.buy_price_label">Precio de compra:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.buy_price_value">
             {{ currentPrice !== null && currentPrice !== undefined ? (currentPrice | currency:'USD':'symbol':'1.2-2') : (operationResult.boughtAt | currency:'USD':'symbol':'1.2-2') }}
           </dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Cantidad:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.quantity_label">Cantidad:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.quantity_value">
             {{ operationResult.filledQuantity || 0 }} de {{ buyForm.get('quantity')?.value || 0 }}
           </dd>
 
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Total cobrado real:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.real_total_charged_label">Total cobrado real:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.real_total_charged_value">
             {{ realOrderTotal != null ? (realOrderTotal | currency:'USD':'symbol':'1.0-0') : 'No disponible' }}
           </dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Total:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.total_label">Total:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.total_value">
             {{ getOrderPrice() * getOrderQuantity() | currency:'USD':'symbol':'1.2-2' }}
           </dd>
           
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Comisión app (20%):</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.app_commission_label">Comisión app (20%):</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.app_commission_value">
             {{ getOrderPrice() * getOrderQuantity() * 0.20 | currency:'USD':'symbol':'1.2-2' }}
           </dd>
           
-          <dt *ngIf="data.clientId" class="text-sm text-gray-600 dark:text-gray-400">Comisión comisionista (60%):</dt>
-          <dd *ngIf="data.clientId" class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt *ngIf="data.clientId" class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.commissioner_commission_label">Comisión comisionista (60%):</dt>
+          <dd *ngIf="data.clientId" class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.commissioner_commission_value">
             {{ (currentPrice !== null && currentPrice !== undefined && operationResult.filledQuantity !== undefined) ? (currentPrice * operationResult.filledQuantity * 0.60) : (operationResult.boughtAt && operationResult.filledQuantity ? operationResult.boughtAt * operationResult.filledQuantity * 0.60 : 0) | currency:'USD':'symbol':'1.2-2' }}
           </dd>
 
-          <dt class="text-sm text-gray-600 dark:text-gray-400">Enviada:</dt>
-          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.submitted_label">Enviada:</dt>
+          <dd class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.submitted_value">
             {{ operationResult.submittedAt | date:'dd/MM/yyyy HH:mm' }}
           </dd>
           
-          <dt *ngIf="operationResult.filledAt" class="text-sm text-gray-600 dark:text-gray-400">Ejecutada:</dt>
-          <dd *ngIf="operationResult.filledAt" class="text-sm font-medium text-gray-900 dark:text-white text-right">
+          <dt *ngIf="operationResult.filledAt" class="text-sm text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.order_details.executed_label">Ejecutada:</dt>
+          <dd *ngIf="operationResult.filledAt" class="text-sm font-medium text-gray-900 dark:text-white text-right" i18n="@@buyStockModal.order_details.executed_value">
             {{ operationResult.filledAt | date:'dd/MM/yyyy HH:mm' }}
           </dd>
         </dl>
@@ -322,19 +318,19 @@
             <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="@@buyStockModal.important.information">Información importante</span>
           </div>
           <p class="text-sm text-blue-700 dark:text-blue-300">
-            Las acciones compradas ({{ operationResult.filledQuantity || 0 }}) ya han sido acreditadas en su portafolio.
-            Puede verlas en la sección de "Mis Acciones".
+            <ng-container i18n="@@buyStockModal.completed_order_info">Las acciones compradas ({{ operationResult.filledQuantity || 0 }}) ya han sido acreditadas en su portafolio.
+            Puede verlas en la sección de "Mis Acciones".</ng-container>
           </p>
         </div>
 
         <div *ngIf="operationResult.status === 'pending'" class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-md">
           <div class="flex items-center mb-2">
             <mat-icon class="mr-2 text-yellow-500">watch_later</mat-icon>
-            <span class="text-yellow-800 dark:text-yellow-200 font-medium">Orden pendiente de ejecución</span>
+            <span class="text-yellow-800 dark:text-yellow-200 font-medium" i18n="@@buyStockModal.pending_order_title">Orden pendiente de ejecución</span>
           </div>
           <p class="text-sm text-yellow-700 dark:text-yellow-300">
-            Su orden de compra se ejecutará cuando el precio alcance las condiciones definidas. 
-            Recibirá una notificación cuando la orden sea ejecutada o cancelada.
+            <ng-container i18n="@@buyStockModal.pending_order_info">Su orden de compra se ejecutará cuando el precio alcance las condiciones definidas.
+            Recibirá una notificación cuando la orden sea ejecutada o cancelada.</ng-container>
           </p>
         </div>
       </div>
@@ -349,18 +345,18 @@
       (click)="cancel()"
       mat-button 
       class="mr-3 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-600 rounded transition-colors duration-200">
-      Cancelar
+      <span i18n="@@buyStockModal.cancel_button">Cancelar</span>
     </button>
     <button 
       *ngIf="!operationResult"
       type="button"
       (click)="submitBuyOrder()"
-      [disabled]="buyForm.invalid || isLoading"
+      [disabled]="buyForm.invalid || isLoading || isSubmitting"
       mat-raised-button 
       color="primary"
       class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded transition-colors duration-200">
       <mat-spinner *ngIf="isLoading" [diameter]="20" class="inline-block mr-2 loading-spinner"></mat-spinner>
-      {{ isLoading ? 'Procesando...' : 'Comprar acciones' }}
+      <ng-container i18n="@@buyStockModal.submit_button">{isLoading, select, true {Procesando...} other {Comprar acciones}}</ng-container>
     </button>
     <button 
       *ngIf="operationResult"
@@ -369,7 +365,7 @@
       mat-raised-button 
       color="primary"
       class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-200">
-      Aceptar
+      <span i18n="@@buyStockModal.accept_button">Aceptar</span>
     </button>
   </div>
 </div>

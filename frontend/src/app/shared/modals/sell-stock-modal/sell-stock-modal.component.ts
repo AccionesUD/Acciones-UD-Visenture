@@ -42,11 +42,12 @@ export interface SellStockDialogData {
   styleUrls: ['./sell-stock-modal.component.css']
 })
 export class SellStockModalComponent implements OnInit {
-  sellForm: FormGroup;  sellOrderTypes = [
+  sellForm: FormGroup;
+  
+  sellOrderTypes = [
     { value: 'market', label: 'Mercado', description: 'Ejecutar la orden inmediatamente al precio de mercado actual' },
     { value: 'limit', label: 'Límite', description: 'Ejecutar la orden cuando el precio alcance o supere el valor especificado' },
-    { value: 'stop-loss', label: 'Stop Loss', description: 'Vender cuando el precio caiga por debajo del valor especificado para limitar pérdidas' },
-    { value: 'take-profit', label: 'Take Profit', description: 'Vender cuando el precio alcance un nivel de ganancias especificado' }
+    { value: 'stop-loss', label: 'Stop Loss', description: 'Vender cuando el precio caiga por debajo del valor especificado para limitar pérdidas' }
   ];
   
   timeInForceOptions = [
@@ -246,7 +247,7 @@ export class SellStockModalComponent implements OnInit {
 
     this.isLoading = true;
     this.error = null;
-    this.successMessage = null;
+    this.successMessage = 'Procesando orden de venta...';
 
     const formValues = this.sellForm.value;
     const sellOrder: SellOrder = {
@@ -264,19 +265,20 @@ export class SellStockModalComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.successMessage =
-            sellOrder.type === 'market'
-              ? '¡Orden de venta ejecutada con éxito!'
-              : '¡Orden de venta registrada correctamente y pendiente de ejecución!';
+          this.successMessage = '¡Orden de venta procesada con éxito!';
           this.operationResult = response.data;
-          setTimeout(() => this.dialogRef.close(this.operationResult), 3000);
+          try {
+            const audio = new Audio('/assets/sounds/success.mp3');
+            audio.volume = 0.2;
+            audio.play().catch(() => {});
+          } catch (e) {}
         } else {
           this.error = response.message || 'Error al procesar la orden de venta.';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.error = err.error.message || 'Error de conexión. Por favor, inténtelo de nuevo.';
+        this.error = err.error?.message || 'Error de conexión. Por favor, inténtelo de nuevo.';
         console.error('Error en la venta:', err);
       },
     });

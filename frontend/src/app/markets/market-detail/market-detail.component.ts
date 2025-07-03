@@ -297,13 +297,26 @@ export class MarketDetailComponent implements OnInit, OnDestroy {
         const price = snapshot.latestTrade?.price ?? 0;
         
         // Creamos un objeto de tipo Stock compatible con BuyStockModalComponent
-        const stockForModal = {
+        const stockForModal: any = {
+          id: share.id?.toString() || '',
           symbol: share.symbol,
+          company: share.name_share,
+          marketName: this.stock?.name_market || 'Desconocido',
+          marketId: this.stock?.mic || '',
+          quantity: 0, // No se posee aún
+          unitValue: price,
+          totalValue: 0,
+          performance: 0,
+          color: 'blue', // Color por defecto
+          returnOfMoney: 0,
+          orderType: 'N/A',
+          limitPrice: null,
+          stopPrice: null,
+          current_price: price,
           name: share.name_share,
           exchange: share.stock?.mic || '',
           type: share.class || '',
-          currency: 'USD', // Por defecto USD
-          current_price: price
+          currency: 'USD',
         };
         
         // Si es comisionista, primero mostrar el diálogo de selección de tipo de orden

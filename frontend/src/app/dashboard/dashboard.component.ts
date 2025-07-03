@@ -21,8 +21,10 @@ import { MockChartDataService } from '../services/mock-data-chart.service';
 import { AlpacaDataService } from '../services/alpaca-data.service';
 import { SharesService } from '../services/shares.service';
 import { StocksService } from '../services/stocks.service';
+import { OrdersService } from '../services/orders.service';
 import { Stock } from '../models/stock.model';
 import { Share } from '../models/share.model';
+import { Order } from '../models/order.model';
 import { Subject, interval } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 
@@ -58,10 +60,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions>={};
   public isLoading = true;
   public isLoadingWatchlist = true;
-  public isLoadingTransactions = true;
+  public isLoadingRecentOrders = true; // Changed from isLoadingTransactions
   public useMockData = false;
   public currentSymbol = 'AAPL';
-  public transactions: any[] = [];
+  public recentOrders: Order[] = []; // Changed from transactions: any[]
   private destroy$ = new Subject<void>();
 
   public watchlistShares: any[] = [];
@@ -92,7 +94,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private mockService: MockChartDataService,
     private alpacaService: AlpacaDataService,
     private sharesService: SharesService,
-    private stocksService: StocksService
+    private stocksService: StocksService,
+    private ordersService: OrdersService // Injected OrdersService
   ) {
     this.initializeChart();
     // Cargamos datos iniciales del símbolo por defecto (AAPL)
@@ -203,7 +206,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.isLoading = true;
     this.isLoadingWatchlist = true;
-    this.isLoadingTransactions = true;
+    this.isLoadingRecentOrders = true; // Changed from isLoadingTransactions
     
     // Primero inicializamos los mercados y luego cargamos los datos
     this.stocksService.getStocks().subscribe({
@@ -226,8 +229,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Ya no llamamos a loadChartData aquí porque lo hicimos en preloadDefaultData
     // para mostrar el gráfico tan pronto como sea posible
     
-    // Cargar transacciones recientes
-    this.loadTransactions();
+    // Cargar órdenes recientes
+    this.loadRecentOrders(); // Changed from loadTransactions()
   }
     refreshData(): void {
     console.log('Actualizando datos del dashboard...');
@@ -610,42 +613,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoading = false;
   }
 
-  loadTransactions(): void {
-    this.isLoadingTransactions = true;
+  loadRecentOrders(): void { // Changed from loadTransactions()
+    this.isLoadingRecentOrders = true; // Changed from isLoadingTransactions
     
-    // Simulamos una carga de datos de transacciones
-    setTimeout(() => {
-      this.transactions = [
-        { 
-          id: 'TX100523', 
-          type: 'buy', 
-          symbol: 'AAPL',
-          shares: 10,
-          price: 185.92,
-          total: 1859.20,
-          date: '2025-06-10'
-        },
-        { 
-          id: 'TX100524', 
-          type: 'sell', 
-          symbol: 'MSFT',
-          shares: 5,
-          price: 337.50,
-          total: 1687.50,
-          date: '2025-06-09'
-        },
-        { 
-          id: 'TX100525', 
-          type: 'buy', 
-          symbol: 'GOOGL',
-          shares: 3,
-          price: 131.86,
-          total: 395.58,
-          date: '2025-06-08'
-        }
-      ];
-      this.isLoadingTransactions = false;
-    }, 1200);
+    this.ordersService.getRecentOrders().subscribe({
+      next: (orders) => {
+        console.log('Orders received for recent orders:', orders); // Added console.log
+        this.recentOrders = orders.slice(0, 3); // Ensure only the last 3 are displayed
+        this.isLoadingRecentOrders = false;
+      },
+      error: (error) => {
+        console.error('Error loading recent orders:', error);
+        this.isLoadingRecentOrders = false; // Changed from isLoadingTransactions
+        // Optionally, load mock data or display an error message
+        // For now, we'll just set it to empty and stop loading
+        this.recentOrders = [];
+      }
+    });
   }
   
   initializeChart(): void {
