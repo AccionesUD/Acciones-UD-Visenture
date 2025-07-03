@@ -44,7 +44,7 @@ import { Order, Commission } from '../../models/order.model';
 export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = true;
   dataSource = new MatTableDataSource<Order>();
-  displayedColumns: string[] = ['create_at', 'symbol', 'side', 'type', 'qty', 'status', 'filled_avg_price', 'commission', 'total', 'actions'];
+  displayedColumns: string[] = ['create_at', 'symbol', 'side', 'type', 'qty', 'limit_price', 'stop_price', 'status', 'filled_avg_price', 'commission', 'total', 'actions'];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 

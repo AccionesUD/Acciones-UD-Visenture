@@ -92,6 +92,14 @@
               <th mat-header-cell *matHeaderCellDef i18n="Table header for Quantity"> Cantidad </th>
               <td mat-cell *matCellDef="let order" i18n="@@historical.table.quantity_value"> {{ order.qty }} </td>
             </ng-container>
+            <ng-container matColumnDef="limit_price">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Limit Price"> P. Límite </th>
+              <td mat-cell *matCellDef="let order" i18n="@@historical.table.limit_price_value"> {{ order.limit_price | currency:'USD' }} </td>
+            </ng-container>
+            <ng-container matColumnDef="stop_price">
+              <th mat-header-cell *matHeaderCellDef i18n="Table header for Stop Price"> P. Stop </th>
+              <td mat-cell *matCellDef="let order" i18n="@@historical.table.stop_price_value"> {{ order.stop_price | currency:'USD' }} </td>
+            </ng-container>
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef i18n="Table header for Status"> Estado </th>
               <td mat-cell *matCellDef="let order" i18n="@@historical.table.status_value"> {{ order.status | titlecase }} </td>

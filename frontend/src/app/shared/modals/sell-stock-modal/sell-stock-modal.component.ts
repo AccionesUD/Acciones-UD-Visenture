@@ -47,7 +47,7 @@ export class SellStockModalComponent implements OnInit {
   sellOrderTypes = [
     { value: 'market', label: 'Mercado', description: 'Ejecutar la orden inmediatamente al precio de mercado actual' },
     { value: 'limit', label: 'Límite', description: 'Ejecutar la orden cuando el precio alcance o supere el valor especificado' },
-    { value: 'stop-loss', label: 'Stop Loss', description: 'Vender cuando el precio caiga por debajo del valor especificado para limitar pérdidas' }
+    { value: 'stop', label: 'Stop Loss', description: 'Vender cuando el precio caiga por debajo del valor especificado para limitar pérdidas' }
   ];
   
   timeInForceOptions = [
@@ -218,7 +218,7 @@ export class SellStockModalComponent implements OnInit {
           // Para límite, sugerimos un precio ligeramente mejor que el mercado (+2%)
           const limitPrice = parseFloat((currentPrice * 1.02).toFixed(2));
           limitPriceControl.setValue(limitPrice);
-        } else if (orderType === 'stop-loss') {
+        } else if (orderType === 'stop') {
           // Para stop loss, sugerimos un precio ligeramente inferior (-5%)
           const stopLossPrice = parseFloat((currentPrice * 0.95).toFixed(2));
           limitPriceControl.setValue(stopLossPrice);

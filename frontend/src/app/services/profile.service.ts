@@ -79,7 +79,7 @@ export class ProfileService {
    * Actualiza los datos del perfil del usuario
    */
   updateProfile(profileData: UpdateProfileDto): Observable<ProfileUpdateResponse> {
-    return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/profile`, profileData).pipe(
+    return this.http.put<ProfileUpdateResponse>(`${this.apiUrl}/users/perfil`, profileData).pipe(
       catchError(this.handleError<ProfileUpdateResponse>('updateProfile', {
         success: false,
         message: 'Error al actualizar el perfil'

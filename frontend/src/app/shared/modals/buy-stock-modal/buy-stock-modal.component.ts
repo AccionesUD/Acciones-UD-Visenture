@@ -50,7 +50,7 @@ export class BuyStockModalComponent implements OnInit {
   buyOrderTypes = [
     { value: 'market', label: 'Mercado', description: 'Comprar inmediatamente al precio de mercado actual' },
     { value: 'limit', label: 'Límite', description: 'Comprar cuando el precio alcance o sea menor al valor especificado' },
-    { value: 'stop-loss', label: 'Stop Loss', description: 'Comprar cuando el precio suba por encima del valor especificado' }
+    { value: 'stop', label: 'Stop Loss', description: 'Comprar cuando el precio suba por encima del valor especificado' }
   ];
   
   timeInForceOptions = [
@@ -195,7 +195,7 @@ export class BuyStockModalComponent implements OnInit {
    */
   get priceForCalculation(): number {
     const orderType = this.buyForm.get('orderType')?.value;
-    if (orderType === 'limit' || orderType === 'stop-loss') {
+    if (orderType === 'limit' || orderType === 'stop') {
       return this.buyForm.get('limitPrice')?.value || 0;
     }
     return this.currentPrice ?? this.data.price ?? 0;
@@ -255,7 +255,7 @@ export class BuyStockModalComponent implements OnInit {
         // Para compra límite, sugerimos un precio ligeramente inferior (-2%)
         const limitPrice = parseFloat((currentPrice * 0.98).toFixed(2));
         limitPriceControl.setValue(limitPrice);
-      } else if (orderType === 'stop-loss') {
+      } else if (orderType === 'stop') {
         // Para stop loss en compra, sugerimos un precio superior (+5%)
         const stopLossPrice = parseFloat((currentPrice * 1.05).toFixed(2));
         limitPriceControl.setValue(stopLossPrice);

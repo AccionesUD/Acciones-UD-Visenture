@@ -1,6 +1,6 @@
 export interface AdminAnalyticsData {
     qty_orders_total: number;
-    qty_orders_cancelled: number;
+    qty_orders_canceled: number;
     qty_orders_fill: number;
     qty_orders_in_procces: number;
     qty_order_sell: number;
