@@ -56,8 +56,8 @@
               <img [src]="stock.logo" [alt]="stock.name_market" class="w-full h-full object-contain">
             </div>
             <div>
-              <h1 class="text-3xl md:text-4xl font-bold text-white">{{ stock.name_market }}</h1>
-              <p class="text-emerald-100 text-lg">{{ stock.country_region }}</p>
+              <h1 class="text-3xl md:text-4xl font-bold text-white" i18n="@@market.detail.market_name">{{ stock.name_market }}</h1>
+              <p class="text-emerald-100 text-lg" i18n="@@market.detail.country_region">{{ stock.country_region }}</p>
             </div>
             <div class="ml-auto">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm" 
@@ -86,15 +86,15 @@
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.operation.hours">Horario de operación</span>
-                <span>{{ stock.opening_time }} - {{ stock.closing_time }}</span>
+                <span i18n="@@market.detail.opening_closing_time">{{ stock.opening_time }} - {{ stock.closing_time }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.operation.days">Días de operación</span>
-                <span>{{ stock.days_operation }}</span>
+                <span i18n="@@market.detail.days_operation">{{ stock.days_operation }}</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="text-gray-600 dark:text-gray-400" i18n="@@market.detail.country.region">País/Región</span>
-                <span>{{ stock.country_region }}</span>
+                <span i18n="@@market.detail.country_region_value">{{ stock.country_region }}</span>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@
               </div>
               
               <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                <span i18n="@@market.detail.last.updated">Última actualización:</span> {{ marketClock.timestamp | date:'HH:mm:ss' }}
+                <span i18n="@@market.detail.last.updated">Última actualización:</span> <ng-container i18n="@@market.detail.timestamp">{{ marketClock.timestamp | date:'HH:mm:ss' }}</ng-container>
               </div>
             </div>
           </div>
@@ -167,7 +167,7 @@
             <div *ngFor="let share of featuredShares" class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-shadow p-4">
               <div class="flex justify-between items-start mb-3">
                 <h4 class="font-bold">{{ share.symbol }}</h4>
-                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">{{ share.class }}</span>
+                <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300" i18n="@@market.detail.share_class">{{ share.class }}</span>
               </div>
               <p class="text-gray-700 dark:text-gray-300 font-medium mb-2">{{ share.name_share }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mb-4" i18n="@@market.detail.sector.label">Sector: {{ share.sector }}</p>
@@ -206,10 +206,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let share of shares" class="border-t border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                <td class="py-3 px-4 font-medium">{{ share.symbol }}</td>
-                <td class="py-3 px-4">{{ share.name_share }}</td>
-                <td class="py-3 px-4">{{ share.class }}</td>
-                <td class="py-3 px-4">{{ share.sector }}</td>
+                <td class="py-3 px-4 font-medium" i18n="@@market.detail.share_symbol">{{ share.symbol }}</td>
+                <td class="py-3 px-4" i18n="@@market.detail.share_name">{{ share.name_share }}</td>
+                <td class="py-3 px-4" i18n="@@market.detail.share_class_value">{{ share.class }}</td>
+                <td class="py-3 px-4" i18n="@@market.detail.share_sector">{{ share.sector }}</td>
                 <td class="py-3 px-4">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
                         [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': share.status, 

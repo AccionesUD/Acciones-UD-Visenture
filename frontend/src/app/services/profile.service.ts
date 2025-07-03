@@ -119,7 +119,7 @@ export class ProfileService {
   }
 
  cancelOrderById(orderId: number): Observable<any> {
-   return this.http.delete(`${this.apiUrl}/orders/${orderId}`).pipe(
+   return this.http.delete(`${this.apiUrl}/orders/${String(orderId)}`).pipe(
      catchError(this.handleError<any>('cancelOrderById'))
    );
  }

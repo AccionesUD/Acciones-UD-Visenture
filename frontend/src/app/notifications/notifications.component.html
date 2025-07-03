@@ -1,26 +1,26 @@
 <div class="container mx-auto p-6">
-  <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400 mb-6">Notifications</h1>
+  <h1 class="text-2xl font-bold text-emerald-800 dark:text-emerald-400 mb-6" i18n="@@notifications.page_title">Notificaciones</h1>
 
   <div *ngIf="notifications.length === 0" class="text-gray-600 dark:text-gray-400">
-    No new notifications.
+    <ng-container i18n="@@notifications.no_new_notifications">No hay notificaciones nuevas.</ng-container>
   </div>
 
   <div *ngIf="notifications.length > 0" class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold text-emerald-700 dark:text-emerald-300">Your Notifications</h2>
-      <button (click)="clearAllNotifications()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-        Clear All
+      <h2 class="text-xl font-semibold text-emerald-700 dark:text-emerald-300" i18n="@@notifications.your_notifications_title">Tus Notificaciones</h2>
+      <button (click)="clearAllNotifications()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50" i18n="@@notifications.clear_all">
+        Borrar Todas
       </button>
     </div>
 
     <ul>
       <li *ngFor="let notification of notifications" class="flex items-center justify-between p-3 border-b border-gray-200 dark:border-slate-700 last:border-b-0">
         <div class="flex-1">
-          <p class="text-gray-800 dark:text-gray-200">{{ notification.message }}</p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ notification.timestamp | date:'short' }}</p>
+          <p class="text-gray-800 dark:text-gray-200"><ng-container i18n="@@notifications.message">{{ notification.message }}</ng-container></p>
+          <p class="text-sm text-gray-500 dark:text-gray-400"><ng-container i18n="@@notifications.timestamp">{{ notification.timestamp | date:'short' }}</ng-container></p>
         </div>
-        <button (click)="markAsRead(notification.id)" class="ml-4 px-3 py-1 bg-emerald-500 text-white rounded-md text-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50">
-          Mark as Read
+        <button (click)="markAsRead(notification.id)" class="ml-4 px-3 py-1 bg-emerald-500 text-white rounded-md text-sm hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50" i18n="@@notifications.mark_as_read">
+          Marcar como Leída
         </button>
       </li>
     </ul>

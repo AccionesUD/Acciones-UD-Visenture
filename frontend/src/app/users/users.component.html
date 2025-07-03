@@ -14,7 +14,7 @@
             class="flex items-center px-4 py-2 bg-white border border-emerald-500 dark:bg-slate-800 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             </svg>
-            <span i18n="@@common.actions.refresh">Refrescar</span>
+            <span i18n="@@users.actions.refresh">Refrescar</span>
           </button>
           <!-- Botón de crear usuario eliminado temporalmente por falta de endpoint backend
           <button 
@@ -42,8 +42,8 @@
         <div class="flex items-center mb-4 md:mb-0">
           <mat-icon class="text-red-500 dark:text-red-400 mr-3">error_outline</mat-icon>
           <div>
-            <p class="text-red-700 dark:text-red-300 font-medium">{{ error }}</p>
-            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@commissioner.error.contact.support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
+            <p class="text-red-700 dark:text-red-300 font-medium" i18n="@@users.error.message">{{ error }}</p>
+            <p class="text-xs text-red-600 dark:text-red-400 mt-1" i18n="@@users.error.contact_support">Por favor, intenta nuevamente o contacta con soporte si el error persiste.</p>
           </div>
         </div>
         <button mat-stroked-button color="warn" (click)="loadUsers(true)" class="px-4 py-2 bg-white dark:bg-red-800 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-700 transition-colors">
@@ -83,7 +83,7 @@
                 id="role-filter"
                 formControlName="role"
                 class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 px-4 pr-10 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 transition-colors duration-200">
-                <option *ngFor="let role of roles" [value]="role.value" i18n>{{ role.label }}</option>
+                <option *ngFor="let role of roles" [value]="role.value" i18n="@@users.filters.role.{{role.value}}">{{ role.label }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <mat-icon class="text-indigo-500 dark:text-indigo-400">admin_panel_settings</mat-icon>
@@ -140,14 +140,14 @@
                 <mat-checkbox (change)="$event ? masterToggle() : null"
                               [checked]="selection.hasValue() && isAllSelected()"
                               [indeterminate]="selection.hasValue() && !isAllSelected()"
-                              [aria-label]="checkboxLabel()">
+                              [aria-label]="checkboxLabel()" i18n-aria-label="@@users.table.select_all_users">
                 </mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <mat-checkbox (click)="$event.stopPropagation()"
                               (change)="$event ? selection.toggle(row) : null"
                               [checked]="selection.isSelected(row)"
-                              [aria-label]="checkboxLabel(row)">
+                              [aria-label]="checkboxLabel(row)" i18n-aria-label="@@users.table.select_user">
                 </mat-checkbox>
               </td>
             </ng-container>
@@ -155,13 +155,13 @@
             <!-- Columna Nombre -->
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef mat-sort-header="first_name" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.name.label">Nombre</th>
-              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">{{ getFullName(user) }}</td>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700" i18n="@@users.table.full_name">{{ getFullName(user) }}</td>
             </ng-container>
 
             <!-- Columna Email -->
             <ng-container matColumnDef="email">
               <th mat-header-cell *matHeaderCellDef mat-sort-header="email" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.email.label">Email</th>
-              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">{{ user.email }}</td>
+              <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700" i18n="@@users.table.email">{{ user.email }}</td>
             </ng-container>
 
             <!-- Columna Rol -->
@@ -169,12 +169,12 @@
               <th mat-header-cell *matHeaderCellDef mat-sort-header="role" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700" i18n="@@common.role.label">Rol</th>
               <td mat-cell *matCellDef="let user" class="px-6 py-4 whitespace-nowrap border-b border-gray-200 dark:border-gray-700">
                 <span *ngIf="user.roles && user.roles.length > 0" [matTooltip]="user.roles.length > 1 ? user.roles.map(getRoleDisplay).join(', ') : ''" matTooltipPosition="above">
-                  <span [ngClass]="getRoleClass(user.roles[0])">{{ getRoleDisplay(user.roles[0]) }}</span>
+                  <span [ngClass]="getRoleClass(user.roles[0])" i18n="@@users.table.role_display">{{ getRoleDisplay(user.roles[0]) }}</span>
                   <ng-container *ngIf="user.roles.length > 1">
-                    <span class="ml-1 text-xs text-gray-400 dark:text-gray-500 align-middle">…</span>
+                    <span class="ml-1 text-xs text-gray-400 dark:text-gray-500 align-middle" i18n="@@users.table.more_roles">…</span>
                   </ng-container>
                 </span>
-                <span *ngIf="!user.roles || user.roles.length === 0" class="text-gray-400 italic" i18n="@@users.no.role">Sin rol</span>
+                <span *ngIf="!user.roles || user.roles.length === 0" class="text-gray-400 italic" i18n="@@users.table.no_role">Sin rol</span>
               </td>
             </ng-container>
 

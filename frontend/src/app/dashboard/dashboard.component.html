@@ -45,7 +45,8 @@
             (ngModelChange)="changeTimeSettings($event)"
             class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
           >
-            <option *ngFor="let period of availablePeriods" [ngValue]="period.value">
+            <option *ngFor="let period of availablePeriods" [ngValue]="period.value"
+                    [attr.i18n-label]="'@@dashboard.period.' + period.value">
               {{ period.label }}
             </option>
           </select>
@@ -56,7 +57,8 @@
             (ngModelChange)="changeTimeSettings($event)"
             class="border border-gray-300 dark:border-slate-600 rounded-md text-sm p-1 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200"
           >
-            <option *ngFor="let frame of availableTimeframes" [ngValue]="frame.value">
+            <option *ngFor="let frame of availableTimeframes" [ngValue]="frame.value"
+                    [attr.i18n-label]="'@@dashboard.timeframe.' + frame.value">
               {{ frame.label }}
             </option>
           </select>
@@ -169,42 +171,57 @@
     </div>
 
     
-    <!-- Transacciones recientes -->
+    <!-- Órdenes Recientes -->
     <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md border border-emerald-100 dark:border-slate-700 mb-8">
-      <h2 class="font-semibold text-emerald-800 dark:text-emerald-400 mb-4" i18n="@@dashboard.recent_transactions">Transacciones Recientes</h2>
+      <h2 class="font-semibold text-emerald-800 dark:text-emerald-400 mb-4" i18n="@@dashboard.recent_orders">Órdenes Recientes</h2>
       
-      <div *ngIf="isLoadingTransactions" class="flex justify-center py-8">
+      <div *ngIf="isLoadingRecentOrders" class="flex justify-center py-8">
         <mat-spinner diameter="30"></mat-spinner>
       </div>
       
-      <div *ngIf="!isLoadingTransactions" class="overflow-x-auto">
+      <div *ngIf="!isLoadingRecentOrders && recentOrders.length === 0" class="p-6 text-center text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <p class="font-medium" i18n="@@dashboard.no_recent_orders">No se encontraron órdenes recientes.</p>
+      </div>
+
+      <div *ngIf="!isLoadingRecentOrders && recentOrders.length > 0" class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
           <thead class="bg-gray-50 dark:bg-slate-700/50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acción</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cantidad</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precio</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.id">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.symbol">Símbolo</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.type">Tipo</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.quantity">Cantidad</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.avg_price">Precio Promedio</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.total">Total Aproximado</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.created_at">Fecha Creación</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider" i18n="@@dashboard.orders.table.status">Estado</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-            <tr *ngFor="let tx of transactions" class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ tx.id }}</td>
+            <tr *ngFor="let order of recentOrders" class="hover:bg-gray-50 dark:hover:bg-slate-700/50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ order.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ order.share.symbol }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': tx.type === 'buy',
-                                 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': tx.type === 'sell'}"
+                <span [ngClass]="{'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': order.side === 'buy',
+                                 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': order.side === 'sell'}"
                      class="px-2 py-0.5 rounded-full text-xs font-medium">
-                  <ng-container i18n="@@dashboard.transaction_type">{tx.type, select, buy {Compra} sell {Venta} other {Desconocido}}</ng-container>
+                  <ng-container i18n="@@dashboard.order_side">{order.side, select, buy {Compra} sell {Venta} other {Desconocido}}</ng-container>
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ tx.symbol }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ tx.shares }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ tx.price.toFixed(2) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ tx.total.toFixed(2) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ tx.date | date:'dd/MM/yyyy' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ order.qty }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ order.filled_avg_price !== null ? order.filled_avg_price.toFixed(2) : 'N/A' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">${{ order.approximate_total }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ order.create_at | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span [ngClass]="{
+                  'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400': order.status === 'pending',
+                  'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': order.status === 'filled',
+                  'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': order.status === 'canceled' || order.status === 'expired'
+                }"
+                class="px-2 py-0.5 rounded-full text-xs font-medium capitalize">
+                  <ng-container i18n="@@dashboard.order_status">{order.status, select, pending {Pendiente} filled {Completada} canceled {Cancelada} expired {Expirada} other {Desconocido}}</ng-container>
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>

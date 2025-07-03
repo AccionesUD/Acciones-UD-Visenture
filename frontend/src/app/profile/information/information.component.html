@@ -33,7 +33,7 @@
         </svg>
       </div>
       <div class="ml-3">
-        <p class="text-sm">{{ saveSuccess }}</p>
+        <p class="text-sm" i18n="@@profile.information.save_success_message">{{ saveSuccess }}</p>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@
         </svg>
       </div>
       <div class="ml-3">
-        <p class="text-sm text-red-700 dark:text-red-200">{{ saveError }}</p>
+        <p class="text-sm text-red-700 dark:text-red-200" i18n="@@profile.information.save_error_message">{{ saveError }}</p>
       </div>
     </div>
   </div>
@@ -155,7 +155,7 @@
           </div>
         </div>
         <div *ngIf="profileForm.get('email')?.invalid && (profileForm.get('email')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
-          {{ getEmailErrorMessage() }}
+          <ng-container i18n="@@profile.information.email_error_message">{{ getEmailErrorMessage() }}</ng-container>
         </div>
       </div>
       
@@ -185,7 +185,7 @@
           </div>
         </div>
         <div *ngIf="profileForm.get('phone_number')?.invalid && (profileForm.get('phone_number')?.touched || formSubmitted)" class="text-red-500 text-sm mt-1">
-          {{ getPhoneErrorMessage() }}
+          <ng-container i18n="@@profile.information.phone_error_message">{{ getPhoneErrorMessage() }}</ng-container>
         </div>
       </div>
       

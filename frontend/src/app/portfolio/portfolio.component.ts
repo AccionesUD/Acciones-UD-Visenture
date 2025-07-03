@@ -56,7 +56,7 @@ export class PortfolioComponent implements OnInit, OnDestroy {
   
   // DataSource para MatTable
   dataSource = new MatTableDataSource<Stock>([]);
-  displayedColumns: string[] = ['symbol', 'quantity', 'unitValue', 'totalValue', 'performance', 'orderType', 'limitPrice', 'stopPrice', 'actions'];
+  displayedColumns: string[] = ['symbol', 'quantity', 'unitValue', 'totalValue', 'performance', 'returnOfMoney', 'orderType', 'limitPrice', 'stopPrice', 'actions'];
   
   // Configuración de paginación
   pageSize = 10;
@@ -341,11 +341,33 @@ export class PortfolioComponent implements OnInit, OnDestroy {
    * @param stock Acción a comprar
    */ 
 abrirModalCompra(stock: Stock): void {
+  const stockForModal: any = {
+    id: stock.id,
+    symbol: stock.symbol,
+    company: stock.company,
+    marketName: stock.marketName,
+    marketId: stock.marketId,
+    quantity: stock.quantity,
+    unitValue: stock.unitValue,
+    totalValue: stock.totalValue,
+    performance: stock.performance,
+    color: stock.color,
+    returnOfMoney: stock.returnOfMoney,
+    orderType: stock.orderType,
+    limitPrice: stock.limitPrice,
+    stopPrice: stock.stopPrice,
+    current_price: stock.unitValue,
+    name: stock.company,
+    exchange: stock.marketId,
+    type: 'common', // Asumimos 'common' por defecto, ajustar si es necesario
+    currency: 'USD', // Asumimos USD, ajustar si es necesario
+  };
+
   const dialogRef = this.dialog.open(BuyStockModalComponent, {
     width: '500px',
     maxHeight: '90vh',
-    data: { 
-      stock, 
+    data: {
+      stock: stockForModal,
       price: stock.unitValue,
       maxQuantity: 1000 // Puedes ajustar esto según tu lógica de negocio
     },

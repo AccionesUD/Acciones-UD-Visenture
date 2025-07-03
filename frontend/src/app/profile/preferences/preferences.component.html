@@ -96,12 +96,16 @@
     </div><!-- Contenido de las pestañas -->
     <div class="tab-content">      
       <!-- Panel 1: Alertas de Precio -->
-      <div class="tab-panel" *ngIf="userRole === 'premium'" [ngClass]="{'active': activeTabIndex === 0}">
+      <div class="tab-panel" *ngIf="isPremium" [ngClass]="{'active': activeTabIndex === 0}">
         <h3 class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mb-2" i18n="@@preferences.alerts.config_title">Configuración de alertas</h3>
         <p class="text-gray-600 dark:text-gray-300 mb-4" i18n="@@preferences.alerts.description">
 
           Las alertas te notificarán cuando una acción alcance el precio que hayas establecido.
         </p>
+        <div *ngIf="!isPremium && activeTabIndex === 0" class="p-6 text-center text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900 rounded-lg">
+          <p class="font-medium" i18n="@@preferences.alerts.no_premium">No tiene suscripción activa para acceder a esta característica.</p>
+          <p class="text-sm mt-2" i18n="@@preferences.alerts.required_role">El rol requerido es: usuario_premium</p>
+        </div>
 
         <!-- Sección de Activación de Notificaciones -->
         <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg" *ngIf="notificationSettings">
@@ -296,7 +300,7 @@
                   <div class="mb-2 md:mb-0">
                     <div class="flex items-center">
                       <span class="font-medium text-lg text-emerald-700 dark:text-emerald-400">{{ alert.ticker }}</span>
-                      <span *ngIf="alert.stock_name" class="ml-2 text-gray-600 dark:text-gray-400">
+                      <span *ngIf="alert.stock_name" class="ml-2 text-gray-600 dark:text-gray-400" i18n="@@preferences.alerts.stock_name_value">
                         {{ alert.stock_name }}
                       </span>
                     </div>
@@ -310,12 +314,12 @@
                         {{ alert.target_price | currency:'USD':'symbol':'1.2-2' }}
                       </span>
                       <span class="ml-2 text-gray-600 dark:text-gray-400">
-                        {{ alert.condition === 'above' ? 'o superior' : 'o inferior' }}
+                        <ng-container i18n="@@preferences.alerts.condition_text">{alert.condition, select, above {o superior} below {o inferior}}</ng-container>
                       </span>
                     </div>
                     
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Creada el {{ alert.created_at | date:'dd/MM/yyyy' }}
+                      <ng-container i18n="@@preferences.alerts.created_at">Creada el {{ alert.created_at | date:'dd/MM/yyyy' }}</ng-container>
                     </div>
                   </div>
                   
@@ -427,7 +431,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
-                Guardar preferencias
+                <span i18n="@@preferences.notifications.save_preferences">Guardar preferencias</span>
               </button>
             </div>
           </form>
@@ -608,7 +612,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
               </svg>
-              <span i18n="@@preferences.save">Guardar preferencias</span>
+              <span i18n="@@preferences.markets.save_preferences">Guardar preferencias</span>
             </button>
           </div>
         </div>
@@ -744,7 +748,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                 </svg>
-                <span i18n="@@preferences.save">Guardar preferencias</span>
+                <span i18n="@@preferences.operations.save_preferences">Guardar preferencias</span>
               </button>
             </div>
           </form>

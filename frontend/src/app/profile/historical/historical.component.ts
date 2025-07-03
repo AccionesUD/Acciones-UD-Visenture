@@ -169,7 +169,8 @@ export class HistoricalComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   canBeCancelled(order: Order): boolean {
-    return order.status === 'open' || order.status === 'new' || order.status === 'partially_filled';
+    const cancellableStatus = ['accepted', 'done_for_day'];
+    return cancellableStatus.includes(order.status);
   }
 
   cancelOrder(order: Order): void {
