@@ -45,7 +45,10 @@ export class AdminAnalyticsService {
         const validStatuses = [StatusEventsOrder.DONE_FOR_DAY, StatusEventsOrder.ACCEPTED];
         response.qty_orders_in_procces = orders.filter(order =>
             validStatuses.includes(order.status as StatusEventsOrder)
-        ).length;
+        ).length
+
+        response.qty_orders_canceled= orders.filter(order => order.status === StatusEventsOrder.CANCELED
+        ).length
 
         response.qty_orders_total = orders.length
 
@@ -56,7 +59,8 @@ export class AdminAnalyticsService {
             transaction.type_transaction === typeTransaction.RECHARGE
         ).length;
 
-        response.total_recharge_app = transactions.reduce((sum, transaction) =>
+        let transactionsRecharge = transactions.filter((transaction) => transaction.type_transaction == typeTransaction.RECHARGE)
+        response.total_recharge_app = transactionsRecharge.reduce((sum, transaction) =>
             sum + transaction.value_transaction, 0);
 
 
