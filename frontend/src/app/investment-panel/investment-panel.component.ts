@@ -212,7 +212,7 @@ export class InvestmentPanelComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   formatCurrency(value: number): string {
-    return value?.toLocaleString('es-CO', { style: 'currency', currency: 'COP' }) || '$0';
+    return value?.toLocaleString('es-CO', { style: 'currency', currency: 'USD' }) || '$0';
   }
 
   formatPercentage(value: number): string {

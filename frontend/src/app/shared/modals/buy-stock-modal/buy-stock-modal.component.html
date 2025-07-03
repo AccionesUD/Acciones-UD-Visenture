@@ -214,15 +214,15 @@
           <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.quantity_value">{buyForm.get('quantity')?.value || 0, plural, =1 {1 acción} other {{{buyForm.get('quantity')?.value || 0}} acciones}}</div>
           
           <div class="text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.summary.total_value_label">Valor total:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.total_value">{{ totalValue | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.total_value">{{ totalValue | currency:'USD':'symbol':'1.0-0' }}</div>
           
           <div class="text-gray-600 dark:text-gray-400" i18n="@@buyStockModal.summary.estimated_fee_label">Comisión estimada:</div>
-          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.estimated_fee">{{ estimatedFee | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-right font-medium text-gray-900 dark:text-white" i18n="@@buyStockModal.summary.estimated_fee">{{ estimatedFee | currency:'USD':'symbol':'1.0-0' }}</div>
           
           <div class="border-t border-blue-200 dark:border-blue-700 col-span-2 my-1"></div>
           
           <div class="text-gray-800 dark:text-gray-200 font-medium" i18n="@@buyStockModal.summary.total_to_pay_label">Total a pagar:</div>
-          <div class="text-right font-bold text-blue-600 dark:text-blue-400" i18n="@@buyStockModal.summary.total_to_pay">{{ estimatedNet | currency:'COP':'symbol':'1.0-0' }}</div>
+          <div class="text-right font-bold text-blue-600 dark:text-blue-400" i18n="@@buyStockModal.summary.total_to_pay">{{ estimatedNet | currency:'USD':'symbol':'1.0-0' }}</div>
         </div>
         <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
           <ng-container i18n="@@buyStockModal.summary.disclaimer">* Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.</ng-container>

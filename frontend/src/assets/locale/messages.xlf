@@ -5558,7 +5558,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="buyStockModal.summary.total_value" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ totalValue | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
+        <source><x id="INTERPOLATION" equiv-text="{{ totalValue | currency:&apos;USD&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/buy-stock-modal/buy-stock-modal.component.html</context>
           <context context-type="linenumber">217,218</context>
@@ -5572,7 +5572,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="buyStockModal.summary.estimated_fee" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ estimatedFee | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
+        <source><x id="INTERPOLATION" equiv-text="{{ estimatedFee | currency:&apos;USD&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/buy-stock-modal/buy-stock-modal.component.html</context>
           <context context-type="linenumber">220,221</context>
@@ -5586,7 +5586,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="buyStockModal.summary.total_to_pay" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ estimatedNet | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
+        <source><x id="INTERPOLATION" equiv-text="{{ estimatedNet | currency:&apos;USD&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/buy-stock-modal/buy-stock-modal.component.html</context>
           <context context-type="linenumber">225,226</context>
@@ -6344,7 +6344,7 @@
         <note priority="1" from="meaning">sellStockModal</note>
       </trans-unit>
       <trans-unit id="4996271085363585486" datatype="html">
-        <source> Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:&apos;COP&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones. </source>
+        <source> Los fondos obtenidos de esta venta (<x id="INTERPOLATION" equiv-text="{{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:&apos;USD&apos;:&apos;symbol&apos;:&apos;1.0-0&apos; }}"/>) ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/shared/modals/sell-stock-modal/sell-stock-modal.component.html</context>
           <context context-type="linenumber">323,325</context>

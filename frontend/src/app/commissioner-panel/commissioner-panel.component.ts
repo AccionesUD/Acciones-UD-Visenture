@@ -846,7 +846,7 @@ export class CommissionerPanelComponent implements OnInit, OnDestroy, AfterViewI
   
   // Helper para formatear valores monetarios
   formatCurrency(value: number): string {
-    return value?.toLocaleString('es-CO', { style: 'currency', currency: 'COP' }) || '$0';
+    return value?.toLocaleString('es-CO', { style: 'currency', currency: 'USD' }) || '$0';
   }
   
   // Helper para formatear porcentajes

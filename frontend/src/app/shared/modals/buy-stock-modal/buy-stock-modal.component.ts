@@ -177,7 +177,7 @@ export class BuyStockModalComponent implements OnInit {
     if (this.accountBalance === null || this.accountBalance === undefined) return 'No disponible';
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'COP',
+      currency: 'USD',
       minimumFractionDigits: 2
     }).format(this.accountBalance);
   }

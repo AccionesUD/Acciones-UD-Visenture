@@ -41,9 +41,9 @@ export class AdminAnalyticsService {
       qty_account_commission: 0
     };
 
-    // return this.http.get<AdminAnalyticsData>(`${this.apiUrl}/admin-analytics`).pipe(
-    //   catchError(this.handleError<AdminAnalyticsData>('getAdminAnalytics', {} as AdminAnalyticsData))
-    // );
+     return this.http.get<AdminAnalyticsData>(`${this.apiUrl}/admin-analytics`).pipe(
+       catchError(this.handleError<AdminAnalyticsData>('getAdminAnalytics', {} as AdminAnalyticsData))
+     );
     return of(mockData); // Return mock data as an observable
   }
 

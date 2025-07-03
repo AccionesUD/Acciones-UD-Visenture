@@ -89,7 +89,7 @@
           <ng-container matColumnDef="unitValue">
             <th mat-header-cell *matHeaderCellDef i18n="portfolio|Unit value column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Valor Unitario</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-              {{ stock.unitValue | currency:'COP':'symbol':'1.0-0' }}
+              {{ stock.unitValue | currency:'USD':'symbol':'1.0-0' }}
               <div i18n="@@portfolio.per_share_label" class="text-xs text-gray-400 dark:text-gray-500">por acción</div>
             </td>
           </ng-container>
@@ -98,7 +98,7 @@
           <ng-container matColumnDef="totalValue">
             <th mat-header-cell *matHeaderCellDef i18n="portfolio|Total value column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Valor Total</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700">
-              {{ stock.totalValue | currency:'COP':'symbol':'1.0-0' }}
+              {{ stock.totalValue | currency:'USD':'symbol':'1.0-0' }}
               <div i18n="@@portfolio.total_investment_label" class="text-xs text-gray-500 dark:text-gray-400">Inversión total</div>
             </td>
           </ng-container>
@@ -132,7 +132,7 @@
               'text-green-600 dark:text-green-400': stock.returnOfMoney >= 0,
               'text-red-600 dark:text-red-400': stock.returnOfMoney < 0
             }">
-              {{ stock.returnOfMoney | currency:'COP':'symbol':'1.0-0' }}
+              {{ stock.returnOfMoney | currency:'USD':'symbol':'1.0-0' }}
             </td>
           </ng-container>
 
@@ -143,24 +143,25 @@
               {{ stock.orderType | titlecase }}
             </td>
           </ng-container>
-
-          <!-- Columna Precio Límite -->
+        <!--
+          Columna Precio Límite 
           <ng-container matColumnDef="limitPrice">
             <th mat-header-cell *matHeaderCellDef i18n="portfolio|Limit price column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Precio Límite</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-              <ng-container *ngIf="stock.limitPrice !== null">{{ stock.limitPrice | currency:'COP':'symbol':'1.0-0' }}</ng-container>
+              <ng-container *ngIf="stock.limitPrice !== null">{{ stock.limitPrice | currency:'USD':'symbol':'1.0-0' }}</ng-container>
               <ng-container *ngIf="stock.limitPrice === null">-</ng-container>
             </td>
           </ng-container>
 
-          <!-- Columna Precio Stop -->
+           Columna Precio Stop 
           <ng-container matColumnDef="stopPrice">
             <th mat-header-cell *matHeaderCellDef i18n="portfolio|Stop price column header" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-slate-700">Precio Stop</th>
             <td mat-cell *matCellDef="let stock" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-              <ng-container *ngIf="stock.stopPrice !== null">{{ stock.stopPrice | currency:'COP':'symbol':'1.0-0' }}</ng-container>
+              <ng-container *ngIf="stock.stopPrice !== null">{{ stock.stopPrice | currency:'USD':'symbol':'1.0-0' }}</ng-container>
               <ng-container *ngIf="stock.stopPrice === null">-</ng-container>
             </td>
           </ng-container>
+        -->
 
           <!-- Columna Acciones -->
           <ng-container matColumnDef="actions">
@@ -203,7 +204,7 @@
       <div *ngIf="!isLoading && !error && filteredStocks.length > 0" class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-lg shadow-sm">
           <p i18n="portfolio|Total invested value" class="text-sm text-gray-600 dark:text-gray-400">Valor Total Invertido</p>
-          <p class="text-xl font-bold text-emerald-600 dark:text-emerald-300">{{ portfolioSummary.totalInvested | currency:'COP':'symbol':'1.0-0' }}</p>
+          <p class="text-xl font-bold text-emerald-600 dark:text-emerald-300">{{ portfolioSummary.totalInvested | currency:'USD':'symbol':'1.0-0' }}</p>
         </div>
         <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg shadow-sm">
           <p i18n="portfolio|Total earnings" class="text-sm text-gray-600 dark:text-gray-400">Ganancias Totales</p>
@@ -211,7 +212,7 @@
             <p class="text-xl font-bold" [ngClass]="{
               'text-blue-600 dark:text-blue-300': portfolioSummary.totalEarnings >= 0,
               'text-red-600 dark:text-red-300': portfolioSummary.totalEarnings < 0
-            }">{{ portfolioSummary.totalEarnings | currency:'COP':'symbol':'1.0-0' }}</p>
+            }">{{ portfolioSummary.totalEarnings | currency:'USD':'symbol':'1.0-0' }}</p>
             <svg *ngIf="portfolioSummary.totalEarnings >= 0" class="h-5 w-5 ml-2 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
             </svg>

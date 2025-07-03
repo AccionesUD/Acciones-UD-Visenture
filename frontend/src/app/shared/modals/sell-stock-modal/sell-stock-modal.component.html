@@ -51,7 +51,7 @@
       <!-- Precio actual -->
       <div class="ml-auto text-right">
         <div i18n="sellStockModal|Current price label" class="text-sm text-gray-600 dark:text-gray-400">Precio actual</div>
-        <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
+        <div class="text-lg font-bold text-gray-900 dark:text-white">{{ data.price | currency:'USD':'symbol':'1.0-0' }}</div>
       </div>
     </div>
     
@@ -62,7 +62,7 @@
       </div>
       <div class="flex justify-between text-sm mt-1">
         <span i18n="sellStockModal|Total holding value label" class="text-gray-700 dark:text-gray-300">Valor total de tenencia:</span>
-        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ data.stock.totalValue | currency:'COP':'symbol':'1.0-0' }}</span>
+        <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ data.stock.totalValue | currency:'USD':'symbol':'1.0-0' }}</span>
       </div>
     </div>
   </div>
@@ -200,21 +200,21 @@
       
       <div class="grid grid-cols-2 gap-1 text-sm">
         <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Share price label">Precio por acción:</div>
-        <div class="text-right font-medium text-gray-900 dark:text-white">{{ data.price | currency:'COP':'symbol':'1.0-0' }}</div>
+        <div class="text-right font-medium text-gray-900 dark:text-white">{{ data.price | currency:'USD':'symbol':'1.0-0' }}</div>
         
         <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Quantity label">Cantidad:</div>
         <div class="text-right font-medium text-gray-900 dark:text-white" i18n="sellStockModal|Shares quantity">{sellForm.get('quantity')?.value || 0, plural, =1 {1 acción} other {{{sellForm.get('quantity')?.value || 0}} acciones}}</div>
         
         <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Total value label">Valor total:</div>
-        <div class="text-right font-medium text-gray-900 dark:text-white">{{ totalValue | currency:'COP':'symbol':'1.0-0' }}</div>
+        <div class="text-right font-medium text-gray-900 dark:text-white">{{ totalValue | currency:'USD':'symbol':'1.0-0' }}</div>
         
         <div class="text-gray-600 dark:text-gray-400" i18n="sellStockModal|Estimated fee label">Comisión estimada:</div>
-        <div class="text-right font-medium text-gray-900 dark:text-white">{{ estimatedFee | currency:'COP':'symbol':'1.0-0' }}</div>
+        <div class="text-right font-medium text-gray-900 dark:text-white">{{ estimatedFee | currency:'USD':'symbol':'1.0-0' }}</div>
         
         <div class="border-t border-emerald-200 dark:border-emerald-700 col-span-2 my-1"></div>
         
         <div class="text-gray-800 dark:text-gray-200 font-medium" i18n="sellStockModal|Estimated net amount label">Monto neto estimado:</div>
-        <div class="text-right font-bold text-emerald-600 dark:text-emerald-400">{{ estimatedNet | currency:'COP':'symbol':'1.0-0' }}</div>
+        <div class="text-right font-bold text-emerald-600 dark:text-emerald-400">{{ estimatedNet | currency:'USD':'symbol':'1.0-0' }}</div>
       </div>
         <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2" i18n="sellStockModal|Estimated value disclaimer">
         * Los valores finales podrían variar según las condiciones del mercado al momento de la ejecución.
@@ -289,7 +289,7 @@
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Sale price label">Precio de venta:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ operationResult.filled_avg_price | currency:'COP':'symbol':'1.0-0' }}
+          {{ operationResult.filled_avg_price | currency:'USD':'symbol':'1.0-0' }}
         </dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Quantity result label">Cantidad:</dt>
@@ -299,7 +299,7 @@
 
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Total result label">Total:</dt>
         <dd class="text-sm font-medium text-gray-900 dark:text-white text-right">
-          {{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'COP':'symbol':'1.0-0' }}
+          {{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'USD':'symbol':'1.0-0' }}
         </dd>
         
         <dt class="text-sm text-gray-600 dark:text-gray-400" i18n="sellStockModal|Submitted at label">Enviada:</dt>
@@ -320,7 +320,7 @@
           <span class="text-blue-800 dark:text-blue-200 font-medium" i18n="sellStockModal|Important information title">Información importante</span>
         </div>
         <p class="text-sm text-blue-700 dark:text-blue-300" i18n="sellStockModal|Completed order info">
-          Los fondos obtenidos de esta venta ({{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'COP':'symbol':'1.0-0' }}) 
+          Los fondos obtenidos de esta venta ({{ (operationResult.filled_avg_price || 0) * (operationResult.fill_qyt || 0) | currency:'USD':'symbol':'1.0-0' }}) 
           ya han sido acreditados en su cuenta. Ya puede usar estos fondos para nuevas operaciones.
         </p>
       </div>

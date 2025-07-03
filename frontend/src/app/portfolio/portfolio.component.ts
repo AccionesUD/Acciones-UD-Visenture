@@ -56,7 +56,7 @@ export class PortfolioComponent implements OnInit, OnDestroy {
   
   // DataSource para MatTable
   dataSource = new MatTableDataSource<Stock>([]);
-  displayedColumns: string[] = ['symbol', 'quantity', 'unitValue', 'totalValue', 'performance', 'returnOfMoney', 'orderType', 'limitPrice', 'stopPrice', 'actions'];
+  displayedColumns: string[] = ['symbol', 'quantity', 'unitValue', 'totalValue', 'performance', 'returnOfMoney', 'orderType', 'actions'];
   
   // Configuración de paginación
   pageSize = 10;
@@ -408,8 +408,8 @@ abrirModalCompra(stock: Stock): void {
             width: '400px',
             data: { 
               title: 'Venta completada',
-              message: `Se han vendido ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}. 
-                      Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}.`,
+              message: `Se han vendido ${result.filledQuantity} acciones de ${stock.company} por un total de ${result.totalAmount.toLocaleString('es-CO', {style: 'currency', currency: 'USD'})}. 
+                      Se aplicó una comisión de ${result.fee.toLocaleString('es-CO', {style: 'currency', currency: 'USD'})}.`,
               buttonText: 'Aceptar'
             }
           });
