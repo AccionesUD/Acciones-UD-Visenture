@@ -22,6 +22,7 @@ import { Role } from 'src/roles-permission/entities/role.entity';
 import { PreferencesService } from 'src/preferences/preferences.service';
 import { UpdateUserByAdminDto } from '../dtos/update-user-by-admin.dto';
 import { UpdateUserByAdminResponse } from '../dtos/update-user-by-admin-response.dto';
+import { retry } from 'rxjs';
 
 export class AccountsService {
   constructor(
@@ -188,6 +189,18 @@ export class AccountsService {
       relations: ['roles'],
     });
   }
+
+  async getAllAccounts(){
+    try {
+      const accounts = await this.accountRepository.find({relations: ['roles']})
+    return accounts
+    } catch (error) {
+      throw new RequestTimeoutException('error in BD')
+    }
+   
+  }
+
+
 
   // Actualiza los roles de la cuenta
   async updateAccountRoles(

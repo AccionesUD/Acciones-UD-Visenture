@@ -34,6 +34,15 @@ export class BriefcaseService {
         return briefcaseFind
     }
 
+    async getAllBriefcases() {
+        try {
+            const transaction = await this.briefcaseRepository.find({relations: ['assets']})
+            return transaction
+        } catch (error) {
+            throw new RequestTimeoutException('error in bd')
+        }
+    }
+
     async getBriefcaseAssets(accountId: number) {
         const briefcase = await this.briefcaseRepository.findOne({
             where: { account: { id: accountId }, assets: { currentShareQuantity: MoreThan(0) } },

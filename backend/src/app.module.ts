@@ -31,6 +31,7 @@ import { PreferencesModule } from './preferences/preferences.module';
 import { MarketNotificationsModule } from './notifications/market-notification/market-notifications.module';
 import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AdminAnalyticsModule } from './admin-analytics/admin-analytics.module';
 
 @Module({
   imports: [
@@ -42,21 +43,20 @@ import { ScheduleModule } from '@nestjs/schedule';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false
-          }
-        },
         autoLoadEntities: configService.get('DB_AUTOLOADENTITIES') === 'true',
         synchronize: configService.get('DB_SYNCRONIZE') === 'true',
-        url: configService.get('DB_URL')
+        port: configService.get('DB_PORT', 10),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        host: configService.get('DB_HOST'),
       }),
     }),
     ScheduleModule.forRoot(), 
     CacheModule.register({ ttl: 60 }), //sirve para retrasar las peticiones realizadas a la api con intervalos de un minuto
     UsersModule,
     AccountsModule,
+    AdminAnalyticsModule,
     AuthModule,
     MailModule,
     TokensModule,

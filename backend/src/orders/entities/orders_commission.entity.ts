@@ -9,7 +9,7 @@ export class OrderCommissions{
     @PrimaryGeneratedColumn()
     id: string
   
-    @ManyToOne(() => Order, { cascade: true})
+    @ManyToOne(() => Order, (Order) => (Order.commissions), { cascade: true})
     @JoinColumn({name: 'id_order'})
     order: Order
 

@@ -24,28 +24,28 @@ export class TransactionsService {
             throw new RequestTimeoutException(error, { description: 'Se presento un error en la operacion, intente luego' });
         }
     }
-    
-    async calculateCurrentBalance(accountId: number){
+
+    async calculateCurrentBalance(accountId: number) {
         const transactions = await this.transactionRepository.find({
-            where: {account: {id: accountId}, status: In([statusTransaction.COMPLETE, statusTransaction.PROCESSING])}
+            where: { account: { id: accountId }, status: In([statusTransaction.COMPLETE, statusTransaction.PROCESSING]) }
         })
         const balance = transactions.reduce((sum, t) => sum + t.value_transaction, 0)
-        return {balance: balance}
+        return { balance: balance }
     }
 
-    async getTransaction(operation_id: string){
+    async getTransaction(operation_id: string) {
         try {
-            const transaction = await this.transactionRepository.findOneBy({operation_id})
+            const transaction = await this.transactionRepository.findOneBy({ operation_id })
             return transaction
         } catch (error) {
             throw new RequestTimeoutException('error en la bd')
         }
-    
+
     }
 
-    async getAllTransactions(accountId: number){
+    async getAllTransactions(accountId: number) {
         const transactions = this.transactionRepository.find({
-            where: {account: {id: accountId}},
+            where: { account: { id: accountId } },
             order: {
                 date_create: 'DESC'
             }
@@ -53,12 +53,22 @@ export class TransactionsService {
         return transactions
     }
 
-    async updateTransaction(updateTransactionDto: UpdateTransactionDto){
+    async getAllTransactionsUsers() {
+        try {
+            const transaction = await this.transactionRepository.find()
+            return transaction
+        } catch (error) {
+            throw new RequestTimeoutException('error in DB')
+        }
+
+    }
+
+    async updateTransaction(updateTransactionDto: UpdateTransactionDto) {
         const transaction = await this.getTransaction(updateTransactionDto.operation_id!)
-        if (transaction){
+        if (transaction) {
             transaction.status = updateTransactionDto.status
             transaction.value_transaction = updateTransactionDto.value_transaction ?? transaction.value_transaction
-            if (updateTransactionDto){}
+            if (updateTransactionDto) { }
             try {
                 await this.transactionRepository.save(transaction)
             } catch (error) {
