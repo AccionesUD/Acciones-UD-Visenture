@@ -60,6 +60,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
  qtyOrdersTotal = 0;
  qtyOrdersFill = 0;
  qtyOrdersInProcess = 0;
+ qtyOrdersCancelled = 0;
  qtyOrderSell = 0;
  qtyOrderBuy = 0;
  qtyRechargesInAccounts = 0;
@@ -116,14 +117,14 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
 
   // Bar Chart - Estado de Órdenes
   orderStatus = {
-    series: [{ name: 'Cantidad', data: [0, 0, 0] }], // qty_orders_total, qty_orders_fill, qty_orders_in_procces
+    series: [{ name: 'Cantidad', data: [0, 0, 0, 0] }], // qty_orders_total, qty_orders_fill, qty_orders_in_procces , qty_orders_cancelled
     chart: {
       type: 'bar',
       height: 350,
       background: 'transparent'
     } as ApexChart,
     xaxis: {
-      categories: ['Total', 'Completadas', 'En Proceso'],
+      categories: ['Total', 'Completadas', 'En Proceso', 'Canceladas'],
       labels: {
         style: {
           colors: this.isDark ? '#FFFFFF' : '#333333'
@@ -199,6 +200,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
      this.qtyOrdersTotal = data.qty_orders_total;
      this.qtyOrdersFill = data.qty_orders_fill;
      this.qtyOrdersInProcess = data.qty_orders_in_procces;
+     this.qtyOrdersCancelled = data.qty_orders_cancelled;
      this.qtyOrderSell = data.qty_order_sell;
      this.qtyOrderBuy = data.qty_order_buy;
      this.qtyRechargesInAccounts = data.qty_recharges_in_accounts;
@@ -265,7 +267,7 @@ export class AdminAnalyticsComponent implements OnInit, OnDestroy {
      ...this.orderStatus,
      series: [{
        name: 'Cantidad',
-       data: [this.qtyOrdersTotal, this.qtyOrdersFill, this.qtyOrdersInProcess]
+       data: [this.qtyOrdersTotal, this.qtyOrdersFill, this.qtyOrdersInProcess, this.qtyOrdersCancelled]
      }],
      xaxis: {
        ...this.orderStatus.xaxis,
