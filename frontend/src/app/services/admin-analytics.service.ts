@@ -27,7 +27,7 @@ export class AdminAnalyticsService {
   getAdminAnalytics(): Observable<AdminAnalyticsData> {
     // Mock data for testing purposes
     const mockData: AdminAnalyticsData = {
-      qty_orders_cancelled: 6,
+      qty_orders_canceled: 6,
       qty_orders_total: 30,
       qty_orders_fill: 10,
       qty_orders_in_procces: 2,
