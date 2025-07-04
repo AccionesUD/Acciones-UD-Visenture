@@ -259,14 +259,44 @@
           class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.dashboard">
           Dashboard
         </a>
+        <!-- Mi Perfil -->
+        <a [routerLink]="['/profile']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.my_profile">
+          Mi Perfil
+        </a>
+        <!-- Mi Portafolio -->
+        <a [routerLink]="['/portfolio']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.my_portfolio">
+          Mi Portafolio
+        </a>
+        <!-- Gestionar Fondos -->
+        <a [routerLink]="['/funds']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@funds.manage_funds">
+          Gestionar Fondos
+        </a>
         <!-- Opción del Panel de Comisionista en el menú móvil, temporalmente visible para todos -->
         <a *ngIf="isCommissioner" [routerLink]="['/commissioner-panel']" routerLinkActive="text-emerald-600 dark:text-emerald-500" 
           class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.commissioner_panel">
           Panel de Comisionista
         </a>
-        <a [routerLink]="['/mercados']" class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.markets">
+        <!-- Opciones de administrador -->
+        <a *ngIf="isAdmin" [routerLink]="['/users']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.manage_users">
+          Administrar Usuarios
+        </a>
+        <a *ngIf="isAdmin" [routerLink]="['/admin-analytics']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.admin_panel">
+          Panel de Admin
+        </a>
+        <a [routerLink]="['/markets']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@navbar.markets">
           Mercados
-        </a>        
+        </a>
+        <!-- Notificaciones -->
+        <a [routerLink]="['/notifications']" routerLinkActive="text-emerald-600 dark:text-emerald-500"
+          class="block py-2 text-gray-700 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-500 transition duration-200" i18n="@@notifications.view_all">
+          Notificaciones
+        </a>
         <button (click)="logout()" class="w-full text-left block py-2 text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 transition duration-200" i18n="@@auth.logout">
           Cerrar Sesión
         </button>
